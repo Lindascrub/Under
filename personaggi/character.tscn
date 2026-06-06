@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://da8851e8ni6jb"]
+
+[ext_resource type="Texture2D" uid="uid://v3vx6d7pc1mu" path="res://personaggi/normal.png" id="1_glpr6"]
+[ext_resource type="Script" uid="uid://d30llty7nxua6" path="res://personaggi/giocatore.gd" id="1_pjt0s"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pjt0s"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(288, 64, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wa5vi"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(304, 64, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wfnr8"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(320, 64, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_px5sl"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(336, 64, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0qfo5"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(352, 64, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yxww1"]
+atlas = ExtResource("1_glpr6")
+region = Rect2(368, 64, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wdpcj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pjt0s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wa5vi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wfnr8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_px5sl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0qfo5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yxww1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_glpr6"]
+size = Vector2(8, 20)
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1820891275]
+script = ExtResource("1_pjt0s")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1501293288]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_wdpcj")
+autoplay = "default"
+frame_progress = 0.07078282
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1052129611]
+position = Vector2(0, 5)
+shape = SubResource("RectangleShape2D_glpr6")
