@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bs536syqvqgae"]
+
+[ext_resource type="Script" uid="uid://btgolx1b7lsco" path="res://labels/mondo_iniziale.gd" id="1_4mxmh"]
+[ext_resource type="PackedScene" uid="uid://da8851e8ni6jb" path="res://personaggi/tscn/character.tscn" id="2_vou6a"]
+[ext_resource type="PackedScene" uid="uid://df04500cdfj37" path="res://personaggi/tscn/john.tscn" id="3_7ppmr"]
+
+[node name="MondoIniziale" type="Node2D" unique_id=380192464]
+script = ExtResource("1_4mxmh")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=519726678]
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=1875986420]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "DEBITO : $100"
+
+[node name="CharacterBody2D" parent="." unique_id=1820891275 instance=ExtResource("2_vou6a")]
+position = Vector2(-21, -7)
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=2087133963]
+zoom = Vector2(5, 5)
+
+[node name="CharacterBody2D2" parent="." unique_id=160978463 instance=ExtResource("3_7ppmr")]
+position = Vector2(22, -8)

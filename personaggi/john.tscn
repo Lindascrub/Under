@@ -1,9 +1,6 @@
-[gd_scene format=3 uid="uid://df04500cdfj37"]
+[gd_scene format=3 uid="uid://cj80ny2i7mdi5"]
 
-[ext_resource type="Texture2D" uid="uid://cioegjfw624hy" path="res://personaggi/john.png" id="1_lt87v"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6vue"]
-size = Vector2(9, 18)
+[ext_resource type="Texture2D" uid="uid://cioegjfw624hy" path="res://personaggi/png/john.png" id="1_lt87v"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2neb7"]
 atlas = ExtResource("1_lt87v")
@@ -55,12 +52,16 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="CharacterBody2D" type="CharacterBody2D" unique_id=160978463]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6vue"]
+size = Vector2(9, 18)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=794956475]
-position = Vector2(0, 7)
-shape = SubResource("RectangleShape2D_c6vue")
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=160978463]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1286356770]
 sprite_frames = SubResource("SpriteFrames_5aurq")
 frame_progress = 0.28306395
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=794956475]
+visible = false
+position = Vector2(0, 7)
+shape = SubResource("RectangleShape2D_c6vue")
