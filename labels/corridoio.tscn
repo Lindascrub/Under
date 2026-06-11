@@ -22,11 +22,11 @@ zoom = Vector2(3.5, 3.5)
 [node name="StaticBody2D" type="StaticBody2D" parent="Muri" unique_id=969895975]
 
 [node name="collition" type="CollisionShape2D" parent="Muri/StaticBody2D" unique_id=633611257]
-position = Vector2(-24, 65)
+position = Vector2(-23, 65)
 shape = SubResource("RectangleShape2D_7dapy")
 
 [node name="collition2" type="CollisionShape2D" parent="Muri/StaticBody2D" unique_id=1436853769]
-position = Vector2(23, 66)
+position = Vector2(25, 65)
 shape = SubResource("RectangleShape2D_7dapy")
 
 [node name="pavimenti" type="Node2D" parent="." unique_id=696461521]
