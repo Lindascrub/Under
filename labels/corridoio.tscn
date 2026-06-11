@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://piql6r3w6e63"]
+
+[ext_resource type="Texture2D" uid="uid://dxwvuos2b0bv5" path="res://assets/Screenshot 2026-06-06 234934.png" id="1_4trr4"]
+[ext_resource type="Script" uid="uid://dc6lnw0ga5riq" path="res://labels/corridoio.gd" id="1_pssbs"]
+[ext_resource type="PackedScene" uid="uid://fxcguquekh6t" path="res://personaggi/character.tscn" id="2_7dapy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7dapy"]
+size = Vector2(20, 206)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pssbs"]
+size = Vector2(51, 15.5)
+
+[node name="corridoio" type="Node2D" unique_id=1941854690]
+script = ExtResource("1_pssbs")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=595915681]
+position = Vector2(2, 66)
+zoom = Vector2(3.5, 3.5)
+
+[node name="Muri" type="Node" parent="." unique_id=2007528600]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Muri" unique_id=969895975]
+
+[node name="collition" type="CollisionShape2D" parent="Muri/StaticBody2D" unique_id=633611257]
+position = Vector2(-24, 65)
+shape = SubResource("RectangleShape2D_7dapy")
+
+[node name="collition2" type="CollisionShape2D" parent="Muri/StaticBody2D" unique_id=1436853769]
+position = Vector2(23, 66)
+shape = SubResource("RectangleShape2D_7dapy")
+
+[node name="pavimenti" type="Node2D" parent="." unique_id=696461521]
+position = Vector2(0.9999999, 1)
+scale = Vector2(0.10514706, 0.18513511)
+
+[node name="pavimento" type="Sprite2D" parent="pavimenti" unique_id=950288411]
+texture_filter = 1
+scale = Vector2(1.0000001, 1)
+texture = ExtResource("1_4trr4")
+
+[node name="pavimento2" type="Sprite2D" parent="pavimenti" unique_id=1920149080]
+texture_filter = 1
+position = Vector2(9.536743e-07, 405.10956)
+scale = Vector2(1.0000001, 1)
+texture = ExtResource("1_4trr4")
+
+[node name="pavimento3" type="Sprite2D" parent="pavimenti" unique_id=187449782]
+texture_filter = 1
+position = Vector2(9.536743e-07, 783.2118)
+scale = Vector2(1.0000001, 1)
+texture = ExtResource("1_4trr4")
+
+[node name="Giocatore" parent="." unique_id=1820891275 instance=ExtResource("2_7dapy")]
+position = Vector2(1, -29)
+
+[node name="cambiScena" type="Node" parent="." unique_id=1612226402]
+
+[node name="entraUfficio2" type="Area2D" parent="cambiScena" unique_id=674384988]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="cambiScena/entraUfficio2" unique_id=699169693]
+position = Vector2(-1, -45)
+shape = SubResource("RectangleShape2D_pssbs")
+
+[node name="entraUfficio" type="Area2D" parent="cambiScena" unique_id=1575260489]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="cambiScena/entraUfficio" unique_id=1040131022]
+position = Vector2(2.5, 175.25)
+shape = SubResource("RectangleShape2D_pssbs")
+
+[connection signal="body_entered" from="cambiScena/entraUfficio" to="." method="_on_entra_ufficio_body_entered"]

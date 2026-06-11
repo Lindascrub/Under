@@ -1,11 +1,63 @@
-[gd_scene format=3 uid="uid://bs536syqvqgae"]
+[gd_scene format=3 uid="uid://cgpmoae45c4s2"]
 
-[ext_resource type="Script" uid="uid://btgolx1b7lsco" path="res://labels/mondo_iniziale.gd" id="1_4mxmh"]
+[ext_resource type="Texture2D" uid="uid://ccrh34las85qo" path="res://assets/Screenshot 2026-06-06 224252.png" id="2_4mxmh"]
 [ext_resource type="PackedScene" uid="uid://da8851e8ni6jb" path="res://personaggi/tscn/character.tscn" id="2_vou6a"]
-[ext_resource type="PackedScene" uid="uid://df04500cdfj37" path="res://personaggi/tscn/john.tscn" id="3_7ppmr"]
+
+[sub_resource type="GDScript" id="GDScript_x4bn3"]
+script/source = "extends Node2D
+
+@onready var porta_ascensore = get_node_or_null(\"MuriAscensore3\")
+
+func _ready() -> void:
+	print(\"L'ascensore aziendale sta scendendo... Puoi muoverti nella cabina.\")
+	
+	# Aspettiamo i 5 secondi di viaggio
+	await get_tree().create_timer(5.0).timeout
+	
+	print(\"Le porte si aprono. Puoi uscire!\")
+	if porta_ascensore:
+		porta_ascensore.queue_free() 
+	else:
+		print(\"NOTA: MuriAscensore3 non trovato o già rimosso.\")
+
+# QUESTO È IL SEGNALE GIUSTO COLLEGATO ORA!
+func _on_uscita_ascensore_body_entered(body: Node2D) -> void:
+	print(\"Il sensore ha sentito qualcosa: \", body.name)
+	
+	# Controlliamo se è un CharacterBody2D (il tuo giocatore)
+	if body is CharacterBody2D:
+		print(\"Giocatore confermato! Tento il cambio scena verso il corridoio...\")
+		
+		# Controlliamo entrambi i percorsi possibili per non rischiare!
+		if ResourceLoader.exists(\"res://corridoio.tscn\"):
+			get_tree().change_scene_to_file(\"res://corridoio.tscn\")
+		elif ResourceLoader.exists(\"res://labels/corridoio.tscn\"):
+			get_tree().change_scene_to_file(\"res://labels/corridoio.tscn\")
+		else:
+			print(\"ERRORE: Il file corridoio.tscn non esiste in nessuna delle due cartelle!\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x4bn3"]
+size = Vector2(69.75, 19)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4mxmh"]
+size = Vector2(20.5, 201.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vou6a"]
+size = Vector2(92.875, 78.34375)
 
 [node name="MondoIniziale" type="Node2D" unique_id=380192464]
-script = ExtResource("1_4mxmh")
+script = SubResource("GDScript_x4bn3")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2087133963]
+position = Vector2(-27, 20)
+zoom = Vector2(3.5, 3.5)
+
+[node name="ascensore" type="Sprite2D" parent="." unique_id=629636754]
+texture_filter = 1
+position = Vector2(-25, -15.000003)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("2_4mxmh")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=519726678]
 
@@ -13,12 +65,43 @@ script = ExtResource("1_4mxmh")
 offset_right = 40.0
 offset_bottom = 23.0
 text = "DEBITO : $100"
+metadata/_edit_use_anchors_ = true
 
-[node name="CharacterBody2D" parent="." unique_id=1820891275 instance=ExtResource("2_vou6a")]
-position = Vector2(-21, -7)
+[node name="Giocatore" parent="." unique_id=1820891275 instance=ExtResource("2_vou6a")]
+position = Vector2(-27, 20)
 
-[node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=2087133963]
-zoom = Vector2(5, 5)
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=730676485]
 
-[node name="CharacterBody2D2" parent="." unique_id=160978463 instance=ExtResource("3_7ppmr")]
-position = Vector2(22, -8)
+[node name="uscitaAscensore" type="Area2D" parent="." unique_id=2116888910]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="uscitaAscensore" unique_id=674246272]
+position = Vector2(-24.875, 59)
+shape = SubResource("RectangleShape2D_x4bn3")
+
+[node name="muri" type="Node" parent="." unique_id=350100292]
+
+[node name="MuriAscensore" type="StaticBody2D" parent="muri" unique_id=177580941]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="muri/MuriAscensore" unique_id=831084357]
+position = Vector2(-64.25, 21.25)
+shape = SubResource("RectangleShape2D_4mxmh")
+
+[node name="MuriAscensore2" type="StaticBody2D" parent="muri" unique_id=862956141]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="muri/MuriAscensore2" unique_id=772771572]
+position = Vector2(11, 21)
+shape = SubResource("RectangleShape2D_4mxmh")
+
+[node name="MuriAscensore4" type="StaticBody2D" parent="muri" unique_id=1505634217]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="muri/MuriAscensore4" unique_id=1402636049]
+position = Vector2(-25, -28.171875)
+shape = SubResource("RectangleShape2D_vou6a")
+
+[node name="MuriAscensore3" type="StaticBody2D" parent="." unique_id=1149890901]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MuriAscensore3" unique_id=734219342]
+position = Vector2(-24.4375, 85.34375)
+shape = SubResource("RectangleShape2D_vou6a")
+
+[connection signal="body_entered" from="uscitaAscensore" to="." method="_on_uscita_ascensore_body_entered"]
