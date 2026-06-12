@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cgpmoae45c4s2"]
 
-[ext_resource type="Texture2D" uid="uid://ccrh34las85qo" path="res://assets/Screenshot 2026-06-06 224252.png" id="2_4mxmh"]
+[ext_resource type="Texture2D" uid="uid://ccrh34las85qo" path="res://assets/ascensore.png" id="2_4mxmh"]
 [ext_resource type="PackedScene" uid="uid://da8851e8ni6jb" path="res://personaggi/tscn/character.tscn" id="2_vou6a"]
 
 [sub_resource type="GDScript" id="GDScript_x4bn3"]

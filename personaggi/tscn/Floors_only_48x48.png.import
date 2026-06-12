@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://juifgtx3xql7"
-path="res://.godot/imported/animated_door_big_4.png-aadfa0a9c6c89ebcd9c7c101a6b845c3.ctex"
+uid="uid://gtjan46nlrf0"
+path="res://.godot/imported/Floors_only_48x48.png-a8e4805d42e782e64e092784a9c5e17c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/animated_door_big_4.png"
-dest_files=["res://.godot/imported/animated_door_big_4.png-aadfa0a9c6c89ebcd9c7c101a6b845c3.ctex"]
+source_file="res://personaggi/tscn/Floors_only_48x48.png"
+dest_files=["res://.godot/imported/Floors_only_48x48.png-a8e4805d42e782e64e092784a9c5e17c.ctex"]
 
 [params]
 

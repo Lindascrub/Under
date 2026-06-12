@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccrh34las85qo"
-path="res://.godot/imported/Screenshot 2026-06-06 224252.png-7688c3a02b51c758315d858e7b5edf5c.ctex"
+uid="uid://cs0cxmmw8v053"
+path="res://.godot/imported/animated_door_prison_cell.png-8564cddae8ecef1a0e0e3c9ff86ee19e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Screenshot 2026-06-06 224252.png"
-dest_files=["res://.godot/imported/Screenshot 2026-06-06 224252.png-7688c3a02b51c758315d858e7b5edf5c.ctex"]
+source_file="res://assets/animated_door_prison_cell.png"
+dest_files=["res://.godot/imported/animated_door_prison_cell.png-8564cddae8ecef1a0e0e3c9ff86ee19e.ctex"]
 
 [params]
 

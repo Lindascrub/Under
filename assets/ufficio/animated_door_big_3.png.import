@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2pfqjj6ef7ux"
-path="res://.godot/imported/animated_door_glass_right.png-4fad47bcddeb23ea42628f2beb70385b.ctex"
+uid="uid://bpqicxq74w3ax"
+path="res://.godot/imported/animated_door_big_3.png-c6afbd9cb302f141afd770414918440e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/animated_door_glass_right.png"
-dest_files=["res://.godot/imported/animated_door_glass_right.png-4fad47bcddeb23ea42628f2beb70385b.ctex"]
+source_file="res://assets/ufficio/animated_door_big_3.png"
+dest_files=["res://.godot/imported/animated_door_big_3.png-c6afbd9cb302f141afd770414918440e.ctex"]
 
 [params]
 

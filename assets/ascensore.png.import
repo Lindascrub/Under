@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckin2hblnl2h2"
-path="res://.godot/imported/animated_door_glass_left.png-eab85f8d9e1d56779bce04ecb0e965f1.ctex"
+uid="uid://ccrh34las85qo"
+path="res://.godot/imported/ascensore.png-f9cce91e2222e9f051acb88e4b79c349.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/animated_door_glass_left.png"
-dest_files=["res://.godot/imported/animated_door_glass_left.png-eab85f8d9e1d56779bce04ecb0e965f1.ctex"]
+source_file="res://assets/ascensore.png"
+dest_files=["res://.godot/imported/ascensore.png-f9cce91e2222e9f051acb88e4b79c349.ctex"]
 
 [params]
 
