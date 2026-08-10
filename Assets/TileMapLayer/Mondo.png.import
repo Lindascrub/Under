@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpqicxq74w3ax"
-path="res://.godot/imported/animated_door_big_3.png-c6afbd9cb302f141afd770414918440e.ctex"
+uid="uid://dn7x55jh7jd0h"
+path="res://.godot/imported/Mondo.png-38a1e259445fd563576f607e876f9fd4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ufficio/animated_door_big_3.png"
-dest_files=["res://.godot/imported/animated_door_big_3.png-c6afbd9cb302f141afd770414918440e.ctex"]
+source_file="res://Assets/TileMapLayer/Mondo.png"
+dest_files=["res://.godot/imported/Mondo.png-38a1e259445fd563576f607e876f9fd4.ctex"]
 
 [params]
 

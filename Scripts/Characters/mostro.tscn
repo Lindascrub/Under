@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bble3oadly4n3"]
+
+[sub_resource type="GDScript" id="GDScript_5t6n7"]
+script/source = "extends Area2D
+
+signal combattimento_iniziato
+
+func _ready():
+	# Quando il player tocca il mostro
+	body_entered.connect(_on_body_entered)
+
+func _on_body_entered(body):
+	if body.name == \"Player\":
+		combattimento_iniziato.emit()
+		queue_free() # Il mostro scompare (poi lo gestiremo meglio)
+"
+
+[node name="Mostro" type="Area2D" unique_id=1039329027]
+script = SubResource("GDScript_5t6n7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1238141621]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CollisionShape2D" unique_id=1479738758]

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cs0cxmmw8v053"
-path="res://.godot/imported/animated_door_prison_cell.png-8564cddae8ecef1a0e0e3c9ff86ee19e.ctex"
+uid="uid://bshbs2x1rstqe"
+path="res://.godot/imported/PlayerIdle.png-1fd925bcf1757258df0e4716606fe4fe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/animated_door_prison_cell.png"
-dest_files=["res://.godot/imported/animated_door_prison_cell.png-8564cddae8ecef1a0e0e3c9ff86ee19e.ctex"]
+source_file="res://Assets/personaggi/PlayerIdle.png"
+dest_files=["res://.godot/imported/PlayerIdle.png-1fd925bcf1757258df0e4716606fe4fe.ctex"]
 
 [params]
 

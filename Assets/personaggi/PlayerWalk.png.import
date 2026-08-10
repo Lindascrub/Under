@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccrh34las85qo"
-path="res://.godot/imported/ascensore.png-f9cce91e2222e9f051acb88e4b79c349.ctex"
+uid="uid://ydapw6jh7ex0"
+path="res://.godot/imported/PlayerWalk.png-0d18011aeb8955162c273b27c2900262.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ascensore.png"
-dest_files=["res://.godot/imported/ascensore.png-f9cce91e2222e9f051acb88e4b79c349.ctex"]
+source_file="res://Assets/personaggi/PlayerWalk.png"
+dest_files=["res://.godot/imported/PlayerWalk.png-0d18011aeb8955162c273b27c2900262.ctex"]
 
 [params]
 

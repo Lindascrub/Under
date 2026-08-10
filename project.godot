@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="undercheap"
-run/main_scene="uid://cgpmoae45c4s2"
+run/main_scene="uid://1njumcekh6eb"
 config/features=PackedStringArray("4.6", "Mobile")
 
 [autoload]
