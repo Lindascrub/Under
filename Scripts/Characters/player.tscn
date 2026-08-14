@@ -384,17 +384,18 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtp4b"]
-size = Vector2(10, 21.3125)
+size = Vector2(8, 20.65625)
 
 [node name="Player" type="CharacterBody2D" unique_id=840087444]
 script = ExtResource("1_dtp4b")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1264977679]
 texture_filter = 1
+position = Vector2(-2, -1)
 sprite_frames = SubResource("SpriteFrames_okufa")
 animation = &"idle_down"
 autoplay = "idle_down"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1686603374]
-position = Vector2(0, 5.34375)
+position = Vector2(-2, 5)
 shape = SubResource("RectangleShape2D_dtp4b")
