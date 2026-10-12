@@ -1,0 +1,248 @@
+extends CanvasLayer
+## Interfaccia globale: HUD, box dei dialoghi, scelte, dissolvenze e testo narrato.
+## Uso tipico:  await Ui.say(["Ciao!"], "Nico")   /   var i: int = await Ui.choose("Sì o no?", ["Sì", "No"])
+
+signal faded_in
+signal _advance
+signal _chosen(index: int)
+
+const TYPE_SPEED := 45.0
+const COL_TEXT := Color.WHITE
+const COL_NAME := Color("ffe14d")
+const COL_DIM := Color("8a8494")
+
+## Vero mentre un dialogo o una scelta è aperta.
+var busy := false
+## Vero durante le dissolvenze tra scene.
+var transitioning := false
+## Vero durante le scene scriptate (finali): il giocatore non si muove.
+var cutscene := false
+
+var _hud: Label
+var _box: Panel
+var _name: Label
+var _text: Label
+var _choice_box: Panel
+var _choice_label: Label
+var _fade: ColorRect
+var _narr: Label
+
+var _mode := ""
+var _label: Label
+var _typed := 0.0
+var _typing := false
+var _options: Array = []
+var _sel := 0
+
+
+func _ready() -> void:
+	layer = 10
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_build()
+	GameState.changed.connect(_refresh_hud)
+	_refresh_hud()
+	show_hud(false)
+
+
+func blocks_input() -> bool:
+	return busy or transitioning or cutscene
+
+
+func show_hud(visible_: bool) -> void:
+	_hud.visible = visible_
+
+
+# --- costruzione ------------------------------------------------------------
+
+func _panel_style() -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = Color.BLACK
+	s.border_color = Color.WHITE
+	s.set_border_width_all(3)
+	return s
+
+
+func _make_label(size: int, color := COL_TEXT) -> Label:
+	var l := Label.new()
+	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_color_override("font_color", color)
+	return l
+
+
+func _build() -> void:
+	_hud = _make_label(13)
+	_hud.position = Vector2(8, 6)
+	_hud.add_theme_constant_override("outline_size", 5)
+	_hud.add_theme_color_override("font_outline_color", Color.BLACK)
+	add_child(_hud)
+
+	_box = Panel.new()
+	_box.add_theme_stylebox_override("panel", _panel_style())
+	_box.position = Vector2(16, 258)
+	_box.size = Vector2(608, 90)
+	add_child(_box)
+	_name = _make_label(13, COL_NAME)
+	_name.position = Vector2(14, 6)
+	_box.add_child(_name)
+	_text = _make_label(16)
+	_text.position = Vector2(14, 24)
+	_text.size = Vector2(580, 62)
+	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_box.add_child(_text)
+	_box.visible = false
+
+	_choice_box = Panel.new()
+	_choice_box.add_theme_stylebox_override("panel", _panel_style())
+	add_child(_choice_box)
+	_choice_label = _make_label(16)
+	_choice_label.position = Vector2(12, 8)
+	_choice_box.add_child(_choice_label)
+	_choice_box.visible = false
+
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.position = Vector2.ZERO
+	_fade.size = Vector2(640, 360)
+	add_child(_fade)
+
+	_narr = _make_label(18)
+	_narr.position = Vector2(60, 40)
+	_narr.size = Vector2(520, 280)
+	_narr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_narr.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_narr.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_narr.visible = false
+	add_child(_narr)
+
+
+func _refresh_hud() -> void:
+	_hud.text = "Giorno %d/%d    Debito %s    Soldi %s    %s" % [
+		mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
+		GameState.euros(GameState.debt), GameState.euros(GameState.money), GameState.rank_name(),
+	]
+
+
+# --- dialoghi ---------------------------------------------------------------
+
+func say(lines: Array, speaker: String = "") -> void:
+	busy = true
+	_box.visible = true
+	_name.text = speaker
+	_name.visible = speaker != ""
+	for line: Variant in lines:
+		await _type(_text, GameState.fmt(str(line)))
+	_box.visible = false
+	busy = false
+
+
+func choose(prompt: String, options: Array, speaker: String = "") -> int:
+	busy = true
+	_box.visible = true
+	_name.text = speaker
+	_name.visible = speaker != ""
+	_text.text = GameState.fmt(prompt)
+	_text.visible_characters = -1
+	_options = options
+	_sel = 0
+	_render_choices()
+	_choice_box.visible = true
+	_mode = "choose"
+	var idx: int = await _chosen
+	_mode = ""
+	_choice_box.visible = false
+	_box.visible = false
+	busy = false
+	return idx
+
+
+## Testo centrato su schermo nero (intro, cambio giorno, finali). Usalo dopo fade_out().
+func narrate(lines: Array) -> void:
+	busy = true
+	_narr.visible = true
+	for line: Variant in lines:
+		await _type(_narr, GameState.fmt(str(line)))
+	_narr.visible = false
+	busy = false
+
+
+func show_status() -> void:
+	await say([
+		"* {rank}. Giorno {day} di {last_day}.",
+		"* Debito: {debt}. Soldi: {money}.",
+		"* Tempo libero rimasto oggi: %d." % GameState.free_time,
+	])
+
+
+func _type(label: Label, text: String) -> void:
+	label.text = text
+	label.visible_characters = 0
+	_label = label
+	_typed = 0.0
+	_typing = true
+	_mode = "say"
+	await _advance
+	_mode = ""
+
+
+func _render_choices() -> void:
+	var lines: Array[String] = []
+	for i in _options.size():
+		lines.append(("> " if i == _sel else "   ") + GameState.fmt(str(_options[i])))
+	_choice_label.text = "\n".join(lines)
+	var w := 0.0
+	var font := _choice_label.get_theme_font("font")
+	for l in lines:
+		w = maxf(w, font.get_string_size(l, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x)
+	_choice_box.size = Vector2(w + 28, _options.size() * 23 + 14)
+	_choice_box.position = Vector2(624 - _choice_box.size.x, 252 - _choice_box.size.y)
+
+
+func _process(delta: float) -> void:
+	if not _typing or _label == null:
+		return
+	_typed += delta * TYPE_SPEED
+	_label.visible_characters = int(_typed)
+	if int(_typed) >= _label.get_total_character_count():
+		_label.visible_characters = -1
+		_typing = false
+
+
+func _input(event: InputEvent) -> void:
+	if _mode == "say":
+		if event.is_action_pressed("confirm") or event.is_action_pressed("cancel"):
+			get_viewport().set_input_as_handled()
+			if _typing:
+				_typing = false
+				_label.visible_characters = -1
+			elif event.is_action_pressed("confirm"):
+				_advance.emit()
+	elif _mode == "choose":
+		if event.is_action_pressed("move_up"):
+			get_viewport().set_input_as_handled()
+			_sel = posmod(_sel - 1, _options.size())
+			_render_choices()
+		elif event.is_action_pressed("move_down"):
+			get_viewport().set_input_as_handled()
+			_sel = posmod(_sel + 1, _options.size())
+			_render_choices()
+		elif event.is_action_pressed("confirm"):
+			get_viewport().set_input_as_handled()
+			_chosen.emit(_sel)
+
+
+# --- dissolvenze ------------------------------------------------------------
+
+func fade_out(time := 0.35) -> void:
+	transitioning = true
+	var tw := create_tween()
+	tw.tween_property(_fade, "color:a", 1.0, time)
+	await tw.finished
+
+
+func fade_in(time := 0.35) -> void:
+	var tw := create_tween()
+	tw.tween_property(_fade, "color:a", 0.0, time)
+	await tw.finished
+	transitioning = false
+	faded_in.emit()

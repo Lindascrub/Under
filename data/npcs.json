@@ -1,0 +1,146 @@
+{
+  "nico": {
+    "name": "Nico",
+    "sheet": "char_05",
+    "intro": [
+      "Ehi! Tu sei quello nuovo del terzo piano, giusto?",
+      "Io sono Nico. Vendo caffè qui sotto da... troppo tempo.",
+      "Primo giorno alla CHEAP? Auguri. Lì dentro la gente entra persona ed esce... boh, vedrai.",
+      "Il primo caffè è gratis. Anche il secondo, se non lo dici a nessuno."
+    ]
+  },
+  "marta": {
+    "name": "Marta",
+    "sheet": "char_06",
+    "intro": [
+      "Oh, ciao. Sei il figlio del signore del terzo piano? Mi dispiace tanto.",
+      "Io abito al secondo, con i miei due bambini. Se ti serve qualcosa, bussa."
+    ],
+    "days": [
+      ["Mi è arrivata una lettera dall'agenzia. Dicono che sono in ritardo con l'affitto.", "Ce la farò. Ce la faccio sempre."],
+      ["I bambini oggi volevano la pizza. Ho detto che la pizza fa male.", "...Non fa male. Costa."],
+      ["Ho trovato un secondo lavoro, la sera. Pulizie.", "Dormirò quando i bambini saranno grandi."]
+    ],
+    "helped": ["Grazie ancora per l'altra volta. Alla fine i bambini l'hanno mangiata, la pizza!", "Una fetta era per te, sappilo."],
+    "help": {
+      "kind": "money",
+      "cost": 120,
+      "ask": "Marta guarda per terra. Le mancano 120 € per la bolletta della luce.",
+      "yes": ["Davvero? Io... non so cosa dire.", "Te li ridò appena posso. Te lo giuro."]
+    }
+  },
+  "sig_bruno": {
+    "name": "Signor Bruno",
+    "sheet": "char_07",
+    "intro": [
+      "Buongiorno, giovanotto. Lei è nuovo del quartiere?",
+      "Io sto qui ogni mattina. Guardo la gente passare. È il mio lavoro, da pensionato."
+    ],
+    "days": [
+      ["Ho pagato un'assicurazione per quarant'anni. Ora che mi serve, dicono che non copre niente.", "Ho fatto reclamo. Vedremo."],
+      ["Mia moglie diceva sempre: chi ha fretta perde il meglio.", "Lei ha sempre fretta, giovanotto."],
+      ["I piccioni li conosco tutti per nome. Quello zoppo è Ernesto."]
+    ],
+    "helped": ["Grazie per la spesa dell'altro giorno. Mi ha fatto compagnia, più che altro.", "Torni quando vuole. Io sono sempre qui."],
+    "help": {
+      "kind": "time",
+      "ask": "Il signor Bruno guarda le borse della spesa. Sono tante, e le scale sono quattro piani.",
+      "yes": ["Che gentile. Non lo fa più nessuno, sa?", "Venga, le offro un bicchiere d'acqua. È tutto quello che ho, ma è fresca."]
+    }
+  },
+  "lea": {
+    "name": "Lea",
+    "sheet": "char_08",
+    "intro": [
+      "Scusa, non ho tempo. Ho lezione, poi il turno al bar, poi il turno al pub.",
+      "Mi chiamo Lea. Studio ingegneria. Credo. Non me lo ricordo più."
+    ],
+    "days": [
+      ["Ho dormito tre ore. Il record della settimana è quattro."],
+      ["Un libro di testo costa quanto un mese di spesa.", "Lo fotocopio a pezzi in biblioteca, come una criminale."],
+      ["Un giorno costruirò ponti. Per ora costruisco cocktail."]
+    ],
+    "helped": ["Ho comprato il libro! Quello vero, con la copertina.", "Ti nomino nei ringraziamenti della tesi. Promesso."],
+    "help": {
+      "kind": "money",
+      "cost": 60,
+      "ask": "Lea conta le monete. Le mancano 60 € per il libro dell'esame.",
+      "yes": ["Aspetta, sul serio? Grazie. Grazie davvero.", "Ti restituisco tutto quando sarò un'ingegnera famosa."]
+    }
+  },
+  "ragazzo_sami": {
+    "name": "Sami",
+    "sheet": "char_09",
+    "intro": [
+      "Non posso fermarmi! L'app mi toglie punti se ci metto più di 12 minuti.",
+      "Sami, piacere. Faccio il rider. Cioè, l'app dice che sono un \"partner indipendente\"."
+    ],
+    "days": [
+      ["La catena della bici si è rotta di nuovo. Se non consegno, non mangio."],
+      ["Ieri ho fatto 40 consegne. Ho guadagnato meno di uno che ne ha ordinate 40."],
+      ["Mia madre crede che lavoro in ufficio. Non dirglielo, eh."]
+    ],
+    "helped": ["La bici va che è una meraviglia! Grazie a te ho fatto il record.", "Il record di stanchezza, ma comunque un record."],
+    "help": {
+      "kind": "time",
+      "ask": "Sami armeggia con la catena della bici. Ha le mani nere e gli occhi lucidi.",
+      "yes": ["Ce l'abbiamo fatta! Sei un mago!", "La prossima consegna te la porto gratis. Anzi no, non posso. Ma il pensiero c'è."]
+    }
+  },
+  "portiere_ivo": {
+    "name": "Ivo",
+    "sheet": "char_10",
+    "intro": [
+      "Ah, il ragazzo del terzo piano. Conoscevo tuo padre. Brav'uomo, troppo buono per questo mondo.",
+      "Io sono Ivo, il portiere. Abito nello sgabuzzino al piano terra. Non dirlo all'amministratore."
+    ],
+    "days": [
+      ["L'ascensore è rotto da sei mesi. La CHEAP dice che ripararlo \"non è una priorità\"."],
+      ["Gira voce che vogliono comprare il palazzo. Non ci credo. Chi lo vorrebbe, questo palazzo?"],
+      ["Tuo padre mi portava il giornale ogni mattina. Me lo leggeva, perché io gli occhiali li ho rotti."]
+    ],
+    "helped": ["Grazie per avermi dato una mano col cortile. Sembra quasi nuovo.", "Tuo padre sarebbe contento di te."],
+    "help": {
+      "kind": "time",
+      "ask": "Ivo cerca di spazzare il cortile, ma la schiena non lo aiuta.",
+      "yes": ["Ah, la gioventù! Io alla tua età spostavo armadi.", "Ora sposto solo i pensieri. E pesano di più."]
+    }
+  },
+  "dario": {
+    "name": "Dario",
+    "sheet": "char_11",
+    "intro": [
+      "Nuovo? Benvenuto all'inferno con l'aria condizionata.",
+      "Io sono Dario. Quindici anni qui dentro. Tre figli. Zero ferie."
+    ],
+    "days": [
+      ["Il trucco è non guardare mai cosa firmi. Lo fanno tutti."],
+      ["Mia figlia ha la recita a scuola stasera. Fa l'albero.", "Io farò l'impiegato che resta in ufficio fino alle dieci."],
+      ["Dicono che stanno provando un software che fa il mio lavoro. Ah! Voglio vederlo, a fare il mio lavoro."]
+    ],
+    "helped": ["Sono arrivato alla recita! Mia figlia era l'albero più bello del mondo.", "Ti devo un favore enorme. Enorme."],
+    "help": {
+      "kind": "time",
+      "ask": "Dario fissa una pila di pratiche. Se le finisse tu, lui potrebbe andare alla recita della figlia.",
+      "yes": ["Sul serio lo faresti? Sei un pazzo. Grazie!", "Corro! Se il capo chiede, sono in bagno. Da tre ore."]
+    }
+  },
+  "giulia": {
+    "name": "Giulia",
+    "sheet": "char_12",
+    "intro": [
+      "Ciao di nuovo! Se hai dubbi sul terminale, chiedi pure a me."
+    ],
+    "days": [
+      ["Il primo giorno è il più difficile. Poi ti abitui. Ed è peggio."],
+      ["Ho un piccolo intervento il mese prossimo. Niente di grave, dicono. Per fortuna c'è l'assicurazione aziendale."],
+      ["Una volta qui dentro si rideva. Non mi ricordo quando."]
+    ],
+    "helped": ["Grazie per avermi aiutata con quelle pratiche. Sei una brava persona.", "Non lasciare che questo posto ti cambi, ok?"],
+    "help": {
+      "kind": "time",
+      "ask": "Giulia è sommersa di pratiche, e ha mal di testa da stamattina.",
+      "yes": ["Mi hai salvato la giornata.", "Il caffè della macchinetta è orribile, ma te ne offro uno lo stesso."]
+    }
+  }
+}

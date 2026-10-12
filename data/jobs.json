@@ -1,0 +1,121 @@
+[
+  {
+    "day": 1,
+    "victim": "marta",
+    "easy": {
+      "title": "Recupero crediti",
+      "desc": [
+        "Incarico: manda la lettera di sfratto agli inquilini in ritardo con l'affitto.",
+        "Nella lista c'è anche il tuo palazzo. Secondo piano: Marta R., due figli.",
+        "Non devi parlare con nessuno. La lettera è già scritta."
+      ]
+    },
+    "hard": {
+      "title": "Magazzino",
+      "minigame": "warehouse",
+      "desc": ["Incarico: smistare scatole in magazzino per tutto il turno.", "Paga bassa. Schiena a pezzi."]
+    }
+  },
+  {
+    "day": 2,
+    "victim": "sig_bruno",
+    "easy": {
+      "title": "Ufficio reclami",
+      "desc": [
+        "Incarico: respingi la richiesta di rimborso di un pensionato.",
+        "Bruno T., 81 anni. Gli abbiamo venduto un'assicurazione che non copre niente.",
+        "Premi RESPINGI. Non leggerà mai la risposta fino in fondo."
+      ]
+    },
+    "hard": {
+      "title": "Consegne",
+      "minigame": "delivery",
+      "desc": ["Incarico: consegne a piedi sotto la pioggia.", "Paga a pacco. Le auto non si fermano."]
+    }
+  },
+  {
+    "day": 3,
+    "victim": "dario",
+    "easy": {
+      "title": "Ottimizzazione del personale",
+      "desc": [
+        "Incarico: firma il licenziamento di un collega. Lo sostituirà un software.",
+        "Il nome sul modulo è Dario. Siede due scrivanie più in là. Ha tre figli.",
+        "Non serve dirglielo di persona. Lo saprà dall'email automatica."
+      ]
+    },
+    "hard": {
+      "title": "Magazzino",
+      "minigame": "warehouse",
+      "desc": ["Incarico: turno doppio in magazzino.", "Le scatole oggi sono il doppio."]
+    }
+  },
+  {
+    "day": 4,
+    "victim": "lea",
+    "easy": {
+      "title": "Revisione affitti",
+      "desc": [
+        "Incarico: aumenta del 30% gli affitti delle case per studenti.",
+        "Tra gli inquilini c'è Lea M., che lavora di notte per pagarsi gli studi.",
+        "Basta cambiare un numero in una tabella."
+      ]
+    },
+    "hard": {
+      "title": "Consegne",
+      "minigame": "delivery",
+      "desc": ["Incarico: consegne nel traffico dell'ora di punta.", "Paga a pacco."]
+    }
+  },
+  {
+    "day": 5,
+    "victim": "ragazzo_sami",
+    "easy": {
+      "title": "Turni flessibili",
+      "desc": [
+        "Incarico: approva i nuovi turni da 14 ore per i rider.",
+        "Chi rifiuta viene disattivato dall'app. Tra loro c'è Sami, il ragazzo della bici.",
+        "Lo chiamano \"flessibilità\". Firma qui."
+      ]
+    },
+    "hard": {
+      "title": "Magazzino",
+      "minigame": "warehouse",
+      "desc": ["Incarico: magazzino, turno di notte.", "Il caporeparto conta i secondi."]
+    }
+  },
+  {
+    "day": 6,
+    "victim": "giulia",
+    "easy": {
+      "title": "Tagli ai costi",
+      "desc": [
+        "Incarico: cancella l'assicurazione sanitaria dei dipendenti.",
+        "Giulia, la collega che ti ha insegnato tutto, aspetta un intervento il mese prossimo.",
+        "Risparmio previsto: enorme. Il tuo bonus: anche."
+      ]
+    },
+    "hard": {
+      "title": "Consegne",
+      "minigame": "delivery",
+      "desc": ["Incarico: consegne con la grandine.", "Nessuno ti ringrazierà."]
+    }
+  },
+  {
+    "day": 7,
+    "victim": "portiere_ivo",
+    "easy": {
+      "title": "Grande fusione",
+      "desc": [
+        "Incarico: firma la fusione. Il tuo palazzo verrà demolito per costruire uffici.",
+        "Trecento famiglie perderanno casa. Anche Ivo, il portiere, che vive nello sgabuzzino al piano terra.",
+        "È l'ultima firma. Dopo, non dovrai più firmare niente."
+      ]
+    },
+    "hard": {
+      "title": "Magazzino",
+      "minigame": "warehouse",
+      "desc": ["Incarico: ultimo turno della settimana in magazzino.", "Ti fanno male anche i pensieri."]
+    }
+  }
+]
