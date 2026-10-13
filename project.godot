@@ -21,6 +21,7 @@ Controls="*res://autoload/controls.gd"
 GameState="*res://autoload/game_state.gd"
 Ui="*res://autoload/ui.gd"
 Router="*res://autoload/router.gd"
+Sound="*res://autoload/sound.gd"
 
 [display]
 
@@ -30,6 +31,13 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
+
+[gui]
+
+theme/default_font_antialiasing=0
+theme/default_font_hinting=0
+theme/default_font_subpixel_positioning=0
+theme/custom_font="res://fonts/PixelifySans.ttf"
 
 [rendering]
 

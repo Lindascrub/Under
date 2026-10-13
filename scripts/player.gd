@@ -17,6 +17,10 @@ var _sprite: AnimatedSprite2D
 func _ready() -> void:
 	add_to_group("player")
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	var shadow := Sprite2D.new()
+	shadow.texture = Assets.shadow()
+	shadow.position = Vector2(0, -1)
+	add_child(shadow)
 	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = Assets.character(sheet)
 	_sprite.centered = false

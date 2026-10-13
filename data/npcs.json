@@ -2,145 +2,975 @@
   "nico": {
     "name": "Nico",
     "sheet": "char_05",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          38,
+          8
+        ],
+        "anim": "idle_down"
+      }
+    ],
     "intro": [
       "Ehi! Tu sei quello nuovo del terzo piano, giusto?",
-      "Io sono Nico. Vendo caffè qui sotto da... troppo tempo.",
+      "Io sono Nico. Vendo caffè qui, dentro questa tazza gigante. Sì, ci lavoro dentro. Non chiedere.",
       "Primo giorno alla CHEAP? Auguri. Lì dentro la gente entra persona ed esce... boh, vedrai.",
-      "Il primo caffè è gratis. Anche il secondo, se non lo dici a nessuno."
+      "Passa ogni mattina. Il caffè per te è gratis. Non dirlo a nessuno."
     ]
   },
   "marta": {
     "name": "Marta",
     "sheet": "char_06",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          6,
+          10
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          30,
+          16
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          11,
+          16
+        ],
+        "anim": "idle_up"
+      },
+      {
+        "room": "street",
+        "cell": [
+          6,
+          10
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "street",
+        "cell": [
+          20,
+          16
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          7,
+          10
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          6,
+          10
+        ],
+        "anim": "idle_down"
+      }
+    ],
     "intro": [
       "Oh, ciao. Sei il figlio del signore del terzo piano? Mi dispiace tanto.",
       "Io abito al secondo, con i miei due bambini. Se ti serve qualcosa, bussa."
     ],
     "days": [
-      ["Mi è arrivata una lettera dall'agenzia. Dicono che sono in ritardo con l'affitto.", "Ce la farò. Ce la faccio sempre."],
-      ["I bambini oggi volevano la pizza. Ho detto che la pizza fa male.", "...Non fa male. Costa."],
-      ["Ho trovato un secondo lavoro, la sera. Pulizie.", "Dormirò quando i bambini saranno grandi."]
+      [
+        "Mi è arrivata una lettera dall'agenzia. Dicono che sono in ritardo con l'affitto.",
+        "Ce la farò. Ce la faccio sempre."
+      ],
+      [
+        "I bambini oggi volevano la pizza. Ho detto che la pizza fa male.",
+        "...Non fa male. Costa."
+      ],
+      [
+        "Ho trovato un secondo lavoro, la sera. Pulizie.",
+        "Dormirò quando i bambini saranno grandi."
+      ]
     ],
-    "helped": ["Grazie ancora per l'altra volta. Alla fine i bambini l'hanno mangiata, la pizza!", "Una fetta era per te, sappilo."],
+    "helped": [
+      "Grazie ancora per l'altra volta. Alla fine i bambini l'hanno mangiata, la pizza!",
+      "Una fetta era per te, sappilo."
+    ],
     "help": {
       "kind": "money",
-      "cost": 120,
-      "ask": "Marta guarda per terra. Le mancano 120 € per la bolletta della luce.",
-      "yes": ["Davvero? Io... non so cosa dire.", "Te li ridò appena posso. Te lo giuro."]
+      "cost": 60,
+      "ask": "Le dai i 60 € che le mancano per la bolletta della luce.",
+      "yes": [
+        "Davvero? Io... non so cosa dire.",
+        "Te li ridò appena posso. Te lo giuro."
+      ]
+    },
+    "battle": {
+      "hook": "Marta stringe una lettera in mano. Ha gli occhi lucidi.",
+      "intro": "* Marta ti si avvicina con una pila di bollette.",
+      "flavor": [
+        "* Marta conta le monete nel portafoglio. Due volte.",
+        "* Da una finestra, un bambino chiama \"mamma!\".",
+        "* Marta sorride. È un sorriso molto stanco."
+      ],
+      "talk": [
+        "Luce, gas, affitto... e la gita della scuola!",
+        "Scusa, non volevo scaricarti tutto addosso.",
+        "Ce la faccio. Ce la faccio sempre."
+      ],
+      "acts": [
+        {
+          "name": "Ascolta",
+          "trust": 1,
+          "lines": [
+            "* Lasci che Marta parli. Le bollette, i turni, i bambini.",
+            "* Non risolvi niente. Ma lei respira meglio."
+          ]
+        },
+        {
+          "name": "Fai una battuta",
+          "trust": 1,
+          "lines": [
+            "* Dici che le bollette sono come i piccioni: più le guardi, più arrivano.",
+            "* Marta ride. Non rideva da settimane."
+          ]
+        },
+        {
+          "name": "Consiglia di risparmiare",
+          "trust": -1,
+          "lines": [
+            "* Le consigli di risparmiare.",
+            "* Marta ti guarda come se le avessi consigliato di respirare meno."
+          ]
+        }
+      ],
+      "attacks": [
+        "bills",
+        "toys"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Prestale soldi al 40%",
+        "pay": 150,
+        "lines": [
+          "* Le offri un prestito \"da amico\". Al 40% di interesse.",
+          "* Marta firma senza leggere. Ti ringrazia, perfino."
+        ]
+      }
     }
   },
   "sig_bruno": {
     "name": "Signor Bruno",
     "sheet": "char_07",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          12,
+          10
+        ],
+        "anim": "sit_right"
+      }
+    ],
     "intro": [
       "Buongiorno, giovanotto. Lei è nuovo del quartiere?",
-      "Io sto qui ogni mattina. Guardo la gente passare. È il mio lavoro, da pensionato."
+      "Io sto qui ogni mattina, sulla mia panchina. Guardo la gente passare. È il mio lavoro, da pensionato."
     ],
     "days": [
-      ["Ho pagato un'assicurazione per quarant'anni. Ora che mi serve, dicono che non copre niente.", "Ho fatto reclamo. Vedremo."],
-      ["Mia moglie diceva sempre: chi ha fretta perde il meglio.", "Lei ha sempre fretta, giovanotto."],
-      ["I piccioni li conosco tutti per nome. Quello zoppo è Ernesto."]
+      [
+        "Ho pagato un'assicurazione per quarant'anni. Ora che mi serve, dicono che non copre niente.",
+        "Ho fatto reclamo. Vedremo."
+      ],
+      [
+        "Mia moglie diceva sempre: chi ha fretta perde il meglio.",
+        "Lei ha sempre fretta, giovanotto."
+      ],
+      [
+        "I piccioni li conosco tutti per nome. Quello zoppo è Ernesto."
+      ]
     ],
-    "helped": ["Grazie per la spesa dell'altro giorno. Mi ha fatto compagnia, più che altro.", "Torni quando vuole. Io sono sempre qui."],
+    "helped": [
+      "Grazie per la spesa dell'altro giorno. Mi ha fatto compagnia, più che altro.",
+      "Torni quando vuole. Io sono sempre qui."
+    ],
     "help": {
       "kind": "time",
-      "ask": "Il signor Bruno guarda le borse della spesa. Sono tante, e le scale sono quattro piani.",
-      "yes": ["Che gentile. Non lo fa più nessuno, sa?", "Venga, le offro un bicchiere d'acqua. È tutto quello che ho, ma è fresca."]
+      "ask": "Porti la spesa del signor Bruno su per quattro piani di scale.",
+      "yes": [
+        "Che gentile. Non lo fa più nessuno, sa?",
+        "Venga, le offro un bicchiere d'acqua. È tutto quello che ho, ma è fresca."
+      ]
+    },
+    "battle": {
+      "hook": "Il signor Bruno ha voglia di chiacchierare. Ha tutto il tempo del mondo. Tu no.",
+      "intro": "* Il signor Bruno lancia briciole ai piccioni. Anche a te, per sbaglio.",
+      "flavor": [
+        "* Il signor Bruno racconta del 1974. Di nuovo.",
+        "* Un piccione si posa sulla tua spalla.",
+        "* Il signor Bruno ti guarda come guardava suo figlio."
+      ],
+      "talk": [
+        "Ai miei tempi il pane costava venti lire!",
+        "Ernesto! Lascia stare il signore!",
+        "Mia moglie le sarebbe piaciuta, sa?"
+      ],
+      "acts": [
+        {
+          "name": "Ascolta la storia",
+          "trust": 1,
+          "lines": [
+            "* Ascolti la storia della sua prima auto. Era verde. L'ha venduta per pagare le nozze.",
+            "* Il signor Bruno è felice che qualcuno lo ascolti."
+          ]
+        },
+        {
+          "name": "Dai da mangiare ai piccioni",
+          "trust": 1,
+          "lines": [
+            "* Lanci qualche briciola. Ernesto zoppica verso di te.",
+            "* \"Gli piace, a Ernesto!\", ride il signor Bruno."
+          ]
+        },
+        {
+          "name": "Guarda l'orologio",
+          "trust": -1,
+          "lines": [
+            "* Guardi l'orologio. Il signor Bruno se ne accorge.",
+            "* \"Scusi, lei ha da fare. Tutti hanno da fare.\""
+          ]
+        }
+      ],
+      "attacks": [
+        "crumbs",
+        "pigeons"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Vendigli un'assicurazione CHEAP",
+        "pay": 180,
+        "lines": [
+          "* Gli vendi un'assicurazione CHEAP. Non copre niente, come l'altra.",
+          "* \"Grazie, giovanotto. Così sto più tranquillo.\""
+        ]
+      }
     }
   },
   "lea": {
     "name": "Lea",
     "sheet": "char_08",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          30,
+          16
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          34,
+          17
+        ],
+        "anim": "sit_right"
+      },
+      {
+        "room": "street",
+        "cell": [
+          39,
+          10
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "street",
+        "cell": [
+          30,
+          16
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "street",
+        "cell": [
+          34,
+          17
+        ],
+        "anim": "sit_right"
+      },
+      {
+        "room": "street",
+        "cell": [
+          50,
+          16
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          39,
+          10
+        ],
+        "anim": "idle_down"
+      }
+    ],
     "intro": [
       "Scusa, non ho tempo. Ho lezione, poi il turno al bar, poi il turno al pub.",
       "Mi chiamo Lea. Studio ingegneria. Credo. Non me lo ricordo più."
     ],
     "days": [
-      ["Ho dormito tre ore. Il record della settimana è quattro."],
-      ["Un libro di testo costa quanto un mese di spesa.", "Lo fotocopio a pezzi in biblioteca, come una criminale."],
-      ["Un giorno costruirò ponti. Per ora costruisco cocktail."]
+      [
+        "Ho dormito tre ore. Il record della settimana è quattro."
+      ],
+      [
+        "Un libro di testo costa quanto un mese di spesa.",
+        "Lo fotocopio a pezzi in biblioteca, come una criminale."
+      ],
+      [
+        "Un giorno costruirò ponti. Per ora costruisco cocktail."
+      ]
     ],
-    "helped": ["Ho comprato il libro! Quello vero, con la copertina.", "Ti nomino nei ringraziamenti della tesi. Promesso."],
+    "helped": [
+      "Ho comprato il libro! Quello vero, con la copertina.",
+      "Ti nomino nei ringraziamenti della tesi. Promesso."
+    ],
     "help": {
       "kind": "money",
-      "cost": 60,
-      "ask": "Lea conta le monete. Le mancano 60 € per il libro dell'esame.",
-      "yes": ["Aspetta, sul serio? Grazie. Grazie davvero.", "Ti restituisco tutto quando sarò un'ingegnera famosa."]
+      "cost": 40,
+      "ask": "Dai a Lea i 40 € che le mancano per il libro dell'esame.",
+      "yes": [
+        "Aspetta, sul serio? Grazie. Grazie davvero.",
+        "Ti restituisco tutto quando sarò un'ingegnera famosa."
+      ]
+    },
+    "battle": {
+      "hook": "Lea fissa il telefono. Sembra sul punto di esplodere.",
+      "intro": "* Lea ti travolge con una valanga di libri e notifiche.",
+      "flavor": [
+        "* Il telefono di Lea vibra. Il capo del pub. Di nuovo.",
+        "* Lea sottolinea un libro con un evidenziatore quasi scarico.",
+        "* Lea sbadiglia così forte che sbadigli anche tu."
+      ],
+      "talk": [
+        "Esame tra due giorni! Turno stasera! Affitto domani!",
+        "Scusa, il telefono... no, ignoralo. Anzi no.",
+        "Ma tu dormi? Come si fa?"
+      ],
+      "acts": [
+        {
+          "name": "Ripassa con lei",
+          "trust": 1,
+          "lines": [
+            "* Ripassi con Lea le leggi della termodinamica.",
+            "* Non ci capisci niente. Lei sì, spiegandole a te."
+          ]
+        },
+        {
+          "name": "Spegnile il telefono",
+          "trust": 1,
+          "lines": [
+            "* Le spegni il telefono. Per un minuto, silenzio.",
+            "* Lea chiude gli occhi. \"Grazie.\""
+          ]
+        },
+        {
+          "name": "Dille di mollare gli studi",
+          "trust": -1,
+          "lines": [
+            "* Le dici che tanto la laurea non serve a niente.",
+            "* Lea ti guarda malissimo."
+          ]
+        }
+      ],
+      "attacks": [
+        "books",
+        "notifications"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Offrile un prestito d'onore CHEAP",
+        "pay": 160,
+        "lines": [
+          "* Le fai firmare un prestito d'onore CHEAP. Lo ripagherà per vent'anni.",
+          "* \"Finalmente posso studiare!\", dice. Ti abbraccia."
+        ]
+      }
     }
   },
   "ragazzo_sami": {
     "name": "Sami",
     "sheet": "char_09",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          20,
+          16
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          44,
+          16
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          15,
+          16
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          52,
+          10
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          25,
+          16
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          44,
+          16
+        ],
+        "anim": "idle_up"
+      },
+      {
+        "room": "street",
+        "cell": [
+          20,
+          16
+        ],
+        "anim": "wander"
+      }
+    ],
     "intro": [
       "Non posso fermarmi! L'app mi toglie punti se ci metto più di 12 minuti.",
       "Sami, piacere. Faccio il rider. Cioè, l'app dice che sono un \"partner indipendente\"."
     ],
     "days": [
-      ["La catena della bici si è rotta di nuovo. Se non consegno, non mangio."],
-      ["Ieri ho fatto 40 consegne. Ho guadagnato meno di uno che ne ha ordinate 40."],
-      ["Mia madre crede che lavoro in ufficio. Non dirglielo, eh."]
+      [
+        "La catena della bici si è rotta di nuovo. Se non consegno, non mangio."
+      ],
+      [
+        "Ieri ho fatto 40 consegne. Ho guadagnato meno di uno che ne ha ordinate 40."
+      ],
+      [
+        "Mia madre crede che lavoro in ufficio. Non dirglielo, eh."
+      ]
     ],
-    "helped": ["La bici va che è una meraviglia! Grazie a te ho fatto il record.", "Il record di stanchezza, ma comunque un record."],
+    "helped": [
+      "La bici va che è una meraviglia! Grazie a te ho fatto il record.",
+      "Il record di stanchezza, ma comunque un record."
+    ],
     "help": {
       "kind": "time",
-      "ask": "Sami armeggia con la catena della bici. Ha le mani nere e gli occhi lucidi.",
-      "yes": ["Ce l'abbiamo fatta! Sei un mago!", "La prossima consegna te la porto gratis. Anzi no, non posso. Ma il pensiero c'è."]
+      "ask": "Passi due ore con Sami a sistemare la catena della bici.",
+      "yes": [
+        "Ce l'abbiamo fatta! Sei un mago!",
+        "La prossima consegna te la porto gratis. Anzi no, non posso. Ma il pensiero c'è."
+      ]
+    },
+    "battle": {
+      "hook": "Sami sta per scoppiare a piangere davanti alla sua app.",
+      "intro": "* Sami ti corre addosso tra macchine e pacchi.",
+      "flavor": [
+        "* L'app di Sami suona: \"Sei in ritardo di 30 secondi.\"",
+        "* Sami controlla il cielo. Sta per piovere. Ovviamente.",
+        "* Sami si massaggia le gambe."
+      ],
+      "talk": [
+        "Spostati! Ho una pizza che si raffredda!",
+        "Tre stelle! Mi ha dato tre stelle perché pioveva!",
+        "Scusa. Non sono così, di solito."
+      ],
+      "acts": [
+        {
+          "name": "Aiutalo con le consegne",
+          "trust": 1,
+          "lines": [
+            "* Porti un pacco al posto suo. Il cliente non ti dà la mancia.",
+            "* Sami ride: \"Benvenuto nel mio mondo.\""
+          ]
+        },
+        {
+          "name": "Chiedigli della sua famiglia",
+          "trust": 1,
+          "lines": [
+            "* Sami ti mostra una foto di sua madre e sua sorella.",
+            "* \"Lavoro per loro. Ne vale la pena. Credo.\""
+          ]
+        },
+        {
+          "name": "Ordina qualcosa dall'app",
+          "trust": -1,
+          "lines": [
+            "* Ordini un panino dall'app. Arriva Sami a consegnartelo.",
+            "* Ti guarda. Lo guardi. È molto imbarazzante."
+          ]
+        }
+      ],
+      "attacks": [
+        "cars",
+        "rain"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Fagli firmare il contratto \"flessibile\"",
+        "pay": 170,
+        "lines": [
+          "* Gli fai firmare un contratto CHEAP da rider \"flessibile\". Turni da 14 ore.",
+          "* \"Finalmente un contratto!\", dice Sami. È contento."
+        ]
+      }
     }
   },
   "portiere_ivo": {
     "name": "Ivo",
     "sheet": "char_10",
+    "schedule": [
+      {
+        "room": "street",
+        "cell": [
+          2,
+          10
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          3,
+          9
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "street",
+        "cell": [
+          2,
+          10
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          7,
+          16
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "street",
+        "cell": [
+          2,
+          10
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "street",
+        "cell": [
+          3,
+          9
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          2,
+          10
+        ],
+        "anim": "idle_down"
+      }
+    ],
     "intro": [
       "Ah, il ragazzo del terzo piano. Conoscevo tuo padre. Brav'uomo, troppo buono per questo mondo.",
       "Io sono Ivo, il portiere. Abito nello sgabuzzino al piano terra. Non dirlo all'amministratore."
     ],
     "days": [
-      ["L'ascensore è rotto da sei mesi. La CHEAP dice che ripararlo \"non è una priorità\"."],
-      ["Gira voce che vogliono comprare il palazzo. Non ci credo. Chi lo vorrebbe, questo palazzo?"],
-      ["Tuo padre mi portava il giornale ogni mattina. Me lo leggeva, perché io gli occhiali li ho rotti."]
+      [
+        "L'ascensore è rotto da sei mesi. La CHEAP dice che ripararlo \"non è una priorità\"."
+      ],
+      [
+        "Gira voce che vogliono comprare il palazzo. Non ci credo. Chi lo vorrebbe, questo palazzo?"
+      ],
+      [
+        "Tuo padre mi portava il giornale ogni mattina. Me lo leggeva, perché io gli occhiali li ho rotti."
+      ]
     ],
-    "helped": ["Grazie per avermi dato una mano col cortile. Sembra quasi nuovo.", "Tuo padre sarebbe contento di te."],
+    "helped": [
+      "Grazie per avermi dato una mano col cortile. Sembra quasi nuovo.",
+      "Tuo padre sarebbe contento di te."
+    ],
     "help": {
       "kind": "time",
-      "ask": "Ivo cerca di spazzare il cortile, ma la schiena non lo aiuta.",
-      "yes": ["Ah, la gioventù! Io alla tua età spostavo armadi.", "Ora sposto solo i pensieri. E pesano di più."]
+      "ask": "Spazzi il cortile con Ivo per due ore.",
+      "yes": [
+        "Ah, la gioventù! Io alla tua età spostavo armadi.",
+        "Ora sposto solo i pensieri. E pesano di più."
+      ]
+    },
+    "battle": {
+      "hook": "Ivo ha un mazzo di chiavi enorme e un'aria preoccupata.",
+      "intro": "* Ivo agita il suo mazzo di chiavi. Sono le chiavi di tutto il palazzo.",
+      "flavor": [
+        "* Ivo fischietta una canzone di quando era giovane.",
+        "* Ivo spazza lo stesso punto da dieci minuti.",
+        "* Ivo si sistema gli occhiali rotti."
+      ],
+      "talk": [
+        "Questa apre la cantina, questa il tetto, questa... boh!",
+        "Tuo padre sapeva sempre quale chiave usare.",
+        "Se vendono il palazzo, dove vado io?"
+      ],
+      "acts": [
+        {
+          "name": "Parla di tuo padre",
+          "trust": 1,
+          "lines": [
+            "* Parlate di tuo padre. Ivo ricorda cose che tu non sapevi.",
+            "* \"Ti voleva bene, sai? Non era bravo a dirlo.\""
+          ]
+        },
+        {
+          "name": "Aiutalo con le chiavi",
+          "trust": 1,
+          "lines": [
+            "* Lo aiuti a trovare la chiave giusta. È l'ultima che provate.",
+            "* Ivo ride: \"Come sempre!\""
+          ]
+        },
+        {
+          "name": "Digli di andare in pensione",
+          "trust": -1,
+          "lines": [
+            "* Gli dici che alla sua età dovrebbe riposarsi.",
+            "* \"E con quali soldi, ragazzo?\""
+          ]
+        }
+      ],
+      "attacks": [
+        "keys",
+        "crumbs"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Compra il suo sgabuzzino per la CHEAP",
+        "pay": 200,
+        "lines": [
+          "* Gli offri un po' di soldi per lo sgabuzzino, per conto della CHEAP.",
+          "* Ivo accetta. Non sa che domani dovrà andarsene."
+        ]
+      }
     }
   },
   "dario": {
     "name": "Dario",
     "sheet": "char_11",
+    "schedule": [
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "office",
+        "cell": [
+          12,
+          9
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "idle_down"
+      }
+    ],
     "intro": [
       "Nuovo? Benvenuto all'inferno con l'aria condizionata.",
       "Io sono Dario. Quindici anni qui dentro. Tre figli. Zero ferie."
     ],
     "days": [
-      ["Il trucco è non guardare mai cosa firmi. Lo fanno tutti."],
-      ["Mia figlia ha la recita a scuola stasera. Fa l'albero.", "Io farò l'impiegato che resta in ufficio fino alle dieci."],
-      ["Dicono che stanno provando un software che fa il mio lavoro. Ah! Voglio vederlo, a fare il mio lavoro."]
+      [
+        "Il trucco è non guardare mai cosa firmi. Lo fanno tutti."
+      ],
+      [
+        "Mia figlia ha la recita a scuola stasera. Fa l'albero.",
+        "Io farò l'impiegato che resta in ufficio fino alle dieci."
+      ],
+      [
+        "Dicono che stanno provando un software che fa il mio lavoro. Ah! Voglio vederlo, a fare il mio lavoro."
+      ]
     ],
-    "helped": ["Sono arrivato alla recita! Mia figlia era l'albero più bello del mondo.", "Ti devo un favore enorme. Enorme."],
+    "helped": [
+      "Sono arrivato alla recita! Mia figlia era l'albero più bello del mondo.",
+      "Ti devo un favore enorme. Enorme."
+    ],
     "help": {
       "kind": "time",
-      "ask": "Dario fissa una pila di pratiche. Se le finisse tu, lui potrebbe andare alla recita della figlia.",
-      "yes": ["Sul serio lo faresti? Sei un pazzo. Grazie!", "Corro! Se il capo chiede, sono in bagno. Da tre ore."]
+      "ask": "Finisci le pratiche di Dario, così lui può andare alla recita della figlia.",
+      "yes": [
+        "Sul serio lo faresti? Sei un pazzo. Grazie!",
+        "Corro! Se il capo chiede, sono in bagno. Da tre ore."
+      ]
+    },
+    "battle": {
+      "hook": "Dario è sommerso di pratiche. Ti guarda come un naufrago guarda una nave.",
+      "intro": "* Dario ti lancia addosso le sue pratiche arretrate.",
+      "flavor": [
+        "* Dario fissa lo schermo senza sbattere le palpebre.",
+        "* Il telefono di Dario squilla. Non risponde.",
+        "* Dario beve il quinto caffè. Sono le dieci."
+      ],
+      "talk": [
+        "Pratica 4512! Pratica 4513! Pratica... aiuto.",
+        "Quindici anni. Quindici!",
+        "Non diventare come me, ok?"
+      ],
+      "acts": [
+        {
+          "name": "Smezza le pratiche",
+          "trust": 1,
+          "lines": [
+            "* Prendi metà delle sue pratiche.",
+            "* Dario ti guarda come se avessi fatto un miracolo."
+          ]
+        },
+        {
+          "name": "Chiedi dei figli",
+          "trust": 1,
+          "lines": [
+            "* Dario ti parla dei suoi tre figli. Gli si illumina la faccia.",
+            "* Per un momento, sembra di nuovo giovane."
+          ]
+        },
+        {
+          "name": "Digli di lavorare di più",
+          "trust": -1,
+          "lines": [
+            "* Gli dici che con un po' più di impegno ce la farebbe.",
+            "* Dario ride. Non è una risata allegra."
+          ]
+        }
+      ],
+      "attacks": [
+        "papers",
+        "emails"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Prenditi il merito del suo lavoro",
+        "pay": 220,
+        "lines": [
+          "* Consegni le sue pratiche al capo con il tuo nome sopra.",
+          "* Il capo ti fa i complimenti. Dario non dice niente."
+        ]
+      }
     }
   },
   "giulia": {
     "name": "Giulia",
     "sheet": "char_12",
+    "schedule": [
+      {
+        "room": "office",
+        "cell": [
+          11,
+          4
+        ],
+        "anim": "idle_left"
+      },
+      {
+        "room": "office",
+        "cell": [
+          12,
+          7
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "office",
+        "cell": [
+          11,
+          4
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "office",
+        "cell": [
+          12,
+          7
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "office",
+        "cell": [
+          11,
+          4
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "office",
+        "cell": [
+          11,
+          4
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "office",
+        "cell": [
+          12,
+          7
+        ],
+        "anim": "wander"
+      }
+    ],
     "intro": [
       "Ciao di nuovo! Se hai dubbi sul terminale, chiedi pure a me."
     ],
     "days": [
-      ["Il primo giorno è il più difficile. Poi ti abitui. Ed è peggio."],
-      ["Ho un piccolo intervento il mese prossimo. Niente di grave, dicono. Per fortuna c'è l'assicurazione aziendale."],
-      ["Una volta qui dentro si rideva. Non mi ricordo quando."]
+      [
+        "Il primo giorno è il più difficile. Poi ti abitui. Ed è peggio."
+      ],
+      [
+        "Ho un piccolo intervento il mese prossimo. Niente di grave, dicono. Per fortuna c'è l'assicurazione aziendale."
+      ],
+      [
+        "Una volta qui dentro si rideva. Non mi ricordo quando."
+      ]
     ],
-    "helped": ["Grazie per avermi aiutata con quelle pratiche. Sei una brava persona.", "Non lasciare che questo posto ti cambi, ok?"],
+    "helped": [
+      "Grazie per avermi aiutata con quelle pratiche. Sei una brava persona.",
+      "Non lasciare che questo posto ti cambi, ok?"
+    ],
     "help": {
       "kind": "time",
-      "ask": "Giulia è sommersa di pratiche, e ha mal di testa da stamattina.",
-      "yes": ["Mi hai salvato la giornata.", "Il caffè della macchinetta è orribile, ma te ne offro uno lo stesso."]
+      "ask": "Aiuti Giulia con le pratiche per due ore, così può andare dal medico.",
+      "yes": [
+        "Mi hai salvato la giornata.",
+        "Il caffè della macchinetta è orribile, ma te ne offro uno lo stesso."
+      ]
+    },
+    "battle": {
+      "hook": "Giulia si massaggia la testa. Ha il mal di testa da tre giorni.",
+      "intro": "* Giulia ti sommerge di post-it gialli.",
+      "flavor": [
+        "* Giulia scrive un altro post-it: \"Ricordati di respirare\".",
+        "* Giulia prende una pastiglia per il mal di testa.",
+        "* Giulia guarda la finestra. Fuori c'è il sole. Dentro no."
+      ],
+      "talk": [
+        "Riunione alle 9! Report alle 10! Medico alle... boh.",
+        "Scusa, sono un disastro oggi.",
+        "Tu come stai? Davvero, intendo."
+      ],
+      "acts": [
+        {
+          "name": "Portale un caffè",
+          "trust": 1,
+          "lines": [
+            "* Porti a Giulia un caffè della macchinetta.",
+            "* È orribile. Lei lo beve come fosse champagne."
+          ]
+        },
+        {
+          "name": "Riordina i post-it",
+          "trust": 1,
+          "lines": [
+            "* Riordini i post-it per colore.",
+            "* Giulia ride: \"Così sembrano quasi un piano!\""
+          ]
+        },
+        {
+          "name": "Parla di produttività",
+          "trust": -1,
+          "lines": [
+            "* Le parli di un metodo per essere più produttivi.",
+            "* Giulia sospira e scrive un post-it: \"No\"."
+          ]
+        }
+      ],
+      "attacks": [
+        "postits",
+        "notifications"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Segnala le sue assenze al capo",
+        "pay": 200,
+        "lines": [
+          "* Segnali al capo tutte le volte che Giulia è uscita prima per il medico.",
+          "* Il capo ti ringrazia. Giulia ti saluta, come sempre. Non lo sa."
+        ]
+      }
     }
   }
 }

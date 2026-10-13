@@ -1,11 +1,22 @@
 extends Room
 ## L'ufficio della CHEAP S.p.A. Al terminale si sceglie il lavoro del giorno:
-## facile (firma, sfrutti qualcuno, guadagni tanto), duro (minigioco, guadagni poco) o rifiuto.
+## facile (una firma, un'ora, una persona in meno), duro (un turno-battaglia di 8 ore) o rifiuto.
 
 const RB := "tiles/room_builder.png"
+const DESK_TEXTS := [
+	["* Sul monitor: PRODUTTIVITÀ DEL REPARTO 37%. Sotto, a penna: \"aiuto\"."],
+	["* Una scrivania. Nel cassetto c'è una scorta di caffè solubile e di antidolorifici."],
+	["* Sul monitor è aperta un'email: \"Oggetto: ottimizzazione del personale (riservato)\"."],
+	["* Una foto di famiglia, girata verso il muro. Forse per non farsi vedere."],
+	["* Post-it sul monitor: \"Sorridi! Il cliente ti sente.\""],
+	["* Il computer è spento. Sopra c'è un biglietto: \"Grazie di tutto. Scusate.\""],
+	["* Sul monitor scorre un grafico. Sale sempre. Non c'è scritto cosa."],
+	["* Una tazza con la scritta \"Il miglior dipendente del mondo\". È piena di polvere."],
+]
 
 
 func build() -> void:
+	music = "ufficio"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(38 + c.x % 3, 11 + c.y % 2)}
 	paint([
 		"####################",
@@ -29,20 +40,31 @@ func build() -> void:
 	})
 
 	add_prop("props/terminal.png", Vector2i(9, 3))
-	add_prop("props/portrait.png", Vector2i(6, 2), 0)
-	add_prop("props/trash.png", Vector2i(17, 3))
-	add_prop("props/cooler.png", Vector2i(18, 3), 1, Vector2i(16, 48))
-	for x in [3, 4, 14, 15]:
-		for y in [5, 8]:
-			add_prop("props/office_desk.png", Vector2i(x, y))
-	for x in [3, 14, 15]:
-		add_prop("props/office_chair.png", Vector2i(x, 9), 0)
+	add_prop("props/portrait.png", Vector2i(6, 2), 0, Vector2i(16, 32), [
+		"* Il ritratto del fondatore della CHEAP. Ti sorride come sorride una banca.",
+	])
+	add_prop("props/trash.png", Vector2i(17, 3), 1, Vector2i(16, 32), [
+		"* Il cestino è pieno di curriculum. Alcuni sono ancora chiusi nella busta.",
+	])
+	add_prop("props/palm.png", Vector2i(1, 3), 1, Vector2i(32, 32), [
+		"* Una palma finta. È l'unica cosa qui dentro che non si stanca mai.",
+	])
+	add_prop("props/plant.png", Vector2i(18, 9), 1, Vector2i(16, 32), [
+		"* Una pianta vera. Qualcuno la annaffia di nascosto ogni mattina.",
+	])
+
+	# Scrivanie: la sedia sta dietro (a nord), la scrivania la copre in parte.
+	var k := 0
+	for y in [5, 8]:
+		for x in [3, 4, 14, 15]:
+			if not (x == 4 and y == 8):
+				add_prop("props/office_chair.png", Vector2i(x, y - 1), 0, Vector2i(16, 32), [], Vector2(0, -4))
+			add_prop("props/office_desk.png", Vector2i(x, y), 1, Vector2i(16, 32), DESK_TEXTS[k % DESK_TEXTS.size()])
+			k += 1
 
 	add_spot(cell_center(Vector2i(9, 3)), _terminal)
 	add_exit(Rect2i(9, 11, 2, 1), Router.STREET, "office")
-
-	add_npc("giulia", Vector2i(11, 4), "left")
-	add_npc("dario", Vector2i(4, 6), "up")
+	spawn_people("office")
 
 	spawns["default"] = cell_feet(Vector2i(9, 9))
 	spawns["street"] = spawns["default"]
@@ -58,7 +80,7 @@ func enter() -> void:
 		await Ui.say([
 			"Ah, sei il nuovo! Io sono Giulia, ti faccio vedere come funziona.",
 			"Ogni mattina vai al terminale contro il muro e scegli un incarico.",
-			"Ci sono quelli che pagano bene e non costano fatica. E quelli che ti spaccano la schiena.",
+			"Ci sono quelli che pagano bene e durano un'ora. E quelli che ti prendono tutta la giornata e ti spaccano la schiena.",
 			"...Io ti consiglio i secondi. Ma non te l'ho detto io.",
 		], "Giulia")
 	await show_pending()
@@ -72,30 +94,41 @@ func _terminal() -> void:
 	var easy: Dictionary = job.get("easy", {})
 	var hard: Dictionary = job.get("hard", {})
 	var options := [
-		"%s  (+%s)" % [easy.get("title", "?"), GameState.euros(GameState.easy_pay())],
-		"%s  (+100 / 400 €)" % hard.get("title", "?"),
+		"%s  (+%s, 1 ora)" % [easy.get("title", "?"), GameState.euros(GameState.easy_pay())],
+		"%s  (8 ore, paga bassa)" % hard.get("title", "?"),
 		"Rifiuta di lavorare",
 	]
-	var i: int = await Ui.choose("CHEAP S.p.A. - Incarichi del giorno {day}. Ruolo: {rank}.", options, "Terminale")
+	var i: int = await Ui.choose("CHEAP S.p.A. - Incarichi di {day_name}. Ruolo: {rank}. Ore {clock}.", options, "Terminale")
 	match i:
 		0:
 			await Ui.say(easy.get("desc", []), "Terminale")
-			var sign_it: int = await Ui.choose("Basta un clic.", ["FIRMA", "Annulla"], "Terminale")
-			if sign_it != 0:
+			var go: int = await Ui.choose("Basta un clic.", ["Apri il modulo", "Annulla"], "Terminale")
+			if go != 0:
 				return
-			var pay := GameState.do_easy_job()
-			await Ui.say([
-				"* Hai firmato. Ci è voluto un secondo.",
-				"* +%s. Il capo è soddisfatto: ora sei {rank}!" % GameState.euros(pay),
-				"* Non hai sentito niente. Proprio niente.",
-			])
+			var victim := str(job.get("victim", ""))
+			var vdata := GameState.npc_data(victim)
+			Router.battle({
+				"kind": "sign",
+				"id": victim,
+				"name": str(vdata.get("name", "Qualcuno")),
+				"sheet": str(vdata.get("sheet", "char_02")),
+				"intro": "* Il modulo è pronto. In fondo c'è la foto di %s.\n* Qualunque cosa tu scelga, la risposta è sempre la stessa." % vdata.get("name", "qualcuno"),
+				"return": Router.OFFICE,
+				"spawn": "terminal",
+			})
 		1:
+			if not GameState.has_time(GameState.COST_HARD_JOB):
+				await Ui.say(["* Sono le {clock}. Non ti restano otto ore prima di mezzanotte."], "Terminale")
+				return
 			await Ui.say(hard.get("desc", []), "Terminale")
 			var accept: int = await Ui.choose("Accetti il turno?", ["Accetta", "Annulla"], "Terminale")
 			if accept != 0:
 				return
-			var scene := Router.WAREHOUSE if hard.get("minigame", "") == "warehouse" else Router.DELIVERY
-			Router.goto(scene)
+			var cfg: Dictionary = (hard.get("battle", {}) as Dictionary).duplicate(true)
+			cfg["kind"] = "work"
+			cfg["return"] = Router.OFFICE
+			cfg["spawn"] = "terminal"
+			Router.battle(cfg)
 		2:
 			var really: int = await Ui.choose("Sicuro? Oggi non guadagnerai niente.", ["Rifiuta", "Annulla"], "Terminale")
 			if really != 0:
@@ -104,5 +137,5 @@ func _terminal() -> void:
 			await Ui.say([
 				"* Spegni il terminale.",
 				"* Dall'ufficio del capo, qualcuno ti guarda male.",
-				"* Per la prima volta dopo tanto tempo, respiri.",
+				"* Per la prima volta dopo tanto tempo, respiri. E hai tutta la giornata davanti.",
 			])

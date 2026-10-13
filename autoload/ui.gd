@@ -33,6 +33,8 @@ var _typed := 0.0
 var _typing := false
 var _options: Array = []
 var _sel := 0
+var _pitch := 1.0
+var _last_blip := 0
 
 
 func _ready() -> void:
@@ -117,9 +119,10 @@ func _build() -> void:
 
 
 func _refresh_hud() -> void:
-	_hud.text = "Giorno %d/%d    Debito %s    Soldi %s    %s" % [
-		mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
-		GameState.euros(GameState.debt), GameState.euros(GameState.money), GameState.rank_name(),
+	_hud.text = "%s %s   Giorno %d/%d   Debito %s   Soldi %s   Energia %d/%d" % [
+		GameState.day_name(), GameState.clock(), mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
+		GameState.euros(GameState.debt), GameState.euros(GameState.money),
+		GameState.energy, GameState.MAX_ENERGY,
 	]
 
 
@@ -130,6 +133,7 @@ func say(lines: Array, speaker: String = "") -> void:
 	_box.visible = true
 	_name.text = speaker
 	_name.visible = speaker != ""
+	_pitch = 1.0 if speaker == "" else 0.75 + float(absi(speaker.hash()) % 50) / 100.0
 	for line: Variant in lines:
 		await _type(_text, GameState.fmt(str(line)))
 	_box.visible = false
@@ -159,6 +163,7 @@ func choose(prompt: String, options: Array, speaker: String = "") -> int:
 ## Testo centrato su schermo nero (intro, cambio giorno, finali). Usalo dopo fade_out().
 func narrate(lines: Array) -> void:
 	busy = true
+	_pitch = 0.6
 	_narr.visible = true
 	for line: Variant in lines:
 		await _type(_narr, GameState.fmt(str(line)))
@@ -167,17 +172,28 @@ func narrate(lines: Array) -> void:
 
 
 func show_status() -> void:
-	await say([
-		"* {rank}. Giorno {day} di {last_day}.",
-		"* Debito: {debt}. Soldi: {money}.",
-		"* Tempo libero rimasto oggi: %d." % GameState.free_time,
-	])
+	var hours := GameState.hours_left()
+	var options: Array = []
+	for item in GameState.items:
+		options.append(item)
+	options.append("Chiudi")
+	var prompt := "{rank}. {day_name} {clock}: mancano %d ore a mezzanotte. Energia %d/%d." % [
+		int(hours), GameState.energy, GameState.MAX_ENERGY]
+	if GameState.items.is_empty():
+		prompt += "
+Non hai oggetti."
+	var i: int = await choose(prompt, options, "Stato")
+	if i < GameState.items.size():
+		Sound.sfx("heal")
+		await say(GameState.use_item(i).split("
+"))
 
 
 func _type(label: Label, text: String) -> void:
 	label.text = text
 	label.visible_characters = 0
 	_label = label
+	_last_blip = 0
 	_typed = 0.0
 	_typing = true
 	_mode = "say"
@@ -203,6 +219,11 @@ func _process(delta: float) -> void:
 		return
 	_typed += delta * TYPE_SPEED
 	_label.visible_characters = int(_typed)
+	if int(_typed) - _last_blip >= 2:
+		_last_blip = int(_typed)
+		var ch := _label.text.substr(clampi(_last_blip - 1, 0, _label.text.length() - 1), 1)
+		if ch != " " and ch != "*":
+			Sound.blip(_pitch)
 	if int(_typed) >= _label.get_total_character_count():
 		_label.visible_characters = -1
 		_typing = false
@@ -221,13 +242,16 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("move_up"):
 			get_viewport().set_input_as_handled()
 			_sel = posmod(_sel - 1, _options.size())
+			Sound.sfx("move")
 			_render_choices()
 		elif event.is_action_pressed("move_down"):
 			get_viewport().set_input_as_handled()
 			_sel = posmod(_sel + 1, _options.size())
+			Sound.sfx("move")
 			_render_choices()
 		elif event.is_action_pressed("confirm"):
 			get_viewport().set_input_as_handled()
+			Sound.sfx("select")
 			_chosen.emit(_sel)
 
 

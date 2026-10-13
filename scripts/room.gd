@@ -17,6 +17,9 @@ var spawns: Dictionary = {}
 var spawn_facing: Dictionary = {}
 ## Quanto la camera può salire sopra la mappa (per mostrare edifici alti).
 var camera_top := 0
+## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
+var music := "quartiere"
+var outdoor := false
 var player: Player
 ## Contenitore con y-sort: oggetti e persone si coprono nel giusto ordine.
 var world: Node2D
@@ -25,6 +28,7 @@ var _tiles: TileMapLayer
 var _tileset: TileSet
 var _sources: Dictionary = {}
 var _solids: StaticBody2D
+var _light: CanvasModulate
 
 
 func _ready() -> void:
@@ -41,6 +45,12 @@ func _ready() -> void:
 	build()
 	_spawn_player()
 	Ui.show_hud(true)
+	Sound.music(music)
+	if outdoor:
+		_light = CanvasModulate.new()
+		add_child(_light)
+		_update_light()
+		GameState.changed.connect(_update_light)
 	if Ui.transitioning:
 		await Ui.faded_in
 	enter()
@@ -48,6 +58,11 @@ func _ready() -> void:
 
 func build() -> void:
 	pass
+
+
+func _update_light() -> void:
+	if _light:
+		_light.color = GameState.daylight()
 
 
 func enter() -> void:
@@ -134,17 +149,36 @@ func cell_feet(cell: Vector2i) -> Vector2:
 
 ## Piazza un oggetto con l'angolo in basso a sinistra sulla cella indicata.
 ## Le ultime `solid_rows` righe di celle occupate diventano solide.
-func add_prop(rel: String, bottom_left: Vector2i, solid_rows := 1, fallback := Vector2i(16, 32)) -> Sprite2D:
+## `text`: cosa dice l'oggetto quando lo guardi (Z). `nudge`: spostamento fine in pixel.
+func add_prop(rel: String, bottom_left: Vector2i, solid_rows := 1, fallback := Vector2i(16, 32),
+		text: Array = [], nudge := Vector2.ZERO) -> Sprite2D:
 	var s := Sprite2D.new()
 	s.texture = Assets.tex(rel, fallback)
 	s.centered = false
 	s.offset = Vector2(0, -s.texture.get_height())
-	s.position = Vector2(bottom_left.x * T, (bottom_left.y + 1) * T)
+	s.position = Vector2(bottom_left.x * T, (bottom_left.y + 1) * T) + nudge
 	world.add_child(s)
+	var w := int(ceil(s.texture.get_width() / float(T)))
 	if solid_rows > 0:
-		var w := int(ceil(s.texture.get_width() / float(T)))
 		block(Rect2i(bottom_left.x, bottom_left.y - solid_rows + 1, w, solid_rows))
+	if not text.is_empty():
+		examine(Vector2(bottom_left.x * T + s.texture.get_width() / 2.0, (bottom_left.y + 1) * T - 8) + nudge, text)
 	return s
+
+
+## Un punto che, guardato, mostra una descrizione.
+func examine(pos: Vector2, text: Array) -> Interactable:
+	return add_spot(pos, func() -> void: Ui.say(text))
+
+
+## Mette nella stanza le persone che oggi, secondo data/npcs.json, si trovano qui.
+func spawn_people(room_key: String) -> void:
+	for id: String in GameState.npc_ids():
+		var place := GameState.npc_place(id)
+		if place.get("room", "") != room_key:
+			continue
+		var cell: Array = place.get("cell", [1, 1])
+		add_npc(id, Vector2i(int(cell[0]), int(cell[1])), str(place.get("anim", "idle_down")))
 
 
 ## Ritaglia un pezzo da un foglio grande (per esempio un edificio intero).
@@ -161,10 +195,10 @@ func add_region(rel: String, sheet_size: Vector2i, region: Rect2, bottom_left: V
 	return s
 
 
-func add_npc(id: String, cell: Vector2i, facing := "down") -> Npc:
+func add_npc(id: String, cell: Vector2i, activity := "idle_down") -> Npc:
 	var n := Npc.new()
 	n.id = id
-	n.facing = facing
+	n.activity = activity if activity.contains("_") or activity in ["phone", "read", "wander"] else "idle_" + activity
 	n.position = cell_feet(cell)
 	world.add_child(n)
 	return n
@@ -196,6 +230,8 @@ func add_exit(r: Rect2i, path: String, spawn_name: String) -> void:
 
 func _spawn_player() -> void:
 	player = Player.new()
+	if Router.spawn == "_back" and GameState.battle.has("return_pos"):
+		spawns["_back"] = GameState.battle["return_pos"]
 	var key := Router.spawn if spawns.has(Router.spawn) else "default"
 	player.position = spawns.get(key, Vector2(map_size * T) / 2.0)
 	player.facing = spawn_facing.get(key, "down")

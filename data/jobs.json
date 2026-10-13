@@ -13,7 +13,62 @@
     "hard": {
       "title": "Magazzino",
       "minigame": "warehouse",
-      "desc": ["Incarico: smistare scatole in magazzino per tutto il turno.", "Paga bassa. Schiena a pezzi."]
+      "desc": [
+        "Incarico: smistare scatole in magazzino per otto ore.",
+        "Paga bassa. Schiena a pezzi."
+      ],
+      "battle": {
+        "name": "Il Caporeparto",
+        "sheet": "char_13",
+        "goal": 4,
+        "pay": 260,
+        "damage": 3,
+        "intro": "* Il caporeparto ti aspetta davanti a una montagna di scatole.",
+        "work_line": "Sposti una pila di scatole.",
+        "flavor": [
+          "* Il caporeparto guarda il cronometro.",
+          "* Da qualche parte, un nastro trasportatore cigola.",
+          "* Ti fa male la schiena. È solo l'inizio."
+        ],
+        "talk": [
+          "Più veloce! Le scatole non si spostano da sole!",
+          "Pausa? Cos'è una pausa?",
+          "Ti tengo d'occhio, sai."
+        ],
+        "acts": [
+          {
+            "name": "Chiedi una pausa",
+            "trust": 0,
+            "lines": [
+              "* Chiedi una pausa.",
+              "* \"La pausa è per chi non ha debiti\", risponde il caporeparto."
+            ]
+          },
+          {
+            "name": "Chiedi un aumento",
+            "trust": 0,
+            "lines": [
+              "* Chiedi un aumento.",
+              "* Il caporeparto ride così forte che cade una scatola."
+            ]
+          },
+          {
+            "name": "Fischietta",
+            "trust": 0,
+            "lines": [
+              "* Fischietti mentre lavori.",
+              "* Per un attimo, il magazzino sembra meno grigio."
+            ]
+          }
+        ],
+        "attacks": [
+          "boxes",
+          "camera",
+          "boxes",
+          "papers"
+        ],
+        "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
+      }
     }
   },
   {
@@ -30,7 +85,62 @@
     "hard": {
       "title": "Consegne",
       "minigame": "delivery",
-      "desc": ["Incarico: consegne a piedi sotto la pioggia.", "Paga a pacco. Le auto non si fermano."]
+      "desc": [
+        "Incarico: consegne a piedi sotto la pioggia.",
+        "Paga a pacco. Le auto non si fermano."
+      ],
+      "battle": {
+        "name": "La Strada",
+        "sheet": "char_14",
+        "goal": 4,
+        "pay": 240,
+        "damage": 3,
+        "intro": "* Piove. L'app ti assegna quaranta consegne. La strada ti aspetta.",
+        "work_line": "Consegni un pacco sotto la pioggia.",
+        "flavor": [
+          "* L'app ti ricorda che sei in ritardo.",
+          "* Un'auto ti passa vicinissima. Ti bagna tutto.",
+          "* Un cliente ti dà una stella. Pioveva."
+        ],
+        "talk": [
+          "Consegna entro 12 minuti!",
+          "Il cliente dice che il pacco è bagnato.",
+          "Tre stelle. Pioveva."
+        ],
+        "acts": [
+          {
+            "name": "Ripara il telefono dalla pioggia",
+            "trust": 0,
+            "lines": [
+              "* Metti il telefono in un sacchetto di plastica.",
+              "* Funziona. Più o meno."
+            ]
+          },
+          {
+            "name": "Saluta un altro rider",
+            "trust": 0,
+            "lines": [
+              "* Saluti un altro rider. Ti saluta anche lui.",
+              "* Siete fradici tutti e due. Vi capite."
+            ]
+          },
+          {
+            "name": "Chiama l'assistenza",
+            "trust": 0,
+            "lines": [
+              "* Chiami l'assistenza dell'app.",
+              "* Risponde un robot. Ti dice che il tuo tempo è prezioso."
+            ]
+          }
+        ],
+        "attacks": [
+          "cars",
+          "rain",
+          "notifications",
+          "cars"
+        ],
+        "tired": "* Hai le gambe a pezzi e la pioggia ti è entrata nelle ossa."
+      }
     }
   },
   {
@@ -47,7 +157,62 @@
     "hard": {
       "title": "Magazzino",
       "minigame": "warehouse",
-      "desc": ["Incarico: turno doppio in magazzino.", "Le scatole oggi sono il doppio."]
+      "desc": [
+        "Incarico: turno doppio in magazzino.",
+        "Le scatole oggi sono il doppio."
+      ],
+      "battle": {
+        "name": "Il Caporeparto",
+        "sheet": "char_13",
+        "goal": 4,
+        "pay": 260,
+        "damage": 3,
+        "intro": "* Il caporeparto ti aspetta davanti a una montagna di scatole.",
+        "work_line": "Sposti una pila di scatole.",
+        "flavor": [
+          "* Il caporeparto guarda il cronometro.",
+          "* Da qualche parte, un nastro trasportatore cigola.",
+          "* Ti fa male la schiena. È solo l'inizio."
+        ],
+        "talk": [
+          "Più veloce! Le scatole non si spostano da sole!",
+          "Pausa? Cos'è una pausa?",
+          "Ti tengo d'occhio, sai."
+        ],
+        "acts": [
+          {
+            "name": "Chiedi una pausa",
+            "trust": 0,
+            "lines": [
+              "* Chiedi una pausa.",
+              "* \"La pausa è per chi non ha debiti\", risponde il caporeparto."
+            ]
+          },
+          {
+            "name": "Chiedi un aumento",
+            "trust": 0,
+            "lines": [
+              "* Chiedi un aumento.",
+              "* Il caporeparto ride così forte che cade una scatola."
+            ]
+          },
+          {
+            "name": "Fischietta",
+            "trust": 0,
+            "lines": [
+              "* Fischietti mentre lavori.",
+              "* Per un attimo, il magazzino sembra meno grigio."
+            ]
+          }
+        ],
+        "attacks": [
+          "boxes",
+          "camera",
+          "boxes",
+          "papers"
+        ],
+        "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
+      }
     }
   },
   {
@@ -64,7 +229,62 @@
     "hard": {
       "title": "Consegne",
       "minigame": "delivery",
-      "desc": ["Incarico: consegne nel traffico dell'ora di punta.", "Paga a pacco."]
+      "desc": [
+        "Incarico: consegne nel traffico dell'ora di punta.",
+        "Paga a pacco."
+      ],
+      "battle": {
+        "name": "La Strada",
+        "sheet": "char_14",
+        "goal": 4,
+        "pay": 240,
+        "damage": 3,
+        "intro": "* Piove. L'app ti assegna quaranta consegne. La strada ti aspetta.",
+        "work_line": "Consegni un pacco sotto la pioggia.",
+        "flavor": [
+          "* L'app ti ricorda che sei in ritardo.",
+          "* Un'auto ti passa vicinissima. Ti bagna tutto.",
+          "* Un cliente ti dà una stella. Pioveva."
+        ],
+        "talk": [
+          "Consegna entro 12 minuti!",
+          "Il cliente dice che il pacco è bagnato.",
+          "Tre stelle. Pioveva."
+        ],
+        "acts": [
+          {
+            "name": "Ripara il telefono dalla pioggia",
+            "trust": 0,
+            "lines": [
+              "* Metti il telefono in un sacchetto di plastica.",
+              "* Funziona. Più o meno."
+            ]
+          },
+          {
+            "name": "Saluta un altro rider",
+            "trust": 0,
+            "lines": [
+              "* Saluti un altro rider. Ti saluta anche lui.",
+              "* Siete fradici tutti e due. Vi capite."
+            ]
+          },
+          {
+            "name": "Chiama l'assistenza",
+            "trust": 0,
+            "lines": [
+              "* Chiami l'assistenza dell'app.",
+              "* Risponde un robot. Ti dice che il tuo tempo è prezioso."
+            ]
+          }
+        ],
+        "attacks": [
+          "cars",
+          "rain",
+          "notifications",
+          "cars"
+        ],
+        "tired": "* Hai le gambe a pezzi e la pioggia ti è entrata nelle ossa."
+      }
     }
   },
   {
@@ -81,7 +301,62 @@
     "hard": {
       "title": "Magazzino",
       "minigame": "warehouse",
-      "desc": ["Incarico: magazzino, turno di notte.", "Il caporeparto conta i secondi."]
+      "desc": [
+        "Incarico: magazzino, turno di notte.",
+        "Il caporeparto conta i secondi."
+      ],
+      "battle": {
+        "name": "Il Caporeparto",
+        "sheet": "char_13",
+        "goal": 4,
+        "pay": 260,
+        "damage": 3,
+        "intro": "* Il caporeparto ti aspetta davanti a una montagna di scatole.",
+        "work_line": "Sposti una pila di scatole.",
+        "flavor": [
+          "* Il caporeparto guarda il cronometro.",
+          "* Da qualche parte, un nastro trasportatore cigola.",
+          "* Ti fa male la schiena. È solo l'inizio."
+        ],
+        "talk": [
+          "Più veloce! Le scatole non si spostano da sole!",
+          "Pausa? Cos'è una pausa?",
+          "Ti tengo d'occhio, sai."
+        ],
+        "acts": [
+          {
+            "name": "Chiedi una pausa",
+            "trust": 0,
+            "lines": [
+              "* Chiedi una pausa.",
+              "* \"La pausa è per chi non ha debiti\", risponde il caporeparto."
+            ]
+          },
+          {
+            "name": "Chiedi un aumento",
+            "trust": 0,
+            "lines": [
+              "* Chiedi un aumento.",
+              "* Il caporeparto ride così forte che cade una scatola."
+            ]
+          },
+          {
+            "name": "Fischietta",
+            "trust": 0,
+            "lines": [
+              "* Fischietti mentre lavori.",
+              "* Per un attimo, il magazzino sembra meno grigio."
+            ]
+          }
+        ],
+        "attacks": [
+          "boxes",
+          "camera",
+          "boxes",
+          "papers"
+        ],
+        "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
+      }
     }
   },
   {
@@ -98,7 +373,62 @@
     "hard": {
       "title": "Consegne",
       "minigame": "delivery",
-      "desc": ["Incarico: consegne con la grandine.", "Nessuno ti ringrazierà."]
+      "desc": [
+        "Incarico: consegne con la grandine.",
+        "Nessuno ti ringrazierà."
+      ],
+      "battle": {
+        "name": "La Strada",
+        "sheet": "char_14",
+        "goal": 4,
+        "pay": 240,
+        "damage": 3,
+        "intro": "* Piove. L'app ti assegna quaranta consegne. La strada ti aspetta.",
+        "work_line": "Consegni un pacco sotto la pioggia.",
+        "flavor": [
+          "* L'app ti ricorda che sei in ritardo.",
+          "* Un'auto ti passa vicinissima. Ti bagna tutto.",
+          "* Un cliente ti dà una stella. Pioveva."
+        ],
+        "talk": [
+          "Consegna entro 12 minuti!",
+          "Il cliente dice che il pacco è bagnato.",
+          "Tre stelle. Pioveva."
+        ],
+        "acts": [
+          {
+            "name": "Ripara il telefono dalla pioggia",
+            "trust": 0,
+            "lines": [
+              "* Metti il telefono in un sacchetto di plastica.",
+              "* Funziona. Più o meno."
+            ]
+          },
+          {
+            "name": "Saluta un altro rider",
+            "trust": 0,
+            "lines": [
+              "* Saluti un altro rider. Ti saluta anche lui.",
+              "* Siete fradici tutti e due. Vi capite."
+            ]
+          },
+          {
+            "name": "Chiama l'assistenza",
+            "trust": 0,
+            "lines": [
+              "* Chiami l'assistenza dell'app.",
+              "* Risponde un robot. Ti dice che il tuo tempo è prezioso."
+            ]
+          }
+        ],
+        "attacks": [
+          "cars",
+          "rain",
+          "notifications",
+          "cars"
+        ],
+        "tired": "* Hai le gambe a pezzi e la pioggia ti è entrata nelle ossa."
+      }
     }
   },
   {
@@ -115,7 +445,62 @@
     "hard": {
       "title": "Magazzino",
       "minigame": "warehouse",
-      "desc": ["Incarico: ultimo turno della settimana in magazzino.", "Ti fanno male anche i pensieri."]
+      "desc": [
+        "Incarico: ultimo turno della settimana in magazzino.",
+        "Ti fanno male anche i pensieri."
+      ],
+      "battle": {
+        "name": "Il Caporeparto",
+        "sheet": "char_13",
+        "goal": 4,
+        "pay": 260,
+        "damage": 3,
+        "intro": "* Il caporeparto ti aspetta davanti a una montagna di scatole.",
+        "work_line": "Sposti una pila di scatole.",
+        "flavor": [
+          "* Il caporeparto guarda il cronometro.",
+          "* Da qualche parte, un nastro trasportatore cigola.",
+          "* Ti fa male la schiena. È solo l'inizio."
+        ],
+        "talk": [
+          "Più veloce! Le scatole non si spostano da sole!",
+          "Pausa? Cos'è una pausa?",
+          "Ti tengo d'occhio, sai."
+        ],
+        "acts": [
+          {
+            "name": "Chiedi una pausa",
+            "trust": 0,
+            "lines": [
+              "* Chiedi una pausa.",
+              "* \"La pausa è per chi non ha debiti\", risponde il caporeparto."
+            ]
+          },
+          {
+            "name": "Chiedi un aumento",
+            "trust": 0,
+            "lines": [
+              "* Chiedi un aumento.",
+              "* Il caporeparto ride così forte che cade una scatola."
+            ]
+          },
+          {
+            "name": "Fischietta",
+            "trust": 0,
+            "lines": [
+              "* Fischietti mentre lavori.",
+              "* Per un attimo, il magazzino sembra meno grigio."
+            ]
+          }
+        ],
+        "attacks": [
+          "boxes",
+          "camera",
+          "boxes",
+          "papers"
+        ],
+        "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
+      }
     }
   }
 ]

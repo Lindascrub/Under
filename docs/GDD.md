@@ -10,32 +10,42 @@ Un RPG narrativo in stile Undertale in cui il giocatore, schiacciato da un debit
 - **Comodità sospetta:** il lavoro che sfrutta qualcuno è *facilissimo* (un clic) e paga tantissimo. Quello onesto è un minigioco faticoso e paga pochissimo.
 - **Senso di colpa:** il gioco non giudica mai mentre giochi. Il giudizio arriva tutto nel finale.
 
-## Il ciclo di una giornata (7 giorni)
+## Il ciclo di una giornata (7 giorni, orologio di 24 ore)
 
-1. **Casa:** il computer mostra il debito e le email della banca e della CHEAP.
-2. **Strada:** parli con le persone del quartiere. Puoi aiutarle con soldi o con tempo libero.
-3. **Ufficio:** al terminale scegli l'incarico del giorno.
-   - **Facile:** leggi cosa stai facendo a chi, poi premi FIRMA. Guadagno alto e una promozione.
-   - **Duro:** un minigioco (magazzino o consegne). Paga bassa.
-   - **Rifiuta:** zero soldi.
-4. **Sera:** aiuti le persone, se ti resta tempo libero (3 al giorno, 2 se hai fatto un turno duro).
-5. **Letto:** paghi la rata (o no) e dormi. Durante la notte gli interessi aumentano il debito.
+La giornata inizia alle 7:00 e finisce a mezzanotte. Ogni azione consuma tempo:
+
+| Azione | Tempo |
+|---|---|
+| Firmare l'incarico facile | 1 ora |
+| Turno duro (battaglia di lavoro) | 8 ore |
+| Ascoltare una persona (battaglia) | 1 ora |
+| Aiutarla col tuo tempo | +2 ore |
+| Riposare su una panchina | 1 ora (+8 energia) |
+| Spostarsi tra casa, strada e ufficio | 10 minuti |
+
+A mezzanotte crolli dal sonno e ti risvegli a casa, dove paghi (o no) la rata. La luce in strada cambia con l'ora.
+
+## Le battaglie (stile Undertale)
+
+Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende quando vieni colpito; a zero crolli dallo stress e perdi tre ore.
+
+- **Persone** (strada e ufficio): SFRUTTA (soldi subito, la persona diventa un robot), PARLA (aumenta la fiducia), OGGETTI, AIUTA (diventa giallo quando la fiducia è piena). Ogni persona attacca coi suoi problemi: bollette e giocattoli (Marta), briciole e piccioni (Bruno), libri e notifiche (Lea), auto e pioggia (Sami), chiavi (Ivo), pratiche ed email (Dario), post-it (Giulia).
+- **Lavoro duro:** LAVORA (avanzi di un quarto di turno), PARLA, OGGETTI, MOLLA. Il caporeparto usa anche la telecamera blu: se ti muovi mentre la luce blu ti passa sopra, ti colpisce.
+- **Lavoro facile:** tutti e quattro i pulsanti dicono FIRMA.
 
 ## Economia (in `autoload/game_state.gd`)
 
 | Valore | Numero | Perché |
 |---|---|---|
-| Debito iniziale | 48.000 € | Abbastanza da sembrare impossibile |
-| Interessi | 1% a notte (circa 480 €) | Il lavoro onesto non riesce nemmeno a coprirli |
-| Rata minima | 400 € al giorno | Se non la paghi: mora di 250 € |
-| Lavoro facile | 1.500 € × 1,7 per ogni firma precedente | Più sfrutti, più vali |
-| Lavoro duro | 50-400 € in base al minigioco | Ti spacchi la schiena per niente |
-
-Il sistema è truccato apposta: chi lavora onestamente finisce la settimana con più debito di quando ha iniziato.
+| Debito iniziale | 6.000 € | Lavorando onestamente scende un po', ma non sparisce |
+| Interessi | 2% a notte | |
+| Rata minima | 150 € al giorno | Se non la paghi: mora di 100 € |
+| Lavoro facile | 600 € × 1,7 per ogni sfruttamento precedente | Più sfrutti, più vali |
+| Lavoro duro | 30-260 € in base a quanto ne fai e ai colpi presi | Ti spacchi la schiena per poco |
 
 ## La meccanica dei robot
 
-Ogni incarico facile ha una **vittima** (in `data/jobs.json`). Appena firmi, quella persona viene sostituita da un robot:
+Ogni incarico facile ha una **vittima**, e anche scegliere SFRUTTA in una battaglia con una persona la trasforma (in `data/jobs.json`). Appena firmi, quella persona viene sostituita da un robot:
 
 - stessa faccia e stesso posto;
 - frasi aziendali vuote che ti chiamano per titolo ("Buongiorno, Supervisore.");

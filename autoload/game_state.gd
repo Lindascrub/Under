@@ -1,21 +1,33 @@
 extends Node
-## Stato della partita: soldi, debito, giorni e le scelte morali del giocatore.
+## Stato della partita: soldi, debito, ora del giorno, energia, oggetti e scelte morali.
 ## Le regole dei tre finali sono in route().
 
 signal changed
 
 const SAVE_PATH := "user://cheap_save.json"
-const START_DEBT := 48000
-const DAILY_INTEREST := 0.01
-const MIN_PAYMENT := 400
-const LATE_FEE := 250
+const START_DEBT := 6000
+const DAILY_INTEREST := 0.02
+const MIN_PAYMENT := 150
+const LATE_FEE := 100
 const LAST_DAY := 7
-const FREE_TIME_PER_DAY := 3
+const MAX_ENERGY := 20
+## La giornata va dalle 7:00 a mezzanotte. Il tempo è in minuti dall'inizio del giorno.
+const DAY_START := 7 * 60
+const MIDNIGHT := 24 * 60
+
+## Quanto costano le azioni, in minuti.
+const COST_EASY_JOB := 60
+const COST_HARD_JOB := 8 * 60
+const COST_LISTEN := 60
+const COST_HELP_TIME := 120
+const COST_REST := 60
+const COST_WALK := 10
 
 const RANKS: Array[String] = [
 	"Stagista", "Impiegato", "Supervisore", "Responsabile", "Manager",
 	"Direttore", "Amministratore Delegato", "Presidente",
 ]
+const DAY_NAMES: Array[String] = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
 
 ## Quello che dicono le persone sostituite da robot. Sempre gentili, sempre uguali.
 const ROBOT_LINES: Array[String] = [
@@ -26,22 +38,32 @@ const ROBOT_LINES: Array[String] = [
 	"Sono molto felice. Grazie per avermelo chiesto.",
 ]
 
+const ITEMS := {
+	"Caffè di Nico": {"energy": 8, "text": "* Bevi il caffè di Nico. Sa di bruciato e di amicizia."},
+	"Panino": {"energy": 12, "text": "* Mangi il panino. Un po' schiacciato, ma buono."},
+	"Barretta": {"energy": 5, "text": "* Mangi la barretta. Sa di cartone al cioccolato."},
+}
+
 var day := 1
+var minutes := DAY_START
 var money := 0
 var debt := START_DEBT
+var energy := MAX_ENERGY
 var rank := 0
 var exploited := 0
 var hard_work := 0
 var refused := 0
 var helped := 0
+var items: Array[String] = []
 var robots: Array[String] = []
 var helped_ids: Array[String] = []
-var helped_today: Array[String] = []
+var met_today: Array[String] = []
 var flags: Dictionary = {}
 var worked_today := false
-var free_time := FREE_TIME_PER_DAY
 ## Righe da mostrare appena il giocatore entra nella prossima stanza.
 var pending_lines: Array = []
+## Configurazione della prossima battaglia (vedi scenes/battle/battle.gd).
+var battle: Dictionary = {}
 
 var _npcs: Dictionary = {}
 var _jobs: Array = []
@@ -65,20 +87,23 @@ func _load_json(path: String, fallback: Variant) -> Variant:
 
 func new_game() -> void:
 	day = 1
+	minutes = DAY_START
 	money = 0
 	debt = START_DEBT
+	energy = MAX_ENERGY
 	rank = 0
 	exploited = 0
 	hard_work = 0
 	refused = 0
 	helped = 0
+	items.assign(["Panino"])
 	robots.clear()
 	helped_ids.clear()
-	helped_today.clear()
+	met_today.clear()
 	flags.clear()
 	worked_today = false
-	free_time = FREE_TIME_PER_DAY
 	pending_lines.clear()
+	battle.clear()
 	changed.emit()
 
 
@@ -90,6 +115,14 @@ func npc_data(id: String) -> Dictionary:
 
 func npc_ids() -> Array:
 	return _npcs.keys()
+
+
+## Dove si trova una persona oggi: {"room", "cell", "anim"}.
+func npc_place(id: String) -> Dictionary:
+	var schedule: Array = npc_data(id).get("schedule", [])
+	if schedule.is_empty():
+		return {}
+	return schedule[clampi(day - 1, 0, schedule.size() - 1)]
 
 
 func job_today() -> Dictionary:
@@ -110,24 +143,98 @@ func robot_line(id: String) -> String:
 	return ROBOT_LINES[posmod(id.hash() + day, ROBOT_LINES.size())]
 
 
+# --- tempo ------------------------------------------------------------------
+
+func clock() -> String:
+	var m := mini(minutes, MIDNIGHT)
+	return "%02d:%02d" % [m / 60 % 24, m % 60]
+
+
+func day_name() -> String:
+	return DAY_NAMES[clampi(day - 1, 0, DAY_NAMES.size() - 1)]
+
+
+func hours_left() -> float:
+	return maxf(0.0, (MIDNIGHT - minutes) / 60.0)
+
+
+func has_time(cost: int) -> bool:
+	return minutes + cost <= MIDNIGHT
+
+
+## Fa passare il tempo. Restituisce true se è arrivata la mezzanotte.
+func spend(cost: int) -> bool:
+	minutes = mini(minutes + cost, MIDNIGHT)
+	changed.emit()
+	return minutes >= MIDNIGHT
+
+
+func is_midnight() -> bool:
+	return minutes >= MIDNIGHT
+
+
+## Colore della luce in base all'ora (per le scene all'aperto).
+func daylight() -> Color:
+	var h := minutes / 60.0
+	if h < 17.0:
+		return Color.WHITE
+	if h < 20.0:
+		return Color.WHITE.lerp(Color(1.0, 0.78, 0.6), (h - 17.0) / 3.0)
+	if h < 22.0:
+		return Color(1.0, 0.78, 0.6).lerp(Color(0.45, 0.5, 0.78), (h - 20.0) / 2.0)
+	return Color(0.45, 0.5, 0.78)
+
+
+# --- energia e oggetti ------------------------------------------------------
+
+func hurt(amount: int) -> void:
+	energy = maxi(0, energy - amount)
+	changed.emit()
+
+
+func restore(amount: int) -> void:
+	energy = mini(MAX_ENERGY, energy + amount)
+	changed.emit()
+
+
+func use_item(index: int) -> String:
+	var name := items[index]
+	items.remove_at(index)
+	var data: Dictionary = ITEMS.get(name, {"energy": 5, "text": "* Usi l'oggetto."})
+	var before := energy
+	restore(int(data["energy"]))
+	var after := "* Energia al massimo!" if energy >= MAX_ENERGY else "* Hai recuperato %d di energia." % (energy - before)
+	return str(data["text"]) + "\n" + after
+
+
+func give_item(name: String) -> void:
+	items.append(name)
+	changed.emit()
+
+
 # --- lavoro -----------------------------------------------------------------
 
 ## Il lavoro facile paga sempre di più: ogni firma ti rende più "prezioso".
 func easy_pay() -> int:
-	return int(round(1500.0 * pow(1.7, exploited)))
+	return int(round(600.0 * pow(1.7, exploited)))
 
 
-## Firmare: un secondo di fatica, una persona in meno.
-func do_easy_job() -> int:
-	var pay := easy_pay()
+## Sfruttare qualcuno: la persona viene sostituita da un robot.
+func exploit(victim: String, pay: int) -> void:
 	money += pay
 	exploited += 1
 	rank = mini(rank + 1, RANKS.size() - 1)
-	var victim := str(job_today().get("victim", ""))
 	if victim != "" and victim not in robots:
 		robots.append(victim)
-	worked_today = true
 	changed.emit()
+
+
+## Firmare l'incarico facile del giorno: un'ora di "fatica", una persona in meno.
+func do_easy_job() -> int:
+	var pay := easy_pay()
+	exploit(str(job_today().get("victim", "")), pay)
+	worked_today = true
+	spend(COST_EASY_JOB)
 	return pay
 
 
@@ -135,8 +242,7 @@ func finish_hard_job(pay: int) -> void:
 	money += pay
 	hard_work += 1
 	worked_today = true
-	free_time = maxi(free_time - 1, 0)
-	changed.emit()
+	spend(COST_HARD_JOB)
 
 
 func refuse_work() -> void:
@@ -149,8 +255,8 @@ func refuse_work() -> void:
 
 # --- aiutare le persone -----------------------------------------------------
 
-func can_help(id: String) -> bool:
-	return id not in helped_today and id not in robots
+func can_meet(id: String) -> bool:
+	return id not in met_today and id not in robots
 
 
 func help(id: String, kind: String, cost: int) -> bool:
@@ -159,11 +265,10 @@ func help(id: String, kind: String, cost: int) -> bool:
 			return false
 		money -= cost
 	else:
-		if free_time <= 0:
+		if not has_time(COST_HELP_TIME):
 			return false
-		free_time -= 1
+		spend(COST_HELP_TIME)
 	helped += 1
-	helped_today.append(id)
 	if id not in helped_ids:
 		helped_ids.append(id)
 	changed.emit()
@@ -185,9 +290,10 @@ func end_day(paid_minimum: bool) -> void:
 		debt += LATE_FEE
 	debt += int(round(debt * DAILY_INTEREST))
 	day += 1
+	minutes = DAY_START
+	energy = MAX_ENERGY
 	worked_today = false
-	free_time = FREE_TIME_PER_DAY
-	helped_today.clear()
+	met_today.clear()
 	changed.emit()
 
 
@@ -243,6 +349,8 @@ func fmt(text: String) -> String:
 		.replace("{debt}", euros(debt)) \
 		.replace("{money}", euros(money)) \
 		.replace("{day}", str(day)) \
+		.replace("{day_name}", day_name()) \
+		.replace("{clock}", clock()) \
 		.replace("{last_day}", str(LAST_DAY))
 
 
@@ -265,7 +373,7 @@ func save_game() -> void:
 	var data := {
 		"day": day, "money": money, "debt": debt, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
-		"robots": robots, "helped_ids": helped_ids, "flags": flags,
+		"items": items, "robots": robots, "helped_ids": helped_ids, "flags": flags,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -287,6 +395,7 @@ func load_game() -> bool:
 	hard_work = int(d.get("hard_work", 0))
 	refused = int(d.get("refused", 0))
 	helped = int(d.get("helped", 0))
+	items.assign(d.get("items", []))
 	robots.assign(d.get("robots", []))
 	helped_ids.assign(d.get("helped_ids", []))
 	flags = d.get("flags", {})

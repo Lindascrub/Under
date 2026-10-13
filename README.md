@@ -2,7 +2,7 @@
 
 Un piccolo RPG narrativo in stile Undertale, fatto con Godot 4.
 
-Inizi con un debito di 48.000 €. Ogni giorno scegli come guadagnare: firmare qualcosa che rovina una persona (facile, pagato tantissimo) oppure spaccarti la schiena (difficile, pagato pochissimo). Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
+Inizi con un debito di 6.000 € e hai una settimana. Ogni giornata ha un orologio di 24 ore: ogni azione consuma tempo, e a mezzanotte crolli dal sonno. Al lavoro scegli se firmare qualcosa che rovina una persona (un'ora, pagato tantissimo) o fare un turno duro di 8 ore (una battaglia alla Undertale, pagata pochissimo). Per strada le persone ti "attaccano" coi loro problemi: puoi SFRUTTARLE, PARLARE con loro o AIUTARLE. Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
 
 Tre finali: **ricco**, **onesto**, **ribelle**. Design completo in [docs/GDD.md](docs/GDD.md).
 
@@ -29,7 +29,7 @@ Tre finali: **ricco**, **onesto**, **ribelle**. Design completo in [docs/GDD.md]
 | Frecce / WASD | Muoversi |
 | Z / Invio / Spazio | Parlare, interagire, confermare |
 | X / Shift | Correre, saltare il testo |
-| C | Stato (debito, soldi, tempo libero) |
+| C | Stato e oggetti (ore rimaste, energia, caffè di Nico) |
 
 ## Test automatico
 
@@ -48,3 +48,5 @@ I dialoghi delle persone sono in `data/npcs.json`, gli incarichi in `data/jobs.j
 ## Crediti
 
 - Grafica: [LimeZu](https://limezu.itch.io/) (Modern Interiors, Modern Exteriors).
+- Font: [Pixelify Sans](https://github.com/eifetx/Pixelify-Sans), licenza SIL Open Font License (`fonts/OFL.txt`).
+- Musica ed effetti sonori: generati da `tools/make_audio.py`.

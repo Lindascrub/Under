@@ -1,14 +1,22 @@
 extends Node
-## Test automatico: gioca da solo tutte le scene e i tre finali, premendo Z al posto tuo.
+## Test automatico: gioca da solo scene, battaglie e i tre finali.
 ## Esegui:  Godot --headless --path . res://tests/smoke_test.tscn
 ## Alla fine stampa "SMOKE TEST OK" oppure gli errori trovati.
 
 var _frame := 0
 var _failures: Array[String] = []
+## Quale opzione scegliere quando si apre una scelta (Ui.choose).
+var choose_index := 0
+## Scelte specifiche da fare in ordine (poi si torna a choose_index).
+var choose_queue: Array = []
+## Piano per la battaglia: lista di [pulsante, voce del sottomenu].
+var plan: Array = []
+var fallback := [3, 1]
+var fast_dodge := true
+var immortal := false
 
 
 func _ready() -> void:
-	# Questo nodo deve sopravvivere ai cambi di scena.
 	var placeholder := Node.new()
 	get_tree().root.add_child.call_deferred(placeholder)
 	await get_tree().process_frame
@@ -18,8 +26,36 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_frame += 1
-	if Ui.busy and _frame % 3 == 0:
+	if immortal:
+		GameState.energy = GameState.MAX_ENERGY
+	var scene := get_tree().current_scene
+	if scene and scene.scene_file_path == Router.BATTLE and not Ui.transitioning:
+		_drive_battle(scene)
+	elif Ui.busy and _frame % 3 == 0:
+		if Ui.get("_mode") == "choose":
+			var idx: int = choose_queue.pop_front() if not choose_queue.is_empty() else choose_index
+			Ui.set("_sel", mini(idx, (Ui.get("_options") as Array).size() - 1))
 		_tap("confirm")
+
+
+func _drive_battle(b: Node) -> void:
+	if _frame % 3 != 0:
+		return
+	match str(b.get("phase")):
+		"menu":
+			var step: Array = plan.pop_front() if not plan.is_empty() else fallback
+			b.set("menu", step[0])
+			b.set("_pending_sub", step[1])
+			_tap("confirm")
+		"sub":
+			var items: Array = b.get("sub_items")
+			b.set("sub", mini(int(b.get("_pending_sub")), items.size() - 1))
+			_tap("confirm")
+		"msg", "bubble":
+			_tap("confirm")
+		"dodge":
+			if fast_dodge:
+				b.set("attack_t", 99.0)
 
 
 func _tap(action: String) -> void:
@@ -33,7 +69,22 @@ func _tap(action: String) -> void:
 	Input.parse_input_event(up)
 
 
-func _idle(max_frames := 6000) -> void:
+func _scene_path() -> String:
+	var scene := get_tree().current_scene
+	return scene.scene_file_path if scene else ""
+
+
+func _wait_scene(path: String, max_frames := 30000) -> void:
+	var n := 0
+	while (_scene_path() != path or Ui.transitioning) and n < max_frames:
+		await get_tree().process_frame
+		n += 1
+	if n >= max_frames:
+		_fail("timeout aspettando %s (scena attuale %s)" % [path, _scene_path()])
+	await get_tree().process_frame
+
+
+func _idle(max_frames := 8000) -> void:
 	var n := 0
 	await get_tree().process_frame
 	while (Ui.busy or Ui.transitioning) and n < max_frames:
@@ -46,17 +97,17 @@ func _idle(max_frames := 6000) -> void:
 
 func _go(path: String, spawn := "") -> Node:
 	Router.goto(path, spawn)
-	await get_tree().process_frame
+	await _wait_scene(path)
 	await _idle()
-	var scene := get_tree().current_scene
-	if scene == null or scene.scene_file_path != path:
-		_fail("la scena attesa era %s" % path)
-	return scene
+	return get_tree().current_scene
 
 
-func _scene_path() -> String:
-	var scene := get_tree().current_scene
-	return scene.scene_file_path if scene else ""
+func _npc(id: String) -> Node:
+	for n in get_tree().get_nodes_in_group("npc"):
+		if n.get("id") == id:
+			return n
+	_fail("non trovo %s nella scena" % id)
+	return null
 
 
 func _check(cond: bool, what: String) -> void:
@@ -70,68 +121,112 @@ func _fail(what: String) -> void:
 
 
 func _run() -> void:
-	# Menu
 	await _go(Router.MENU)
 
-	# Giorno 1: casa, strada, ufficio, lavoro facile
+	# --- casa
 	GameState.new_game()
 	var home := await _go(Router.HOME, "bed")
 	home.call("_computer")
 	await _idle()
-	home.call("_robot_toy")
-	await _idle()
-
-	var street := await _go(Router.STREET, "home")
-	for n in get_tree().get_nodes_in_group("npc"):
-		n.call("interact")
-		await _idle()
-		n.call("interact")
-		await _idle()
-	_check(GameState.helped > 0, "aiutare qualcuno col tempo libero dovrebbe funzionare")
-
-	var office := await _go(Router.OFFICE, "street")
-	office.call("_terminal")
-	await _idle()
-	_check(GameState.exploited == 1, "il lavoro facile non è stato registrato")
-	_check(GameState.is_robot("marta"), "Marta dovrebbe essere diventata un robot")
-	_check(GameState.rank == 1, "dopo la firma dovresti essere promosso")
-
-	# Le persone-robot parlano come robot
-	await _go(Router.STREET, "office")
-	for n in get_tree().get_nodes_in_group("npc"):
-		if n.get("id") == "marta":
-			n.call("interact")
+	for spot in get_tree().get_nodes_in_group("interactable"):
+		if spot is Interactable and spot.position.y > 60:
+			spot.call("interact")
 			await _idle()
+			break
 
-	# Minigiochi
-	for path in [Router.WAREHOUSE, Router.DELIVERY]:
-		var mg := await _go(path)
-		var waited := 0
-		while not mg.get("started") and waited < 2000:
-			await get_tree().process_frame
-			waited += 1
-		mg.set("time_left", 0.05)
-		var guard := 0
-		while get_tree().current_scene == mg and guard < 6000:
-			await get_tree().process_frame
-			guard += 1
+	# --- strada: parlare con tutti, poi una battaglia in cui aiuti e una in cui sfrutti
+	await _go(Router.STREET, "home")
+	choose_index = 1
+	for n in get_tree().get_nodes_in_group("npc"):
+		n.call("interact")
 		await _idle()
-		_check(_scene_path() == Router.OFFICE, "dopo il minigioco si torna in ufficio")
-	_check(GameState.hard_work == 2, "i turni duri non sono stati pagati")
+	_check("Caffè di Nico" in GameState.items, "Nico dovrebbe regalare un caffè")
+	_check(GameState.npc_place("sig_bruno").get("anim") == "sit_right", "il signor Bruno dovrebbe stare seduto")
 
-	# Dormire
-	home = await _go(Router.HOME, "bed")
+	choose_index = 0
+	GameState.met_today.clear()
+	var minutes_before := GameState.minutes
+	plan = [[1, 0], [1, 1], [3, 0]]
+	_npc("sig_bruno").call("interact")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.STREET)
+	await _idle()
+	_check("sig_bruno" in GameState.helped_ids, "aiutare il signor Bruno nella battaglia dovrebbe funzionare")
+	_check(GameState.minutes >= minutes_before + 180, "ascoltare e aiutare dovrebbe costare 3 ore")
+
+	plan = [[0, 0]]
+	_npc("marta").call("interact")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.STREET)
+	await _idle()
+	_check(GameState.is_robot("marta"), "sfruttare Marta dovrebbe renderla un robot")
+	_check(GameState.exploited == 1, "lo sfruttamento non è stato contato")
+
+	# --- ufficio: turno duro (battaglia di lavoro)
+	GameState.minutes = GameState.DAY_START
+	var office := await _go(Router.OFFICE, "street")
+	choose_queue = [1, 0]
+	plan = []
+	fallback = [0, 0]
+	office.call("_terminal")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.OFFICE)
+	await _idle()
+	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno duro non è stato pagato")
+
+	# --- ufficio: firma (lavoro facile) il giorno dopo
+	GameState.end_day(true)
+	choose_queue = [0, 0]
+	office = await _go(Router.OFFICE, "street")
+	office.call("_terminal")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.OFFICE)
+	await _idle()
+	_check(GameState.is_robot("sig_bruno"), "la firma del giorno 2 dovrebbe colpire il signor Bruno")
+
+	# --- tutti gli attacchi, giocati per intero
+	immortal = true
+	fast_dodge = false
+	fallback = [1, 0]
+	GameState.battle = {
+		"kind": "work", "name": "Test", "sheet": "char_13", "goal": 99, "pay": 10,
+		"acts": [{"name": "Prova", "trust": 0, "lines": ["* Prova."]}],
+		"attacks": ["bills", "emails", "boxes", "cars", "pigeons", "crumbs", "toys", "books",
+			"coffee", "notifications", "keys", "postits", "papers", "rain", "camera"],
+		"return": Router.HOME, "spawn": "bed",
+	}
+	Router.goto(Router.BATTLE)
+	await _wait_scene(Router.BATTLE)
+	var battle := get_tree().current_scene
+	var guard := 0
+	while int(battle.get("turn")) < 16 and guard < 60000:
+		await get_tree().process_frame
+		guard += 1
+	_check(int(battle.get("turn")) >= 16, "non tutti gli attacchi sono stati giocati")
+	battle.call("_end_battle")
+	await _wait_scene(Router.HOME)
+	immortal = false
+	fast_dodge = true
+	fallback = [3, 1]
+
+	# --- mezzanotte: si torna a casa e si dorme per forza
+	await _idle()
 	var day_before := GameState.day
-	home.call("_sleep")
+	GameState.minutes = GameState.MIDNIGHT - 5
+	Router.goto(Router.STREET, "home")
+	await _wait_scene(Router.HOME)
 	await _idle()
 	await _idle()
-	_check(GameState.day == day_before + 1, "dormire dovrebbe far passare il giorno")
+	await _wait_scene(Router.HOME)
+	await _idle()
+	_check(GameState.day == day_before + 1, "a mezzanotte dovrebbe finire la giornata")
+	_check(GameState.minutes == GameState.DAY_START, "il nuovo giorno dovrebbe iniziare alle 7:00")
 
-	# Salvataggio
+	# --- salvataggio
 	GameState.save_game()
 	_check(GameState.load_game(), "il salvataggio non si ricarica")
 
-	# I tre finali
+	# --- i tre finali
 	for route in ["ricco", "onesto", "ribelle"]:
 		GameState.new_game()
 		match route:
@@ -147,17 +242,8 @@ func _run() -> void:
 				GameState.helped_ids.assign(["sig_bruno", "dario"])
 		_check(GameState.route() == route, "route() dovrebbe dare " + route)
 		Router.goto(Router.ENDING)
-		var guard := 0
-		while _scene_path() != Router.ENDING and guard < 2000:
-			await get_tree().process_frame
-			guard += 1
-		_check(_scene_path() == Router.ENDING, "il finale %s non si è aperto" % route)
-		guard = 0
-		while _scene_path() != Router.MENU and guard < 20000:
-			await get_tree().process_frame
-			guard += 1
+		await _wait_scene(Router.MENU, 60000)
 		await _idle()
-		_check(_scene_path() == Router.MENU, "il finale %s dovrebbe tornare al menu" % route)
 
 	if _failures.is_empty():
 		print("SMOKE TEST OK")

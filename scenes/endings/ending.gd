@@ -1,15 +1,11 @@
 extends Room
 ## I tre finali. Quale vedi lo decide GameState.route():
-##   ricco   -> l'attico, i robot, Nico che apre la finestra
+##   ricco   -> l'attico, i "colleghi", Nico che ti fa guardare giù (city_below), poi la verità sui robot
 ##   onesto  -> la strada al tramonto: il debito resta, le persone anche
 ##   ribelle -> la notte in cui il quartiere smette di pagare
 
 const RB := "tiles/room_builder.png"
 const CITY := "tiles/city_terrains.png"
-const BUILDINGS := "tiles/generic_buildings.png"
-const BUILDINGS_SIZE := Vector2i(512, 3200)
-const HOUSE_REGION := Rect2(368, 400, 96, 288)
-const TOWER_REGION := Rect2(240, 402, 112, 286)
 
 var route := ""
 var nico: Npc
@@ -20,15 +16,20 @@ func build() -> void:
 	Ui.cutscene = true
 	route = GameState.route()
 	if route == "ricco":
+		music = "ufficio"
 		_build_penthouse()
 	else:
+		music = "quartiere"
 		_build_street()
 
 
 func enter() -> void:
 	match route:
 		"ricco":
-			await _rich()
+			if GameState.flags.get("ending_stage", 0) == 0:
+				await _rich_start()
+			else:
+				await _rich_reveal()
 		"ribelle":
 			await _rebel()
 		_:
@@ -37,6 +38,7 @@ func enter() -> void:
 
 func _finish(lines: Array) -> void:
 	GameState.delete_save()
+	GameState.flags.erase("ending_stage")
 	Ui.cutscene = false
 	Router.goto(Router.MENU, "", lines)
 
@@ -56,7 +58,6 @@ func _build_penthouse() -> void:
 		".": floor_def,
 		"_floor": floor_def,
 	})
-	# La grande finestra dell'attico.
 	var frame := ColorRect.new()
 	frame.color = Color("1a1420")
 	frame.position = Vector2(7 * T, T + 2)
@@ -67,19 +68,20 @@ func _build_penthouse() -> void:
 	sky.position = frame.position + Vector2(3, 3)
 	sky.size = frame.size - Vector2(6, 6)
 	add_child(sky)
+	add_prop("props/palm.png", Vector2i(2, 3), 1, Vector2i(32, 32))
+	add_prop("props/palm.png", Vector2i(16, 3), 1, Vector2i(32, 32))
 
 	# Tutti, tranne Nico, sono già robot. Il giocatore non lo sa ancora.
 	for id: String in GameState.npc_ids():
 		if id != "nico" and not GameState.is_robot(id):
 			GameState.robots.append(id)
-	var spots := [Vector2i(3, 5), Vector2i(5, 6), Vector2i(15, 6), Vector2i(17, 5),
+	var spots := [Vector2i(3, 6), Vector2i(5, 7), Vector2i(15, 7), Vector2i(17, 6),
 		Vector2i(3, 9), Vector2i(6, 9), Vector2i(14, 9), Vector2i(17, 9)]
 	var k := 0
 	for id: String in GameState.npc_ids():
 		if id == "nico" or k >= spots.size():
 			continue
-		var facing := "right" if spots[k].x < 10 else "left"
-		people.append(add_npc(id, spots[k], facing))
+		people.append(add_npc(id, spots[k], "right" if spots[k].x < 10 else "left"))
 		k += 1
 	nico = add_npc("nico", Vector2i(10, 4), "down")
 	spawns["default"] = cell_feet(Vector2i(10, 7))
@@ -87,35 +89,39 @@ func _build_penthouse() -> void:
 
 
 func _build_street() -> void:
+	outdoor = route == "onesto"
 	var rows: Array = []
 	for y in 13:
 		var row := ""
 		for x in 24:
 			var ch := "s"
 			if y == 10:
-				ch = "R"
+				ch = "C"
 			elif y > 10:
 				ch = "r"
-			if y == 12 or x == 0 or x == 23:
-				ch = "x"
 			row += ch
 		rows.append(row)
-	var sidewalk := {"tex": CITY, "at": Vector2i(10, 2)}
+	var sidewalk := {"tex": CITY, "at": func(c: Vector2i) -> Vector2i: return Vector2i(9 + c.x % 4, c.y % 4)}
 	paint(rows, {
 		"s": sidewalk,
-		"x": {"tex": CITY, "at": Vector2i(10, 2), "solid": true},
-		"R": {"tex": CITY, "at": Vector2i(2, 8)},
+		"C": {"tex": CITY, "at": Vector2i(1, 3)},
 		"r": {"tex": CITY, "at": Vector2i(2, 5)},
 		"_floor": sidewalk,
 	})
-	camera_top = 48
-	add_region(BUILDINGS, BUILDINGS_SIZE, HOUSE_REGION, Vector2i(3, 6))
-	add_region(BUILDINGS, BUILDINGS_SIZE, TOWER_REGION, Vector2i(13, 6))
+	camera_top = 64
+	for b: Array in [["buildings/home.png", 2, Vector2i(112, 288)], ["street/coffee_kiosk.png", 10, Vector2i(96, 144)],
+			["buildings/condo_yellow.png", 17, Vector2i(96, 176)]]:
+		add_prop(b[0], Vector2i(b[1], 6), 0, b[2])
 	block(Rect2i(0, 0, 24, 7))
-
-	var tint := CanvasModulate.new()
-	tint.color = Color(1.0, 0.8, 0.62) if route == "onesto" else Color(0.42, 0.48, 0.75)
-	add_child(tint)
+	block(Rect2i(-1, 0, 1, 13))
+	block(Rect2i(24, 0, 1, 13))
+	block(Rect2i(0, 12, 24, 1))
+	if route == "ribelle":
+		var night := CanvasModulate.new()
+		night.color = Color(0.42, 0.48, 0.75)
+		add_child(night)
+	else:
+		GameState.minutes = 19 * 60
 
 	var ids: Array = []
 	for id: String in GameState.npc_ids():
@@ -134,7 +140,7 @@ func _build_street() -> void:
 
 # --- finale ricco -----------------------------------------------------------
 
-func _rich() -> void:
+func _rich_start() -> void:
 	await Ui.say([
 		"* Ultimo piano della torre CHEAP. Il tuo ufficio.",
 		"* Il debito non esiste più. Sul conto: {money}.",
@@ -144,9 +150,14 @@ func _rich() -> void:
 	await Ui.say([
 		"Ehi. Sei diventato ricco da far schifo, eh?",
 		"Sono salito a piedi. Sessanta piani. L'ascensore non riconosce chi non ha il badge.",
-		"Vieni qui. Ti devo far vedere una cosa.",
+		"Vieni alla finestra. Guarda giù.",
 	], "Nico")
-	await _city_below()
+	GameState.flags["ending_stage"] = 1
+	Ui.cutscene = false
+	Router.goto(Router.ENDING_CITY)
+
+
+func _rich_reveal() -> void:
 	await Ui.say([
 		"E sai chi è la feccia peggiore?",
 		"Non loro. Quello che guarda dall'alto e dice che è colpa loro.",
@@ -154,10 +165,11 @@ func _rich() -> void:
 	], "Nico")
 	for p in people:
 		p.reveal(2.0)
+	Sound.sfx("glitch")
 	await get_tree().create_timer(2.6).timeout
 	await Ui.say([
 		"* Non c'è nessuno.",
-		"* Marta. Il signor Bruno. Dario. Giulia. Ivo.",
+		"* Marta. Il signor Bruno. Dario. Giulia. Ivo. Lea. Sami.",
 		"* Da quanto tempo stavi parlando con delle macchine?",
 		"* Ogni firma, una persona in meno. Ogni promozione, un sorriso finto in più.",
 	])
@@ -174,63 +186,11 @@ func _rich() -> void:
 	])
 
 
-func _city_below() -> void:
-	await Ui.fade_out()
-	var layer := CanvasLayer.new()
-	layer.layer = 5
-	add_child(layer)
-	var bg := ColorRect.new()
-	bg.color = Color("10131c")
-	bg.size = Vector2(640, 360)
-	layer.add_child(bg)
-	for i in 4:
-		var b := Sprite2D.new()
-		var at := AtlasTexture.new()
-		at.atlas = Assets.tex(BUILDINGS, BUILDINGS_SIZE)
-		at.region = HOUSE_REGION if i % 2 == 0 else TOWER_REGION
-		b.texture = at
-		b.centered = false
-		b.scale = Vector2(1.3, 1.3)
-		b.position = Vector2(20 + i * 160, 300 - at.region.size.y * 1.3)
-		b.modulate = Color(0.35, 0.38, 0.5)
-		layer.add_child(b)
-	var street := ColorRect.new()
-	street.color = Color("22252e")
-	street.position = Vector2(0, 290)
-	street.size = Vector2(640, 70)
-	layer.add_child(street)
-	for i in 7:
-		var cardboard := ColorRect.new()
-		cardboard.color = Color("6b5236")
-		cardboard.position = Vector2(30 + i * 88, 318)
-		cardboard.size = Vector2(70, 12)
-		layer.add_child(cardboard)
-		var s := Sprite2D.new()
-		var at := AtlasTexture.new()
-		at.atlas = Assets.tex("characters/char_%02d.png" % (i + 6), Vector2i(384, 96))
-		at.region = Rect2(18 * 16, 32, 16, 32)
-		s.texture = at
-		s.scale = Vector2(2, 2)
-		s.rotation = PI / 2.0 if i % 2 == 0 else 0.0
-		s.position = Vector2(64 + i * 88, 312 if i % 2 == 0 else 292)
-		s.modulate = Color(0.55, 0.55, 0.68)
-		layer.add_child(s)
-	await Ui.fade_in()
-	await Ui.say([
-		"* Sotto la torre, la città.",
-		"* Gente che dorme sui cartoni. La fila davanti alla mensa gira intorno all'isolato.",
-		"* Sono le facce che salutavi ogni mattina. Quelle vere.",
-	])
-	await Ui.fade_out()
-	layer.queue_free()
-	await Ui.fade_in()
-
-
 # --- finale onesto ----------------------------------------------------------
 
 func _honest() -> void:
 	await Ui.say([
-		"Il debito è ancora lì, eh? Anzi, è cresciuto.",
+		"Il debito è ancora lì, eh? È sceso un po', ma è ancora lì.",
 		"La banca ha mandato un'altra lettera. Domani ne manderà un'altra.",
 	], "Nico")
 	for p in people:
@@ -243,7 +203,7 @@ func _honest() -> void:
 	], "Nico")
 	_finish([
 		"FINALE: ONESTO",
-		"Debito: {debt}.\nÈ più grande di quando hai iniziato.",
+		"Debito: {debt}.\nTi sei sporcato le mani. Non sei diventato ricco.",
 		"Le persone intorno a te sono vere. Per oggi basta.",
 		"Grazie per aver giocato a CHEAP.",
 	])
@@ -255,8 +215,7 @@ func _rebel() -> void:
 	await Ui.say([
 		"Guarda quanti siamo.",
 		"Tutti con un debito. Tutti stanchi. Tutti qui.",
-		"Sette giorni fa dovevi {debt}. Stanotte, se va come deve andare, non lo dovrà più nessuno.",
-		"Sei pronto?",
+		"Una settimana fa dovevi {debt}. Stanotte, se va come deve andare, non lo dovrà più nessuno.",
 	], "Nico")
 	var c: int = await Ui.choose("Sei pronto?", ["Andiamo", "...Andiamo"], "Nico")
 	if c == 1:
