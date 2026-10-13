@@ -119,7 +119,13 @@
       "yes": [
         "Davvero? Io... non so cosa dire.",
         "Te li ridò appena posso. Te lo giuro."
-      ]
+      ],
+      "unlock": {
+        "flag": "marta_dinner",
+        "lines": [
+          "* (Marta ti ha invitato a cena: \"Il portone giallo, primo piano. Quando vuoi, c'è sempre un piatto di pasta.\")"
+        ]
+      }
     },
     "battle": {
       "hook": "Marta stringe una lettera in mano. Ha gli occhi lucidi.",
@@ -202,7 +208,15 @@
       {
         "room": "none"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "park",
+      "cell": [
+        17,
+        15
+      ],
+      "anim": "idle_down"
+    }
   },
   "sig_bruno": {
     "name": "Signor Bruno",
@@ -332,7 +346,10 @@
       {
         "room": "none"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "none"
+    }
   },
   "lea": {
     "name": "Lea",
@@ -505,7 +522,15 @@
         ],
         "anim": "read"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "park",
+      "cell": [
+        24,
+        12
+      ],
+      "anim": "read"
+    }
   },
   "ragazzo_sami": {
     "name": "Sami",
@@ -691,7 +716,15 @@
         ],
         "anim": "wander"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "street",
+      "cell": [
+        56,
+        16
+      ],
+      "anim": "wander"
+    }
   },
   "portiere_ivo": {
     "name": "Ivo",
@@ -791,6 +824,14 @@
         "count": 12,
         "time": 15,
         "color": "#d08a30"
+      },
+      "unlock": {
+        "flag": "shelter_key",
+        "lines": [
+          "Ivo: Aspetta, prima che te ne vai. Tieni questa chiave.",
+          "Ivo: È la cantina del palazzo blu, qui accanto. La sera ci troviamo lì sotto in tanti. Gente che non ce la fa più.",
+          "* (Hai ricevuto: la chiave del Rifugio. Il portone del palazzo blu ora si apre.)"
+        ]
       }
     },
     "battle": {
@@ -845,6 +886,14 @@
           "* Ivo accetta. Non sa che domani dovrà andarsene."
         ]
       }
+    },
+    "after_help": {
+      "room": "street",
+      "cell": [
+        2,
+        9
+      ],
+      "anim": "read"
     }
   },
   "dario": {
@@ -1007,7 +1056,10 @@
         ],
         "anim": "idle_down"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "none"
+    }
   },
   "giulia": {
     "name": "Giulia",
@@ -1162,7 +1214,10 @@
       {
         "room": "none"
       }
-    ]
+    ],
+    "after_help": {
+      "room": "none"
+    }
   },
   "tano": {
     "name": "Tano",
@@ -1229,7 +1284,16 @@
         "reward": 10,
         "hits": 4
       }
-    }
+    },
+    "after_help": {
+      "room": "park",
+      "cell": [
+        20,
+        9
+      ],
+      "anim": "idle_down"
+    },
+    "emote": "note"
   },
   "elsa": {
     "name": "Signora Elsa",
@@ -1298,6 +1362,9 @@
         "time": 14,
         "color": "#8a5a30"
       }
+    },
+    "after_help": {
+      "room": "none"
     }
   },
   "rocco": {
@@ -1323,10 +1390,10 @@
     ],
     "evening": [
       {
-        "room": "park",
+        "room": "shelter",
         "cell": [
           9,
-          12
+          7
         ],
         "anim": "idle_down"
       }
@@ -1364,6 +1431,9 @@
         ],
         "reward": 10
       }
+    },
+    "after_help": {
+      "room": "none"
     }
   }
 }

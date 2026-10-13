@@ -33,8 +33,8 @@ func build() -> void:
 	# Porte
 	add_spot(Vector2(1 * T + 56, (BASE + 1) * T - 2), func() -> void: Router.goto(Router.HOME, "street"))
 	add_spot(Vector2(42 * T + 104, (BASE + 1) * T - 2), func() -> void: Router.goto(Router.OFFICE, "street"))
-	examine(Vector2(9 * T + 48, (BASE + 1) * T - 2), ["* Il portone è chiuso. Sul citofono metà dei nomi sono stati cancellati con il pennarello."])
-	examine(Vector2(28 * T + 48, (BASE + 1) * T - 2), ["* \"Vendesi. Rivolgersi a CHEAP Immobiliare.\" Il cartello è più nuovo del palazzo."])
+	add_spot(Vector2(9 * T + 48, (BASE + 1) * T - 2), _blue_door)
+	add_spot(Vector2(28 * T + 48, (BASE + 1) * T - 2), _yellow_door)
 	examine(Vector2(16 * T + 48, (BASE + 1) * T - 2), ["* Un cortile pieno di spazzatura. Un gatto nero ti fissa come se sapesse qualcosa che tu non sai."])
 	examine(Vector2(35 * T + 48, (BASE + 1) * T - 2), ["* Il chiosco di Nico, a forma di tazza gigante.", "* Sul bancone c'è un cartello scritto a mano: \"Si accettano anche sorrisi\"."])
 	examine(Vector2(57 * T + 40, (BASE + 1) * T - 2), ["* Il cartellone dice: CHEAP - SORRIDI!", "* Qualcuno ha aggiunto sotto, a pennarello: \"...e paga\"."])
@@ -48,6 +48,7 @@ func build() -> void:
 	spawns["home"] = spawns["default"]
 	spawns["office"] = cell_feet(Vector2i(48, 9))
 	spawns["park"] = cell_feet(Vector2i(24, 2))
+	spawns["shelter"] = cell_feet(Vector2i(12, 8))
 
 
 func enter() -> void:
@@ -99,14 +100,14 @@ func _props() -> void:
 		add_prop("street/lamp.png", Vector2i(x, 15), 1, Vector2i(32, 64), [
 			"* Un lampione. Qualcuno ci ha attaccato un volantino: \"Cercasi gatto. Risponde al nome di Debito\".",
 		])
-	add_prop("street/bench_side.png", Vector2i(12, 10), 3, Vector2i(16, 48), [
+	add_side_bench(Vector2i(12, 10), [
 		"* La panchina del signor Bruno. Nessuno ci si siede, quando c'è lui: è una questione di rispetto.",
 	])
 	for c in [Vector2i(14, 10), Vector2i(15, 9), Vector2i(13, 8), Vector2i(36, 10), Vector2i(26, 16)]:
 		var pg := Pigeon.new()
 		pg.position = cell_feet(c) + Vector2(randf_range(-4, 4), 0)
 		world.add_child(pg)
-	add_prop("street/bench_side.png", Vector2i(34, 17), 3, Vector2i(16, 48))
+	add_side_bench(Vector2i(34, 17))
 	add_spot(cell_center(Vector2i(35, 16)), _rest)
 	add_prop("street/trash_pile_1.png", Vector2i(17, 10), 1, Vector2i(64, 32), [
 		"* Spazzatura che nessuno passa a ritirare. Il servizio è stato \"ottimizzato\" dalla CHEAP.",
@@ -174,6 +175,39 @@ func _art(path: String, pos: Vector2) -> void:
 	s.position = pos
 	s.z_index = 1
 	add_child(s)
+
+
+func _blue_door() -> void:
+	if GameState.flags.get("shelter_key", false):
+		Router.goto(Router.SHELTER, "street")
+		return
+	await Ui.say(["* Il portone è chiuso. Sul citofono metà dei nomi sono stati cancellati con il pennarello.",
+		"* Da sotto la porta della cantina filtra una luce. E si sente qualcuno ridere."])
+
+
+func _yellow_door() -> void:
+	if not GameState.flags.get("marta_dinner", false):
+		await Ui.say(["* \"Vendesi. Rivolgersi a CHEAP Immobiliare.\" Il cartello è più nuovo del palazzo.",
+			"* Al primo piano c'è una finestra con dei disegni di bambini attaccati al vetro."])
+		return
+	if GameState.flags.get("dinner_day", 0) == GameState.day:
+		await Ui.say(["* Hai già mangiato da Marta oggi. I bambini ti salutano dalla finestra."])
+		return
+	if GameState.is_robot("marta"):
+		await Ui.say(["* Suoni il campanello. Marta apre, sorride sempre allo stesso modo, e richiude.", "* Non ti ha riconosciuto."])
+		return
+	var c: int = await Ui.choose("Marta ti aveva invitato a cena. Sali? (1 ora)", ["Sali", "Un'altra volta"])
+	if c != 0:
+		return
+	GameState.flags["dinner_day"] = GameState.day
+	GameState.spend(60)
+	GameState.restore(GameState.MAX_ENERGY)
+	Sound.sfx("heal")
+	await Ui.say([
+		"* Marta ha cucinato pasta al pomodoro. I bambini ti chiedono se sei un supereroe.",
+		"* Dici di no. Ti credono poco.",
+		"* Energia al massimo. Per un'ora ti sei dimenticato del debito.",
+	])
 
 
 func _rest() -> void:

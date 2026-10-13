@@ -155,6 +155,23 @@ func _run() -> void:
 	await _idle()
 	_check("sig_bruno" in GameState.helped_ids, "aiutare il signor Bruno (minigioco) dovrebbe funzionare")
 	_check(GameState.money >= 10, "dopo il minigioco il signor Bruno dovrebbe darti 10 euro")
+	_check(GameState.npc_place("sig_bruno").get("room") == "none", "dopo l'aiuto il signor Bruno dovrebbe tornare a casa")
+
+	# Ivo: aiutarlo sblocca il Rifugio
+	GameState.minutes = GameState.DAY_START
+	plan = [[1, 0], [1, 1], [3, 0]]
+	_npc("portiere_ivo").call("interact")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.STREET)
+	await _idle()
+	_check(GameState.flags.get("shelter_key", false), "aiutare Ivo dovrebbe dare la chiave del Rifugio")
+	get_tree().current_scene.call("_blue_door")
+	await _wait_scene(Router.SHELTER)
+	await _idle()
+	get_tree().current_scene.call("_bread")
+	await _idle()
+	_check(GameState.items.count("Panino") >= 1, "al Rifugio dovrebbe esserci il pane")
+	await _go(Router.STREET, "shelter")
 	_check(GameState.minutes >= minutes_before + 120, "ascoltare e aiutare dovrebbe costare 2 ore")
 
 	# --- parco: persone nuove, aiuto diretto col minigioco, punto di salvataggio
@@ -201,6 +218,19 @@ func _run() -> void:
 	await _wait_scene(Router.OFFICE)
 	await _idle()
 	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno duro non è stato pagato")
+
+	# --- ascensore per l'ufficio del Capo (serve il grado di Supervisore)
+	GameState.rank = 2
+	office = await _go(Router.OFFICE, "street")
+	office.call("_ride_elevator")
+	await _wait_scene(Router.BOSS)
+	await _idle()
+	var ex_before := GameState.exploited
+	choose_queue = [0]
+	get_tree().current_scene.call("_talk")
+	await _idle()
+	_check(GameState.exploited == ex_before + 1, "l'incarico extra del Capo dovrebbe contare come promozione")
+	GameState.rank = 1
 
 	# --- ufficio: firma (lavoro facile) il giorno dopo
 	GameState.end_day(true)

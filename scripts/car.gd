@@ -12,6 +12,7 @@ var _honked := false
 
 
 func _ready() -> void:
+	add_to_group("car")
 	_sprite = Sprite2D.new()
 	_sprite.centered = false
 	add_child(_sprite)
@@ -37,6 +38,8 @@ func _process(delta: float) -> void:
 	if _wait > 0.0:
 		_wait -= delta
 		return
+	if _car_ahead():
+		return
 	if _blocked():
 		if not _honked:
 			_honked = true
@@ -56,3 +59,14 @@ func _blocked() -> bool:
 		return false
 	var d := p.global_position - global_position
 	return absf(d.y + 6) < 16 and d.x * direction > 0 and absf(d.x) < 56
+
+
+## Un'altra auto nella stessa corsia, troppo vicina davanti: si aspetta in coda.
+func _car_ahead() -> bool:
+	for other in get_tree().get_nodes_in_group("car"):
+		if other == self or not other.visible:
+			continue
+		var d: Vector2 = (other as Node2D).global_position - global_position
+		if absf(d.y) < 4 and d.x * direction > 0 and absf(d.x) < 74:
+			return true
+	return false

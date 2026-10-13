@@ -127,6 +127,22 @@ func _source(rel: String) -> int:
 	return sid
 
 
+## Rende solido un rettangolo preciso in pixel (per oggetti più piccoli di una casella).
+func block_px(r: Rect2) -> void:
+	var shape := RectangleShape2D.new()
+	shape.size = r.size
+	var col := CollisionShape2D.new()
+	col.shape = shape
+	col.position = r.get_center()
+	_solids.add_child(col)
+
+
+## Panchina laterale (16x48): solo la seduta blocca il passaggio.
+func add_side_bench(bottom: Vector2i, text: Array = []) -> void:
+	add_prop("street/bench_side.png", bottom, 0, Vector2i(16, 48), text)
+	block_px(Rect2(bottom.x * T + 3, (bottom.y - 2) * T + 22, 10, 24))
+
+
 ## Rende solide le celle del rettangolo.
 func block(r: Rect2i) -> void:
 	var shape := RectangleShape2D.new()

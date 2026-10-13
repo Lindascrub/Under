@@ -83,3 +83,19 @@ static func shadow() -> Texture2D:
 	var t := ImageTexture.create_from_image(img)
 	_textures["_shadow"] = t
 	return t
+
+
+## C'è qualcuno (persona, passante o giocatore) subito davanti a chi cammina?
+static func someone_ahead(walker: Node2D, direction: float, reach := 18.0) -> bool:
+	var tree := walker.get_tree()
+	var others: Array[Node] = []
+	others.append_array(tree.get_nodes_in_group("npc"))
+	others.append_array(tree.get_nodes_in_group("walker"))
+	others.append_array(tree.get_nodes_in_group("player"))
+	for o in others:
+		if o == walker:
+			continue
+		var d: Vector2 = (o as Node2D).global_position - walker.global_position
+		if absf(d.y) < 10 and d.x * direction > 0 and absf(d.x) < reach:
+			return true
+	return false

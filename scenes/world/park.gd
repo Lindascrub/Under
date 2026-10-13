@@ -53,7 +53,8 @@ func build() -> void:
 	for c in [Vector2i(6, 6), Vector2i(7, 6), Vector2i(22, 6), Vector2i(23, 6)]:
 		add_prop("park/sunflower.png", c, 1, Vector2i(16, 32), ["* Un girasole. Si gira sempre verso il sole, anche quando il sole non c'è."])
 	for c in [Vector2i(5, 11), Vector2i(23, 11), Vector2i(9, 15), Vector2i(19, 15)]:
-		add_prop("park/bench.png", c, 1, Vector2i(32, 16), ["* Una panchina. Qualcuno ci ha inciso: \"Qui ci siamo baciati, 2009\"."])
+		add_prop("park/bench.png", c, 0, Vector2i(32, 16), ["* Una panchina. Qualcuno ci ha inciso: \"Qui ci siamo baciati, 2009\"."])
+		block_px(Rect2(c.x * T + 1, c.y * T + 6, 30, 9))
 	for c in [Vector2i(10, 13), Vector2i(12, 15), Vector2i(20, 12)]:
 		var pg := Pigeon.new()
 		pg.position = cell_feet(c)

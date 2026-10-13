@@ -1,7 +1,7 @@
 extends Node2D
 ## Battaglia in stile Undertale. La configurazione arriva da GameState.battle:
 ##   kind "person": una persona ti travolge coi suoi problemi.
-##       SFRUTTA (guadagni, lei diventa un robot)  PARLA (fiducia)  OGGETTI  AIUTA (quando il nome è giallo)
+##       PROMUOVI (le "proponi un affare": guadagni, lei diventa un robot)  PARLA (fiducia)  OGGETTI  AIUTA (quando il nome è giallo)
 ##   kind "work":   un turno di lavoro duro.
 ##       LAVORA (avanzi)  PARLA  OGGETTI  MOLLA
 ##   kind "sign":   il lavoro facile. Tutti e quattro i pulsanti dicono FIRMA.
@@ -145,7 +145,7 @@ func _buttons() -> Array[String]:
 			return ["LAVORA", "PARLA", "OGGETTI", "MOLLA"]
 		"sign":
 			return ["FIRMA", "FIRMA", "FIRMA", "FIRMA"]
-	return ["SFRUTTA", "PARLA", "OGGETTI", "AIUTA"]
+	return ["PROMUOVI", "PARLA", "OGGETTI", "AIUTA"]
 
 
 func _ready_to_help() -> bool:

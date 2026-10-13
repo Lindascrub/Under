@@ -17,6 +17,9 @@ var _home := Vector2.ZERO
 var _wander_range := 32.0
 var _wander_dir := 1.0
 var _pause := 0.0
+var _emote: Sprite2D
+var _emote_t := 0.0
+var _greeted := false
 
 
 func _ready() -> void:
@@ -54,6 +57,16 @@ func _ready() -> void:
 	sprite.frame = randi() % 6
 	if GameState.is_robot(id):
 		sprite.speed_scale = 0.0
+	_emote = Sprite2D.new()
+	var at := AtlasTexture.new()
+	at.atlas = load("res://art/emotes.png") if ResourceLoader.exists("res://art/emotes.png") else Assets.tex("_emotes", Vector2i(44, 10))
+	at.region = Rect2(0, 0, 11, 10)
+	_emote.texture = at
+	_emote.position = Vector2(4, -42)
+	_emote.visible = false
+	_emote.z_index = 5
+	add_child(_emote)
+	_emote_t = randf_range(3.0, 10.0)
 
 
 func _anim_for(act: String) -> String:
@@ -62,13 +75,45 @@ func _anim_for(act: String) -> String:
 	return act
 
 
+## Nuvoletta sopra la testa: "..." , "!", una nota, un cuore. I robot non ne fanno mai.
+func emote(kind: String, time := 1.6) -> void:
+	if GameState.is_robot(id):
+		return
+	var idx := ["dots", "bang", "note", "heart"].find(kind)
+	(_emote.texture as AtlasTexture).region = Rect2(maxi(idx, 0) * 11, 0, 11, 10)
+	_emote.visible = true
+	await get_tree().create_timer(time).timeout
+	if is_instance_valid(_emote):
+		_emote.visible = false
+
+
+func _update_emote(delta: float) -> void:
+	if GameState.is_robot(id) or Ui.blocks_input():
+		return
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	if p and not _greeted and p.global_position.distance_to(global_position) < 36:
+		_greeted = true
+		emote("bang" if not GameState.flags.get("met_" + id, false) else ("heart" if id in GameState.helped_ids else "dots"), 1.2)
+		return
+	_emote_t -= delta
+	if _emote_t <= 0.0:
+		_emote_t = randf_range(6.0, 14.0)
+		emote(str(data.get("emote", "dots")))
+
+
 func _process(delta: float) -> void:
+	_update_emote(delta)
 	if activity != "wander" or Ui.blocks_input():
 		if activity == "wander" and sprite.animation.begins_with("walk"):
 			sprite.play("idle_" + sprite.animation.trim_prefix("walk_"))
 		return
 	if _pause > 0.0:
 		_pause -= delta
+		return
+	if Assets.someone_ahead(self, _wander_dir):
+		_wander_dir = -_wander_dir
+		_pause = randf_range(0.6, 1.4)
+		sprite.play("idle_down")
 		return
 	position.x += _wander_dir * WANDER_SPEED * delta
 	var anim := "walk_right" if _wander_dir > 0 else "walk_left"

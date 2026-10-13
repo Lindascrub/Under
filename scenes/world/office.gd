@@ -63,6 +63,7 @@ func build() -> void:
 			k += 1
 
 	add_spot(cell_center(Vector2i(9, 3)), _terminal)
+	_elevator(Vector2i(12, 1))
 	add_exit(Rect2i(9, 11, 2, 1), Router.STREET, "office")
 	spawn_people("office")
 
@@ -71,6 +72,8 @@ func build() -> void:
 	spawn_facing["default"] = "up"
 	spawn_facing["street"] = "up"
 	spawns["terminal"] = cell_feet(Vector2i(9, 4))
+	spawns["elevator"] = cell_feet(Vector2i(12, 4))
+	spawn_facing["elevator"] = "down"
 	spawn_facing["terminal"] = "up"
 
 
@@ -94,6 +97,8 @@ func _terminal() -> void:
 	var easy: Dictionary = job.get("easy", {})
 	var hard: Dictionary = job.get("hard", {})
 	var options := [
+
+
 		"%s  (+%s, 1 ora)" % [easy.get("title", "?"), GameState.euros(GameState.easy_pay())],
 		"%s  (8 ore, paga bassa)" % hard.get("title", "?"),
 		"Rifiuta di lavorare",
@@ -139,3 +144,32 @@ func _terminal() -> void:
 				"* Dall'ufficio del capo, qualcuno ti guarda male.",
 				"* Per la prima volta dopo tanto tempo, respiri. E hai tutta la giornata davanti.",
 			])
+
+
+## L'ascensore per l'ultimo piano: serve un badge da Supervisore (2 promozioni).
+func _elevator(top_left: Vector2i) -> void:
+	var frame := ColorRect.new()
+	frame.color = Color("4a4658")
+	frame.position = Vector2(top_left.x * T, top_left.y * T + 4)
+	frame.size = Vector2(2 * T, 2 * T - 4)
+	add_child(frame)
+	for i in 2:
+		var door := ColorRect.new()
+		door.color = Color("aeb4c4")
+		door.position = frame.position + Vector2(2 + i * 15, 3)
+		door.size = Vector2(13, frame.size.y - 3)
+		add_child(door)
+	var light := ColorRect.new()
+	light.color = Color("3ddc84") if GameState.rank >= 2 else Color("d0302f")
+	light.position = frame.position + Vector2(14, -3)
+	light.size = Vector2(4, 2)
+	add_child(light)
+	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
+
+
+func _ride_elevator() -> void:
+	if GameState.rank < 2:
+		await Ui.say(["* L'ascensore per l'ultimo piano. Accanto c'è un lettore di badge.",
+			"* Sul display: \"Accesso riservato. Dal grado di Supervisore in su.\""])
+		return
+	Router.goto(Router.BOSS, "elevator")

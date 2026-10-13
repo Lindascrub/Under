@@ -21,10 +21,12 @@ var speed := 26.0
 var _sprite: AnimatedSprite2D
 var _robot := false
 var _line := 0
+var _stuck := 0.0
 
 
 func _ready() -> void:
 	add_to_group("interactable")
+	add_to_group("walker")
 	var shadow := Sprite2D.new()
 	shadow.texture = Assets.shadow()
 	shadow.position = Vector2(0, -1)
@@ -72,6 +74,6 @@ func interact() -> void:
 	if p:
 		_sprite.play("idle_" + ("right" if p.global_position.x > global_position.x else "left"))
 	if _robot:
-		await Ui.say([GameState.robot_line(sheet)], "Passante")
+		await Ui.say([GameState.robot_line(sheet)], "Passante", sheet)
 	else:
-		await Ui.say([LINES[_line]], "Passante")
+		await Ui.say([LINES[_line]], "Passante", sheet)

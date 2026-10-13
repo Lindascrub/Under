@@ -26,6 +26,11 @@ var _choice_box: Panel
 var _choice_label: Label
 var _fade: ColorRect
 var _narr: Label
+var _portrait: TextureRect
+var _portrait_tex: AtlasTexture
+var _talk_t := 0.0
+## Ritratti extra per chi non è in npcs.json.
+const EXTRA_PORTRAITS := {"Dottor Prezzi": "char_18"}
 
 var _mode := ""
 var _label: Label
@@ -86,6 +91,14 @@ func _build() -> void:
 	_name = _make_label(13, COL_NAME)
 	_name.position = Vector2(14, 6)
 	_box.add_child(_name)
+	_portrait_tex = AtlasTexture.new()
+	_portrait = TextureRect.new()
+	_portrait.texture = _portrait_tex
+	_portrait.position = Vector2(12, 21)
+	_portrait.size = Vector2(48, 48)
+	_portrait.stretch_mode = TextureRect.STRETCH_SCALE
+	_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_box.add_child(_portrait)
 	_text = _make_label(16)
 	_text.position = Vector2(14, 24)
 	_text.size = Vector2(580, 62)
@@ -128,11 +141,32 @@ func _refresh_hud() -> void:
 
 # --- dialoghi ---------------------------------------------------------------
 
-func say(lines: Array, speaker: String = "") -> void:
+## Mostra il ritratto (testa ingrandita) di chi parla, come in Undertale.
+func _show_portrait(speaker: String, sheet: String) -> void:
+	if sheet == "" and speaker != "":
+		sheet = EXTRA_PORTRAITS.get(speaker, "")
+		if sheet == "":
+			for id: String in GameState.npc_ids():
+				var d := GameState.npc_data(id)
+				if str(d.get("name", "")) == speaker:
+					sheet = str(d.get("sheet", ""))
+					break
+	var has := sheet != ""
+	_portrait.visible = has
+	if has:
+		_portrait_tex.atlas = Assets.tex("characters/%s.png" % sheet, Vector2i(896, 656))
+		_portrait_tex.region = Rect2(18 * 16, 41, 16, 16)
+	_name.position.x = 70.0 if has else 14.0
+	_text.position.x = 70.0 if has else 14.0
+	_text.size.x = 524.0 if has else 580.0
+
+
+func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 	busy = true
 	_box.visible = true
 	_name.text = speaker
 	_name.visible = speaker != ""
+	_show_portrait(speaker, portrait)
 	_pitch = 1.0 if speaker == "" else 0.75 + float(absi(speaker.hash()) % 50) / 100.0
 	for line: Variant in lines:
 		await _type(_text, GameState.fmt(str(line)))
@@ -145,6 +179,7 @@ func choose(prompt: String, options: Array, speaker: String = "") -> int:
 	_box.visible = true
 	_name.text = speaker
 	_name.visible = speaker != ""
+	_show_portrait(speaker, "")
 	_text.text = GameState.fmt(prompt)
 	_text.visible_characters = -1
 	_options = options
@@ -219,6 +254,10 @@ func _process(delta: float) -> void:
 		return
 	_typed += delta * TYPE_SPEED
 	_label.visible_characters = int(_typed)
+	if _portrait.visible and _label == _text:
+		_talk_t += delta
+		# "bocca" che si muove: alterna due fotogrammi mentre il testo scorre
+		_portrait_tex.region.position.x = (18 + (int(_talk_t * 8.0) % 2) * 2) * 16
 	if int(_typed) - _last_blip >= 2:
 		_last_blip = int(_typed)
 		var ch := _label.text.substr(clampi(_last_blip - 1, 0, _label.text.length() - 1), 1)
@@ -227,6 +266,7 @@ func _process(delta: float) -> void:
 	if int(_typed) >= _label.get_total_character_count():
 		_label.visible_characters = -1
 		_typing = false
+		_portrait_tex.region.position.x = 18 * 16
 
 
 func _input(event: InputEvent) -> void:

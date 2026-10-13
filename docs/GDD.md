@@ -32,7 +32,13 @@ A mezzanotte crolli dal sonno e ti risvegli a casa, dove paghi (o no) la rata. L
 - **Casa**: letto (rata e salvataggio), computer della banca.
 - **Strada**: auto che passano (si fermano se sei in mezzo), passanti, piccioni che volano via, il chiosco di Nico, la torre della CHEAP.
 - **Parco** (in cima alla via laterale): Tano il musicista, la signora Elsa dei gatti, Rocco (ex dipendente CHEAP sostituito da un robot). Di sera, se hai già rifiutato il lavoro, c'è il mercato del baratto.
-- **Ufficio**: il terminale degli incarichi.
+- **Ufficio**: il terminale degli incarichi. L'ascensore porta all'**ufficio del Capo** (Dottor Prezzi) dal grado di Supervisore: ogni giorno offre un "incarico extra" che promuove qualcuno al posto tuo.
+- **Il Rifugio** (cantina del palazzo blu): si sblocca aiutando Ivo. Letto per riposare, pane gratis una volta al giorno, una bacheca con i messaggi del quartiere.
+- **Casa di Marta** (portone giallo): dopo averla aiutata ti invita a cena (energia al massimo).
+
+Dopo che le hai aiutate, le persone fanno altro per il resto della giornata (campo `after_help` in `data/npcs.json`): il signor Bruno torna a casa con la spesa, Dario va alla recita, Sami riparte a consegnare.
+
+I personaggi hanno un ritratto nei dialoghi e mostrano nuvolette sopra la testa ("…", "!", una nota, un cuore). I robot no.
 
 Di sera (dalle 18) molte persone cambiano posto: alcune vanno al parco, altre tornano a casa.
 
@@ -54,7 +60,7 @@ Quando aiuti qualcuno col tuo tempo parte un minigioco a sorpresa; se ci riesci 
 
 Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende quando vieni colpito; a zero crolli dallo stress e perdi tre ore.
 
-- **Persone** (strada e ufficio): SFRUTTA (soldi subito, la persona diventa un robot), PARLA (aumenta la fiducia), OGGETTI, AIUTA (diventa giallo quando la fiducia è piena). Ogni persona attacca coi suoi problemi: bollette e giocattoli (Marta), briciole e piccioni (Bruno), libri e notifiche (Lea), auto e pioggia (Sami), chiavi (Ivo), pratiche ed email (Dario), post-it (Giulia).
+- **Persone** (strada e ufficio): PROMUOVI (il nome aziendale per sfruttare: soldi subito, la persona diventa un robot), PARLA (aumenta la fiducia), OGGETTI, AIUTA (diventa giallo quando la fiducia è piena). Ogni persona attacca coi suoi problemi: bollette e giocattoli (Marta), briciole e piccioni (Bruno), libri e notifiche (Lea), auto e pioggia (Sami), chiavi (Ivo), pratiche ed email (Dario), post-it (Giulia).
 - **Lavoro duro:** LAVORA (avanzi di un quarto di turno), PARLA, OGGETTI, MOLLA. Il caporeparto usa anche la telecamera blu: se ti muovi mentre la luce blu ti passa sopra, ti colpisce.
 - **Lavoro facile:** tutti e quattro i pulsanti dicono FIRMA.
 
@@ -70,7 +76,7 @@ Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende q
 
 ## La meccanica dei robot
 
-Ogni incarico facile ha una **vittima**, e anche scegliere SFRUTTA in una battaglia con una persona la trasforma (in `data/jobs.json`). Appena firmi, quella persona viene sostituita da un robot:
+Ogni incarico facile ha una **vittima**, e anche scegliere PROMUOVI in una battaglia con una persona la trasforma (in `data/jobs.json`). Appena firmi, quella persona viene sostituita da un robot:
 
 - stessa faccia e stesso posto;
 - frasi aziendali vuote che ti chiamano per titolo ("Buongiorno, Supervisore.");

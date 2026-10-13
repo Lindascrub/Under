@@ -60,6 +60,8 @@ var items: Array[String] = []
 var robots: Array[String] = []
 var helped_ids: Array[String] = []
 var met_today: Array[String] = []
+## Chi hai aiutato oggi: per il resto della giornata fa altro (campo "after_help").
+var helped_today: Array[String] = []
 var flags: Dictionary = {}
 var worked_today := false
 ## Righe da mostrare appena il giocatore entra nella prossima stanza.
@@ -104,6 +106,7 @@ func new_game() -> void:
 	robots.clear()
 	helped_ids.clear()
 	met_today.clear()
+	helped_today.clear()
 	flags.clear()
 	worked_today = false
 	pending_lines.clear()
@@ -124,6 +127,8 @@ func npc_ids() -> Array:
 ## Dove si trova una persona adesso: {"room", "cell", "anim"}. Di sera può cambiare posto.
 func npc_place(id: String) -> Dictionary:
 	var data := npc_data(id)
+	if id in helped_today and data.has("after_help"):
+		return data["after_help"]
 	var schedule: Array = data.get("schedule", [])
 	if minutes >= EVENING and data.has("evening"):
 		schedule = data["evening"]
@@ -276,6 +281,12 @@ func help(id: String, kind: String, cost: int) -> bool:
 			return false
 		spend(COST_HELP_TIME)
 	helped += 1
+	var unlock: Dictionary = npc_data(id).get("help", {}).get("unlock", {})
+	if not unlock.is_empty() and not flags.get(unlock.get("flag", ""), false):
+		flags[unlock["flag"]] = true
+		pending_lines.append_array(unlock.get("lines", []))
+	if id not in helped_today:
+		helped_today.append(id)
 	if id not in helped_ids:
 		helped_ids.append(id)
 	changed.emit()
@@ -301,6 +312,7 @@ func end_day(paid_minimum: bool) -> void:
 	energy = MAX_ENERGY
 	worked_today = false
 	met_today.clear()
+	helped_today.clear()
 	changed.emit()
 
 
@@ -386,7 +398,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 	var data := {
 		"day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
-		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today,
+		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
 		"worked_today": worked_today, "flags": flags, "room": room,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
@@ -417,6 +429,7 @@ func load_game() -> Dictionary:
 	robots.assign(d.get("robots", []))
 	helped_ids.assign(d.get("helped_ids", []))
 	met_today.assign(d.get("met_today", []))
+	helped_today.assign(d.get("helped_today", []))
 	worked_today = bool(d.get("worked_today", false))
 	flags = d.get("flags", {})
 	changed.emit()
