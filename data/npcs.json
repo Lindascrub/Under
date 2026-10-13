@@ -1068,10 +1068,10 @@
       {
         "room": "office",
         "cell": [
-          11,
+          7,
           4
         ],
-        "anim": "idle_left"
+        "anim": "idle_right"
       },
       {
         "room": "office",
@@ -1084,7 +1084,7 @@
       {
         "room": "office",
         "cell": [
-          11,
+          7,
           4
         ],
         "anim": "read"
@@ -1100,7 +1100,7 @@
       {
         "room": "office",
         "cell": [
-          11,
+          7,
           4
         ],
         "anim": "phone"
@@ -1108,7 +1108,7 @@
       {
         "room": "office",
         "cell": [
-          11,
+          7,
           4
         ],
         "anim": "read"

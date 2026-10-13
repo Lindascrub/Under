@@ -152,18 +152,18 @@ func _elevator(top_left: Vector2i) -> void:
 	frame.color = Color("4a4658")
 	frame.position = Vector2(top_left.x * T, top_left.y * T + 4)
 	frame.size = Vector2(2 * T, 2 * T - 4)
-	add_child(frame)
+	world.add_child(frame)
 	for i in 2:
 		var door := ColorRect.new()
 		door.color = Color("aeb4c4")
 		door.position = frame.position + Vector2(2 + i * 15, 3)
 		door.size = Vector2(13, frame.size.y - 3)
-		add_child(door)
+		world.add_child(door)
 	var light := ColorRect.new()
 	light.color = Color("3ddc84") if GameState.rank >= 2 else Color("d0302f")
 	light.position = frame.position + Vector2(14, -3)
 	light.size = Vector2(4, 2)
-	add_child(light)
+	world.add_child(light)
 	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
 
 

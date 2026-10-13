@@ -110,7 +110,7 @@ func _process(delta: float) -> void:
 	if _pause > 0.0:
 		_pause -= delta
 		return
-	if Assets.someone_ahead(self, _wander_dir):
+	if test_move(global_transform, Vector2(_wander_dir * 3.0, 0)):
 		_wander_dir = -_wander_dir
 		_pause = randf_range(0.6, 1.4)
 		sprite.play("idle_down")

@@ -67,6 +67,7 @@ func build() -> void:
 	lift.color = Color("aeb4c4")
 	lift.position = Vector2(2 * T, 8 * T + 4)
 	lift.size = Vector2(2 * T, T - 4)
+	lift.z_index = -1
 	add_child(lift)
 	add_exit(Rect2i(2, 9, 2, 1), Router.OFFICE, "elevator")
 	block(Rect2i(0, 9, 2, 1))

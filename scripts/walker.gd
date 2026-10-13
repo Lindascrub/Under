@@ -43,6 +43,7 @@ func _ready() -> void:
 	col.position = Vector2(0, -3)
 	add_child(col)
 	_robot = randf() < GameState.exploited * 0.25
+	_unstick.call_deferred()
 	_line = randi() % LINES.size()
 	speed = randf_range(22.0, 32.0)
 
@@ -52,11 +53,17 @@ func _process(delta: float) -> void:
 		if _sprite.animation.begins_with("walk"):
 			_sprite.play("idle_" + ("right" if direction > 0 else "left"))
 		return
-	var p := get_tree().get_first_node_in_group("player") as Node2D
-	if p and absf(p.global_position.y - global_position.y) < 10 and (p.global_position.x - global_position.x) * direction > 0 \
-			and absf(p.global_position.x - global_position.x) < 18:
+	# Se è finito sopra qualcuno, continua a camminare finché non si separano.
+	var inside := test_move(global_transform, Vector2(0.5, 0)) and test_move(global_transform, Vector2(-0.5, 0))
+	# Altrimenti, prima di fare un passo controlla se c'è qualcuno (o qualcosa) davanti.
+	if not inside and test_move(global_transform, Vector2(direction * 3.0, 0)):
 		_sprite.play("idle_" + ("right" if direction > 0 else "left"))
+		_stuck += delta
+		if _stuck > 1.2:
+			_stuck = 0.0
+			direction = -direction
 		return
+	_stuck = 0.0
 	position.x += direction * speed * delta
 	var anim := "walk_right" if direction > 0 else "walk_left"
 	if _sprite.animation != anim:
@@ -77,3 +84,12 @@ func interact() -> void:
 		await Ui.say([GameState.robot_line(sheet)], "Passante", sheet)
 	else:
 		await Ui.say([LINES[_line]], "Passante", sheet)
+
+
+## Se compare sopra qualcuno (o dentro un oggetto), si sposta finché non è libero.
+func _unstick() -> void:
+	await get_tree().physics_frame
+	for i in 40:
+		if not test_move(global_transform, Vector2(0.5, 0)) and not test_move(global_transform, Vector2(-0.5, 0)):
+			return
+		position.x = wrapf(position.x + 16.0 * randi_range(1, 4), min_x, max_x)
