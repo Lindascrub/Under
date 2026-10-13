@@ -210,6 +210,7 @@ func _run() -> void:
 
 	# --- parco: persone nuove, aiuto diretto col minigioco, punto di salvataggio
 	var park := await _go(Router.PARK, "street")
+	GameState.quests["gatto_elsa"] = "declined"
 	var money_before := GameState.money
 	choose_index = 0
 	_npc("elsa").call("interact")
@@ -313,6 +314,43 @@ func _run() -> void:
 	await _idle()
 	_check(GameState.day == day_before + 1, "a mezzanotte dovrebbe finire la giornata")
 	_check(GameState.minutes == GameState.DAY_START, "il nuovo giorno dovrebbe iniziare alle 7:00")
+
+	# --- missioni: trovare il gatto di Elsa e portare il pacco di Sami
+	GameState.quests.clear()
+	GameState.minutes = GameState.DAY_START
+	GameState.robots.clear()
+	GameState.helped_today.clear()
+	GameState.met_today.clear()
+	choose_queue = [0]
+	var p2 := await _go(Router.PARK, "street")
+	_npc("elsa").call("interact")
+	await _idle()
+	_check(Quests.state("gatto_elsa") == "active", "accettare la missione del gatto dovrebbe attivarla")
+	var spot := Quests.find_spot(Quests.get_quest("gatto_elsa"))
+	var room_path := "res://scenes/world/%s.tscn" % spot["room"]
+	var rm: Node = await _go(room_path, "street")
+	var picked := false
+	for it in get_tree().get_nodes_in_group("interactable"):
+		if it is Interactable and it.position.distance_to((rm as Room).cell_feet(Vector2i(int(spot["cell"][0]), int(spot["cell"][1]))) + Vector2(0, -6)) < 2:
+			it.call("interact")
+			picked = true
+			break
+	await _idle()
+	_check(picked and Quests.state("gatto_elsa") == "found", "il gatto dovrebbe essere nascosto dove dice la missione")
+	var money_q := GameState.money
+	p2 = await _go(Router.PARK, "street")
+	_npc("elsa").call("interact")
+	await _idle()
+	_check(Quests.state("gatto_elsa") == "done" and GameState.money == money_q + 15, "riportare il gatto dovrebbe chiudere la missione con 15 euro")
+	_check("Economia è scappato" not in Quests.active_titles(), "la missione finita non dovrebbe restare nel menu")
+	GameState.quests["pacco_sami"] = "active"
+	_npc("rocco").call("interact")
+	await _idle()
+	_check(Quests.state("pacco_sami") == "found", "consegnare il pacco a Rocco dovrebbe funzionare")
+	GameState.quests["esame_luca"] = "active"
+	Quests.end_day()
+	_check(Quests.state("esame_luca") == "failed" and GameState.flags.has("quest_news_esame_luca"), "una missione non finita dovrebbe fallire a fine giornata")
+	await _go(Router.STREET, "park")
 
 	# --- salvataggio
 	GameState.save_game()

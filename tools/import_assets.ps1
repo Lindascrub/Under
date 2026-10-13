@@ -36,6 +36,7 @@ $interiors = [ordered]@{
     ($conference -f 41)  = "props/terminal.png"
     ($conference -f 45)  = "props/trash.png"
     ($conference -f 54)  = "props/portrait.png"
+    "3_Animated_objects/16x16/spritesheets/animated_cat.png" = "props/cat.png"
 }
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i

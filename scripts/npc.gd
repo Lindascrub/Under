@@ -153,6 +153,8 @@ func interact() -> void:
 	if GameState.is_robot(id):
 		await Ui.say([GameState.robot_line(id)], who)
 		return
+	if await Quests.handle_npc(self):
+		return
 	await Ui.say(_lines(), who)
 	if id == "nico" and GameState.flags.get("coffee_day", 0) != GameState.day:
 		GameState.flags["coffee_day"] = GameState.day

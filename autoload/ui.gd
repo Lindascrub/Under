@@ -214,6 +214,10 @@ func show_status() -> void:
 	options.append("Chiudi")
 	var prompt := "{rank}. {day_name} {clock}: mancano %d ore a mezzanotte. Energia %d/%d." % [
 		int(hours), GameState.energy, GameState.MAX_ENERGY]
+	var missions := Quests.active_titles()
+	if not missions.is_empty():
+		prompt += "
+Missioni: " + ", ".join(missions) + "."
 	if GameState.items.is_empty():
 		prompt += "
 Non hai oggetti."

@@ -42,6 +42,19 @@ I personaggi hanno un ritratto nei dialoghi e mostrano nuvolette sopra la testa 
 
 Di sera (dalle 18) molte persone cambiano posto: alcune vanno al parco, altre tornano a casa.
 
+## Missioni
+
+Piccoli favori facoltativi che rubano tempo (`data/quests.json`). Se non li finisci entro sera falliscono, e il giorno dopo chi te li ha chiesti te lo dice.
+
+| Missione | Chi | Cosa fare |
+|---|---|---|
+| Economia è scappato | Signora Elsa | Trovare il gatto (ogni giorno in un posto diverso) e riportarglielo |
+| L'esame di Luca | Marta | Dare ripetizioni a suo figlio (minigioco, 2 ore); se non lo fai, il giorno dopo è bocciato |
+| Il pacco di Sami | Sami | Portare un pacco a Rocco, al parco |
+| Gli occhiali di Ivo | Ivo | Trovare i suoi occhiali persi |
+
+Le missioni in corso si vedono nel menu C.
+
 ## Salvataggi
 
 Le stelline gialle (strada e parco) salvano stanza, posizione e ora, e ridanno tutta l'energia. Anche dormire salva. "Continua" riporta esattamente lì.

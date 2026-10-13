@@ -223,6 +223,42 @@ func spawn_people(room_key: String) -> void:
 			continue
 		var cell: Array = place.get("cell", [1, 1])
 		add_npc(id, Vector2i(int(cell[0]), int(cell[1])), str(place.get("anim", "idle_down")))
+	for it: Dictionary in Quests.items_in(room_key):
+		_add_quest_item(it["quest"], it["cell"])
+
+
+## L'oggetto nascosto di una missione: un gatto che dorme o un paio di occhiali per terra.
+func _add_quest_item(q: Dictionary, cell: Vector2i) -> void:
+	var node: Node2D
+	if q.get("item") == "cat":
+		var cat := AnimatedSprite2D.new()
+		var frames := SpriteFrames.new()
+		var tex := Assets.tex("props/cat.png", Vector2i(576, 16))
+		for i in 12:
+			var at := AtlasTexture.new()
+			at.atlas = tex
+			at.region = Rect2(i * 48, 0, 48, 16)
+			frames.add_frame("default", at)
+		frames.set_animation_speed("default", 6.0)
+		cat.sprite_frames = frames
+		cat.centered = false
+		cat.offset = Vector2(-24, -15)
+		cat.play()
+		node = cat
+	else:
+		var s := Sprite2D.new()
+		s.texture = load("res://art/glasses.png") if ResourceLoader.exists("res://art/glasses.png") else Assets.tex("_glasses", Vector2i(10, 6))
+		s.offset = Vector2(0, -4)
+		node = s
+	node.position = cell_feet(cell)
+	world.add_child(node)
+	var holder: Array = []
+	holder.append(add_spot(cell_feet(cell) + Vector2(0, -6), func() -> void:
+		node.queue_free()
+		for h: Node in holder:
+			h.queue_free()
+		await Quests.pick_up(q)
+	))
 
 
 ## Ritaglia un pezzo da un foglio grande (per esempio un edificio intero).

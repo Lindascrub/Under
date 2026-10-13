@@ -63,6 +63,8 @@ var met_today: Array[String] = []
 ## Chi hai aiutato oggi: per il resto della giornata fa altro (campo "after_help").
 var helped_today: Array[String] = []
 var flags: Dictionary = {}
+## Stato delle missioni (vedi scripts/quests.gd): id -> "active" | "found" | "done" | "failed".
+var quests: Dictionary = {}
 var worked_today := false
 ## Righe da mostrare appena il giocatore entra nella prossima stanza.
 var pending_lines: Array = []
@@ -108,6 +110,7 @@ func new_game() -> void:
 	met_today.clear()
 	helped_today.clear()
 	flags.clear()
+	quests.clear()
 	worked_today = false
 	pending_lines.clear()
 	battle.clear()
@@ -304,6 +307,7 @@ func pay_debt(amount: int) -> int:
 
 
 func end_day(paid_minimum: bool) -> void:
+	Quests.end_day()
 	if not paid_minimum and debt > 0:
 		debt += LATE_FEE
 	debt += int(round(debt * DAILY_INTEREST))
@@ -399,7 +403,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
-		"worked_today": worked_today, "flags": flags, "room": room,
+		"worked_today": worked_today, "flags": flags, "quests": quests, "room": room,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -432,6 +436,7 @@ func load_game() -> Dictionary:
 	helped_today.assign(d.get("helped_today", []))
 	worked_today = bool(d.get("worked_today", false))
 	flags = d.get("flags", {})
+	quests = d.get("quests", {})
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {

@@ -184,6 +184,9 @@ func _finish(success: bool) -> void:
 	var who := str(cfg.get("name", ""))
 	var id := str(cfg.get("id", ""))
 	GameState.help(id, "time", GameState.COST_HELP_TIME)
+	if cfg.has("quest"):
+		# Il giorno dopo chi te l'ha chiesto ti dirà com'è andata.
+		GameState.flags["quest_news_" + str(cfg["quest"])] = "done" if success else "fail"
 	var lines: Array = []
 	if success:
 		Sound.sfx("spare")
@@ -191,8 +194,9 @@ func _finish(success: bool) -> void:
 		GameState.money += reward
 		GameState.changed.emit()
 		lines.append_array(cfg.get("win", ["Grazie!"]))
-		lines.append("Tieni, non è molto, ma te li sei guadagnati.")
-		lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
+		if reward > 0:
+			lines.append("Tieni, non è molto, ma te li sei guadagnati.")
+			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
 	else:
 		lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
 		lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)

@@ -1,0 +1,214 @@
+[
+  {
+    "id": "gatto_elsa",
+    "giver": "elsa",
+    "days": [
+      1,
+      2,
+      3
+    ],
+    "title": "Economia è scappato",
+    "type": "find",
+    "item": "cat",
+    "offer": [
+      "Oh, caro, menomale che sei qui! Economia è scappato!",
+      "Il mio gatto più grasso. Ogni giorno si nasconde in un posto diverso, quel birbante."
+    ],
+    "ask": "Mi aiuti a cercarlo?",
+    "accepted": [
+      "Grazie, caro! Prova a guardare in giro per il quartiere. Gli piacciono i posti dove c'è da mangiare."
+    ],
+    "spots": [
+      {
+        "room": "street",
+        "cell": [
+          21,
+          8
+        ]
+      },
+      {
+        "room": "park",
+        "cell": [
+          26,
+          13
+        ]
+      },
+      {
+        "room": "street",
+        "cell": [
+          60,
+          16
+        ]
+      },
+      {
+        "room": "shelter",
+        "cell": [
+          12,
+          7
+        ]
+      }
+    ],
+    "found": [
+      "* Eccolo! Un gattone grigio sta dormendo come se il mondo fosse suo.",
+      "* Lo prendi in braccio. Fa le fusa. Pesa come un sacco di patate."
+    ],
+    "reminder": [
+      "Hai trovato Economia? Guarda bene, si nasconde dove c'è da mangiare."
+    ],
+    "thanks": [
+      "Economia! Tesoro mio! Dov'eri finito?",
+      "Grazie, caro. Tieni, non è molto, ma i gatti ti ringraziano."
+    ],
+    "reward": 15,
+    "fail": [
+      "Economia è tornato da solo stamattina. Affamato e offeso.",
+      "Non importa, caro. Lo so che hai tanto da fare."
+    ]
+  },
+  {
+    "id": "esame_luca",
+    "giver": "marta",
+    "days": [
+      1,
+      2
+    ],
+    "title": "L'esame di Luca",
+    "type": "minigame",
+    "offer": [
+      "Domani mio figlio Luca ha l'esame di matematica.",
+      "Non lo passerà mai. Io non so spiegargliela, e le ripetizioni costano quanto la spesa di una settimana."
+    ],
+    "ask": "Potresti dargli ripetizioni tu? Ci vogliono un paio d'ore.",
+    "accepted": [
+      "Davvero? Grazie! Luca, vieni qui! C'è qualcuno che ti aiuta!"
+    ],
+    "cost": 120,
+    "minigame": {
+      "type": "sequence",
+      "title": "Ripetizioni a Luca",
+      "intro": [
+        "* Luca ti guarda con la faccia di chi odia le frazioni.",
+        "* Le formule vanno ricordate nell'ordine giusto. Guarda la sequenza e ripetila."
+      ]
+    },
+    "thanks": [
+      "Luca dice che ora le frazioni gli sembrano meno cattive.",
+      "Grazie. Davvero. Non so come ripagarti."
+    ],
+    "reward": 0,
+    "done_next_day": [
+      "Luca ha passato l'esame! Ha preso sette! Sette!",
+      "Ha detto che da grande vuole fare il professore. O il supereroe. Non ha ancora deciso."
+    ],
+    "fail": [
+      "Luca è stato bocciato.",
+      "Non è colpa tua. È che... io non c'ero, perché lavoravo. E tu avevi da fare. Lo so."
+    ],
+    "fail_now": [
+      "Luca non ha capito molto, ma ti ha fatto un disegno per ringraziarti.",
+      "Speriamo bene, per domani."
+    ]
+  },
+  {
+    "id": "pacco_sami",
+    "giver": "ragazzo_sami",
+    "days": [
+      1,
+      2,
+      3
+    ],
+    "title": "Il pacco di Sami",
+    "type": "deliver",
+    "to": "rocco",
+    "offer": [
+      "Sono rovinato! Devo consegnare questo pacco a Rocco, al parco, ma la catena si è rotta di nuovo.",
+      "Se arrivo in ritardo, l'app mi toglie la consegna e pure la giornata."
+    ],
+    "ask": "Lo porti tu a Rocco, al parco?",
+    "accepted": [
+      "Sei un mito! Rocco è quello che legge sempre gli annunci di lavoro."
+    ],
+    "reminder": [
+      "Il pacco va a Rocco, al parco! Ti prego, prima che l'app se ne accorga!"
+    ],
+    "delivered": [
+      "Un pacco per me? Da Sami?",
+      "Oh! È il mio vecchio libro di cucina. L'avevo prestato a sua madre anni fa. Che bravo ragazzo."
+    ],
+    "thanks": [
+      "Rocco ha il suo pacco? Mi hai salvato la giornata!",
+      "Tieni, dividiamo la consegna. È giusto così."
+    ],
+    "reward": 10,
+    "fail": [
+      "Il pacco è arrivato tardi. L'app mi ha tolto tre stelle e la paga della giornata.",
+      "Fa niente. Sono abituato."
+    ]
+  },
+  {
+    "id": "occhiali_ivo",
+    "giver": "portiere_ivo",
+    "days": [
+      2,
+      3,
+      4
+    ],
+    "title": "Gli occhiali di Ivo",
+    "type": "find",
+    "item": "glasses",
+    "offer": [
+      "Ragazzo, ho perso gli occhiali. Di nuovo.",
+      "Quelli rotti, sì. Ma sono gli unici che ho. Senza non distinguo le chiavi della cantina da quelle del tetto."
+    ],
+    "ask": "Me li cerchi? Ieri sono passato dal parco e dal chiosco di Nico.",
+    "accepted": [
+      "Grazie, ragazzo. Guarda per terra: io guardo sempre per terra, quando cammino."
+    ],
+    "spots": [
+      {
+        "room": "park",
+        "cell": [
+          4,
+          9
+        ]
+      },
+      {
+        "room": "street",
+        "cell": [
+          41,
+          9
+        ]
+      },
+      {
+        "room": "park",
+        "cell": [
+          25,
+          17
+        ]
+      },
+      {
+        "room": "street",
+        "cell": [
+          29,
+          16
+        ]
+      }
+    ],
+    "found": [
+      "* Per terra c'è un paio di occhiali con una lente incrinata e una zampetta tenuta insieme con lo scotch.",
+      "* Sono di Ivo, non ci sono dubbi."
+    ],
+    "reminder": [
+      "Li hai trovati? Ieri sono passato dal parco e dal chiosco di Nico."
+    ],
+    "thanks": [
+      "I miei occhiali! Ora ti vedo! Sei più giovane di quanto pensassi.",
+      "Tieni qualcosa per il disturbo. E non dirlo all'amministratore."
+    ],
+    "reward": 10,
+    "fail": [
+      "Gli occhiali li ho ritrovati da solo. Ci sono passato sopra con la scopa.",
+      "Ora sono rotti in due posti invece che in uno. Pazienza."
+    ]
+  }
+]
