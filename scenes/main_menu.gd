@@ -74,6 +74,14 @@ func _render() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _locked or Ui.blocks_input():
 		return
+	if event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+		var y := (event as InputEventScreenTouch).position.y - _list.position.y
+		var i := int(y / (_list.get_line_height() + 1))
+		if y >= 0 and i < _options.size():
+			_sel = i
+			_render()
+			_choose(_options[_sel])
+		return
 	if event.is_action_pressed("move_up"):
 		_sel = posmod(_sel - 1, _options.size())
 		_render()

@@ -1,6 +1,6 @@
 # CHEAP
 
-Un piccolo RPG narrativo in stile Undertale, fatto con Godot 4.
+Un piccolo RPG narrativo in stile Undertale per Android (telefono in orizzontale), fatto con Godot 4.
 
 Inizi con un debito di 6.000 € e hai 4 giorni (se lo paghi prima, il finale arriva appena vai a dormire). Ogni giornata ha un orologio di 24 ore: ogni azione consuma tempo, e a mezzanotte crolli dal sonno. Al lavoro scegli se firmare qualcosa che rovina una persona (un'ora, pagato tantissimo) o fare un turno duro di 8 ore (una battaglia alla Undertale, pagata pochissimo). Per strada e al parco le persone ti "attaccano" coi loro problemi: puoi PROMUOVERLE (cioè sfruttarle, ma con un nome più elegante), PARLARE con loro o AIUTARLE. Aiutando le persone si sbloccano posti nuovi, come il Rifugio. Aiutare qualcuno fa partire un piccolo minigioco a sorpresa. Si salva toccando le stelline. Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
 
@@ -30,6 +30,22 @@ Tre finali: **ricco**, **onesto**, **ribelle**. Design completo in [docs/GDD.md]
 | Z / Invio / Spazio | Parlare, interagire, confermare |
 | X / Shift | Correre, saltare il testo |
 | C | Stato e oggetti (ore rimaste, energia, caffè di Nico) |
+
+## Comandi touch (telefono)
+
+Joystick a sinistra per muoversi; a destra **OK** (parlare, confermare), **X** (correre, saltare il testo) e **C** (stato e oggetti). Nei dialoghi basta toccare lo schermo; nelle battaglie si toccano direttamente i pulsanti e le voci dei menu. I comandi compaiono solo quando servono.
+
+Per provarli sul PC: avvia il gioco con l'argomento `-- --touch`.
+
+## Esportare per Android
+
+1. In Godot: **Editor → Gestisci modelli di esportazione → Scarica e installa** (versione 4.6.3).
+2. Installa [Android Studio](https://developer.android.com/studio) (serve per l'Android SDK) e un JDK 17.
+3. In **Editor → Impostazioni dell'editor → Esporta → Android** indica la cartella dell'Android SDK e quella del JDK.
+4. **Progetto → Esporta… → Android → Esporta progetto**: il file viene creato in `build/Cheap.apk`.
+5. Per provare subito sul telefono: attiva il *debug USB* sul telefono, collegalo al PC e premi l'icona Android in alto a destra nell'editor.
+
+Il profilo di esportazione è già pronto in `export_presets.cfg` (nome pacchetto `com.lindascrub.cheap`).
 
 ## Test automatico
 

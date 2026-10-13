@@ -71,6 +71,21 @@ func _tap(action: String) -> void:
 	Input.parse_input_event(up)
 
 
+func _touch(pos: Vector2, pressed: bool, index: int) -> void:
+	var t := InputEventScreenTouch.new()
+	t.position = pos
+	t.pressed = pressed
+	t.index = index
+	Input.parse_input_event(t)
+
+
+func _drag(pos: Vector2, index: int) -> void:
+	var d := InputEventScreenDrag.new()
+	d.position = pos
+	d.index = index
+	Input.parse_input_event(d)
+
+
 func _scene_path() -> String:
 	var scene := get_tree().current_scene
 	return scene.scene_file_path if scene else ""
@@ -130,6 +145,25 @@ func _run() -> void:
 	var home := await _go(Router.HOME, "bed")
 	home.call("_computer")
 	await _idle()
+
+	# --- comandi touch: il joystick muove il personaggio, un tocco fa avanzare il dialogo
+	TouchControls.enabled = true
+	var start_x: float = (home as Room).player.position.x
+	_touch(TouchControls.STICK_CENTER, true, 0)
+	_drag(TouchControls.STICK_CENTER + Vector2(35, 0), 0)
+	for i in 30:
+		await get_tree().physics_frame
+	_touch(TouchControls.STICK_CENTER + Vector2(35, 0), false, 0)
+	_check((home as Room).player.position.x > start_x + 5, "il joystick touch dovrebbe muovere il personaggio")
+	Ui.say(["Prova touch."])
+	var guard_t := 0
+	while Ui.busy and guard_t < 200:
+		_touch(Vector2(300, 120), true, 1)
+		_touch(Vector2(300, 120), false, 1)
+		await get_tree().process_frame
+		guard_t += 1
+	_check(not Ui.busy, "un tocco sullo schermo dovrebbe far avanzare il dialogo")
+	TouchControls.enabled = false
 	for spot in get_tree().get_nodes_in_group("interactable"):
 		if spot is Interactable and spot.position.y > 60:
 			spot.call("interact")

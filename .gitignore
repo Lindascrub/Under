@@ -6,3 +6,6 @@ export/
 
 # Asset LimeZu comprati: non si possono ridistribuire. Usa tools/import_assets.ps1
 /assets/limezu/
+
+# APK esportati
+build/

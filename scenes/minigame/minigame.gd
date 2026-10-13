@@ -139,7 +139,8 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
 		return
-	if type == "timing" and event.is_action_pressed("confirm"):
+	var tapped := event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed
+	if type == "timing" and (event.is_action_pressed("confirm") or tapped):
 		if marker >= zone.x and marker <= zone.y:
 			hits += 1
 			Sound.sfx("select")

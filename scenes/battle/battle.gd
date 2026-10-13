@@ -444,7 +444,38 @@ func _hits(b: Dictionary) -> bool:
 	return closest.distance_to(soul) < SOUL_R - 1.0
 
 
+## Sul telefono si possono toccare direttamente pulsanti e voci dei menu.
+func _touch(pos: Vector2) -> void:
+	match phase:
+		"menu":
+			for i in 4:
+				if Rect2(32 + i * 149, BTN_Y, 130, 32).has_point(pos):
+					menu = i
+					if _typing:
+						_typing = false
+						_text.visible_characters = -1
+					_choose_button()
+					return
+		"sub":
+			for i in sub_items.size():
+				if Rect2(box.position.x + 20, box.position.y + 14 + i * 22, box.size.x - 40, 22).has_point(pos):
+					sub = i
+					_choose_sub()
+					return
+		"msg":
+			if _typing:
+				_typing = false
+				_text.visible_characters = -1
+			else:
+				_next_msg()
+		"bubble":
+			_start_dodge()
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+		_touch((event as InputEventScreenTouch).position)
+		return
 	var n := 4
 	match phase:
 		"menu":

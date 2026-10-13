@@ -269,7 +269,34 @@ func _process(delta: float) -> void:
 		_portrait_tex.region.position.x = 18 * 16
 
 
+## Tocchi sullo schermo: un tocco sul dialogo lo fa avanzare, un tocco su una scelta la seleziona.
+func _touch(event: InputEventScreenTouch) -> bool:
+	if not event.pressed:
+		return false
+	if _mode == "say":
+		if _typing:
+			_typing = false
+			_label.visible_characters = -1
+		else:
+			_advance.emit()
+		return true
+	if _mode == "choose":
+		var r := Rect2(_choice_box.position, _choice_box.size)
+		if r.has_point(event.position):
+			var i := clampi(int((event.position.y - r.position.y - 8.0) / 23.0), 0, _options.size() - 1)
+			_sel = i
+			_render_choices()
+			Sound.sfx("select")
+			_chosen.emit(_sel)
+			return true
+	return false
+
+
 func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if _touch(event):
+			get_viewport().set_input_as_handled()
+		return
 	if _mode == "say":
 		if event.is_action_pressed("confirm") or event.is_action_pressed("cancel"):
 			get_viewport().set_input_as_handled()
