@@ -9,17 +9,19 @@ const START_DEBT := 6000
 const DAILY_INTEREST := 0.02
 const MIN_PAYMENT := 150
 const LATE_FEE := 100
-const LAST_DAY := 7
+const LAST_DAY := 4
 const MAX_ENERGY := 20
 ## La giornata va dalle 7:00 a mezzanotte. Il tempo è in minuti dall'inizio del giorno.
 const DAY_START := 7 * 60
 const MIDNIGHT := 24 * 60
 
+## Da quest'ora le persone seguono gli orari serali (campo "evening" in npcs.json).
+const EVENING := 18 * 60
 ## Quanto costano le azioni, in minuti.
 const COST_EASY_JOB := 60
 const COST_HARD_JOB := 8 * 60
 const COST_LISTEN := 60
-const COST_HELP_TIME := 120
+const COST_HELP_TIME := 60
 const COST_REST := 60
 const COST_WALK := 10
 
@@ -64,6 +66,8 @@ var worked_today := false
 var pending_lines: Array = []
 ## Configurazione della prossima battaglia (vedi scenes/battle/battle.gd).
 var battle: Dictionary = {}
+## Configurazione del prossimo minigioco (vedi scenes/minigame/minigame.gd).
+var minigame: Dictionary = {}
 
 var _npcs: Dictionary = {}
 var _jobs: Array = []
@@ -117,9 +121,12 @@ func npc_ids() -> Array:
 	return _npcs.keys()
 
 
-## Dove si trova una persona oggi: {"room", "cell", "anim"}.
+## Dove si trova una persona adesso: {"room", "cell", "anim"}. Di sera può cambiare posto.
 func npc_place(id: String) -> Dictionary:
-	var schedule: Array = npc_data(id).get("schedule", [])
+	var data := npc_data(id)
+	var schedule: Array = data.get("schedule", [])
+	if minutes >= EVENING and data.has("evening"):
+		schedule = data["evening"]
 	if schedule.is_empty():
 		return {}
 	return schedule[clampi(day - 1, 0, schedule.size() - 1)]
@@ -216,7 +223,7 @@ func give_item(name: String) -> void:
 
 ## Il lavoro facile paga sempre di più: ogni firma ti rende più "prezioso".
 func easy_pay() -> int:
-	return int(round(600.0 * pow(1.7, exploited)))
+	return int(round(900.0 * pow(1.7, exploited)))
 
 
 ## Sfruttare qualcuno: la persona viene sostituita da un robot.
@@ -299,16 +306,21 @@ func end_day(paid_minimum: bool) -> void:
 
 ## Quale finale ha "meritato" il giocatore.
 func route() -> String:
-	if exploited >= 4:
+	if exploited >= 3 or (debt <= 0 and exploited >= 1):
 		return "ricco"
-	if refused >= 3 and helped >= 4:
+	if refused >= 2 and helped >= 3:
 		return "ribelle"
 	return "onesto"
 
 
+## Il gioco finisce quando la settimana di lavoro è passata o quando il debito è pagato.
+func is_over() -> bool:
+	return day > LAST_DAY or debt <= 0
+
+
 ## Nico è l'unico personaggio che si accorge di come stai cambiando.
 func nico_lines() -> Array:
-	if exploited >= 4:
+	if exploited >= 3:
 		return [
 			"Ehi, {rank}! ...Scusa, ora ti chiamano tutti così, no?",
 			"Non ti vedo più qui sotto.",
@@ -369,27 +381,33 @@ func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
 
-func save_game() -> void:
+## Salva tutto: anche stanza, posizione e ora (punti di salvataggio e letto).
+func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> void:
 	var data := {
-		"day": day, "money": money, "debt": debt, "rank": rank,
+		"day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
-		"items": items, "robots": robots, "helped_ids": helped_ids, "flags": flags,
+		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today,
+		"worked_today": worked_today, "flags": flags, "room": room,
+		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(data))
 
 
-func load_game() -> bool:
+## Carica il salvataggio. Restituisce {"room", "pos"} per sapere dove ricomparire, oppure {} se non c'è.
+func load_game() -> Dictionary:
 	if not has_save():
-		return false
+		return {}
 	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
 	if typeof(d) != TYPE_DICTIONARY:
-		return false
+		return {}
 	new_game()
 	day = int(d.get("day", 1))
+	minutes = int(d.get("minutes", DAY_START))
 	money = int(d.get("money", 0))
 	debt = int(d.get("debt", START_DEBT))
+	energy = int(d.get("energy", MAX_ENERGY))
 	rank = int(d.get("rank", 0))
 	exploited = int(d.get("exploited", 0))
 	hard_work = int(d.get("hard_work", 0))
@@ -398,9 +416,15 @@ func load_game() -> bool:
 	items.assign(d.get("items", []))
 	robots.assign(d.get("robots", []))
 	helped_ids.assign(d.get("helped_ids", []))
+	met_today.assign(d.get("met_today", []))
+	worked_today = bool(d.get("worked_today", false))
 	flags = d.get("flags", {})
 	changed.emit()
-	return true
+	var pos: Array = d.get("pos", [])
+	return {
+		"room": str(d.get("room", "res://scenes/world/home.tscn")),
+		"pos": Vector2(float(pos[0]), float(pos[1])) if pos.size() == 2 else Vector2.INF,
+	}
 
 
 func delete_save() -> void:

@@ -228,6 +228,17 @@ func _help() -> void:
 	var h: Dictionary = cfg.get("help", {})
 	var kind_ := str(h.get("kind", "time"))
 	var cost := int(h.get("cost", 0))
+	if kind_ == "time" and h.has("minigame"):
+		if not GameState.has_time(GameState.COST_HELP_TIME):
+			Sound.sfx("deny")
+			_say(["* Vorresti aiutare, ma è troppo tardi: non ti resta abbastanza tempo oggi."], _enemy_turn)
+			return
+		Sound.sfx("spare")
+		phase = "end"
+		var back := str(cfg.get("return", Router.STREET))
+		var back_pos: Vector2 = cfg.get("return_pos", Vector2(100, 150))
+		Router.minigame(Npc.minigame_cfg(str(cfg.get("id", "")), str(cfg.get("name", "")), h, back, back_pos))
+		return
 	if GameState.help(str(cfg.get("id", "")), kind_, cost):
 		Sound.sfx("spare")
 		var lines: Array = ["* " + str(h.get("ask", ""))]

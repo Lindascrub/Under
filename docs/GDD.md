@@ -10,7 +10,9 @@ Un RPG narrativo in stile Undertale in cui il giocatore, schiacciato da un debit
 - **Comodità sospetta:** il lavoro che sfrutta qualcuno è *facilissimo* (un clic) e paga tantissimo. Quello onesto è un minigioco faticoso e paga pochissimo.
 - **Senso di colpa:** il gioco non giudica mai mentre giochi. Il giudizio arriva tutto nel finale.
 
-## Il ciclo di una giornata (7 giorni, orologio di 24 ore)
+## Il ciclo di una giornata (4 giorni, orologio di 24 ore)
+
+Se il debito arriva a zero, il finale parte appena vai a dormire.
 
 La giornata inizia alle 7:00 e finisce a mezzanotte. Ogni azione consuma tempo:
 
@@ -19,11 +21,34 @@ La giornata inizia alle 7:00 e finisce a mezzanotte. Ogni azione consuma tempo:
 | Firmare l'incarico facile | 1 ora |
 | Turno duro (battaglia di lavoro) | 8 ore |
 | Ascoltare una persona (battaglia) | 1 ora |
-| Aiutarla col tuo tempo | +2 ore |
+| Aiutarla col tuo tempo (minigioco a sorpresa, ti dà 10 €) | +1 ora |
 | Riposare su una panchina | 1 ora (+8 energia) |
 | Spostarsi tra casa, strada e ufficio | 10 minuti |
 
 A mezzanotte crolli dal sonno e ti risvegli a casa, dove paghi (o no) la rata. La luce in strada cambia con l'ora.
+
+## Luoghi
+
+- **Casa**: letto (rata e salvataggio), computer della banca.
+- **Strada**: auto che passano (si fermano se sei in mezzo), passanti, piccioni che volano via, il chiosco di Nico, la torre della CHEAP.
+- **Parco** (in cima alla via laterale): Tano il musicista, la signora Elsa dei gatti, Rocco (ex dipendente CHEAP sostituito da un robot). Di sera, se hai già rifiutato il lavoro, c'è il mercato del baratto.
+- **Ufficio**: il terminale degli incarichi.
+
+Di sera (dalle 18) molte persone cambiano posto: alcune vanno al parco, altre tornano a casa.
+
+## Salvataggi
+
+Le stelline gialle (strada e parco) salvano stanza, posizione e ora, e ridanno tutta l'energia. Anche dormire salva. "Continua" riporta esattamente lì.
+
+## Minigiochi di aiuto
+
+Quando aiuti qualcuno col tuo tempo parte un minigioco a sorpresa; se ci riesci ti danno 10 €.
+
+| Tipo | Come si gioca | Chi |
+|---|---|---|
+| Tempismo | Premi Z quando il segno è nel verde | Signor Bruno (scale), Sami (catena), Tano (chitarra) |
+| Raccolta | Muovi il cuore e raccogli tutto in tempo | Ivo (foglie), Elsa (croccantini) |
+| Sequenza | Ricorda e ripeti le frecce | Dario (pratiche), Giulia (post-it), Rocco (curriculum) |
 
 ## Le battaglie (stile Undertale)
 
@@ -40,7 +65,7 @@ Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende q
 | Debito iniziale | 6.000 € | Lavorando onestamente scende un po', ma non sparisce |
 | Interessi | 2% a notte | |
 | Rata minima | 150 € al giorno | Se non la paghi: mora di 100 € |
-| Lavoro facile | 600 € × 1,7 per ogni sfruttamento precedente | Più sfrutti, più vali |
+| Lavoro facile | 900 € × 1,7 per ogni sfruttamento precedente | Più sfrutti, più vali: in 3 giorni ripaghi tutto |
 | Lavoro duro | 30-260 € in base a quanto ne fai e ai colpi presi | Ti spacchi la schiena per poco |
 
 ## La meccanica dei robot
@@ -78,8 +103,8 @@ Nel finale ricco lo shader `shaders/robot.gdshader` rivela tutti i robot.
 
 | Finale | Condizione | Cosa succede |
 |---|---|---|
-| **Ricco** | 4 o più firme | Sei nell'attico, intorno a te i "colleghi". Nico sale a piedi, apre la finestra: sotto c'è la gente che dorme sui cartoni. Poi ti dice di guardarli davvero: sono tutti robot. Resti solo. |
-| **Ribelle** | Almeno 3 rifiuti e almeno 4 aiuti | Il quartiere si riunisce di notte e assalta la banca. I registri dei debiti bruciano. Cosa succede ai creditori resta **ambiguo**. Il giorno dopo si vive di baratto. |
+| **Ricco** | 3 o più sfruttamenti (o debito pagato sfruttando) | Sei nell'attico, intorno a te i "colleghi". Nico sale a piedi, apre la finestra: sotto c'è la gente che dorme sui cartoni. Poi ti dice di guardarli davvero: sono tutti robot. Resti solo. |
+| **Ribelle** | Almeno 2 rifiuti e almeno 3 aiuti | Il quartiere si riunisce di notte e assalta la banca. I registri dei debiti bruciano. Cosa succede ai creditori resta **ambiguo**. Il giorno dopo si vive di baratto. |
 | **Onesto** | Tutti gli altri casi | Strada al tramonto. Il debito è più grande di prima e il sistema è uguale. Ma le persone che hai aiutato sono vere e sono lì. |
 
 ## Struttura del codice

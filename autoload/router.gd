@@ -6,13 +6,17 @@ const MENU := "res://scenes/main_menu.tscn"
 const HOME := "res://scenes/world/home.tscn"
 const STREET := "res://scenes/world/street.tscn"
 const OFFICE := "res://scenes/world/office.tscn"
+const PARK := "res://scenes/world/park.tscn"
+const MINIGAME := "res://scenes/minigame/minigame.tscn"
 const BATTLE := "res://scenes/battle/battle.tscn"
 const ENDING := "res://scenes/endings/ending.tscn"
 const ENDING_CITY := "res://scenes/endings/city_below.tscn"
-const WORLD: Array[String] = [HOME, STREET, OFFICE]
+const WORLD: Array[String] = [HOME, STREET, OFFICE, PARK]
 
 ## Nome del punto di arrivo nella prossima stanza (vedi Room.spawns).
 var spawn := ""
+## Posizione esatta in cui ricomparire (salvataggi), se spawn è "_save".
+var save_pos := Vector2.INF
 
 
 ## Se `narration` non è vuota, il testo appare su schermo nero prima della nuova scena.
@@ -47,3 +51,20 @@ func battle(cfg: Dictionary) -> void:
 	Sound.sfx("encounter")
 	Sound.music("")
 	goto(BATTLE)
+
+
+## Un minigioco "a sorpresa" quando aiuti qualcuno. Alla fine si torna dove si era.
+func minigame(cfg: Dictionary) -> void:
+	if Ui.transitioning:
+		return
+	GameState.minigame = cfg
+	goto(MINIGAME)
+
+
+## Riprende la partita salvata dal punto esatto in cui si era.
+func continue_game() -> void:
+	var where := GameState.load_game()
+	if where.is_empty():
+		return
+	save_pos = where["pos"]
+	goto(str(where["room"]), "_save" if save_pos != Vector2.INF else "bed", ["{day_name}, ore {clock}."])

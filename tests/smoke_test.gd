@@ -31,6 +31,8 @@ func _process(_delta: float) -> void:
 	var scene := get_tree().current_scene
 	if scene and scene.scene_file_path == Router.BATTLE and not Ui.transitioning:
 		_drive_battle(scene)
+	elif scene and scene.scene_file_path == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play":
+		scene.call("_finish", true)
 	elif Ui.busy and _frame % 3 == 0:
 		if Ui.get("_mode") == "choose":
 			var idx: int = choose_queue.pop_front() if not choose_queue.is_empty() else choose_index
@@ -141,7 +143,7 @@ func _run() -> void:
 		n.call("interact")
 		await _idle()
 	_check("Caffè di Nico" in GameState.items, "Nico dovrebbe regalare un caffè")
-	_check(GameState.npc_place("sig_bruno").get("anim") == "sit_right", "il signor Bruno dovrebbe stare seduto")
+	_check(GameState.npc_place("sig_bruno").get("anim") == "sit_left", "il signor Bruno dovrebbe stare seduto")
 
 	choose_index = 0
 	GameState.met_today.clear()
@@ -151,8 +153,34 @@ func _run() -> void:
 	await _wait_scene(Router.BATTLE)
 	await _wait_scene(Router.STREET)
 	await _idle()
-	_check("sig_bruno" in GameState.helped_ids, "aiutare il signor Bruno nella battaglia dovrebbe funzionare")
-	_check(GameState.minutes >= minutes_before + 180, "ascoltare e aiutare dovrebbe costare 3 ore")
+	_check("sig_bruno" in GameState.helped_ids, "aiutare il signor Bruno (minigioco) dovrebbe funzionare")
+	_check(GameState.money >= 10, "dopo il minigioco il signor Bruno dovrebbe darti 10 euro")
+	_check(GameState.minutes >= minutes_before + 120, "ascoltare e aiutare dovrebbe costare 2 ore")
+
+	# --- parco: persone nuove, aiuto diretto col minigioco, punto di salvataggio
+	var park := await _go(Router.PARK, "street")
+	var money_before := GameState.money
+	choose_index = 0
+	_npc("elsa").call("interact")
+	await _wait_scene(Router.MINIGAME)
+	await _wait_scene(Router.PARK)
+	await _idle()
+	_check(GameState.money == money_before + 10, "aiutare Elsa dovrebbe dare 10 euro")
+	park = get_tree().current_scene
+	for spot in get_tree().get_nodes_in_group("interactable"):
+		if spot is Interactable and spot.position.distance_to(park.cell_center(Vector2i(18, 16))) < 2:
+			spot.call("interact")
+			await _idle()
+	var saved_minutes := GameState.minutes
+	GameState.minutes += 120
+	Router.continue_game()
+	await _wait_scene(Router.PARK)
+	await _idle()
+	_check(GameState.minutes == saved_minutes, "Continua dovrebbe riportare all'ora del salvataggio")
+	park = get_tree().current_scene
+	_check(park.cell_center(Vector2i(18, 17)).distance_to((park as Room).player.position) < 20,
+		"Continua dovrebbe riportare vicino al punto di salvataggio")
+	await _go(Router.STREET, "park")
 
 	plan = [[0, 0]]
 	_npc("marta").call("interact")
@@ -224,19 +252,38 @@ func _run() -> void:
 
 	# --- salvataggio
 	GameState.save_game()
-	_check(GameState.load_game(), "il salvataggio non si ricarica")
+	_check(not GameState.load_game().is_empty(), "il salvataggio non si ricarica")
+
+	# --- di sera le persone cambiano posto
+	GameState.minutes = 19 * 60
+	_check(GameState.npc_place("sig_bruno").get("room") == "park", "di sera il signor Bruno dovrebbe essere al parco")
+	await _go(Router.PARK, "street")
+	_check(_npc("sig_bruno") != null, "il signor Bruno dovrebbe essere nel parco la sera")
+	GameState.minutes = GameState.DAY_START
+
+	# --- debito pagato: dormendo si va al finale
+	GameState.new_game()
+	GameState.exploited = 2
+	GameState.money = 10000
+	home = await _go(Router.HOME, "bed")
+	choose_queue = [0, 1]
+	home.call("_sleep")
+	await _wait_scene(Router.ENDING, 20000)
+	await _wait_scene(Router.MENU, 60000)
+	await _idle()
+	_check(GameState.debt <= 0, "pagando tutto il debito dovrebbe arrivare a zero")
 
 	# --- i tre finali
 	for route in ["ricco", "onesto", "ribelle"]:
 		GameState.new_game()
 		match route:
 			"ricco":
-				GameState.exploited = 5
+				GameState.exploited = 3
 				GameState.money = 90000
 				GameState.debt = 0
 			"ribelle":
-				GameState.refused = 4
-				GameState.helped = 5
+				GameState.refused = 2
+				GameState.helped = 3
 				GameState.helped_ids.assign(["marta", "lea"])
 			"onesto":
 				GameState.helped_ids.assign(["sig_bruno", "dario"])

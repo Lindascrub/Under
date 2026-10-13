@@ -27,7 +27,8 @@ func build() -> void:
 	_art("res://art/billboard_ad.png", Vector2(57 * T + 6, (BASE + 1) * T - 96 + 17))
 	for gap in [0, 8, 15, 22, 27, 34, 41, 56, 62, 63]:
 		block(Rect2i(gap, 0, 1, BASE + 1))
-	block(Rect2i(23, 0, 4, 1))
+	add_exit(Rect2i(23, 0, 4, 1), Router.PARK, "street")
+	_art("res://art/park_sign.png", Vector2(21 * T - 12, 2 * T - 8))
 
 	# Porte
 	add_spot(Vector2(1 * T + 56, (BASE + 1) * T - 2), func() -> void: Router.goto(Router.HOME, "street"))
@@ -40,10 +41,13 @@ func build() -> void:
 
 	_props()
 	spawn_people("street")
+	_traffic()
+	add_save_point(Vector2i(32, 9))
 
 	spawns["default"] = cell_feet(Vector2i(4, 9))
 	spawns["home"] = spawns["default"]
 	spawns["office"] = cell_feet(Vector2i(48, 9))
+	spawns["park"] = cell_feet(Vector2i(24, 2))
 
 
 func enter() -> void:
@@ -86,15 +90,22 @@ func _paint_ground() -> void:
 
 
 func _props() -> void:
-	for x in [6, 19, 31, 52, 60]:
-		add_prop("street/lamp.png", Vector2i(x, 8), 1, Vector2i(32, 64), [
+	# Lampioni sul bordo del marciapiede, verso la strada, lontani dalle porte.
+	for x in [7, 18, 33, 53, 61]:
+		add_prop("street/lamp.png", Vector2i(x, 10), 1, Vector2i(32, 64), [
 			"* Un lampione. Di notte illumina solo metà strada: l'altra metà \"è in attesa di fondi\".",
+		])
+	for x in [12, 28, 47]:
+		add_prop("street/lamp.png", Vector2i(x, 15), 1, Vector2i(32, 64), [
+			"* Un lampione. Qualcuno ci ha attaccato un volantino: \"Cercasi gatto. Risponde al nome di Debito\".",
 		])
 	add_prop("street/bench_side.png", Vector2i(12, 10), 3, Vector2i(16, 48), [
 		"* La panchina del signor Bruno. Nessuno ci si siede, quando c'è lui: è una questione di rispetto.",
 	])
-	add_prop("street/pigeon_1.png", Vector2i(14, 10), 0, Vector2i(16, 16), ["* Un piccione. Ti guarda come se gli dovessi dei soldi."])
-	add_prop("street/pigeon_2.png", Vector2i(13, 8), 0, Vector2i(16, 16), ["* Un altro piccione. Questo sembra Ernesto, quello zoppo."])
+	for c in [Vector2i(14, 10), Vector2i(15, 9), Vector2i(13, 8), Vector2i(36, 10), Vector2i(26, 16)]:
+		var pg := Pigeon.new()
+		pg.position = cell_feet(c) + Vector2(randf_range(-4, 4), 0)
+		world.add_child(pg)
 	add_prop("street/bench_side.png", Vector2i(34, 17), 3, Vector2i(16, 48))
 	add_spot(cell_center(Vector2i(35, 16)), _rest)
 	add_prop("street/trash_pile_1.png", Vector2i(17, 10), 1, Vector2i(64, 32), [
@@ -110,14 +121,30 @@ func _props() -> void:
 	add_prop("street/dumpster_graffiti.png", Vector2i(62, 7), 1, Vector2i(32, 32), [
 		"* Un cassonetto. Sopra qualcuno ha scritto con lo spray: IL DEBITO È UNA CATENA.",
 	])
-	add_prop("street/car_wreck.png", Vector2i(23, 4), 2, Vector2i(64, 48), [
-		"* Un'auto abbandonata. Sul parabrezza ci sono sette multe e un biglietto: \"Scusate, non posso pagare\".",
-	])
 	add_prop("street/trash_bags.png", Vector2i(25, 6), 1, Vector2i(32, 32), ["* Sacchi della spazzatura. Odorano di lunedì."])
 	for x in [2, 10, 26, 40, 50, 58]:
 		add_prop("street/tree.png", Vector2i(x, 18), 1, Vector2i(32, 48), ["* Un albero. Qualcuno ci ha inciso: \"M + figli, per sempre\"."])
 	for x in [6, 14, 20, 30, 46, 54]:
 		add_prop("street/flowers.png", Vector2i(x, 18), 1, Vector2i(32, 16), ["* Un'aiuola. I fiori sono finti, ma qualcuno li annaffia lo stesso."])
+
+
+func _traffic() -> void:
+	for lane: Array in [[12, -1.0], [14, 1.0]]:
+		for i in 2:
+			var car := Car.new()
+			car.direction = lane[1]
+			car.min_x = -80.0
+			car.max_x = W * T + 80.0
+			car.position = Vector2(randf_range(0, W * T), (int(lane[0]) + 1) * T)
+			world.add_child(car)
+	for w: Array in [[9, "char_13"], [16, "char_18"], [9, "char_19"], [16, "char_20"]]:
+		var walker := Walker.new()
+		walker.sheet = w[1]
+		walker.direction = 1.0 if randf() < 0.5 else -1.0
+		walker.min_x = T
+		walker.max_x = (W - 1) * T
+		walker.position = Vector2(randf_range(2 * T, (W - 2) * T), (int(w[0]) + 1) * T - 2)
+		world.add_child(walker)
 
 
 func _building(rel: String, x: int, size: Vector2i, region := Rect2()) -> void:

@@ -41,13 +41,13 @@ func build() -> void:
 	add_prop("props/plant.png", Vector2i(14, 3), 1, Vector2i(16, 32), [
 		"* Una pianta mezza secca. Ha l'aria di chi ha visto troppe bollette.",
 	])
-	add_prop("props/lamp.png", Vector2i(1, 7), 1, Vector2i(16, 32), [
+	add_prop("props/lamp.png", Vector2i(1, 9), 1, Vector2i(16, 32), [
 		"* Una lampada. La accendi. La spegni. La bolletta della luce ti guarda male.",
 	])
-	add_prop("props/boxes.png", Vector2i(12, 9), 2, Vector2i(32, 48), [
+	add_prop("props/boxes.png", Vector2i(9, 3), 1, Vector2i(32, 48), [
 		"* Scatoloni del trasloco. Dentro: bollette, bollette, una tua foto da bambino, bollette.",
 	])
-	add_prop("props/boxes_small.png", Vector2i(14, 9), 1, Vector2i(16, 32), [
+	add_prop("props/boxes_small.png", Vector2i(4, 3), 1, Vector2i(16, 32), [
 		"* Su questo scatolone c'è scritto \"COSE IMPORTANTI\". Dentro c'è solo un'altra bolletta.",
 	])
 
@@ -131,8 +131,11 @@ func _sleep(forced := false) -> void:
 			paid_minimum = amounts[i] >= minimum
 
 	GameState.end_day(paid_minimum)
-	if GameState.day > GameState.LAST_DAY:
-		Router.goto(Router.ENDING, "", ["La settimana è finita.", "La banca ha fatto i suoi conti.", "Adesso tocca a te fare i tuoi."])
+	if GameState.debt <= 0:
+		Router.goto(Router.ENDING, "", ["Il debito è pagato.", "Per la prima volta da quando sei arrivato, dormi senza sognare la banca.", "Al risveglio, però, qualcosa è cambiato."])
 		return
-	GameState.save_game()
+	if GameState.is_over():
+		Router.goto(Router.ENDING, "", ["I giorni sono finiti.", "La banca ha fatto i suoi conti.", "Adesso tocca a te fare i tuoi."])
+		return
+	GameState.save_game(Router.HOME)
 	Router.goto(Router.HOME, "bed", ["{day_name}. Ore 7:00.", "Durante la notte gli interessi hanno lavorato al posto tuo.\nDebito: {debt}."])

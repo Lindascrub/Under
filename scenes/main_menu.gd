@@ -92,7 +92,6 @@ func _choose(option: String) -> void:
 			GameState.delete_save()
 			Router.goto(Router.HOME, "bed", INTRO)
 		"Continua":
-			GameState.load_game()
-			Router.goto(Router.HOME, "bed", ["Giorno {day}."])
+			Router.continue_game()
 		"Esci":
 			get_tree().quit()

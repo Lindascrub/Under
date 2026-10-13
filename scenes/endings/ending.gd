@@ -215,7 +215,7 @@ func _rebel() -> void:
 	await Ui.say([
 		"Guarda quanti siamo.",
 		"Tutti con un debito. Tutti stanchi. Tutti qui.",
-		"Una settimana fa dovevi {debt}. Stanotte, se va come deve andare, non lo dovrà più nessuno.",
+		"Pochi giorni fa dovevi {debt}. Stanotte, se va come deve andare, non lo dovrà più nessuno.",
 	], "Nico")
 	var c: int = await Ui.choose("Sei pronto?", ["Andiamo", "...Andiamo"], "Nico")
 	if c == 1:

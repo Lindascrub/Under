@@ -17,6 +17,16 @@
       "Io sono Nico. Vendo caffè qui, dentro questa tazza gigante. Sì, ci lavoro dentro. Non chiedere.",
       "Primo giorno alla CHEAP? Auguri. Lì dentro la gente entra persona ed esce... boh, vedrai.",
       "Passa ogni mattina. Il caffè per te è gratis. Non dirlo a nessuno."
+    ],
+    "evening": [
+      {
+        "room": "street",
+        "cell": [
+          38,
+          8
+        ],
+        "anim": "idle_down"
+      }
     ]
   },
   "marta": {
@@ -163,7 +173,36 @@
           "* Marta firma senza leggere. Ti ringrazia, perfino."
         ]
       }
-    }
+    },
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          17,
+          15
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "street",
+        "cell": [
+          6,
+          10
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "park",
+        "cell": [
+          11,
+          9
+        ],
+        "anim": "wander"
+      },
+      {
+        "room": "none"
+      }
+    ]
   },
   "sig_bruno": {
     "name": "Signor Bruno",
@@ -175,7 +214,7 @@
           12,
           10
         ],
-        "anim": "sit_right"
+        "anim": "sit_left"
       }
     ],
     "intro": [
@@ -205,7 +244,17 @@
       "yes": [
         "Che gentile. Non lo fa più nessuno, sa?",
         "Venga, le offro un bicchiere d'acqua. È tutto quello che ho, ma è fresca."
-      ]
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "Le scale del signor Bruno",
+        "intro": [
+          "* Quattro piani di scale con le borse della spesa.",
+          "* Premi Z al momento giusto per fare ogni gradino senza inciampare."
+        ],
+        "reward": 10,
+        "hits": 4
+      }
     },
     "battle": {
       "hook": "Il signor Bruno ha voglia di chiacchierare. Ha tutto il tempo del mondo. Tu no.",
@@ -259,7 +308,31 @@
           "* \"Grazie, giovanotto. Così sto più tranquillo.\""
         ]
       }
-    }
+    },
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          6,
+          12
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "none"
+      },
+      {
+        "room": "park",
+        "cell": [
+          22,
+          12
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "none"
+      }
+    ]
   },
   "lea": {
     "name": "Lea",
@@ -279,7 +352,7 @@
           34,
           17
         ],
-        "anim": "sit_right"
+        "anim": "sit_left"
       },
       {
         "room": "street",
@@ -303,7 +376,7 @@
           34,
           17
         ],
-        "anim": "sit_right"
+        "anim": "sit_left"
       },
       {
         "room": "street",
@@ -403,7 +476,36 @@
           "* \"Finalmente posso studiare!\", dice. Ti abbraccia."
         ]
       }
-    }
+    },
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          24,
+          12
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "park",
+        "cell": [
+          9,
+          14
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "none"
+      },
+      {
+        "room": "park",
+        "cell": [
+          24,
+          12
+        ],
+        "anim": "read"
+      }
+    ]
   },
   "ragazzo_sami": {
     "name": "Sami",
@@ -491,7 +593,17 @@
       "yes": [
         "Ce l'abbiamo fatta! Sei un mago!",
         "La prossima consegna te la porto gratis. Anzi no, non posso. Ma il pensiero c'è."
-      ]
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "La catena di Sami",
+        "intro": [
+          "* La catena della bici è saltata di nuovo.",
+          "* Premi Z quando il segno è nel verde per agganciare ogni maglia."
+        ],
+        "reward": 10,
+        "hits": 5
+      }
     },
     "battle": {
       "hook": "Sami sta per scoppiare a piangere davanti alla sua app.",
@@ -545,7 +657,41 @@
           "* \"Finalmente un contratto!\", dice Sami. È contento."
         ]
       }
-    }
+    },
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          20,
+          14
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "street",
+        "cell": [
+          44,
+          16
+        ],
+        "anim": "phone"
+      },
+      {
+        "room": "park",
+        "cell": [
+          20,
+          14
+        ],
+        "anim": "idle_left"
+      },
+      {
+        "room": "street",
+        "cell": [
+          20,
+          16
+        ],
+        "anim": "wander"
+      }
+    ]
   },
   "portiere_ivo": {
     "name": "Ivo",
@@ -633,7 +779,19 @@
       "yes": [
         "Ah, la gioventù! Io alla tua età spostavo armadi.",
         "Ora sposto solo i pensieri. E pesano di più."
-      ]
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "Il cortile di Ivo",
+        "intro": [
+          "* Il cortile è pieno di foglie secche.",
+          "* Raccoglile tutte con le frecce prima che Ivo si stanchi di aspettare."
+        ],
+        "reward": 10,
+        "count": 12,
+        "time": 15,
+        "color": "#d08a30"
+      }
     },
     "battle": {
       "hook": "Ivo ha un mazzo di chiavi enorme e un'aria preoccupata.",
@@ -776,7 +934,16 @@
       "yes": [
         "Sul serio lo faresti? Sei un pazzo. Grazie!",
         "Corro! Se il capo chiede, sono in bagno. Da tre ore."
-      ]
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "Le pratiche di Dario",
+        "intro": [
+          "* Le pratiche vanno timbrate in un ordine preciso.",
+          "* Guarda la sequenza di frecce e ripetila."
+        ],
+        "reward": 10
+      }
     },
     "battle": {
       "hook": "Dario è sommerso di pratiche. Ti guarda come un naufrago guarda una nave.",
@@ -830,7 +997,17 @@
           "* Il capo ti fa i complimenti. Dario non dice niente."
         ]
       }
-    }
+    },
+    "evening": [
+      {
+        "room": "office",
+        "cell": [
+          4,
+          7
+        ],
+        "anim": "idle_down"
+      }
+    ]
   },
   "giulia": {
     "name": "Giulia",
@@ -917,7 +1094,16 @@
       "yes": [
         "Mi hai salvato la giornata.",
         "Il caffè della macchinetta è orribile, ma te ne offro uno lo stesso."
-      ]
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "I post-it di Giulia",
+        "intro": [
+          "* I post-it di Giulia vanno rimessi in ordine.",
+          "* Guarda la sequenza e ripetila con le frecce."
+        ],
+        "reward": 10
+      }
     },
     "battle": {
       "hook": "Giulia si massaggia la testa. Ha il mal di testa da tre giorni.",
@@ -970,6 +1156,213 @@
           "* Segnali al capo tutte le volte che Giulia è uscita prima per il medico.",
           "* Il capo ti ringrazia. Giulia ti saluta, come sempre. Non lo sa."
         ]
+      }
+    },
+    "evening": [
+      {
+        "room": "none"
+      }
+    ]
+  },
+  "tano": {
+    "name": "Tano",
+    "sheet": "char_15",
+    "schedule": [
+      {
+        "room": "park",
+        "cell": [
+          12,
+          12
+        ],
+        "anim": "idle_down"
+      },
+      {
+        "room": "park",
+        "cell": [
+          18,
+          13
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          16,
+          14
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Ehi, amico! Tano, musicista di strada. Il palco più grande del mondo: il marciapiede.",
+      "Suonavo nell'orchestra della città. Poi la CHEAP l'ha comprata e ci ha sostituiti con una playlist."
+    ],
+    "days": [
+      [
+        "Oggi ho guadagnato tre euro e una caramella. La caramella era buona."
+      ],
+      [
+        "La mia chitarra è più vecchia di me. E più intonata."
+      ],
+      [
+        "Se senti una canzone triste nel parco, sono io. Se senti una canzone allegra, è la radio di qualcuno."
+      ]
+    ],
+    "helped": [
+      "Grazie per avermi aiutato con la chitarra! Suona come nuova. Cioè, come vecchia, ma meglio."
+    ],
+    "help": {
+      "kind": "time",
+      "ask": "Tano non riesce ad accordare la chitarra. Ti chiede di tenergli il tempo.",
+      "yes": [
+        "Senti che suono! Questa la dedico a te."
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "La chitarra di Tano",
+        "intro": [
+          "* Tano pizzica le corde una alla volta.",
+          "* Premi Z quando il segno è nel verde per accordare ogni corda."
+        ],
+        "reward": 10,
+        "hits": 4
+      }
+    }
+  },
+  "elsa": {
+    "name": "Signora Elsa",
+    "sheet": "char_16",
+    "schedule": [
+      {
+        "room": "park",
+        "cell": [
+          21,
+          13
+        ],
+        "anim": "idle_left"
+      },
+      {
+        "room": "park",
+        "cell": [
+          8,
+          13
+        ],
+        "anim": "idle_right"
+      }
+    ],
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          22,
+          15
+        ],
+        "anim": "idle_left"
+      }
+    ],
+    "intro": [
+      "Buongiorno, caro. Io sono Elsa. Do da mangiare ai gatti del parco.",
+      "Sono sette. Hanno tutti il nome di un ministro. Il più grasso si chiama Economia."
+    ],
+    "days": [
+      [
+        "Economia oggi non si è fatto vedere. Forse è in crisi."
+      ],
+      [
+        "La pensione basta per me e per i gatti. Per me un po' meno."
+      ],
+      [
+        "I gatti non pagano l'affitto. Beati loro."
+      ]
+    ],
+    "helped": [
+      "Grazie per i croccantini, caro. I gatti ti hanno già perdonato tutto."
+    ],
+    "help": {
+      "kind": "time",
+      "ask": "Alla signora Elsa si è rotto il sacchetto: i croccantini sono sparsi ovunque.",
+      "yes": [
+        "Grazie, caro! Economia ti manda un bacio. Si fa per dire."
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "I croccantini di Elsa",
+        "intro": [
+          "* I croccantini sono sparsi su tutto il prato.",
+          "* Raccoglili con le frecce prima che arrivino i piccioni."
+        ],
+        "reward": 10,
+        "count": 10,
+        "time": 14,
+        "color": "#8a5a30"
+      }
+    }
+  },
+  "rocco": {
+    "name": "Rocco",
+    "sheet": "char_17",
+    "schedule": [
+      {
+        "room": "park",
+        "cell": [
+          5,
+          13
+        ],
+        "anim": "read"
+      },
+      {
+        "room": "park",
+        "cell": [
+          23,
+          13
+        ],
+        "anim": "read"
+      }
+    ],
+    "evening": [
+      {
+        "room": "park",
+        "cell": [
+          9,
+          12
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Ciao. Rocco. Lavoravo alla CHEAP, al tuo posto, credo.",
+      "Un giorno sono arrivato e alla mia scrivania c'era un robot con la mia faccia. Giuro. Nessuno se n'è accorto."
+    ],
+    "days": [
+      [
+        "Leggo gli annunci di lavoro. Cercano tutti \"giovani con dieci anni di esperienza\"."
+      ],
+      [
+        "Ti hanno già promosso? Stai attento. Più sali, meno gente vedi."
+      ],
+      [
+        "La sera qui facciamo un mercato. Niente soldi. Passa, se vuoi."
+      ]
+    ],
+    "helped": [
+      "Grazie per il curriculum. Se mi assumono, il primo caffè lo offro io. Da Nico, ovvio."
+    ],
+    "help": {
+      "kind": "time",
+      "ask": "Rocco ha il curriculum tutto in disordine e domani ha un colloquio.",
+      "yes": [
+        "Perfetto! Sembra il curriculum di uno che ce la può fare."
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "Il curriculum di Rocco",
+        "intro": [
+          "* Le pagine del curriculum vanno rimesse in ordine.",
+          "* Guarda la sequenza di frecce e ripetila."
+        ],
+        "reward": 10
       }
     }
   }

@@ -62,6 +62,24 @@ $props = @{
 }
 foreach ($k in $props.Keys) { $exteriors[($cityProp -f $k)] = "street/$($props[$k]).png" }
 
+# Parco
+$garden = "$ext/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_{0}.png"
+$exteriors["$ext/1_Terrains_and_Fences_16x16.png"] = "tiles/terrains.png"
+$exteriors[($cityProp -f "Fountain_1")] = "park/fountain.png"
+$exteriors[($garden -f "Statue_Angel_1")] = "park/angel.png"
+$exteriors[($garden -f "Medium_Bench_Horizontal")] = "park/bench.png"
+$exteriors[($garden -f "Bush_1")] = "park/bush.png"
+$exteriors[($garden -f "Bush_5")] = "park/bush_2.png"
+$exteriors[($garden -f "Big_Sunflower")] = "park/sunflower.png"
+$exteriors[($cityProp -f "Tree_2")] = "park/tree_2.png"
+
+# Auto per il traffico (viste di lato)
+$vehicle = "$ext/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_{0}.png"
+foreach ($n in 1..6) {
+    $exteriors[($vehicle -f "Car_Left_$n")] = "cars/car_left_$n.png"
+    $exteriors[($vehicle -f "Car_Right_$n")] = "cars/car_right_$n.png"
+}
+
 $files = @{ "moderninteriors-win.zip" = $interiors; "modernexteriors-win.zip" = $exteriors }
 
 $copied = 0

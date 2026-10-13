@@ -142,8 +142,12 @@ func _lines() -> Array:
 
 
 ## Come in Undertale: invece di combattere, la persona ti "attacca" coi suoi problemi.
+## Chi non ha una battaglia ti chiede direttamente una mano (minigioco a sorpresa).
 func _offer_encounter(who: String) -> void:
-	if not data.has("battle") or not GameState.can_meet(id):
+	if not GameState.can_meet(id):
+		return
+	if not data.has("battle"):
+		await _offer_help(who)
 		return
 	if not GameState.has_time(GameState.COST_LISTEN):
 		return
@@ -162,3 +166,26 @@ func _offer_encounter(who: String) -> void:
 	cfg["return"] = get_tree().current_scene.scene_file_path
 	cfg["return_pos"] = (get_tree().get_first_node_in_group("player") as Node2D).global_position
 	Router.battle(cfg)
+
+
+func _offer_help(who: String) -> void:
+	var h: Dictionary = data.get("help", {})
+	if not h.has("minigame") or not GameState.has_time(GameState.COST_HELP_TIME):
+		return
+	var choice: int = await Ui.choose(str(h.get("ask", "Ti chiede una mano.")), ["Dai una mano (1 ora)", "Non ora"], who)
+	if choice != 0:
+		return
+	GameState.met_today.append(id)
+	Router.minigame(Npc.minigame_cfg(id, who, h, get_tree().current_scene.scene_file_path,
+		(get_tree().get_first_node_in_group("player") as Node2D).global_position))
+
+
+## Prepara la configurazione del minigioco di aiuto di una persona.
+static func minigame_cfg(npc_id: String, who: String, help: Dictionary, back: String, back_pos: Vector2) -> Dictionary:
+	var cfg: Dictionary = (help["minigame"] as Dictionary).duplicate(true)
+	cfg["id"] = npc_id
+	cfg["name"] = who
+	cfg["win"] = help.get("yes", ["Grazie!"])
+	cfg["return"] = back
+	cfg["return_pos"] = back_pos
+	return cfg

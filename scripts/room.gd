@@ -166,6 +166,34 @@ func add_prop(rel: String, bottom_left: Vector2i, solid_rows := 1, fallback := V
 	return s
 
 
+## Punto di salvataggio: una stellina che brilla. Salva stanza, posizione e ora, e ridà energia.
+func add_save_point(cell: Vector2i) -> void:
+	var star := AnimatedSprite2D.new()
+	var frames := SpriteFrames.new()
+	var tex: Texture2D = load("res://art/save_star.png") if ResourceLoader.exists("res://art/save_star.png") else Assets.tex("_star", Vector2i(26, 13))
+	for i in 2:
+		var at := AtlasTexture.new()
+		at.atlas = tex
+		at.region = Rect2(i * 13, 0, 13, 13)
+		frames.add_frame("default", at)
+	frames.set_animation_speed("default", 2.0)
+	star.sprite_frames = frames
+	star.position = cell_center(cell) + Vector2(0, -4)
+	star.play()
+	world.add_child(star)
+	add_spot(cell_center(cell), func() -> void: _save_here(cell))
+
+
+func _save_here(cell: Vector2i) -> void:
+	GameState.restore(GameState.MAX_ENERGY)
+	GameState.save_game(scene_file_path, cell_feet(cell + Vector2i(0, 1)))
+	Sound.sfx("spare")
+	await Ui.say([
+		"* (Una stellina brilla a mezz'aria. Guardarla ti fa tornare la voglia di andare avanti.)",
+		"* Energia al massimo. Partita salvata: {day_name}, ore {clock}.",
+	])
+
+
 ## Un punto che, guardato, mostra una descrizione.
 func examine(pos: Vector2, text: Array) -> Interactable:
 	return add_spot(pos, func() -> void: Ui.say(text))
@@ -232,6 +260,10 @@ func _spawn_player() -> void:
 	player = Player.new()
 	if Router.spawn == "_back" and GameState.battle.has("return_pos"):
 		spawns["_back"] = GameState.battle["return_pos"]
+	if Router.spawn == "_mg" and GameState.minigame.has("return_pos"):
+		spawns["_mg"] = GameState.minigame["return_pos"]
+	if Router.spawn == "_save" and Router.save_pos != Vector2.INF:
+		spawns["_save"] = Router.save_pos
 	var key := Router.spawn if spawns.has(Router.spawn) else "default"
 	player.position = spawns.get(key, Vector2(map_size * T) / 2.0)
 	player.facing = spawn_facing.get(key, "down")

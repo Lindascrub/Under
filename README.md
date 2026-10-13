@@ -2,7 +2,7 @@
 
 Un piccolo RPG narrativo in stile Undertale, fatto con Godot 4.
 
-Inizi con un debito di 6.000 € e hai una settimana. Ogni giornata ha un orologio di 24 ore: ogni azione consuma tempo, e a mezzanotte crolli dal sonno. Al lavoro scegli se firmare qualcosa che rovina una persona (un'ora, pagato tantissimo) o fare un turno duro di 8 ore (una battaglia alla Undertale, pagata pochissimo). Per strada le persone ti "attaccano" coi loro problemi: puoi SFRUTTARLE, PARLARE con loro o AIUTARLE. Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
+Inizi con un debito di 6.000 € e hai 4 giorni (se lo paghi prima, il finale arriva appena vai a dormire). Ogni giornata ha un orologio di 24 ore: ogni azione consuma tempo, e a mezzanotte crolli dal sonno. Al lavoro scegli se firmare qualcosa che rovina una persona (un'ora, pagato tantissimo) o fare un turno duro di 8 ore (una battaglia alla Undertale, pagata pochissimo). Per strada e al parco le persone ti "attaccano" coi loro problemi: puoi SFRUTTARLE, PARLARE con loro o AIUTARLE. Aiutare qualcuno fa partire un piccolo minigioco a sorpresa. Si salva toccando le stelline. Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
 
 Tre finali: **ricco**, **onesto**, **ribelle**. Design completo in [docs/GDD.md](docs/GDD.md).
 
