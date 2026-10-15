@@ -29,6 +29,7 @@ var _tileset: TileSet
 var _sources: Dictionary = {}
 var _solids: StaticBody2D
 var _light: CanvasModulate
+var _grey_rect: ColorRect
 
 
 func _ready() -> void:
@@ -46,6 +47,7 @@ func _ready() -> void:
 	_spawn_player()
 	Ui.show_hud(true)
 	Sound.music(music)
+	_grey_world()
 	if outdoor:
 		_light = CanvasModulate.new()
 		add_child(_light)
@@ -58,6 +60,30 @@ func _ready() -> void:
 
 func build() -> void:
 	pass
+
+
+## Più alto è il LV, più il mondo perde colore. I dialoghi e l'HUD restano a colori.
+func _grey_world() -> void:
+	if GameState.exploited <= 0 or player == null:
+		return
+	# Attaccato alla telecamera e sopra a tutto il mondo (ma sotto l'interfaccia, che sta in un altro strato).
+	var rect := ColorRect.new()
+	rect.size = VIEW + Vector2(8, 8)
+	rect.position = -rect.size / 2.0
+	rect.z_index = 100
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://shaders/grey_world.gdshader")
+	mat.set_shader_parameter("amount", minf(0.85, GameState.exploited * 0.22))
+	rect.material = mat
+	add_child(rect)
+	_grey_rect = rect
+
+
+## Il filtro grigio segue quello che inquadra la telecamera (anche ai bordi della mappa).
+func _process(_delta: float) -> void:
+	if _grey_rect and player:
+		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
 
 
 func _update_light() -> void:

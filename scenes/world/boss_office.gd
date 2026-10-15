@@ -73,6 +73,15 @@ func build() -> void:
 	block(Rect2i(0, 9, 2, 1))
 	block(Rect2i(4, 9, 14, 1))
 
+	# La scala per l'ultimo piano: la Presidenza. Si apre dal LV 4.
+	var stairs := ColorRect.new()
+	stairs.color = Color("3a2a30")
+	stairs.position = Vector2(14 * T, 8 * T + 4)
+	stairs.size = Vector2(2 * T, T - 4)
+	stairs.z_index = -1
+	add_child(stairs)
+	add_spot(cell_center(Vector2i(14, 8)) + Vector2(8, 0), _stairs)
+	spawns["stairs"] = cell_feet(Vector2i(14, 7))
 	spawns["default"] = cell_feet(Vector2i(3, 7))
 	spawns["elevator"] = spawns["default"]
 	spawn_facing["default"] = "up"
@@ -90,10 +99,16 @@ func enter() -> void:
 
 
 func _talk() -> void:
+	# Anche il capo si lamenta del suo capo: in questo mondo tutti si lamentano di quelli sopra.
 	var lines := [
-		"Ogni persona ha un prezzo, {rank}. Il nostro lavoro è scoprirlo prima di lei.",
-		"Sa qual è il segreto del successo? Non guardare mai in basso.",
-		"I sentimenti sono un costo. E i costi si tagliano.",
+		"Ogni persona ha un prezzo, {rank}. Il nostro lavoro è scoprirlo prima di lei.
+Il mio prezzo? Lo decide il Presidente. Sempre troppo basso.",
+		"Sa qual è il segreto del successo? Non guardare mai in basso.
+E non guardare mai in alto, se no vedi il Presidente che ti guarda.",
+		"I sentimenti sono un costo. E i costi si tagliano.
+Lo dice il Presidente. Io eseguo. Anche io ho un capo, sa? Tutti hanno un capo.",
+		"Lavoro qui da trent'anni. Ho tutto. Non ho mai tempo di usarlo.
+Ma il Presidente dice che sto andando benissimo.",
 	]
 	await Ui.say([lines[GameState.day % lines.size()]], "Dottor Prezzi")
 	if GameState.flags.get("boss_job_day", 0) == GameState.day:
@@ -116,6 +131,7 @@ func _talk() -> void:
 	await Ui.say([
 		"* Firmi. Il Dottor Prezzi sorride. Ha un sorriso troppo regolare.",
 		"* +%s. Ora sei {rank}." % GameState.euros(pay),
+		GameState.level_up_line(),
 	])
 
 
@@ -125,3 +141,10 @@ func _pick_victim() -> String:
 		if id != "nico" and not GameState.is_robot(id):
 			ids.append(id)
 	return "" if ids.is_empty() else str(ids[GameState.day % ids.size()])
+
+
+func _stairs() -> void:
+	if GameState.lv() < 4:
+		await Ui.say(["* Una scala stretta che sale verso la Presidenza.", "* Una catenella e un cartello: \"Solo LV 4 e superiori\"."])
+		return
+	Router.goto(Router.PRESIDENCY, "stairs")

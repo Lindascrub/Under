@@ -10,6 +10,62 @@ Un RPG narrativo in stile Undertale in cui il giocatore, schiacciato da un debit
 - **Comodità sospetta:** il lavoro che sfrutta qualcuno è *facilissimo* (un clic) e paga tantissimo. Quello onesto è un minigioco faticoso e paga pochissimo.
 - **Senso di colpa:** il gioco non giudica mai mentre giochi. Il giudizio arriva tutto nel finale.
 
+## Tre strade, tre sistemi economici
+
+Il tempo è la vera valuta del gioco. Le tre strade sono tre modi di trattarlo:
+
+| Strada | Il tempo… | Come ci arrivi | Finale |
+|---|---|---|---|
+| **Capitalismo** | lo compri dagli altri e vendi il tuo | Sfrutti almeno 3 persone (firme, PROMUOVI, incarichi del Capo) | L'attico, la città vista dall'alto, tutti robot |
+| **Comunismo** | è uguale per tutti, fisso, già assegnato | Strada predefinita: non spingi in nessuna direzione | Un turno uguale per tutti, per sempre. Sei un ingranaggio |
+| **Baratto** | si scambia o si regala, senza prezzo | Liberi almeno una persona | Dipende dalla massa critica (sotto) |
+
+### Ogni persona ha uno stato
+
+Nascosto al giocatore, si vede solo da come si comporta: **sfruttato** (robot), **ingranaggio** (lavora come sempre) o **libero** (ha smesso: lo trovi al parco o al Rifugio, con frasi nuove).
+
+### Il "perché lavoro" e come si libera qualcuno
+
+Ogni lavoratore ha un motivo (`motive` in `data/npcs.json`): Marta e Lea il **debito**, Sami e Giulia la **paura**, Ivo l'**abitudine**, Dario l'**orgoglio** (il suo contatore: "ancora 213 giorni e smetto").
+
+1. In battaglia, con PARLA, chiedi perché lavora: scopri il motivo.
+2. Conquisti la sua fiducia.
+3. In AIUTA scegli **Liberalo** (una lunga chiacchierata: 2 ore).
+
+Chi smette rinuncia allo stipendio. Se il sistema non crolla, resta nei guai: è una responsabilità.
+
+### Massa critica (strada del baratto)
+
+| Lavoratori liberati | Finale |
+|---|---|
+| Meno della metà | **Una piccola comunità**: dolceamaro, chi ha smesso è più libero e più povero |
+| Almeno la metà | **Il crollo**: la notte in cui il quartiere smette di pagare (sorte dei creditori ambigua) |
+| Quasi tutti (80%) | **Il mondo disordinato e vivo**: il debito non esiste più perché non c'è più chi lo pretende |
+
+Ogni finale ricorda anche cosa hai fatto zona per zona (ufficio, strada, parco), come in Undertale.
+
+### LV
+
+Come il LV di Undertale ("level of violence"), qui il LV sale quando sfrutti, con il messaggio LEVEL UP: la promozione è il level up. A ogni livello il mondo diventa più grigio (l'interfaccia resta a colori).
+
+### Il tempo
+
+- La giornata tipo: 10 ore di lavoro, 8 di sonno, 3 per mangiare, 3 libere che le faccende si mangiano quasi tutte.
+- Una barra delle 24 ore sotto l'HUD mostra sonno, ore passate, lavoro che ti aspetta e il poco **tempo tuo**.
+- Sfruttare qualcuno con PROMUOVI ti restituisce un'ora: le sue ore diventano tue.
+- Gli **straordinari** (2 ore, +80 €) trasformano il tuo tempo libero in soldi.
+
+### Turni diversi per ogni strada
+
+Lo stesso lavoro cambia ritmo:
+- capitalismo (hai già sfruttato): **frenetico**, attacchi più veloci e più dolorosi;
+- comunismo: **ripetitivo**, sempre lo stesso attacco;
+- baratto (hai liberato qualcuno): **insieme**, una persona liberata lavora con te e para parte degli attacchi.
+
+### La catena che finisce nel vuoto
+
+Il Dottor Prezzi si lamenta del Presidente. Dal LV 4 la scala porta alla **Presidenza**: nessun cattivo, solo un uomo che ha comprato tutto e non sa cosa farne, e che conosceva tuo padre. Puoi chiedergli di cancellare il debito, sederti con lui un'ora, o andartene.
+
 ## Il ciclo di una giornata (4 giorni, orologio di 24 ore)
 
 Se il debito arriva a zero, il finale parte appena vai a dormire.
@@ -118,7 +174,7 @@ Nel finale ricco lo shader `shaders/robot.gdshader` rivela tutti i robot.
 - **Dario:** collega cinico, tre figli.
 - **Giulia:** collega gentile che ti insegna il lavoro.
 
-## I tre finali (`route()` in `game_state.gd`)
+## I finali in dettaglio (`route()` in `game_state.gd`)
 
 | Finale | Condizione | Cosa succede |
 |---|---|---|

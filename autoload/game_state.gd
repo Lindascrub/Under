@@ -19,7 +19,7 @@ const MIDNIGHT := 24 * 60
 const EVENING := 18 * 60
 ## Quanto costano le azioni, in minuti.
 const COST_EASY_JOB := 60
-const COST_HARD_JOB := 8 * 60
+const COST_HARD_JOB := 10 * 60
 const COST_LISTEN := 60
 const COST_HELP_TIME := 60
 const COST_REST := 60
@@ -65,6 +65,10 @@ var helped_today: Array[String] = []
 var flags: Dictionary = {}
 ## Stato delle missioni (vedi scripts/quests.gd): id -> "active" | "found" | "done" | "failed".
 var quests: Dictionary = {}
+## Persone che hai convinto a smettere di lavorare (strada del baratto).
+var freed: Array[String] = []
+## Persone di cui conosci il "perché lavoro" (glielo hai chiesto in battaglia).
+var motives_known: Array[String] = []
 var worked_today := false
 ## Righe da mostrare appena il giocatore entra nella prossima stanza.
 var pending_lines: Array = []
@@ -111,6 +115,8 @@ func new_game() -> void:
 	helped_today.clear()
 	flags.clear()
 	quests.clear()
+	freed.clear()
+	motives_known.clear()
 	worked_today = false
 	pending_lines.clear()
 	battle.clear()
@@ -130,6 +136,8 @@ func npc_ids() -> Array:
 ## Dove si trova una persona adesso: {"room", "cell", "anim"}. Di sera può cambiare posto.
 func npc_place(id: String) -> Dictionary:
 	var data := npc_data(id)
+	if id in freed and data.has("freed_place"):
+		return data["freed_place"]
 	if id in helped_today and data.has("after_help"):
 		return data["after_help"]
 	var schedule: Array = data.get("schedule", [])
@@ -238,6 +246,7 @@ func easy_pay() -> int:
 func exploit(victim: String, pay: int) -> void:
 	money += pay
 	exploited += 1
+	pending_level_up = true
 	rank = mini(rank + 1, RANKS.size() - 1)
 	if victim != "" and victim not in robots:
 		robots.append(victim)
@@ -320,13 +329,113 @@ func end_day(paid_minimum: bool) -> void:
 	changed.emit()
 
 
-## Quale finale ha "meritato" il giocatore.
+## Quale finale ha "meritato" il giocatore. Le tre strade sono tre sistemi economici:
+##   capitalismo -> hai sfruttato (comprato il tempo degli altri)
+##   baratto     -> hai liberato almeno una persona (il tempo si scambia, senza prezzo)
+##   comunismo   -> non hai spinto da nessuna parte: sei rimasto un ingranaggio (strada predefinita)
 func route() -> String:
 	if exploited >= 3 or (debt <= 0 and exploited >= 1):
-		return "ricco"
-	if refused >= 2 and helped >= 3:
-		return "ribelle"
-	return "onesto"
+		return "capitalismo"
+	if not freed.is_empty():
+		return "baratto"
+	return "comunismo"
+
+
+# --- LV, stati delle persone, massa critica ---------------------------------
+
+## Come il LV di Undertale: sale quando sfrutti. La promozione è il "level up".
+func lv() -> int:
+	return 1 + exploited
+
+
+## Diventa vero a ogni sfruttamento: chi mostra il messaggio "LEVEL UP" lo rimette a false.
+var pending_level_up := false
+
+
+func level_up_line() -> String:
+	pending_level_up = false
+	return "* LEVEL UP! Il tuo LV è salito a %d. Il mondo ti sembra un po' più grigio." % lv()
+
+
+## Lavoratori: le persone che hanno un "perché lavoro" (campo "motive"). Solo loro si possono liberare.
+func workers() -> Array:
+	var out: Array = []
+	for id: String in npc_ids():
+		if npc_data(id).has("motive"):
+			out.append(id)
+	return out
+
+
+## Stato di una persona: "sfruttato" (robot), "libero" (ha smesso) o "ingranaggio" (lavora come sempre).
+func npc_state(id: String) -> String:
+	if is_robot(id):
+		return "sfruttato"
+	if id in freed:
+		return "libero"
+	return "ingranaggio"
+
+
+func free_npc(id: String) -> void:
+	if id not in freed:
+		freed.append(id)
+	changed.emit()
+
+
+## Quanti lavoratori hai liberato, da 0 a 1.
+func freed_ratio() -> float:
+	var w := workers()
+	return 0.0 if w.is_empty() else float(freed.size()) / w.size()
+
+
+## Massa critica della strada del baratto: "pochi", "soglia" (il sistema crolla) o "quasi_tutti".
+func barter_level() -> String:
+	var r := freed_ratio()
+	if r >= 0.8:
+		return "quasi_tutti"
+	if r >= 0.5:
+		return "soglia"
+	return "pochi"
+
+
+## Le zone si ricordano cosa hai fatto: {zona: {"sfruttato": n, "libero": n, "ingranaggio": n}}.
+const ZONES := {
+	"ufficio": ["dario", "giulia"],
+	"strada": ["marta", "sig_bruno", "lea", "ragazzo_sami", "portiere_ivo", "nico"],
+	"parco": ["tano", "elsa", "rocco"],
+}
+
+
+func zone_summary() -> Dictionary:
+	var out := {}
+	for z: String in ZONES:
+		var counts := {"sfruttato": 0, "libero": 0, "ingranaggio": 0}
+		for id: String in ZONES[z]:
+			counts[npc_state(id)] += 1
+		out[z] = counts
+	return out
+
+
+# --- il tempo, cioè la vera valuta ------------------------------------------
+
+## Quante ore della giornata sono davvero tue: quelle rimaste, meno il lavoro (se non l'hai fatto),
+## i pasti e le faccende.
+func own_hours() -> float:
+	var left := hours_left()
+	if not worked_today:
+		left -= 10.0
+	var h := minutes / 60.0
+	if h < 13.0:
+		left -= 1.0
+	if h < 20.0:
+		left -= 1.0
+	left -= 1.0
+	return maxf(0.0, left)
+
+
+## Sfruttare qualcuno ti fa guadagnare tempo: le sue ore diventano tue.
+func steal_time(minutes_gained: int) -> void:
+	minutes = maxi(DAY_START, minutes - minutes_gained)
+	changed.emit()
 
 
 ## Il gioco finisce quando la settimana di lavoro è passata o quando il debito è pagato.
@@ -403,7 +512,8 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
-		"worked_today": worked_today, "flags": flags, "quests": quests, "room": room,
+		"worked_today": worked_today, "flags": flags, "quests": quests,
+		"freed": freed, "motives_known": motives_known, "room": room,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -437,6 +547,8 @@ func load_game() -> Dictionary:
 	worked_today = bool(d.get("worked_today", false))
 	flags = d.get("flags", {})
 	quests = d.get("quests", {})
+	freed.assign(d.get("freed", []))
+	motives_known.assign(d.get("motives_known", []))
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {

@@ -32,6 +32,12 @@ var hits := 0
 var turn := 0
 ## Usato solo dal test automatico per scegliere la voce del sottomenu.
 var _pending_sub := 0
+## Come si lavora dipende dalla strada che stai prendendo:
+##   "frenetico" (capitalismo: più veloce e spietato), "ripetitivo" (comunismo: sempre uguale),
+##   "insieme" (baratto: qualcuno che hai liberato lavora con te e gli attacchi sono meno).
+var work_style := ""
+var speed_mult := 1.0
+var helper := ""
 
 var box := MAIN_BOX
 var box_target := MAIN_BOX
@@ -101,9 +107,13 @@ func _ready() -> void:
 	_bubble_label.size = Vector2(170, 58)
 	_bubble.add_child(_bubble_label)
 
+	var intro := str(cfg.get("intro", "* Qualcuno ti si avvicina."))
+	if kind == "work":
+		intro += "
+" + _choose_work_style()
 	if Ui.transitioning:
 		await Ui.faded_in
-	_show_menu_text(str(cfg.get("intro", "* Qualcuno ti si avvicina.")))
+	_show_menu_text(intro)
 
 
 # --- testo ------------------------------------------------------------------
@@ -168,7 +178,7 @@ func _choose_button() -> void:
 				_open_sub("exploit", [str(ex.get("name", "Approfittane"))])
 		1:
 			var names: Array = []
-			for a: Dictionary in cfg.get("acts", []):
+			for a: Dictionary in _acts():
 				names.append(a.get("name", "?"))
 			_open_sub("act", names)
 		2:
@@ -180,7 +190,10 @@ func _choose_button() -> void:
 			if kind == "work":
 				_open_sub("quit", ["Molla il turno"])
 			else:
-				var opts: Array = ["Aiuta", "Vai via"]
+				var opts: Array = ["Aiuta"]
+				if cfg.has("motive"):
+					opts.append("Liberalo")
+				opts.append("Vai via")
 				_open_sub("mercy", opts)
 
 
@@ -199,14 +212,22 @@ func _choose_sub() -> void:
 			var ex: Dictionary = cfg.get("exploit", {})
 			var pay := int(ex.get("pay", 200))
 			GameState.exploit(str(cfg.get("id", "")), pay)
+			GameState.steal_time(60)
 			Sound.sfx("coin")
 			var lines: Array = ex.get("lines", ["* Ne approfitti."]).duplicate()
 			lines.append("* +%s. Sei stato promosso: ora sei {rank}." % GameState.euros(pay))
+			lines.append("* Ti avanza un'ora: quella che lei non avrà più.")
+			lines.append(GameState.level_up_line())
 			_say(lines, func() -> void: _fade_enemy_and(_end_battle))
 		"act":
-			var act: Dictionary = cfg.get("acts", [])[sub]
+			var act: Dictionary = _acts()[sub]
 			trust += int(act.get("trust", 0))
 			var lines: Array = act.get("lines", ["* ..."]).duplicate()
+			if act.get("motive", false):
+				var who_id := str(cfg.get("id", ""))
+				if who_id not in GameState.motives_known:
+					GameState.motives_known.append(who_id)
+				lines.append("* (Ora sai perché lavora. Con abbastanza fiducia, in AIUTA puoi provare a LIBERARLO.)")
 			if kind == "person" and _ready_to_help():
 				lines.append("* (%s si fida di te. Ora puoi AIUTARE.)" % cfg.get("name", ""))
 			_say(lines, _enemy_turn)
@@ -216,12 +237,51 @@ func _choose_sub() -> void:
 		"quit":
 			_finish_work(true)
 		"mercy":
-			if sub == 1:
+			var choice := str(sub_items[sub])
+			if choice == "Vai via":
 				_say(["* Te ne vai. %s ti guarda andare via." % cfg.get("name", "")], _end_battle)
+			elif choice == "Liberalo":
+				_free()
 			elif not _ready_to_help():
 				_say(["* %s non si fida ancora abbastanza di te." % cfg.get("name", "")], _enemy_turn)
 			else:
 				_help()
+
+
+## Le azioni di PARLA: quelle della persona, più "chiedi perché lavora" se non lo sai ancora.
+func _acts() -> Array:
+	var acts: Array = (cfg.get("acts", []) as Array).duplicate()
+	var m: Dictionary = cfg.get("motive", {})
+	if not m.is_empty() and str(cfg.get("id", "")) not in GameState.motives_known:
+		acts.append({"name": m.get("act", "Chiedi perché lavora"), "trust": 1, "lines": m.get("lines", []), "motive": true})
+	return acts
+
+
+## Strada del baratto: convincere qualcuno a smettere di lavorare. Serve sapere perché lavora
+## e avere la sua fiducia. Chi smette rinuncia allo stipendio: è una responsabilità.
+func _free() -> void:
+	var id := str(cfg.get("id", ""))
+	var m: Dictionary = cfg.get("motive", {})
+	if id not in GameState.motives_known:
+		Sound.sfx("deny")
+		_say(["* Non sai ancora perché %s lavora. Chiediglielo prima (PARLA)." % cfg.get("name", "")], _enemy_turn)
+		return
+	if not _ready_to_help():
+		Sound.sfx("deny")
+		_say(["* %s non si fida abbastanza di te per mollare tutto." % cfg.get("name", "")], _enemy_turn)
+		return
+	if not GameState.has_time(120):
+		Sound.sfx("deny")
+		_say(["* Per una cosa così serve una lunga chiacchierata, e oggi non ti resta abbastanza tempo."], _enemy_turn)
+		return
+	GameState.spend(120)
+	GameState.free_npc(id)
+	Sound.sfx("spare")
+	var lines: Array = ["* " + str(m.get("free_ask", "Gli proponi di smettere."))]
+	lines.append_array(m.get("free_lines", []))
+	lines.append("* %s ha smesso di lavorare. Da domani lo troverai fuori dal sistema." % cfg.get("name", ""))
+	lines.append("* Ora rinuncia a uno stipendio. Se il sistema non crolla, resterà nei guai. Anche per te.")
+	_say(lines, _end_battle)
 
 
 func _help() -> void:
@@ -277,18 +337,37 @@ func _sign() -> void:
 	_say([
 		"* Hai firmato. Ci è voluto un secondo.",
 		"* +%s. Il capo è soddisfatto: ora sei {rank}!" % GameState.euros(pay),
+		GameState.level_up_line(),
 		"* %s non lo vedrai firmare niente. Non lo vedrai più, a dire il vero." % cfg.get("name", "Qualcuno"),
 	], _end_battle)
 
 
 # --- turno avversario -------------------------------------------------------
 
+func _choose_work_style() -> String:
+	if GameState.exploited >= 1:
+		work_style = "frenetico"
+		speed_mult = 1.4
+		cfg["damage"] = int(cfg.get("damage", 3)) + 1
+		return "* Da quando sei stato promosso i ritmi sono raddoppiati. Nessuno si ferma, nessuno respira."
+	if not GameState.freed.is_empty():
+		work_style = "insieme"
+		helper = str(GameState.npc_data(GameState.freed[0]).get("name", "Qualcuno"))
+		return "* %s è venuto a darti una mano, senza chiedere niente. In due pesa meno." % helper
+	work_style = "ripetitivo"
+	return "* Sempre la stessa cosa. Ogni giorno. Allo stesso modo."
+
+
 func _enemy_turn() -> void:
 	var attacks: Array = cfg.get("attacks", ["bills"])
-	attack = str(attacks[turn % attacks.size()])
+	attack = str(attacks[0 if work_style == "ripetitivo" else turn % attacks.size()])
 	turn += 1
 	var talk: Array = cfg.get("talk", ["..."])
 	var line := str(talk[(turn - 1) % talk.size()])
+	if work_style == "insieme":
+		line = "%s lavora con te. Gli attacchi sono meno." % helper
+	elif work_style == "ripetitivo" and turn > 1:
+		line = str(talk[0])
 	if attack == "camera":
 		line = "Ti tengo d'occhio. Se ti muovi quando la luce è BLU, lo vedo."
 	_bubble_label.text = line
@@ -332,7 +411,7 @@ func _finish_work(quit: bool) -> void:
 	if quit:
 		lines.append("* Molli il turno a metà. Il caporeparto scuote la testa.")
 	else:
-		lines.append("* Turno finito. Otto ore della tua vita.")
+		lines.append("* Turno finito. Dieci ore della tua vita.")
 	lines.append("* Paga: %s. Colpi presi: %d." % [GameState.euros(pay), hits])
 	lines.append(str(cfg.get("tired", "* Ti fa male tutto.")))
 	_say(lines, _end_battle)
@@ -404,10 +483,16 @@ func _dodge(delta: float) -> void:
 
 	attack_t += delta
 	spawn_t -= delta
+	var bullets_before := bullets.size()
 	Patterns.update(self, attack, delta)
+	if work_style == "insieme":
+		# chi lavora con te ne para qualcuno
+		for i in range(bullets.size() - 1, bullets_before - 1, -1):
+			if randf() < 0.35:
+				bullets.remove_at(i)
 	for b in bullets:
 		b["vel"] = (b["vel"] as Vector2) + (b.get("acc", Vector2.ZERO) as Vector2) * delta
-		b["pos"] = (b["pos"] as Vector2) + (b["vel"] as Vector2) * delta
+		b["pos"] = (b["pos"] as Vector2) + (b["vel"] as Vector2) * delta * speed_mult
 		b["t"] = float(b.get("t", 0.0)) + delta
 	var keep: Array[Dictionary] = []
 	var far := box.grow(90)
@@ -546,7 +631,7 @@ func _draw() -> void:
 		_bar(Vector2(170, 160), "TURNO", progress, int(cfg.get("goal", 4)), Color("3ddc84"))
 
 	# statistiche
-	draw_string(font, Vector2(32, 300), "TU   %s" % GameState.rank_name(), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
+	draw_string(font, Vector2(32, 300), "TU   LV %d" % GameState.lv(), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
 	draw_string(font, Vector2(300, 300), "ENERGIA", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
 	var w := 80.0
 	draw_rect(Rect2(362, 289, w, 12), Color("8a1020"))

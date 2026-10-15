@@ -9,11 +9,12 @@ const OFFICE := "res://scenes/world/office.tscn"
 const PARK := "res://scenes/world/park.tscn"
 const SHELTER := "res://scenes/world/shelter.tscn"
 const BOSS := "res://scenes/world/boss_office.tscn"
+const PRESIDENCY := "res://scenes/world/presidency.tscn"
 const MINIGAME := "res://scenes/minigame/minigame.tscn"
 const BATTLE := "res://scenes/battle/battle.tscn"
 const ENDING := "res://scenes/endings/ending.tscn"
 const ENDING_CITY := "res://scenes/endings/city_below.tscn"
-const WORLD: Array[String] = [HOME, STREET, OFFICE, PARK, SHELTER, BOSS]
+const WORLD: Array[String] = [HOME, STREET, OFFICE, PARK, SHELTER, BOSS, PRESIDENCY]
 
 ## Nome del punto di arrivo nella prossima stanza (vedi Room.spawns).
 var spawn := ""

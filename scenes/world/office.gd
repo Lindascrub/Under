@@ -1,6 +1,6 @@
 extends Room
 ## L'ufficio della CHEAP S.p.A. Al terminale si sceglie il lavoro del giorno:
-## facile (una firma, un'ora, una persona in meno), duro (un turno-battaglia di 8 ore) o rifiuto.
+## facile (una firma, un'ora, una persona in meno), duro (un turno-battaglia di 10 ore) o rifiuto.
 
 const RB := "tiles/room_builder.png"
 const DESK_TEXTS := [
@@ -91,7 +91,7 @@ func enter() -> void:
 
 func _terminal() -> void:
 	if GameState.worked_today:
-		await Ui.say(["* Il turno di oggi è chiuso. Torna a casa a riposare."], "Terminale")
+		await _overtime()
 		return
 	var job := GameState.job_today()
 	var easy: Dictionary = job.get("easy", {})
@@ -100,7 +100,7 @@ func _terminal() -> void:
 
 
 		"%s  (+%s, 1 ora)" % [easy.get("title", "?"), GameState.euros(GameState.easy_pay())],
-		"%s  (8 ore, paga bassa)" % hard.get("title", "?"),
+		"%s  (10 ore, paga bassa)" % hard.get("title", "?"),
 		"Rifiuta di lavorare",
 	]
 	var i: int = await Ui.choose("CHEAP S.p.A. - Incarichi di {day_name}. Ruolo: {rank}. Ore {clock}.", options, "Terminale")
@@ -123,7 +123,7 @@ func _terminal() -> void:
 			})
 		1:
 			if not GameState.has_time(GameState.COST_HARD_JOB):
-				await Ui.say(["* Sono le {clock}. Non ti restano otto ore prima di mezzanotte."], "Terminale")
+				await Ui.say(["* Sono le {clock}. Non ti restano dieci ore prima di mezzanotte."], "Terminale")
 				return
 			await Ui.say(hard.get("desc", []), "Terminale")
 			var accept: int = await Ui.choose("Accetti il turno?", ["Accetta", "Annulla"], "Terminale")
@@ -173,3 +173,22 @@ func _ride_elevator() -> void:
 			"* Sul display: \"Accesso riservato. Dal grado di Supervisore in su.\""])
 		return
 	Router.goto(Router.BOSS, "elevator")
+
+
+## Straordinari: soldi in cambio del poco tempo che ti resta.
+func _overtime() -> void:
+	if GameState.flags.get("overtime_day", 0) == GameState.day or not GameState.has_time(120):
+		await Ui.say(["* Il turno di oggi è chiuso. Torna a casa a riposare."], "Terminale")
+		return
+	var c: int = await Ui.choose("Il turno è finito. Vuoi fare due ore di straordinari? (+80 €)", ["Straordinari (2 ore)", "Vai a casa"], "Terminale")
+	if c != 0:
+		return
+	GameState.flags["overtime_day"] = GameState.day
+	GameState.spend(120)
+	GameState.money += 80
+	GameState.hurt(3)
+	Sound.sfx("coin")
+	await Ui.say([
+		"* Resti in ufficio. Fuori fa buio. Dario è ancora lì, col suo contatore.",
+		"* +80 €. Le tue due ore libere sono diventate soldi. Non tornano indietro.",
+	])

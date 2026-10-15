@@ -7,6 +7,8 @@ const INTRO := [
 	"...e un debito di {debt}.",
 	"La banca ti ha già scritto. Gli interessi corrono ogni notte.",
 	"Domani inizi a lavorare alla CHEAP S.p.A.",
+	"Una giornata, qui, è fatta così:\ndieci ore di lavoro, otto di sonno, tre per mangiare.\nTre ore libere. Che poi le faccende si mangiano quasi tutte.",
+	"Il tempo che è davvero tuo è quasi niente. Guardalo bene, in alto a sinistra.",
 	"Hai {last_day} giorni.",
 ]
 

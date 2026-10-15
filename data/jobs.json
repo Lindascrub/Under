@@ -14,7 +14,7 @@
       "title": "Magazzino",
       "minigame": "warehouse",
       "desc": [
-        "Incarico: smistare scatole in magazzino per otto ore.",
+        "Incarico: smistare scatole in magazzino per dieci ore.",
         "Paga bassa. Schiena a pezzi."
       ],
       "battle": {

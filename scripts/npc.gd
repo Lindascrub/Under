@@ -46,7 +46,7 @@ func _ready() -> void:
 	col.position = Vector2(0, -4)
 	add_child(col)
 
-	if GameState.is_robot(id):
+	if GameState.is_robot(id) and not activity.begins_with("sit"):
 		activity = "idle_down"
 	if activity.begins_with("sit"):
 		# Seduto su una panchina: un po' più in basso nell'ordinamento, così resta sopra la panchina.
@@ -182,6 +182,8 @@ func _lines() -> Array:
 		return data["intro"]
 	if id == "nico":
 		return GameState.nico_lines()
+	if id in GameState.freed and data.has("motive"):
+		return data["motive"].get("freed_lines", ["..."])
 	if id in GameState.helped_ids and data.has("helped"):
 		return data["helped"]
 	var days: Array = data.get("days", [["..."]])
@@ -210,6 +212,8 @@ func _offer_encounter(who: String) -> void:
 	cfg["name"] = who
 	cfg["sheet"] = data.get("sheet", "char_02")
 	cfg["help"] = data.get("help", {})
+	if data.has("motive"):
+		cfg["motive"] = data["motive"]
 	cfg["return"] = get_tree().current_scene.scene_file_path
 	cfg["return_pos"] = (get_tree().get_first_node_in_group("player") as Node2D).global_position
 	Router.battle(cfg)

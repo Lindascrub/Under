@@ -375,21 +375,49 @@ func _run() -> void:
 	await _idle()
 	_check(GameState.debt <= 0, "pagando tutto il debito dovrebbe arrivare a zero")
 
-	# --- i tre finali
-	for route in ["ricco", "onesto", "ribelle"]:
+	# --- strada del baratto: chiedere il motivo, conquistare fiducia, liberare
+	GameState.new_game()
+	GameState.flags["street_intro"] = true
+	GameState.quests["esame_luca"] = "declined"
+	choose_queue = []
+	choose_index = 0
+	await _go(Router.STREET, "home")
+	plan = [[1, 3], [1, 0], [3, 1]]
+	fallback = [3, 2]
+	_npc("marta").call("interact")
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.STREET)
+	await _idle()
+	_check("marta" in GameState.motives_known, "chiedere a Marta perché lavora dovrebbe rivelare il motivo")
+	_check(GameState.npc_state("marta") == "libero", "Marta dovrebbe essere libera dopo averla convinta")
+	_check(GameState.npc_place("marta").get("room") == "park", "chi è libero dovrebbe stare fuori dal lavoro (al parco)")
+	fallback = [3, 1]
+
+	# --- LV: sale quando sfrutti
+	var lv_before := GameState.lv()
+	GameState.exploit("lea", 100)
+	_check(GameState.lv() == lv_before + 1 and GameState.pending_level_up, "sfruttare dovrebbe alzare il LV")
+	GameState.level_up_line()
+	_check(GameState.own_hours() >= 0.0, "le ore tue non dovrebbero essere negative")
+
+	# --- i finali: capitalismo, comunismo e le tre varianti del baratto
+	var cases := [
+		["capitalismo", 3, [], ""],
+		["comunismo", 0, [], ""],
+		["baratto", 0, ["marta"], "pochi"],
+		["baratto", 0, ["marta", "lea", "dario"], "soglia"],
+		["baratto", 0, ["marta", "lea", "dario", "giulia", "ragazzo_sami"], "quasi_tutti"],
+	]
+	for c: Array in cases:
 		GameState.new_game()
-		match route:
-			"ricco":
-				GameState.exploited = 3
-				GameState.money = 90000
-				GameState.debt = 0
-			"ribelle":
-				GameState.refused = 2
-				GameState.helped = 3
-				GameState.helped_ids.assign(["marta", "lea"])
-			"onesto":
-				GameState.helped_ids.assign(["sig_bruno", "dario"])
-		_check(GameState.route() == route, "route() dovrebbe dare " + route)
+		GameState.exploited = int(c[1])
+		if c[0] == "capitalismo":
+			GameState.money = 90000
+			GameState.debt = 0
+		GameState.freed.assign(c[2])
+		_check(GameState.route() == c[0], "route() dovrebbe dare " + str(c[0]))
+		if c[3] != "":
+			_check(GameState.barter_level() == c[3], "la massa critica dovrebbe essere " + str(c[3]))
 		Router.goto(Router.ENDING)
 		await _wait_scene(Router.MENU, 60000)
 		await _idle()

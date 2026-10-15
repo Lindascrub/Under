@@ -26,6 +26,7 @@ var _choice_box: Panel
 var _choice_label: Label
 var _fade: ColorRect
 var _narr: Label
+var _time_bar: Control
 var _portrait: TextureRect
 var _portrait_tex: AtlasTexture
 var _talk_t := 0.0
@@ -57,6 +58,35 @@ func blocks_input() -> bool:
 
 func show_hud(visible_: bool) -> void:
 	_hud.visible = visible_
+	if _time_bar:
+		_time_bar.visible = visible_
+
+
+## La giornata in 24 caselle: sonno, ore passate, lavoro che ti aspetta e il poco tempo davvero tuo.
+func _draw_time_bar() -> void:
+	var font := Assets.font()
+	var w := 7.0
+	var now := GameState.minutes / 60.0
+	var work_left := 0.0 if GameState.worked_today else 10.0
+	var own := GameState.own_hours()
+	var future_i := 0
+	for h in 24:
+		var col: Color
+		if h < 7:
+			col = Color("2b3a6b")
+		elif h + 1 <= now:
+			col = Color("3a3644")
+		else:
+			if future_i < int(work_left):
+				col = Color("c06a2a")
+			elif future_i >= int(work_left) + int(own):
+				col = Color("5c5666")
+			else:
+				col = Color("3ddc84")
+			future_i += 1
+		_time_bar.draw_rect(Rect2(h * w, 0, w - 1, 6), col)
+	_time_bar.draw_rect(Rect2(clampf(now, 0, 24) * w - 1, -2, 2, 10), Color.WHITE)
+	_time_bar.draw_string(font, Vector2(24 * w + 6, 7), "Tempo tuo: %d h" % int(own), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3ddc84"))
 
 
 # --- costruzione ------------------------------------------------------------
@@ -82,6 +112,12 @@ func _build() -> void:
 	_hud.add_theme_constant_override("outline_size", 5)
 	_hud.add_theme_color_override("font_outline_color", Color.BLACK)
 	add_child(_hud)
+	_time_bar = Control.new()
+	_time_bar.position = Vector2(8, 24)
+	_time_bar.size = Vector2(300, 12)
+	_time_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_time_bar.draw.connect(_draw_time_bar)
+	add_child(_time_bar)
 
 	_box = Panel.new()
 	_box.add_theme_stylebox_override("panel", _panel_style())
@@ -132,11 +168,13 @@ func _build() -> void:
 
 
 func _refresh_hud() -> void:
-	_hud.text = "%s %s   Giorno %d/%d   Debito %s   Soldi %s   Energia %d/%d" % [
-		GameState.day_name(), GameState.clock(), mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
+	_hud.text = "%s %s   LV %d   Giorno %d/%d   Debito %s   Soldi %s   Energia %d/%d" % [
+		GameState.day_name(), GameState.clock(), GameState.lv(), mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
 		GameState.euros(GameState.debt), GameState.euros(GameState.money),
 		GameState.energy, GameState.MAX_ENERGY,
 	]
+	if _time_bar:
+		_time_bar.queue_redraw()
 
 
 # --- dialoghi ---------------------------------------------------------------

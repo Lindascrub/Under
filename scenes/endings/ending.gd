@@ -1,8 +1,10 @@
 extends Room
-## I tre finali. Quale vedi lo decide GameState.route():
-##   ricco   -> l'attico, i "colleghi", Nico che ti fa guardare giù (city_below), poi la verità sui robot
-##   onesto  -> la strada al tramonto: il debito resta, le persone anche
-##   ribelle -> la notte in cui il quartiere smette di pagare
+## I tre finali sono tre sistemi economici, cioè tre modi di trattare il tempo. Li decide GameState.route():
+##   capitalismo -> hai comprato il tempo degli altri: l'attico, Nico, la città vista dall'alto, i robot
+##   comunismo   -> sei rimasto un ingranaggio: il tempo di tutti è uguale, fisso, già assegnato
+##   baratto     -> il tempo si scambia. Dipende dalla massa critica (GameState.barter_level()):
+##                  "pochi" una piccola comunità; "soglia" il sistema crolla; "quasi_tutti" il mondo disordinato ma vivo
+## Alla fine ogni finale ricorda cosa hai fatto zona per zona.
 
 const RB := "tiles/room_builder.png"
 const CITY := "tiles/city_terrains.png"
@@ -15,7 +17,7 @@ var people: Array[Npc] = []
 func build() -> void:
 	Ui.cutscene = true
 	route = GameState.route()
-	if route == "ricco":
+	if route == "capitalismo":
 		music = "ufficio"
 		_build_penthouse()
 	else:
@@ -25,18 +27,45 @@ func build() -> void:
 
 func enter() -> void:
 	match route:
-		"ricco":
+		"capitalismo":
 			if GameState.flags.get("ending_stage", 0) == 0:
 				await _rich_start()
 			else:
 				await _rich_reveal()
-		"ribelle":
-			await _rebel()
+		"baratto":
+			match GameState.barter_level():
+				"quasi_tutti":
+					await _barter_full()
+				"soglia":
+					await _rebel()
+				_:
+					await _barter_few()
 		_:
-			await _honest()
+			await _cog()
+
+
+## Come in Undertale, il finale ricorda cosa hai fatto in ogni zona.
+func _zone_lines() -> String:
+	var out: Array = []
+	var names := {"ufficio": "In ufficio", "strada": "In strada", "parco": "Al parco"}
+	var sums := GameState.zone_summary()
+	for z: String in sums:
+		var c: Dictionary = sums[z]
+		var parts: Array = []
+		if c["sfruttato"] > 0:
+			parts.append("%d sostituiti da robot" % c["sfruttato"])
+		if c["libero"] > 0:
+			parts.append("%d liberi" % c["libero"])
+		if c["ingranaggio"] > 0:
+			parts.append("%d ancora al lavoro" % c["ingranaggio"])
+		out.append("%s: %s." % [names[z], ", ".join(parts)])
+	return "\n".join(out)
 
 
 func _finish(lines: Array) -> void:
+	lines = lines.duplicate()
+	lines.insert(lines.size() - 1, "LV finale: %d." % GameState.lv())
+	lines.insert(lines.size() - 1, _zone_lines())
 	GameState.delete_save()
 	GameState.flags.erase("ending_stage")
 	Ui.cutscene = false
@@ -89,7 +118,7 @@ func _build_penthouse() -> void:
 
 
 func _build_street() -> void:
-	outdoor = route == "onesto"
+	outdoor = route == "comunismo"
 	var rows: Array = []
 	for y in 13:
 		var row := ""
@@ -116,7 +145,7 @@ func _build_street() -> void:
 	block(Rect2i(-1, 0, 1, 13))
 	block(Rect2i(24, 0, 1, 13))
 	block(Rect2i(0, 12, 24, 1))
-	if route == "ribelle":
+	if route == "baratto" and GameState.barter_level() != "quasi_tutti":
 		var night := CanvasModulate.new()
 		night.color = Color(0.42, 0.48, 0.75)
 		add_child(night)
@@ -127,7 +156,9 @@ func _build_street() -> void:
 	for id: String in GameState.npc_ids():
 		if id == "nico" or GameState.is_robot(id):
 			continue
-		if route == "ribelle" or id in GameState.helped_ids:
+		if route == "baratto" and (id in GameState.freed or GameState.barter_level() != "pochi"):
+			ids.append(id)
+		elif route == "comunismo" and GameState.npc_state(id) == "ingranaggio":
 			ids.append(id)
 	var spots := [Vector2i(8, 8), Vector2i(14, 8), Vector2i(7, 9), Vector2i(15, 9),
 		Vector2i(9, 7), Vector2i(13, 7), Vector2i(6, 8), Vector2i(16, 8)]
@@ -178,38 +209,89 @@ func _rich_reveal() -> void:
 		"...Anche per colpa tua.",
 	], "Nico")
 	nico.visible = false
+	if GameState.flags.get("sat_with_president", false):
+		await Ui.say(["* Ti torna in mente il Presidente, seduto davanti alla sua finestra.", "* \"L'ho venduto tutto, un'ora alla volta.\""])
 	await Ui.say(["* Sei da solo, in cima a tutto."])
 	_finish([
-		"FINALE: RICCO",
-		"Debito: 0 €.\nPersone intorno a te: 0.",
+		"FINALE: CAPITALISMO",
+		"Hai comprato il tempo degli altri e venduto il tuo.\nDebito: 0 €. Persone intorno a te: 0.",
 		"Grazie per aver giocato a CHEAP.",
 	])
 
 
-# --- finale onesto ----------------------------------------------------------
+# --- finale comunismo (ingranaggio) -----------------------------------------
 
-func _honest() -> void:
+func _cog() -> void:
 	await Ui.say([
-		"Il debito è ancora lì, eh? È sceso un po', ma è ancora lì.",
-		"La banca ha mandato un'altra lettera. Domani ne manderà un'altra.",
+		"Ti hanno dato un turno nuovo. Lo stesso di tutti.",
+		"Dieci ore di lavoro, otto di sonno, tre per mangiare. Tre libere, che poi sono una.",
+		"Nessuno ti sfrutta. Nessuno è libero. Siamo tutti uguali: tutti un po' stanchi allo stesso modo.",
 	], "Nico")
-	for p in people:
-		var lines: Array = p.data.get("helped", ["Grazie."])
-		await Ui.say([lines[0]], p.display_name())
+	for p in people.slice(0, 3):
+		await Ui.say(["Domani alle sette. Come oggi. Come ieri."], p.display_name())
 	await Ui.say([
-		"Non è cambiato niente. Il sistema è uguale a prima.",
-		"Però tu sei ancora tu. E noi siamo ancora qui.",
-		"Domani si ricomincia. Il caffè lo offro io.",
+		"Il debito è ancora lì. È sceso un po'. Scenderà un po' ogni giorno, per sempre.",
+		"Domani si ricomincia. Il caffè lo offro io. Anche quello, come ogni giorno.",
 	], "Nico")
 	_finish([
-		"FINALE: ONESTO",
-		"Debito: {debt}.\nTi sei sporcato le mani. Non sei diventato ricco.",
-		"Le persone intorno a te sono vere. Per oggi basta.",
+		"FINALE: COMUNISMO",
+		"Il tempo di tutti è uguale, fisso e già assegnato.\nDebito: {debt}.",
+		"Non hai rovinato nessuno. Non hai salvato nessuno. Sei un ingranaggio, e l'ingranaggio gira.",
 		"Grazie per aver giocato a CHEAP.",
 	])
 
 
-# --- finale ribelle ---------------------------------------------------------
+# --- finale baratto: pochi -------------------------------------------------
+
+func _barter_few() -> void:
+	var names: Array = []
+	for id: String in GameState.freed:
+		names.append(str(GameState.npc_data(id).get("name", id)))
+	await Ui.say([
+		"Siamo in pochi. Il sistema non se n'è nemmeno accorto.",
+		"La banca manda lettere. La CHEAP assume altri. La città va avanti come se niente fosse.",
+	], "Nico")
+	for p in people:
+		var lines: Array = p.data.get("motive", {}).get("freed_lines", ["Grazie."])
+		await Ui.say([lines[0]], p.display_name())
+	var who := ", ".join(names)
+	await Ui.say([
+		("* %s hanno smesso di lavorare." if names.size() > 1 else "* %s ha smesso di lavorare.") % who,
+		"* Ma il sistema non è crollato, e uno stipendio in meno pesa. Ci sono mesi in cui il pane del Rifugio non basta.",
+	])
+	await Ui.say(["Però guarda: ci scambiamo le cose, ci aiutiamo. Una piccola città dentro la città.", "Non è una vittoria. Ma è nostra."], "Nico")
+	_finish([
+		"FINALE: BARATTO - UNA PICCOLA COMUNITÀ",
+		"Il debito resta: {debt}.\nChi hai convinto a smettere è più libero. E più povero.",
+		"Forse, con più persone, sarebbe andata diversamente.",
+		"Grazie per aver giocato a CHEAP.",
+	])
+
+
+# --- finale baratto: quasi tutti ---------------------------------------------
+
+func _barter_full() -> void:
+	await Ui.say([
+		"Lo senti? Nessuna sveglia. Nessun clacson. Nessuno corre.",
+		"Hanno smesso quasi tutti, nello stesso momento. Quando non lavora più nessuno, il debito di chi è?",
+	], "Nico")
+	for p in people:
+		var lines: Array = p.data.get("motive", {}).get("freed_lines", ["Buongiorno!"])
+		await Ui.say([lines[lines.size() - 1]], p.display_name())
+	await Ui.say([
+		"È tutto in disordine. La spazzatura, le strade, i conti. Nessuno sa bene come si fa.",
+		"Ma la gente si parla. Si scambia il tempo invece di venderlo.",
+		"Un pane per una riparazione. Un'ora di lavoro per un'ora di lavoro.",
+	], "Nico")
+	_finish([
+		"FINALE: BARATTO - IL MONDO DISORDINATO E VIVO",
+		"Il debito non esiste più, perché non esiste più chi lo pretendeva.",
+		"Il mondo è disordinato. Ma è vivo. E il tempo, finalmente, è tuo.",
+		"Grazie per aver giocato a CHEAP.",
+	])
+
+
+# --- finale baratto: soglia (il sistema crolla) -------------------------------
 
 func _rebel() -> void:
 	await Ui.say([
@@ -226,7 +308,7 @@ func _rebel() -> void:
 		"Dei creditori, nessuno parlò più.",
 		"Qualcuno dice che sono scappati. Altri abbassano lo sguardo e cambiano discorso.",
 		"La mattina dopo, al mercato, nessuno usava soldi.\nUn pane per una riparazione. Un'ora di lavoro per un'ora di lavoro.",
-		"FINALE: RIBELLE",
+		"FINALE: BARATTO - IL CROLLO",
 		"Sei libero. Ma ogni tanto ti chiedi cosa sia successo davvero, quella notte.",
 		"Grazie per aver giocato a CHEAP.",
 	])

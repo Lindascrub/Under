@@ -16,7 +16,9 @@
       "Ehi! Tu sei quello nuovo del terzo piano, giusto?",
       "Io sono Nico. Vendo caffè qui, dentro questa tazza gigante. Sì, ci lavoro dentro. Non chiedere.",
       "Primo giorno alla CHEAP? Auguri. Lì dentro la gente entra persona ed esce... boh, vedrai.",
-      "Passa ogni mattina. Il caffè per te è gratis. Non dirlo a nessuno."
+      "Passa ogni mattina. Il caffè per te è gratis. Non dirlo a nessuno.",
+      "Ah, un consiglio. Qui ognuno lavora per un motivo suo: paura, debiti, abitudine, orgoglio.",
+      "Se capisci il motivo di qualcuno, magari capisci anche come farlo smettere. Pensaci."
     ],
     "evening": [
       {
@@ -210,6 +212,32 @@
       }
     ],
     "after_help": {
+      "room": "park",
+      "cell": [
+        17,
+        15
+      ],
+      "anim": "idle_down"
+    },
+    "motive": {
+      "kind": "debito",
+      "act": "Chiedile perché lavora così tanto",
+      "lines": [
+        "* Glielo chiedi. Marta ride, poi smette di ridere.",
+        "Per i bambini. E per l'affitto. E perché se mi fermo, anche solo un giorno, non so più come si riparte.",
+        "* Il suo motivo è il DEBITO: ha paura di restare indietro coi pagamenti."
+      ],
+      "free_ask": "Proponile di smettere: al Rifugio la casa e il cibo si scambiano, non si pagano.",
+      "free_lines": [
+        "E se poi non funziona? Se resto senza niente, con due bambini?",
+        "...Va bene. Domani non vado. Proviamo. Ma tu non sparire, eh."
+      ],
+      "freed_lines": [
+        "Ho smesso con le pulizie della sera. I bambini mi hanno vista a cena per la prima volta in un anno.",
+        "Ho paura. Ma è una paura diversa."
+      ]
+    },
+    "freed_place": {
       "room": "park",
       "cell": [
         17,
@@ -530,6 +558,31 @@
         12
       ],
       "anim": "read"
+    },
+    "motive": {
+      "kind": "debito",
+      "act": "Chiedile perché fa tre lavori",
+      "lines": [
+        "Perché i libri costano, l'affitto costa, e se mollo gli studi ho sprecato tutto quello che ho pagato finora.",
+        "* Il suo motivo è il DEBITO: crede di dover recuperare quello che ha già speso."
+      ],
+      "free_ask": "Dille che al Rifugio c'è chi presta libri e chi dà lezioni gratis.",
+      "free_lines": [
+        "Lezioni gratis? Libri in prestito? ...Allora posso lasciare il turno di notte.",
+        "Se dormo più di quattro ore svengo dalla felicità."
+      ],
+      "freed_lines": [
+        "Ho lasciato il pub. Ora studio al parco e do ripetizioni in cambio di cene.",
+        "Ho dormito otto ore. Otto! Mi sembrava di essere ricca."
+      ]
+    },
+    "freed_place": {
+      "room": "park",
+      "cell": [
+        24,
+        12
+      ],
+      "anim": "read"
     }
   },
   "ragazzo_sami": {
@@ -724,6 +777,32 @@
         16
       ],
       "anim": "wander"
+    },
+    "motive": {
+      "kind": "paura",
+      "act": "Chiedigli perché non molla l'app",
+      "lines": [
+        "Perché se mi disattivano non trovo altro. Sono senza contratto, senza niente.",
+        "L'app lo sa. Per questo ci tratta così.",
+        "* Il suo motivo è la PAURA: di restare fuori da tutto."
+      ],
+      "free_ask": "Digli che al Rifugio servono mani per riparare bici, e che lì nessuno lo disattiva.",
+      "free_lines": [
+        "Riparare bici... per la gente del quartiere? Senza stelle e senza cronometro?",
+        "Ho tolto l'app. Mi tremano le mani. Ma è una bella sensazione."
+      ],
+      "freed_lines": [
+        "Ho aperto un'officina di bici al Rifugio. Mi pagano in pane e in grazie.",
+        "Mia madre ora lo sa, cosa faccio. È fiera."
+      ]
+    },
+    "freed_place": {
+      "room": "shelter",
+      "cell": [
+        12,
+        8
+      ],
+      "anim": "idle_down"
     }
   },
   "portiere_ivo": {
@@ -894,6 +973,32 @@
         9
       ],
       "anim": "read"
+    },
+    "motive": {
+      "kind": "abitudine",
+      "act": "Chiedigli perché lavora ancora alla sua età",
+      "lines": [
+        "Perché ho sempre lavorato. Se smetto, chi sono?",
+        "Quarant'anni di chiavi. Non so fare altro.",
+        "* Il suo motivo è l'ABITUDINE: senza lavoro non sa chi sarebbe."
+      ],
+      "free_ask": "Digli che il quartiere ha bisogno di qualcuno che conosca tutti, non di un portiere.",
+      "free_lines": [
+        "Qualcuno che conosce tutti... Beh, quello lo so fare.",
+        "Va bene. Le chiavi le tengo. Ma le uso per aprire, non per chiudere."
+      ],
+      "freed_lines": [
+        "Ora apro la cantina a chi ha bisogno. Non è un lavoro. È una cosa che faccio.",
+        "Tuo padre ne sarebbe contento. Lo so."
+      ]
+    },
+    "freed_place": {
+      "room": "shelter",
+      "cell": [
+        4,
+        6
+      ],
+      "anim": "idle_down"
     }
   },
   "dario": {
@@ -963,14 +1068,18 @@
     ],
     "days": [
       [
-        "Il trucco è non guardare mai cosa firmi. Lo fanno tutti."
+        "Ancora 216 giorni e smetto. Me lo sono scritto qui.",
+        "* Indica un post-it sul monitor con un numero cancellato e riscritto tante volte."
       ],
       [
-        "Mia figlia ha la recita a scuola stasera. Fa l'albero.",
-        "Io farò l'impiegato che resta in ufficio fino alle dieci."
+        "Ancora 215. Oppure 400. Dipende dai mutui.",
+        "Mia figlia ha la recita stasera. Fa l'albero. Io farò l'impiegato che resta fino alle dieci."
       ],
       [
-        "Dicono che stanno provando un software che fa il mio lavoro. Ah! Voglio vederlo, a fare il mio lavoro."
+        "Dicono che un software farà il mio lavoro. Ah! Così smetto prima. Ancora... boh."
+      ],
+      [
+        "Sai qual è la cosa peggiore? Lo so benissimo che sto buttando il tempo. Lo so. E vengo lo stesso."
       ]
     ],
     "helped": [
@@ -1059,6 +1168,32 @@
     ],
     "after_help": {
       "room": "none"
+    },
+    "motive": {
+      "kind": "orgoglio",
+      "act": "Chiedigli cosa conta sul suo contatore",
+      "lines": [
+        "Il contatore? Sono i giorni che mi mancano. Ancora 213 e smetto. Giuro.",
+        "Lo dico da quindici anni. Il numero cambia sempre, ma non arriva mai a zero.",
+        "* Il suo motivo è l'ORGOGLIO: non vuole ammettere di aver sprecato quindici anni."
+      ],
+      "free_ask": "Digli che smettere non vuol dire aver perso: vuol dire vedere la prossima recita della figlia.",
+      "free_lines": [
+        "La prossima recita... Fa la luna, sai? Ha una battuta sola.",
+        "...Al diavolo il contatore. Lo azzero oggi."
+      ],
+      "freed_lines": [
+        "Ho azzerato il contatore. Faccio il falegname al Rifugio. Mi fanno male le mani, non la testa.",
+        "Mia figlia ha detto la sua battuta. Ero in prima fila."
+      ]
+    },
+    "freed_place": {
+      "room": "shelter",
+      "cell": [
+        9,
+        7
+      ],
+      "anim": "idle_left"
     }
   },
   "giulia": {
@@ -1217,6 +1352,31 @@
     ],
     "after_help": {
       "room": "none"
+    },
+    "motive": {
+      "kind": "paura",
+      "act": "Chiedile perché resta alla CHEAP",
+      "lines": [
+        "Per l'assicurazione. Il mese prossimo ho l'intervento. Senza la CHEAP non me lo posso permettere.",
+        "* Il suo motivo è la PAURA: di ammalarsi e restare sola."
+      ],
+      "free_ask": "Dille che al Rifugio c'è una cassa comune per chi deve curarsi.",
+      "free_lines": [
+        "Una cassa comune? Gente che si aiuta senza firmare niente?",
+        "...Allora posso andare via. Ho sempre voluto insegnare. Ai bambini, non ai nuovi assunti."
+      ],
+      "freed_lines": [
+        "Ho lasciato la CHEAP. Insegno a leggere ai bambini del quartiere, il pomeriggio.",
+        "L'intervento lo pagheremo insieme. È strano dirlo. È bello dirlo."
+      ]
+    },
+    "freed_place": {
+      "room": "park",
+      "cell": [
+        8,
+        12
+      ],
+      "anim": "read"
     }
   },
   "tano": {
