@@ -2,6 +2,8 @@ extends Room
 ## Casa del protagonista: il letto (fine giornata e rata), il computer (la banca), la porta.
 
 const RB := "tiles/room_builder.png"
+## Angolo in alto a sinistra dello sprite del letto (in pixel), per sdraiarsi.
+const BED_TOP := Vector2(2 * 16, 6 * 16 - 48)
 
 
 func build() -> void:
@@ -60,11 +62,14 @@ func build() -> void:
 	spawns["bed"] = spawns["default"]
 	spawn_facing["default"] = "left"
 	spawn_facing["bed"] = "left"
+	spawns["wake"] = spawns["default"]
 	spawns["street"] = cell_feet(Vector2i(7, 9))
 	spawn_facing["street"] = "up"
 
 
 func enter() -> void:
+	if Router.spawn == "wake":
+		await _wake_up()
 	if GameState.flags.get("forced_sleep", false):
 		GameState.flags.erase("forced_sleep")
 		await _sleep(true)
@@ -130,7 +135,12 @@ func _sleep(forced := false) -> void:
 			Sound.sfx("coin")
 			paid_minimum = amounts[i] >= minimum
 
+	# Ti sdrai davvero nel letto, con la musica della notte.
 	var bedtime := GameState.minutes
+	Ui.cutscene = true
+	player.lie_down(BED_TOP)
+	Sound.music("notte")
+	await get_tree().create_timer(1.4).timeout
 	Ui.show_hud(false)
 	await SleepCutscene.play(self, bedtime)
 	GameState.end_day(paid_minimum)
@@ -141,4 +151,21 @@ func _sleep(forced := false) -> void:
 		Router.goto(Router.ENDING, "", ["I giorni sono finiti.", "La banca ha fatto i suoi conti.", "Adesso tocca a te fare i tuoi."])
 		return
 	GameState.save_game(Router.HOME)
-	Router.goto(Router.HOME, "bed", ["{day_name}. Ore 7:00.", "Durante la notte gli interessi hanno lavorato al posto tuo.\nDebito: {debt}."])
+	Router.goto(Router.HOME, "wake", ["{day_name}.", "Durante la notte gli interessi hanno lavorato al posto tuo.\nDebito: {debt}."])
+
+
+## Il risveglio: sei ancora nel letto, la sveglia suona (prima del testo, così si sente sempre),
+## poi esci dal letto.
+func _wake_up() -> void:
+	Ui.cutscene = true
+	player.lie_down(BED_TOP)
+	Sound.music("notte")
+	Sound.sfx("alarm")
+	await get_tree().create_timer(0.9).timeout
+	Sound.sfx("alarm")
+	await get_tree().create_timer(0.6).timeout
+	Sound.sfx("alarm")
+	await Ui.say(["* DRIIIIN! DRIIIIN!", "* Sono le 7:00. Devi svegliarti.", "* Il debito si è svegliato prima di te."])
+	Sound.music(music)
+	await player.get_up(cell_feet(Vector2i(4, 4)))
+	Ui.cutscene = false

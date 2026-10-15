@@ -12,16 +12,17 @@ var sheet := "char_01"
 var facing := "down"
 var camera: Camera2D
 var _step_t := 0.0
+var _shadow: Sprite2D
 var _sprite: AnimatedSprite2D
 
 
 func _ready() -> void:
 	add_to_group("player")
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
-	var shadow := Sprite2D.new()
-	shadow.texture = Assets.shadow()
-	shadow.position = Vector2(0, -1)
-	add_child(shadow)
+	_shadow = Sprite2D.new()
+	_shadow.texture = Assets.shadow()
+	_shadow.position = Vector2(0, -1)
+	add_child(_shadow)
 	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = Assets.character(sheet)
 	_sprite.centered = false
@@ -91,3 +92,61 @@ func _find_target() -> Node:
 			best_d = d
 			best = n
 	return best
+
+
+var _sleep_nodes: Array[Node] = []
+
+
+## Si sdraia nel letto: la testa sul cuscino che respira, e sopra la coperta.
+## `bed_top_left` è l'angolo in alto a sinistra dello sprite del letto.
+func lie_down(bed_top_left: Vector2) -> void:
+	get_up_instant()
+	_sprite.visible = false
+	_shadow.visible = false
+	var head := AnimatedSprite2D.new()
+	var frames := SpriteFrames.new()
+	var tex := Assets.tex("characters/%s.png" % sheet, Vector2i(896, 656))
+	for i in 6:
+		var at := AtlasTexture.new()
+		at.atlas = tex
+		at.region = Rect2(i * 16, 96, 16, 20)
+		frames.add_frame("default", at)
+	frames.set_animation_speed("default", 3.0)
+	head.sprite_frames = frames
+	head.centered = false
+	head.top_level = true
+	head.global_position = bed_top_left + Vector2(1, -1)
+	head.z_index = 20
+	head.play()
+	add_child(head)
+	var blanket := Sprite2D.new()
+	var bt := AtlasTexture.new()
+	bt.atlas = Assets.tex("props/bed.png", Vector2i(32, 48))
+	bt.region = Rect2(0, 15, 32, 23)
+	blanket.texture = bt
+	blanket.centered = false
+	blanket.top_level = true
+	blanket.global_position = bed_top_left + Vector2(0, 15)
+	blanket.z_index = 21
+	add_child(blanket)
+	_sleep_nodes = [head, blanket]
+
+
+func get_up_instant() -> void:
+	for n in _sleep_nodes:
+		n.queue_free()
+	_sleep_nodes.clear()
+	_sprite.visible = true
+	_shadow.visible = true
+
+
+## Si alza dal letto e fa due passi fino a `to`.
+func get_up(to: Vector2) -> void:
+	get_up_instant()
+	facing = "right"
+	_sprite.play("walk_right")
+	var tw := create_tween()
+	tw.tween_property(self, "position", to, 0.6)
+	await tw.finished
+	_sprite.play("idle_down")
+	facing = "down"

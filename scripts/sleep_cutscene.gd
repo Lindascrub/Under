@@ -2,10 +2,10 @@ class_name SleepCutscene
 extends Node2D
 ## Quando vai a dormire: una finestra dove il cielo passa dall'ora in cui ti sei sdraiato
 ## (tramonto, sera o notte) al buio con stelle e luna, poi l'alba e il sole che sorge.
-## Alla fine suona la sveglia: "Sono le 7:00. Devi svegliarti."
+## La sveglia suona dopo, quando ti risvegli nel letto (vedi home.gd).
 
 const WIN := Rect2(200, 60, 240, 150)
-const DURATION := 4.5
+const DURATION := 2.2
 
 var from_hour := 22.0
 var t := 0.0
@@ -40,11 +40,7 @@ func run() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "t", 1.0, DURATION)
 	await tw.finished
-	alarm = true
-	for i in 3:
-		Sound.sfx("alarm")
-		await get_tree().create_timer(0.9).timeout
-	await Ui.say(["* DRIIIIN! DRIIIIN!", "* Sono le 7:00. Devi svegliarti.", "* Il debito si è svegliato prima di te."])
+	await get_tree().create_timer(0.3).timeout
 
 
 ## Ora del giorno che si vede dalla finestra (oltre le 24 è il mattino dopo).
