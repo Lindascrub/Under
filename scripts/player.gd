@@ -88,6 +88,9 @@ func _find_target() -> Node:
 	var best_d := 16.0
 	for n in get_tree().get_nodes_in_group("interactable"):
 		var d := probe.distance_to(n.call("hotspot"))
+		# Se una persona e un oggetto sono nello stesso punto (Bruno sulla panchina), vince la persona.
+		if n.is_in_group("npc") or n.is_in_group("walker"):
+			d -= 6.0
 		if d < best_d:
 			best_d = d
 			best = n

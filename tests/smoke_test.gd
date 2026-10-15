@@ -178,6 +178,18 @@ func _run() -> void:
 		await _idle()
 	_check("Caffè di Nico" in GameState.items, "Nico dovrebbe regalare un caffè")
 	_check(GameState.npc_place("sig_bruno").get("anim") == "sit_left", "il signor Bruno dovrebbe stare seduto")
+	# Parlare col signor Bruno seduto sulla panchina: deve rispondere lui, non la panchina.
+	var st: Room = get_tree().current_scene
+	st.player.position = st.cell_feet(Vector2i(11, 10))
+	st.player.facing = "right"
+	await get_tree().physics_frame
+	var target: Node = st.player.call("_find_target")
+	_check(target != null and target.get("id") == "sig_bruno", "parlando verso la panchina dovrebbe rispondere il signor Bruno")
+	# Passare accanto al palo del lampione (colonna 18, riga 10) senza muri invisibili.
+	st.player.position = st.cell_feet(Vector2i(19, 10)) + Vector2(4, 0)
+	await get_tree().physics_frame
+	var blocked: bool = st.player.test_move(st.player.global_transform, Vector2(0, -16))
+	_check(not blocked, "accanto al lampione non dovrebbe esserci un muro invisibile")
 
 	choose_index = 0
 	GameState.met_today.clear()

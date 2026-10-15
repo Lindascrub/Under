@@ -208,10 +208,52 @@ func add_prop(rel: String, bottom_left: Vector2i, solid_rows := 1, fallback := V
 	world.add_child(s)
 	var w := int(ceil(s.texture.get_width() / float(T)))
 	if solid_rows > 0:
-		block(Rect2i(bottom_left.x, bottom_left.y - solid_rows + 1, w, solid_rows))
+		# Blocca solo i pixel veri della base dell'oggetto (il palo, il tronco), non tutta la casella.
+		var r := _solid_rect(s.texture, solid_rows)
+		if r.size.x > 0:
+			block_px(Rect2(s.position + r.position, r.size))
+			for cx in range(int(floor((s.position.x + r.position.x) / T)), int(ceil((s.position.x + r.end.x) / T))):
+				for cy in range(int(floor((s.position.y + r.position.y) / T)), int(ceil((s.position.y + r.end.y) / T))):
+					_blocked_cells[Vector2i(cx, cy)] = true
+		else:
+			block(Rect2i(bottom_left.x, bottom_left.y - solid_rows + 1, w, solid_rows))
 	if not text.is_empty():
 		examine(Vector2(bottom_left.x * T + s.texture.get_width() / 2.0, (bottom_left.y + 1) * T - 8) + nudge, text)
 	return s
+
+
+static var _solid_cache := {}
+
+
+## Rettangolo dei pixel non trasparenti nelle ultime `rows` righe di caselle dello sprite,
+## relativo all'angolo in basso a sinistra (le y sono negative). Vuoto se non si può leggere l'immagine.
+func _solid_rect(tex: Texture2D, rows: int) -> Rect2:
+	var key := "%d_%d" % [tex.get_rid().get_id(), rows]
+	if _solid_cache.has(key):
+		return _solid_cache[key]
+	var out := Rect2()
+	var img := tex.get_image()
+	if img:
+		if img.is_compressed():
+			img.decompress()
+		var h := img.get_height()
+		# Oggetti bassi (lampioni, alberi): conta solo la base, i "piedi" dell'oggetto.
+		var top := maxi(0, h - (rows * T if rows > 1 else 6))
+		var minx := img.get_width()
+		var maxx := -1
+		var miny := h
+		var maxy := -1
+		for y in range(top, h):
+			for x in img.get_width():
+				if img.get_pixel(x, y).a > 0.3:
+					minx = mini(minx, x)
+					maxx = maxi(maxx, x)
+					miny = mini(miny, y)
+					maxy = maxi(maxy, y)
+		if maxx >= 0:
+			out = Rect2(minx, miny - h, maxx - minx + 1, maxy - miny + 1)
+	_solid_cache[key] = out
+	return out
 
 
 ## Punto di salvataggio: una stellina che brilla. Salva stanza, posizione e ora, e ridà energia.
