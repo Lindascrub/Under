@@ -43,7 +43,7 @@ func _process(delta: float) -> void:
 
 func _fly_away(from: Vector2) -> void:
 	_flying = true
-	Sound.sfx("move", 1.6)
+	Sound.sfx("flap")
 	var dir := (global_position - from).normalized()
 	if dir == Vector2.ZERO:
 		dir = Vector2.RIGHT

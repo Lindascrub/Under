@@ -60,6 +60,15 @@ def sfx():
     write("stamp.wav", [a + b for a, b in zip(noise(0.18, 0.5), tone(90, 0.18, 0.5, slide=-40))])
     write("encounter.wav", tone(440, 0.06, 0.25) + tone(660, 0.06, 0.25) + tone(880, 0.06, 0.25) + tone(1320, 0.18, 0.25))
     write("spare.wav", tone(523, 0.1, 0.2, triangle) + tone(659, 0.1, 0.2, triangle) + tone(784, 0.25, 0.2, triangle))
+    # sveglia: due toni alternati, a scatti
+    alarm = []
+    for k in range(8):
+        alarm += tone(1760 if k % 2 == 0 else 1320, 0.07, 0.22, decay=False) + [0.0] * int(RATE * 0.03)
+    write("alarm.wav", alarm * 2)
+    write("door.wav", [a + b for a, b in zip(noise(0.12, 0.25), tone(140, 0.12, 0.3, triangle, slide=-60))] + tone(90, 0.1, 0.25, triangle))
+    write("honk.wav", [a + b for a, b in zip(tone(415, 0.28, 0.16, decay=False), tone(330, 0.28, 0.16, decay=False))])
+    write("flap.wav", sum((noise(0.04, 0.18) + [0.0] * int(RATE * 0.03) for _ in range(4)), []))
+    write("step.wav", noise(0.035, 0.12))
     write("glitch.wav", [square(random.choice([110, 220, 880, 1760]), i / RATE) * 0.2 for i in range(int(RATE * 0.35))])
 
 
@@ -129,6 +138,50 @@ def music():
     bas = ("C3 - G2 - C3 - G2 - C3 - G2 - C3 - G2 - "
            "C3 - G2 - C3 - G2 - G2 - D3 - G2 - D3 - ").split()
     write("music_ufficio.wav", track(mel, bas, 0.2, lead_vol=0.08, duty=0.5))
+
+    # "Parco": in Do maggiore, leggero, con un po' di speranza.
+    mel = ("E5 - G5 - C6 - B5 A5 G5 - E5 - F5 - - - "
+           "D5 - F5 - A5 - G5 F5 E5 - C5 - D5 - - - "
+           "E5 - G5 - C6 - D6 C6 B5 - A5 - G5 - E5 - "
+           "F5 - E5 D5 C5 - D5 - C5 - - - - - - - ").split()
+    bas = ("C3 - G2 - C3 - G2 - A2 - E2 - A2 - E2 - "
+           "F2 - C3 - F2 - C3 - G2 - D3 - G2 - D3 - "
+           "C3 - G2 - C3 - G2 - A2 - E2 - F2 - C3 - "
+           "F2 - G2 - F2 - G2 - C3 - G2 - C3 - - - ").split()
+    write("music_parco.wav", track(mel, bas, 0.2, lead_vol=0.1, duty=0.25))
+
+    # "Rifugio": caldo e lento, in Fa maggiore.
+    mel = ("A4 - - C5 - - F5 - - E5 - - C5 - - - "
+           "D5 - - F5 - - A5 - - G5 - - E5 - - - "
+           "F5 - - E5 - - D5 - - C5 - - A4 - - - "
+           "G4 - - A4 - - C5 - - F4 - - - - - - ").split()
+    bas = ("F2 - - - - - C3 - - - - - F2 - - - "
+           "D2 - - - - - A2 - - - - - C3 - - - "
+           "A#2 - - - - - F2 - - - - - A2 - - - "
+           "C3 - - - - - C3 - - F2 - - - - - - ").split()
+    write("music_rifugio.wav", track(mel, bas, 0.26, lead_vol=0.09, duty=0.5))
+
+    # "Presidenza": quasi ferma, solo poche note che si perdono.
+    mel = ("E4 - - - - - - - G4 - - - - - - - "
+           "F4 - - - - - - - D4 - - - - - - - "
+           "E4 - - - - - - - C4 - - - - - - - "
+           "B3 - - - - - - - - - - - - - - - ").split()
+    bas = ("A2 - - - - - - - - - - - - - - - "
+           "D2 - - - - - - - - - - - - - - - "
+           "A2 - - - - - - - - - - - - - - - "
+           "E2 - - - - - - - - - - - - - - - ").split()
+    write("music_presidente.wav", track(mel, bas, 0.3, lead_vol=0.07, bass_vol=0.12, duty=0.5))
+
+    # "Notte": la strada dopo le 20, lenta e un po' sola.
+    mel = ("C5 - - - D#5 - - - G5 - - - F5 - D#5 - "
+           "D5 - - - - - - - C5 - - - - - - - "
+           "G#4 - - - C5 - - - D#5 - - - D5 - C5 - "
+           "B4 - - - - - - - - - - - - - - - ").split()
+    bas = ("C3 - - - - - - - G2 - - - - - - - "
+           "G#2 - - - - - - - G2 - - - - - - - "
+           "F2 - - - - - - - D#2 - - - - - - - "
+           "G2 - - - - - - - G2 - - - - - - - ").split()
+    write("music_notte.wav", track(mel, bas, 0.28, lead_vol=0.08, duty=0.25))
 
 
 if __name__ == "__main__":

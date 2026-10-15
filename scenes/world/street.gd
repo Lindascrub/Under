@@ -10,7 +10,7 @@ const BASE := 7
 
 
 func build() -> void:
-	music = "quartiere"
+	music = "notte" if GameState.minutes >= 20 * 60 else "quartiere"
 	outdoor = true
 	camera_top = 64
 	_paint_ground()

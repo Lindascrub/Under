@@ -11,6 +11,7 @@ const FACING_VECTORS := {
 var sheet := "char_01"
 var facing := "down"
 var camera: Camera2D
+var _step_t := 0.0
 var _sprite: AnimatedSprite2D
 
 
@@ -51,6 +52,11 @@ func _physics_process(_delta: float) -> void:
 	var running := Input.is_action_pressed("cancel")
 	velocity = v * (RUN_SPEED if running else SPEED)
 	move_and_slide()
+	if v != Vector2.ZERO and velocity.length() > 1.0:
+		_step_t -= _delta
+		if _step_t <= 0.0:
+			_step_t = 0.22 if running else 0.32
+			Sound.sfx("step", randf_range(0.9, 1.1))
 	var anim := ("walk_" if v != Vector2.ZERO else "idle_") + facing
 	if _sprite.animation != anim:
 		_sprite.play(anim)

@@ -130,6 +130,9 @@ func _sleep(forced := false) -> void:
 			Sound.sfx("coin")
 			paid_minimum = amounts[i] >= minimum
 
+	var bedtime := GameState.minutes
+	Ui.show_hud(false)
+	await SleepCutscene.play(self, bedtime)
 	GameState.end_day(paid_minimum)
 	if GameState.debt <= 0:
 		Router.goto(Router.ENDING, "", ["Il debito è pagato.", "Per la prima volta da quando sei arrivato, dormi senza sognare la banca.", "Al risveglio, però, qualcosa è cambiato."])

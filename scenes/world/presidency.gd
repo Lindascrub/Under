@@ -7,7 +7,7 @@ const RB := "tiles/room_builder.png"
 
 
 func build() -> void:
-	music = ""
+	music = "presidente"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(42 + c.x % 3, 19 + c.y % 2)}
 	var rows: Array = ["##############", "#WWWWWWWWWWWW#", "#wwwwwwwwwwww#"]
 	for i in 6:

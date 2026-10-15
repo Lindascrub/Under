@@ -50,9 +50,10 @@ func _ready() -> void:
 		activity = "idle_down"
 	if activity.begins_with("sit"):
 		# Seduto su una panchina: un po' più in basso nell'ordinamento, così resta sopra la panchina.
+		# La panchina laterale ha lo schienale a destra: chi è seduto (guarda a sinistra) va sulla seduta.
 		shadow.visible = false
 		position.y += 3
-		sprite.offset.y -= 5
+		sprite.offset += Vector2(-3, -13) if activity == "sit_left" else Vector2(3, -13)
 	sprite.play(_anim_for(activity))
 	sprite.frame = randi() % 6
 	if GameState.is_robot(id):

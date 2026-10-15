@@ -31,6 +31,7 @@ func goto(path: String, spawn_name: String = "", narration: Array = []) -> void:
 		from = get_tree().current_scene.scene_file_path
 	if path in WORLD and from in WORLD and from != path:
 		GameState.spend(GameState.COST_WALK)
+		Sound.sfx("door")
 	if path in WORLD and GameState.is_midnight() and not GameState.flags.get("forced_sleep", false):
 		GameState.flags["forced_sleep"] = true
 		path = HOME

@@ -43,7 +43,7 @@ func _process(delta: float) -> void:
 	if _blocked():
 		if not _honked:
 			_honked = true
-			Sound.sfx("deny", 1.4)
+			Sound.sfx("honk")
 		return
 	_honked = false
 	position.x += direction * speed * delta

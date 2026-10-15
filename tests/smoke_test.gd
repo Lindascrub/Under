@@ -307,10 +307,10 @@ func _run() -> void:
 	var day_before := GameState.day
 	GameState.minutes = GameState.MIDNIGHT - 5
 	Router.goto(Router.STREET, "home")
-	await _wait_scene(Router.HOME)
-	await _idle()
-	await _idle()
-	await _wait_scene(Router.HOME)
+	var guard_m := 0
+	while (GameState.day == day_before or Ui.transitioning or Ui.cutscene or _scene_path() != Router.HOME) and guard_m < 30000:
+		await get_tree().process_frame
+		guard_m += 1
 	await _idle()
 	_check(GameState.day == day_before + 1, "a mezzanotte dovrebbe finire la giornata")
 	_check(GameState.minutes == GameState.DAY_START, "il nuovo giorno dovrebbe iniziare alle 7:00")

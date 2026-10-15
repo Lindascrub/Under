@@ -6,7 +6,7 @@ const RB := "tiles/room_builder.png"
 
 
 func build() -> void:
-	music = "quartiere"
+	music = "rifugio"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(46 + c.x % 3, 25 + c.y % 2)}
 	paint([
 		"################",
