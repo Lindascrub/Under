@@ -13,8 +13,8 @@ config_version=5
 config/name="Cheap"
 config/description="Un gioco sui soldi, sul debito e su chi paga perché tu diventi ricco."
 run/main_scene="res://scenes/main_menu.tscn"
-config/icon="res://art/icon.png"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+config/icon="res://art/icon.png"
 
 [autoload]
 

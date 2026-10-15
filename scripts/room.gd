@@ -29,6 +29,9 @@ var _tileset: TileSet
 var _sources: Dictionary = {}
 var _solids: StaticBody2D
 var _light: CanvasModulate
+## Caselle bloccate da muri e oggetti, e caselle già occupate da persone (per non sovrapporle).
+var _blocked_cells := {}
+var _people_cells := {}
 var _grey_rect: ColorRect
 
 
@@ -177,6 +180,9 @@ func block(r: Rect2i) -> void:
 	col.shape = shape
 	col.position = Vector2(r.position * T) + shape.size / 2.0
 	_solids.add_child(col)
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			_blocked_cells[Vector2i(x, y)] = true
 
 
 # --- contenuto --------------------------------------------------------------
@@ -243,13 +249,16 @@ func examine(pos: Vector2, text: Array) -> Interactable:
 
 ## Mette nella stanza le persone che oggi, secondo data/npcs.json, si trovano qui.
 func spawn_people(room_key: String) -> void:
+	var items := Quests.items_in(room_key)
+	for it: Dictionary in items:
+		_people_cells[it["cell"]] = true
 	for id: String in GameState.npc_ids():
 		var place := GameState.npc_place(id)
 		if place.get("room", "") != room_key:
 			continue
 		var cell: Array = place.get("cell", [1, 1])
 		add_npc(id, Vector2i(int(cell[0]), int(cell[1])), str(place.get("anim", "idle_down")))
-	for it: Dictionary in Quests.items_in(room_key):
+	for it: Dictionary in items:
 		_add_quest_item(it["quest"], it["cell"])
 
 
@@ -301,10 +310,41 @@ func add_region(rel: String, sheet_size: Vector2i, region: Rect2, bottom_left: V
 	return s
 
 
+## Casella libera più vicina a quella voluta: niente muri e nessun'altra persona attaccata.
+## Chi è seduto resta sulla sua panchina.
+func free_cell(cell: Vector2i, keep := false) -> Vector2i:
+	if keep:
+		_people_cells[cell] = true
+		return cell
+	for r in 6:
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				if maxi(absi(dx), absi(dy)) != r:
+					continue
+				var c := cell + Vector2i(dx, dy)
+				if c.x < 0 or c.y < 0 or (map_size != Vector2i.ZERO and (c.x >= map_size.x or c.y >= map_size.y)):
+					continue
+				if _blocked_cells.has(c) or _near_person(c):
+					continue
+				_people_cells[c] = true
+				return c
+	_people_cells[cell] = true
+	return cell
+
+
+func _near_person(c: Vector2i) -> bool:
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			if _people_cells.has(c + Vector2i(dx, dy)):
+				return true
+	return false
+
+
 func add_npc(id: String, cell: Vector2i, activity := "idle_down") -> Npc:
 	var n := Npc.new()
 	n.id = id
 	n.activity = activity if activity.contains("_") or activity in ["phone", "read", "wander"] else "idle_" + activity
+	cell = free_cell(cell, n.activity.begins_with("sit"))
 	n.position = cell_feet(cell)
 	world.add_child(n)
 	return n

@@ -400,6 +400,30 @@ func _run() -> void:
 	GameState.level_up_line()
 	_check(GameState.own_hours() >= 0.0, "le ore tue non dovrebbero essere negative")
 
+	# --- nessuna persona sovrapposta, in nessuna stanza, giorno, ora o stato
+	for state in ["normale", "liberi", "aiutati"]:
+		for day in [1, 2, 3, 4]:
+			for minutes in [9 * 60, 19 * 60]:
+				GameState.new_game()
+				for f in ["street_intro", "park_intro", "shelter_intro", "office_intro"]:
+					GameState.flags[f] = true
+				GameState.day = day
+				GameState.minutes = minutes
+				GameState.refused = 1
+				if state == "liberi":
+					GameState.freed.assign(GameState.workers())
+				elif state == "aiutati":
+					GameState.helped_today.assign(GameState.npc_ids())
+				for room in [Router.PARK, Router.STREET, Router.SHELTER, Router.OFFICE]:
+					GameState.minutes = minutes
+					await _go(room, "street")
+					var ps := get_tree().get_nodes_in_group("npc")
+					for i in ps.size():
+						for j in range(i + 1, ps.size()):
+							var dd: Vector2 = (ps[i] as Node2D).position - (ps[j] as Node2D).position
+							if absf(dd.x) < 14 and absf(dd.y) < 24:
+								_fail("%s e %s sovrapposti in %s (giorno %d, ore %d, %s)" % [ps[i].get("id"), ps[j].get("id"), room.get_file(), day, minutes / 60, state])
+
 	# --- i finali: capitalismo, comunismo e le tre varianti del baratto
 	var cases := [
 		["capitalismo", 3, [], ""],

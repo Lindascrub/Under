@@ -84,7 +84,7 @@ func _barter_market() -> void:
 		p.sprite_frames = Assets.character(c[1])
 		p.centered = false
 		p.offset = Vector2(-8, -31)
-		p.position = cell_feet(c[0])
+		p.position = cell_feet(free_cell(c[0]))
 		p.play("idle_down")
 		world.add_child(p)
 	examine(cell_center(Vector2i(7, 12)), [
