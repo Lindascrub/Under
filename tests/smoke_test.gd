@@ -490,6 +490,39 @@ func _run() -> void:
 	fondo.call("_badge_machine")
 	await _idle()
 	_check(GameState.has_badge("-4") and GameState.debt == GameState.START_DEBT - GameState.badge_cost("-4"), "il badge dovrebbe scalare dal debito")
+	# tre giorni di seguito di turni falliti: Fermo offre i soldi, il Signor Rata il contratto
+	var saved_money := GameState.money
+	var saved_badges := GameState.badges.duplicate()
+	var saved_debt := GameState.debt
+	GameState.badges.clear()
+	GameState.money = 0
+	for k in 3:
+		GameState.work_failed()
+		GameState.day += 1
+	GameState.day -= 1
+	_check(GameState.pity_pending(), "dopo tre giorni di turni falliti qualcuno dovrebbe avere pena di te")
+	choose_queue = [0]
+	fondo.call("_pity_offer")
+	await _idle()
+	await get_tree().create_timer(0.3).timeout
+	await _idle()
+	_check(GameState.money == GameState.badge_cost("-4") and GameState.flags.get("pity_fermo", false), "accettando la pietà dovresti avere i soldi che mancano")
+	GameState.money = 0
+	for k in 3:
+		GameState.day += 1
+		GameState.work_failed()
+	var debt_c := GameState.debt
+	choose_queue = [1]
+	fondo.call("_pity_offer")
+	await _idle()
+	await get_tree().create_timer(0.3).timeout
+	await _idle()
+	_check(GameState.has_badge("-4") and GameState.debt == debt_c + int(round(GameState.badge_cost("-4") * 1.5)), "il contratto del Signor Rata dovrebbe dare il badge e alzare il debito")
+	_check(GameState.interest_rate() > GameState.DAILY_INTEREST, "dopo il contratto gli interessi dovrebbero salire")
+	GameState.flags.erase("contracts")
+	GameState.badges.assign(saved_badges)
+	GameState.money = saved_money
+	GameState.debt = saved_debt
 	# la stellina fa passare la notte: il giorno dopo si può lavorare di nuovo
 	var day_star := GameState.day
 	choose_queue = [1]

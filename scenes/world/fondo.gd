@@ -263,6 +263,15 @@ func _talk_fermo() -> void:
 		await _first_talk()
 		return
 	var who := "Fermo"
+	if GameState.flags.get("pity_fermo", false) and not GameState.flags.get("fermo_pity_line", false):
+		GameState.flags["fermo_pity_line"] = true
+		await Ui.say(["Non ringraziarmi. Se mi ringrazi mi viene da pensare a cosa ho fatto.",
+			"Adesso sali. Se resti qui, quei soldi li ho buttati. E io non butto niente: nemmeno le gocce del secchio."], who)
+		return
+	if GameState.flags.get("contracts", 0) > 0 and not GameState.flags.get("fermo_rata_line", false):
+		GameState.flags["fermo_rata_line"] = true
+		await Ui.say(["Hai firmato col Signor Rata.", "...Anche io, undici anni fa. Avevo quattromila euro di debito. Ricordi?"], who)
+		return
 	if GameState.has_badge("-4") and not GameState.flags.get("fermo_badge_line", false):
 		GameState.flags["fermo_badge_line"] = true
 		await Ui.say(["Hai il badge. ...Bene.", "Non voltarti, quando sali. Fa male, voltarsi. Lo dico per te, non per me.",

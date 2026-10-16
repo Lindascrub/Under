@@ -228,7 +228,7 @@ func is_midnight() -> bool:
 func _new_day() -> void:
 	Quests.end_day()
 	var before := debt
-	debt += int(round(debt * DAILY_INTEREST))
+	debt += int(round(debt * interest_rate()))
 	day += 1
 	worked_today = false
 	met_today.clear()
@@ -306,6 +306,7 @@ func do_easy_job() -> int:
 func finish_hard_job(pay: int) -> void:
 	money += pay
 	hard_work += 1
+	flags["fail_streak"] = 0
 	flags["boss_call_day"] = day
 	worked_today = true
 	spend(COST_HARD_JOB)
@@ -361,7 +362,7 @@ func end_day(paid_minimum: bool) -> void:
 	Quests.end_day()
 	if not paid_minimum and debt > 0:
 		debt += LATE_FEE
-	debt += int(round(debt * DAILY_INTEREST))
+	debt += int(round(debt * interest_rate()))
 	day += 1
 	minutes = DAY_START
 	energy = MAX_ENERGY
@@ -507,6 +508,48 @@ func enter_floor(id: String) -> void:
 	if not flags.has("floor_day_" + id):
 		flags["floor_day_" + id] = day
 		flags["floor_met_" + id] = met_count()
+	changed.emit()
+
+
+# --- pietà e contratti -----------------------------------------------------------
+
+## Il turno è andato male (sei crollato o l'hai mollato a metà). Conta i giorni di seguito.
+func work_failed() -> void:
+	var last := int(flags.get("fail_day", 0))
+	if last == day:
+		return
+	var streak := int(flags.get("fail_streak", 0))
+	flags["fail_streak"] = streak + 1 if last == day - 1 else 1
+	flags["fail_day"] = day
+
+
+## Dopo tre giorni di seguito di turni falliti, qualcuno ha pena di te (o ne approfitta).
+func pity_pending() -> bool:
+	var need := floor_above()
+	return int(flags.get("fail_streak", 0)) >= 3 and need != "" and not has_badge(need) and money < badge_cost(need)
+
+
+## Quanto ti manca per il badge del piano di sopra.
+func money_missing() -> int:
+	var need := floor_above()
+	return 0 if need == "" else maxi(0, badge_cost(need) - money)
+
+
+## Gli interessi di ogni notte: salgono un po' per ogni contratto firmato col Signor Rata.
+func interest_rate() -> float:
+	return DAILY_INTEREST + 0.005 * int(flags.get("contracts", 0))
+
+
+## Il contratto del Signor Rata: il badge subito, il prezzo (più la metà) sul debito.
+func sign_contract() -> void:
+	var need := floor_above()
+	if need == "" or has_badge(need):
+		return
+	badges.append(need)
+	debt += int(round(badge_cost(need) * 1.5))
+	flags["contracts"] = int(flags.get("contracts", 0)) + 1
+	flags["badge_day_" + need] = day
+	flags["fail_streak"] = 0
 	changed.emit()
 
 

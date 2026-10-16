@@ -111,6 +111,8 @@ func show_pending() -> void:
 		await Ui.say(lines)
 	if GameState.boss_call_pending():
 		await _boss_call()
+	if floor_id != "" and GameState.pity_pending():
+		await _pity_offer()
 
 
 ## Il posto di lavoro del lavoro assegnato oggi, se si trova in questa stanza.
@@ -150,6 +152,91 @@ func _station(j: Dictionary) -> void:
 	cfg["return"] = scene_file_path
 	cfg["return_pos"] = player.global_position
 	Router.battle(cfg)
+
+
+## Chi, su ogni piano, ha pena di te: [nome, foglio, frasi, fregatura]. La fregatura è quello che
+## la pietà ti costa (Vito vuole aiuto gratis, il Signor Tasso la chiama "contributo" ma è un prestito).
+const PITY := {
+	"-5": ["Fermo", "char_14", [
+		"Ti ho visto. Tre giorni. Pedali, cadi, ti rialzi, cadi.",
+		"Tieni. Sono i soldi della mia cassetta. Li tenevo per il funerale.",
+		"Tanto, a quanto pare, non mi serve un funerale. Mi serve che almeno uno di noi salga.",
+	], "fermo"],
+	"-4": ["Signora Agenda", "char_20", [
+		"Oh, poverino! Tre giorni senza finire un turno. Mi si stringe il cuore. Davvero. Ce l'ho, un cuore.",
+		"Tieni: è la cassa dei premi di produzione. Tanto nessuno li vince mai.",
+		"Lo scriverò nel registro, però: \"Aiutato per pietà\". Lo scrivo sempre. Lo leggono tutti.",
+	], "registro"],
+	"-3": ["Vito", "char_03", [
+		"Ehi, tu. Ti ho visto crollare tre volte. Al mio banco si dice: chi cade tre volte, o è stupido o è sfortunato.",
+		"Tu mi sembri sfortunato. Tieni, l'incasso di oggi.",
+		"Ma da domani, quando passi, mi dai una mano al banco. Gratis. Così siamo pari. Più o meno.",
+	], "vito"],
+	"-2": ["Signor Tasso", "char_04", [
+		"La banca ha notato le sue... difficoltà. La banca nota tutto.",
+		"Le concediamo un contributo di solidarietà. Firmi qui. E qui.",
+		"È un prestito, naturalmente. Ma lo chiamiamo contributo: suona più caldo.",
+	], "prestito"],
+	"0": ["Giulia", "", [
+		"Senti. Prendili e non dire niente a nessuno.",
+		"Quassù la pietà è vietata dal regolamento. Articolo dodici: \"Non si aiutano i deboli, li si ottimizza\".",
+		"Se lo scoprono, la prossima che crolla sono io.",
+	], "giulia"],
+}
+
+
+## Dopo tre giorni di seguito di turni falliti: qualcuno del piano ti offre i soldi che mancano,
+## e il Signor Rata, dell'ufficio contratti, ti offre il badge subito, in cambio di una firma.
+func _pity_offer() -> void:
+	var need := GameState.floor_above()
+	var missing := GameState.money_missing()
+	var cost := GameState.badge_cost(need)
+	var p: Array = PITY.get(floor_id, PITY["-5"])
+	var who := str(p[0])
+	await Ui.say(["* %s ti chiama. Ha la faccia di chi ti guarda da tre giorni." % who])
+	await Ui.say(p[2], who, str(p[1]))
+	# il Signor Rata arriva sempre al momento giusto. Cioè quello peggiore.
+	var rata := AnimatedSprite2D.new()
+	rata.sprite_frames = Assets.character("char_18")
+	rata.centered = false
+	rata.offset = Vector2(-8, -31)
+	rata.position = player.position + Vector2(-28, 0)
+	rata.play("idle_right")
+	rata.modulate.a = 0.0
+	world.add_child(rata)
+	var tw := rata.create_tween()
+	tw.tween_property(rata, "modulate:a", 1.0, 0.4)
+	Sound.sfx("stamp")
+	await Ui.say(["...Oppure.", "Signor Rata, ufficio contratti. Somiglio al Dottor Prezzi, lo so. Me lo dicono tutti. Forse siamo parenti. Forse no.",
+		"Perché accettare la pietà, che è umiliante, quando può firmare un contratto, che è dignitoso?",
+		"Il badge del %s, adesso, subito. Senza un centesimo." % GameState.floor_name(need),
+		"Clausola uno: il prezzo, più la metà, va sul suo debito. Clausola due: gli interessi di ogni notte salgono un pochino. Pochino.",
+		"Clausola tre la trova in fondo. Scritta piccola. Piccolissima. Non la legge nessuno."], "Signor Rata", "char_18")
+	var c: int = await Ui.choose("Cosa fai? Ti mancano %s per il badge (%s)." % [GameState.euros(missing), GameState.euros(cost)],
+		["Accetta i soldi di %s" % who, "Firma il contratto del Signor Rata", "Rifiuta tutti e due"])
+	GameState.flags["fail_streak"] = 0
+	match c:
+		0:
+			GameState.money += missing
+			GameState.flags["pity_" + str(p[3])] = true
+			GameState.flags["pity_count"] = int(GameState.flags.get("pity_count", 0)) + 1
+			if str(p[3]) == "prestito":
+				GameState.debt += missing
+			Sound.sfx("coin")
+			await Ui.say(["...Bene. Lei ha scelto la pietà. Ci rivedremo, quando la pietà sarà finita. Finisce sempre."], "Signor Rata", "char_18")
+			await Ui.say(["* Hai ricevuto %s. Ora puoi comprare il badge." % GameState.euros(missing)])
+		1:
+			GameState.sign_contract()
+			Sound.sfx("stamp")
+			await Ui.say(["Firmato! Ecco il suo badge. Le sta benissimo.", "Clausola tre: \"Il firmatario riconosce che salire in fretta ha un prezzo. Il prezzo lo decidiamo noi. Dopo.\"",
+				"Arrivederci. Ci vediamo al prossimo piano. Ci vediamo sempre al prossimo piano."], "Signor Rata", "char_18")
+			await Ui.say(["* Hai il badge del %s. Debito: {debt}." % GameState.floor_name(need)])
+		_:
+			await Ui.say(["Rifiuta? Interessante. Nessuno rifiuta mai tutti e due.", "Lo scriverò da qualche parte. Non si preoccupi: io scrivo sempre da qualche parte."], "Signor Rata", "char_18")
+			GameState.flags["pity_refused"] = int(GameState.flags.get("pity_refused", 0)) + 1
+	var tw2 := rata.create_tween()
+	tw2.tween_property(rata, "modulate:a", 0.0, 0.5)
+	tw2.tween_callback(rata.queue_free)
 
 
 ## Il capo telefona dopo il turno: una promozione, cioè sfruttare qualcuno che conosci.

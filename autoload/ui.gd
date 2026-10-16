@@ -33,7 +33,7 @@ var _talk_t := 0.0
 ## Ritratti extra per chi non è in npcs.json.
 const EXTRA_PORTRAITS := {
 	"Dottor Prezzi": "char_18", "Il Presidente": "char_19", "Papà": "char_19",
-	"Signora Agenda": "char_20", "Il capo": "char_18", "Signor Tasso": "char_04", "Fermo": "char_14",
+	"Signora Agenda": "char_20", "Il capo": "char_18", "Signor Tasso": "char_04", "Fermo": "char_14", "Signor Rata": "char_18",
 }
 
 var _mode := ""

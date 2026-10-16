@@ -12,7 +12,13 @@ const DODGE_BOX := Rect2(240, 162, 160, 116)
 const BTN_Y := 314.0
 const SOUL_SPEED := 130.0
 const SOUL_R := 5.0
-const ATTACK_TIME := 6.0
+## Ritmo dei combattimenti: 1.0 = veloce come all'inizio, più basso = più lento e più facile.
+## Proiettili, comparse e avvisi vanno a questa velocità; ATTACK_TIME è in tempo "rallentato"
+## (4.0 con PACE 0.6 = circa 6,7 secondi veri).
+const PACE := 0.6
+const ATTACK_TIME := 4.0
+## Quanta energia toglie un colpo rispetto al valore della battaglia (3 -> 2).
+const DAMAGE_SCALE := 0.6
 const RED := Color("ff2a3c")
 const ORANGE := Color("ff8a1f")
 const YELLOW := Color("ffe14d")
@@ -406,6 +412,8 @@ func _finish_work(quit: bool) -> void:
 	if quit:
 		pay = int(pay * 0.5)
 	GameState.finish_hard_job(pay)
+	if quit:
+		GameState.work_failed()
 	Sound.sfx("coin")
 	var lines: Array = []
 	if quit:
@@ -443,6 +451,7 @@ func _burnout() -> void:
 	GameState.energy = GameState.MAX_ENERGY / 2
 	if kind == "work":
 		GameState.refuse_work()
+		GameState.work_failed()
 	GameState.spend(3 * 60)
 	_say(["* Il cuore ti batte troppo forte. Ti siedi per terra.", "* Sei crollato dallo stress. Passano tre ore prima che tu riesca ad alzarti."], _end_battle)
 
@@ -481,19 +490,21 @@ func _dodge(delta: float) -> void:
 	soul_moved = soul.distance_to(before) > 0.1
 	iframes = maxf(0.0, iframes - delta)
 
-	attack_t += delta
-	spawn_t -= delta
+	# il mondo dei proiettili va più piano del cuore: così si schiva con calma
+	var wd := delta * PACE
+	attack_t += wd
+	spawn_t -= wd
 	var bullets_before := bullets.size()
-	Patterns.update(self, attack, delta)
+	Patterns.update(self, attack, wd)
 	if work_style == "insieme":
 		# chi lavora con te ne para qualcuno
 		for i in range(bullets.size() - 1, bullets_before - 1, -1):
 			if randf() < 0.35:
 				bullets.remove_at(i)
 	for b in bullets:
-		b["vel"] = (b["vel"] as Vector2) + (b.get("acc", Vector2.ZERO) as Vector2) * delta
-		b["pos"] = (b["pos"] as Vector2) + (b["vel"] as Vector2) * delta * speed_mult
-		b["t"] = float(b.get("t", 0.0)) + delta
+		b["vel"] = (b["vel"] as Vector2) + (b.get("acc", Vector2.ZERO) as Vector2) * wd
+		b["pos"] = (b["pos"] as Vector2) + (b["vel"] as Vector2) * wd * speed_mult
+		b["t"] = float(b.get("t", 0.0)) + wd
 	var keep: Array[Dictionary] = []
 	var far := box.grow(90)
 	for b in bullets:
@@ -508,10 +519,10 @@ func _dodge(delta: float) -> void:
 			if b.get("blue", false) and not soul_moved:
 				continue
 			if _hits(b):
-				var dmg := int(cfg.get("damage", 3))
+				var dmg := maxi(1, int(round(int(cfg.get("damage", 3)) * DAMAGE_SCALE)))
 				GameState.hurt(dmg)
 				hits += 1
-				iframes = 1.0
+				iframes = 1.4
 				_shake = 4.0
 				Sound.sfx("hurt")
 				if GameState.energy <= 0:
