@@ -543,7 +543,7 @@ func _run() -> void:
 	_check(GameState.day == day_star + 1 and not GameState.worked_today, "la stellina dovrebbe far passare la notte (e ridare il turno)")
 	fondo = get_tree().current_scene
 	# le scale: con il badge si sale al -4
-	fondo.player.position = fondo.cell_feet(Vector2i(21, 3))
+	fondo.player.position = Vector2(21 * 16 + 16, 16 + 6)
 	await _wait_scene(Router.SOTTOUFFICIO)
 	await _idle()
 	_check(GameState.floor_id == "-4", "con il badge le scale dovrebbero portare al piano -4")

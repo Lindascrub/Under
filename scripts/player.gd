@@ -111,6 +111,12 @@ func walk_to(to: Vector2) -> void:
 	_sprite.play("idle_" + facing)
 
 
+## 0 = luce piena, 1 = buio (mentre fai le scale).
+func set_shade(f: float) -> void:
+	if _sprite:
+		_sprite.modulate = Color.WHITE.lerp(Color(0.3, 0.3, 0.36), f)
+
+
 func set_dark(dark: bool) -> void:
 	if _sprite == null:
 		await ready

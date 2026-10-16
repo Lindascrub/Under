@@ -55,6 +55,8 @@ var crash_t := 0.0
 
 var _title: Label
 var _info: Label
+## I giochi classici (Snake, Simon, Tetris, Frogger, Breakout, Pong): vedi arcade.gd.
+var arcade: Arcade
 
 
 func _ready() -> void:
@@ -95,6 +97,8 @@ func _label(pos: Vector2, size: int, col: Color) -> Label:
 
 
 func _rules() -> String:
+	if game in Arcade.GAMES:
+		return Arcade.new().set_game(game).rules()
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
@@ -115,6 +119,10 @@ func _start() -> void:
 	duration = 25.0
 	time_left = duration
 	phase = "play"
+	if game in Arcade.GAMES:
+		arcade = Arcade.new()
+		arcade.setup(self, game)
+		return
 	match game:
 		"pedal":
 			target = duration * 0.6
@@ -140,6 +148,8 @@ func _process(delta: float) -> void:
 		queue_redraw()
 		return
 	time_left -= delta
+	if arcade:
+		arcade.update(delta)
 	match game:
 		"pedal":
 			speed = maxf(0.0, speed - (0.22 + d * 0.18) * delta)
@@ -234,6 +244,10 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 
+func flash_now(col: Color) -> void:
+	_flash(col)
+
+
 func _flash(col: Color) -> void:
 	flash = 0.3
 	flash_col = col
@@ -241,6 +255,9 @@ func _flash(col: Color) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
+		return
+	if arcade:
+		arcade.input(event)
 		return
 	match game:
 		"pedal":
@@ -344,6 +361,8 @@ func _draw() -> void:
 	var tb := Rect2(BOX.position.x, BOX.end.y + 12, BOX.size.x, 6)
 	draw_rect(tb, Color("2a2633"))
 	draw_rect(Rect2(tb.position, Vector2(tb.size.x * clampf(time_left / duration, 0, 1), tb.size.y)), YELLOW)
+	if arcade:
+		arcade.draw(font)
 	match game:
 		"pedal":
 			_draw_pedal(font)

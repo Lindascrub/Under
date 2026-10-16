@@ -61,7 +61,7 @@
       ],
       "tired": "* Le gambe tremano. In alto, da qualche parte, una stanza è rimasta accesa tutta la notte grazie a te."
     },
-    "game": "pedal"
+    "game": "breakout"
   },
   {
     "id": "bagni",
@@ -125,7 +125,7 @@
       ],
       "tired": "* Hai le mani rosse di candeggina e l'odore non va via."
     },
-    "game": "clean"
+    "game": "snake"
   },
   {
     "id": "callcenter",
@@ -189,7 +189,7 @@
       ],
       "tired": "* Senti ancora i telefoni squillare, anche nel silenzio."
     },
-    "game": "calls"
+    "game": "simon"
   },
   {
     "id": "banco",
@@ -317,7 +317,7 @@
       ],
       "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
     },
-    "game": "sort"
+    "game": "tetris"
   },
   {
     "id": "consegne",
@@ -381,7 +381,7 @@
       ],
       "tired": "* Hai le gambe a pezzi e la pioggia ti è entrata nelle ossa."
     },
-    "game": "deliver"
+    "game": "frogger"
   },
   {
     "id": "cassa",
@@ -393,7 +393,7 @@
       6,
       7
     ],
-    "game": "sort",
+    "game": "pong",
     "station_text": "La cassa: un nastro di monete vere e bottoni falsi. Il Signor Tasso ti guarda senza sbattere le palpebre.",
     "battle": {
       "name": "La Cassa",

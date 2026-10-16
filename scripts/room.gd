@@ -42,6 +42,9 @@ var _stairs_down_pos := Vector2.INF
 ## Dove finiscono gli scalini: si esce dritti fin lì, poi si gira.
 var _stairs_up_exit := Vector2.INF
 var _stairs_down_exit := Vector2.INF
+## Le scale (per abbassare la luce mentre le fai) e i tornelli chiusi.
+var _stair_zones: Array[Dictionary] = []
+var _stair_gates: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -106,6 +109,14 @@ func _grey_world() -> void:
 
 ## Il filtro grigio segue quello che inquadra la telecamera (anche ai bordi della mappa).
 func _process(_delta: float) -> void:
+	if player and not _stair_zones.is_empty():
+		var shade := 0.0
+		for z: Dictionary in _stair_zones:
+			var r: Rect2 = z["rect"]
+			if r.grow(2).has_point(player.position):
+				var f := (r.end.y - player.position.y) / r.size.y if z["up"] else (player.position.y - r.position.y) / r.size.y
+				shade = maxf(shade, clampf(f, 0.0, 1.0))
+		player.set_shade(shade)
 	if camera_lift > 0 and player:
 		var t := clampf((10.0 * T - player.position.y) / (4.0 * T), 0.0, 1.0)
 		player.camera.offset.y = lerpf(player.camera.offset.y, -camera_lift * t, 0.1)
@@ -662,49 +673,94 @@ const DESK_REGION := Rect2(96, 8, 16, 40)
 ## Scale che salgono al piano di sopra, dentro al muro, con il tornello accanto: si passa
 ## solo con il badge di quel piano. `bottom_left` è il primo gradino (sul pavimento).
 func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
-	add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
+	var steps := add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
+	# gli scalini sono "pavimento": chi ci cammina sopra si vede sempre
+	world.remove_child(steps)
+	add_child(steps)
+	move_child(steps, world.get_index())
 	_stairs_up_pos = Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T)
 	_stairs_up_exit = Vector2(bottom_left.x * T + T, (bottom_left.y + 1) * T + 10)
+	# gli scalini si salgono a piedi: il muro dietro le scale non è più solido
+	unblock(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 2))
+	# più sali, più la luce del piano di sotto resta indietro
+	_stair_zones.append({"rect": Rect2(bottom_left.x * T, (bottom_left.y - 2) * T, 2 * T, 3 * T), "up": true})
 	var turn := add_art("res://art/turnstile.png", bottom_left + Vector2i(-1, 0), 1)
 	if GameState.has_badge(need):
 		turn.modulate = Color(0.85, 1.0, 0.85)
+	else:
+		# il tornello chiuso: una sbarra invisibile sul primo gradino
+		var gate := StaticBody2D.new()
+		var gs := RectangleShape2D.new()
+		gs.size = Vector2(2 * T, 4)
+		var gc := CollisionShape2D.new()
+		gc.shape = gs
+		gc.position = Vector2(bottom_left.x * T + T, bottom_left.y * T - 2)
+		gate.add_child(gc)
+		add_child(gate)
+		_stair_gates.append({"node": gate, "need": need})
+		# chi ci sbatte contro legge il cartello
+		var a := Area2D.new()
+		var shape := RectangleShape2D.new()
+		shape.size = Vector2(2 * T - 6, 8)
+		var col := CollisionShape2D.new()
+		col.shape = shape
+		col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 2)
+		a.add_child(col)
+		add_child(a)
+		a.body_entered.connect(func(b: Node2D) -> void:
+			if not (b is Player) or Ui.blocks_input() or GameState.has_badge(need):
+				return
+			Sound.sfx("deny")
+			await Ui.say(["* Il tornello lampeggia rosso. \"Badge del %s richiesto.\"" % GameState.floor_name(need),
+				"* (Il badge si compra allo sportello: %s, a scalare dal debito.)" % GameState.euros(GameState.badge_cost(need))])
+		)
 	examine(cell_center(bottom_left + Vector2i(-1, 0)), [
 		"* Il tornello. Sopra il lettore c'è scritto: \"%s. Solo con badge\"." % GameState.floor_name(need),
 	])
-	var a := Area2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(2 * T - 6, 8)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 4)
-	a.add_child(col)
-	add_child(a)
-	a.body_entered.connect(func(b: Node2D) -> void:
-		if not (b is Player) or Ui.blocks_input():
+	# in cima agli scalini si cambia piano
+	var top := Area2D.new()
+	var ts := RectangleShape2D.new()
+	ts.size = Vector2(2 * T - 6, 8)
+	var tc := CollisionShape2D.new()
+	tc.shape = ts
+	tc.position = Vector2(bottom_left.x * T + T, (bottom_left.y - 2) * T + 4)
+	top.add_child(tc)
+	add_child(top)
+	top.body_entered.connect(func(b: Node2D) -> void:
+		if not (b is Player) or Ui.transitioning:
 			return
-		if GameState.has_badge(need):
-			var key := "stairs_" + need
-			var lines: Array = []
-			if not GameState.flags.get(key, false):
-				GameState.flags[key] = true
-				lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
-			# sali davvero: un gradino alla volta, verso la luce del piano di sopra
-			Ui.cutscene = true
-			var p := b as Player
-			p.z_index = 2
-			await p.climb(Vector2(bottom_left.x * T + T, (bottom_left.y - 2) * T - 4), "up", true)
-			Ui.cutscene = false
-			Router.goto(path, spawn_name, lines)
-			return
-		Sound.sfx("deny")
-		b.position.y += 10
-		await Ui.say(["* Il tornello lampeggia rosso. \"Badge del %s richiesto.\"" % GameState.floor_name(need),
-			"* (Il badge si compra al distributore: %s, a scalare dal debito.)" % GameState.euros(GameState.badge_cost(need))])
+		var key := "stairs_" + need
+		var lines: Array = []
+		if not GameState.flags.get(key, false):
+			GameState.flags[key] = true
+			lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
+		Router.goto(path, spawn_name, lines)
 	)
 
 
+## Il tornello si apre (appena compri il badge, senza dover cambiare stanza).
+func open_turnstiles() -> void:
+	for g: Dictionary in _stair_gates:
+		if GameState.has_badge(str(g["need"])) and is_instance_valid(g["node"]):
+			(g["node"] as Node).queue_free()
+	for n in world.get_children():
+		if n is Sprite2D and (n as Sprite2D).texture and (n as Sprite2D).texture.resource_path.ends_with("turnstile.png"):
+			n.modulate = Color(0.85, 1.0, 0.85)
+
+
+## Toglie i muri (le caselle solide) in un rettangolo di caselle.
+func unblock(r: Rect2i) -> void:
+	var area := Rect2(r.position * T, r.size * T)
+	for c in _solids.get_children():
+		if c is CollisionShape2D and area.has_point((c as CollisionShape2D).position):
+			c.queue_free()
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			_blocked_cells.erase(Vector2i(x, y))
+
+
 ## Scale che scendono al piano di sotto: le stesse scale di legno, viste dall'alto mentre
-## spariscono nel pavimento (2 caselle di larghezza, 3 di altezza).
+## spariscono nel pavimento (2 caselle di larghezza, 3 di altezza). Si scendono a piedi.
 func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) -> void:
 	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
 	s.flip_v = true
@@ -729,21 +785,21 @@ func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) ->
 	s.add_child(shade)
 	_stairs_down_pos = Vector2(bottom_left.x * T + T, bottom_left.y * T + 2)
 	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 2) * T - 2)
+	_stair_zones.append({"rect": Rect2(bottom_left.x * T, (bottom_left.y - 2) * T, 2 * T, 3 * T), "up": false})
+	# ai lati del buco non si cammina (si entra solo dall'alto)
+	block_px(Rect2(bottom_left.x * T - 2, (bottom_left.y - 2) * T + 4, 3, 3 * T - 4))
+	block_px(Rect2((bottom_left.x + 2) * T - 1, (bottom_left.y - 2) * T + 4, 3, 3 * T - 4))
 	var a := Area2D.new()
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(2 * T - 8, T)
+	shape.size = Vector2(2 * T - 8, 6)
 	var col := CollisionShape2D.new()
 	col.shape = shape
-	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T)
+	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 10)
 	a.add_child(col)
 	add_child(a)
 	a.body_entered.connect(func(b: Node2D) -> void:
-		if not (b is Player) or Ui.blocks_input():
-			return
-		Ui.cutscene = true
-		await (b as Player).climb(Vector2(bottom_left.x * T + T, (bottom_left.y + 1) * T), "down", true)
-		Ui.cutscene = false
-		Router.goto(path, spawn_name)
+		if b is Player and not Ui.transitioning:
+			Router.goto(path, spawn_name)
 	)
 
 
@@ -759,30 +815,20 @@ func add_computer_desk(bottom_left: Vector2i, text: Array = []) -> Sprite2D:
 
 ## Arrivando dalle scale, il personaggio sale fuori dalla botola o scende dagli scalini.
 func _prepare_arrival() -> Vector2:
-	var from := Vector2.INF
+	# arrivando dalle scale si compare dove finiscono gli scalini, già in piedi
+	var at := Vector2.INF
 	if Router.spawn == "from_below":
-		from = _stairs_down_pos
+		at = _stairs_down_exit
 	elif Router.spawn == "from_above":
-		from = _stairs_up_pos
-	if from == Vector2.INF or player == null:
-		return Vector2.INF
-	var to := player.position
-	player.position = from
-	player.z_index = 2
-	player.set_dark(true)
-	return to
+		at = _stairs_up_exit
+	if at != Vector2.INF and player:
+		player.position = at
+		player.face("up" if Router.spawn == "from_below" else "down")
+	return Vector2.INF
 
 
-func _do_arrival(to: Vector2) -> void:
-	Ui.cutscene = true
-	var up := Router.spawn == "from_below"
-	var exit := _stairs_down_exit if up else _stairs_up_exit
-	# prima dritti lungo gli scalini, poi verso il punto d'arrivo
-	await player.climb(exit, "up" if up else "down", false)
-	await player.walk_to(to)
-	player.z_index = 0
-	player.face(spawn_facing.get(Router.spawn, "down"))
-	Ui.cutscene = false
+func _do_arrival(_to: Vector2) -> void:
+	pass
 
 
 ## Il distributore dei badge: paghi una parte del debito e ricevi il badge del piano di sopra.
@@ -828,6 +874,7 @@ func _badge_machine() -> void:
 		return
 	Sound.sfx("coin")
 	Sound.sfx("stamp")
+	open_turnstiles()
 	await Ui.say(["Ecco il badge. Ancora caldo, come un biglietto della lotteria che hai già perso.",
 		"Debito: {debt}. Il tornello adesso ha la lucina verde."], who, BADGE_CLERK)
 	if need == "cima":
