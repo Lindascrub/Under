@@ -9,6 +9,7 @@ var _president: AnimatedSprite2D
 
 
 func build() -> void:
+	floor_id = "cima"
 	music = "presidente"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(42 + c.x % 3, 19 + c.y % 2)}
 	var rows: Array = ["##############", "#WWWWWWWWWWWW#", "#wwwwwwwwwwww#"]
@@ -49,10 +50,12 @@ func build() -> void:
 	block(Rect2i(7, 3, 1, 1))
 	add_spot(cell_center(Vector2i(7, 4)), _talk)
 
-	add_exit(Rect2i(6, 9, 2, 1), Router.BOSS, "stairs")
-	spawns["default"] = cell_feet(Vector2i(6, 7))
+	add_stairs_down(Vector2i(11, 8), Router.BOSS, "from_above")
+	spawns["default"] = cell_feet(Vector2i(10, 7))
 	spawns["stairs"] = spawns["default"]
+	spawns["from_below"] = spawns["default"]
 	spawn_facing["default"] = "up"
+	spawn_facing["from_below"] = "left"
 
 
 func enter() -> void:
@@ -68,6 +71,7 @@ func enter() -> void:
 func _talk() -> void:
 	if GameState.flags.get("president_done", false):
 		await Ui.say(["...Sei ancora qui? Nessuno resta mai, qui sopra.", "Nemmeno io, a dire il vero. Io ci sono solo."], "Papà")
+		Router.goto(Router.ENDING, "", ["Sei arrivato in cima.", "E adesso?"])
 		return
 	await Ui.say([
 		"Lo so perché sei salito. Tutti salgono per trovare chi comanda.",
@@ -111,4 +115,8 @@ func _talk() -> void:
 				"Non fare come me. Ti prego.",
 			], "Papà")
 		_:
+			GameState.flags["president_done"] = true
 			await Ui.say(["Fai bene. Qui sopra non c'è niente da vedere. Neanche io."], "Papà")
+	# in cima non c'è altro da fare: il tuo finale
+	await get_tree().create_timer(0.8).timeout
+	Router.goto(Router.ENDING, "", ["Sei arrivato in cima.", "E adesso?"])

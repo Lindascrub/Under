@@ -54,11 +54,11 @@ const ITEMS := {
 ## Dal piano più profondo alla cima. "badge" è quanto costa il badge per salire a quel piano.
 const FLOORS: Array[Dictionary] = [
 	{"id": "-5", "name": "Piano -5", "badge": 0},
-	{"id": "-4", "name": "Piano -4", "badge": 200},
-	{"id": "-3", "name": "Piano -3", "badge": 400},
-	{"id": "-2", "name": "Piano -2", "badge": 600},
-	{"id": "0", "name": "Piano terra", "badge": 800},
-	{"id": "cima", "name": "La Cima", "badge": 1000},
+	{"id": "-4", "name": "Piano -4", "badge": 500},
+	{"id": "-3", "name": "Piano -3", "badge": 800},
+	{"id": "-2", "name": "Piano -2", "badge": 1000},
+	{"id": "0", "name": "Piano terra", "badge": 1200},
+	{"id": "cima", "name": "La Cima", "badge": 1500},
 ]
 
 var day := 1

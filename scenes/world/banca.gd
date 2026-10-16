@@ -73,6 +73,7 @@ func build() -> void:
 			for i in 4:
 				_static(["char_13", "char_18", "char_14", "char_15"][i], Vector2i(10, 6 + i), "idle_up", true)
 
+	add_station("banca")
 	spawn_people("banca")
 	spawns["default"] = cell_feet(Vector2i(8, 10))
 	spawns["mercato"] = spawns["default"]

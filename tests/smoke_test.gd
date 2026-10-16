@@ -486,7 +486,7 @@ func _run() -> void:
 	await _wait_scene(Router.FONDO)
 	await _idle()
 	await _idle()
-	_check(GameState.worked_today and GameState.money >= GameState.badge_cost("-4"), "pedalare alla dinamo dovrebbe pagare il badge del -4")
+	_check(GameState.worked_today and GameState.money >= 150, "pedalare alla dinamo dovrebbe pagare il turno")
 	fondo = get_tree().current_scene
 	# il distributore: senza soldi niente badge, con i soldi sì (e il debito scende)
 	var cash := GameState.money
@@ -495,7 +495,7 @@ func _run() -> void:
 	fondo.call("_badge_machine")
 	await _idle()
 	_check(not GameState.has_badge("-4"), "senza soldi il distributore non dovrebbe dare il badge")
-	GameState.money = cash
+	GameState.money = maxi(cash, GameState.badge_cost("-4"))
 	choose_queue = [0]
 	fondo.call("_badge_machine")
 	await _idle()
@@ -583,6 +583,8 @@ func _run() -> void:
 	var pres: Room = await _go(Router.PRESIDENCY, "stairs")
 	choose_queue = [1]
 	pres.call("_talk")
+	await _wait_scene(Router.ENDING, 40000)
+	await _wait_scene(Router.MENU, 60000)
 	await _idle()
 	_check(GameState.flags.get("father_met", false) and GameState.flags.get("sat_with_president", false), "in cima dovresti incontrare tuo padre")
 

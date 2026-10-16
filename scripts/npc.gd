@@ -240,7 +240,7 @@ static func minigame_cfg(npc_id: String, who: String, help: Dictionary, back: St
 	cfg["win"] = help.get("yes", ["Grazie!"])
 	var above := GameState.floor_above()
 	if above != "" and GameState.room_floor != "":
-		cfg["reward"] = maxi(int(cfg.get("reward", 10)), GameState.badge_cost(above) / 5)
+		cfg["reward"] = maxi(int(cfg.get("reward", 10)), GameState.badge_cost(above) / 8)
 	cfg["return"] = back
 	cfg["return_pos"] = back_pos
 	return cfg

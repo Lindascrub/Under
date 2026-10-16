@@ -105,7 +105,7 @@ func _rules() -> String:
 		"scale":
 			return "* Il cliente chiede un peso. Premi {ok} quando la lancetta è sulla tacca gialla."
 		"sort":
-			return "* Le scatole ROSSE vanno a SINISTRA, quelle BLU a DESTRA. Premi la freccia quando la scatola arriva in fondo al nastro."
+			return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Premi la freccia prima che arrivino in fondo al nastro."
 		"deliver":
 			return "* SU e GIÙ per cambiare corsia. Evita le auto, prendi i pacchi."
 	return "* Lavora."

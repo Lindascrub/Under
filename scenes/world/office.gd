@@ -139,7 +139,7 @@ func _elevator(top_left: Vector2i) -> void:
 	_lift_light.size = Vector2(4, 2)
 	world.add_child(_lift_light)
 	if GameState.has_badge("cima"):
-		_open_elevator(false)
+		_lift_light.color = Color("3ddc84")
 	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
 
 
@@ -161,17 +161,24 @@ func _open_elevator(animate := true) -> void:
 			door.size.x = 3.0
 			if i == 1:
 				door.position.x = to_x
-	var a := Area2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(2 * T - 8, 8)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(_lift_cell.x * T + T, (_lift_cell.y + 2) * T + 4)
-	a.add_child(col)
-	add_child(a)
-	a.body_entered.connect(func(b: Node2D) -> void:
-		if b is Player and not Ui.blocks_input():
-			_ride_up(b as Player))
+	Sound.sfx("door", 1.2)
+
+
+var _riding := false
+
+
+## Avvicinandoti (col badge della Cima) le porte si aprono; arrivato davanti, entri e sali.
+func _process(delta: float) -> void:
+	super(delta)
+	if player == null or _riding or Ui.blocks_input() or not GameState.has_badge("cima"):
+		return
+	var door := Vector2(_lift_cell.x * T + T, (_lift_cell.y + 2) * T + 8)
+	var d := player.position.distance_to(door)
+	if d < 44 and not _lift_open:
+		_open_elevator()
+	elif d < 14 and _lift_open:
+		_riding = true
+		_ride_up(player)
 
 
 func _ride_up(p: Player) -> void:

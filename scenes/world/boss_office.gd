@@ -8,6 +8,7 @@ var _boss: AnimatedSprite2D
 
 
 func build() -> void:
+	floor_id = "cima"
 	music = "ufficio"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(42 + c.x % 3, 19 + c.y % 2)}
 	paint([
@@ -49,7 +50,7 @@ func build() -> void:
 		"* È identico anche al ritratto del fondatore che c'è al piano di sotto. Quello è del 1952.",
 	])
 	add_prop("props/palm.png", Vector2i(1, 3), 1, Vector2i(32, 32))
-	add_prop("props/palm.png", Vector2i(15, 3), 1, Vector2i(32, 32))
+	add_prop("props/palm.png", Vector2i(15, 7), 1, Vector2i(32, 32))
 	add_computer_desk(Vector2i(8, 6))
 	add_computer_desk(Vector2i(9, 6))
 	add_prop("props/computer.png", Vector2i(10, 6))
@@ -75,15 +76,12 @@ func build() -> void:
 	block(Rect2i(0, 9, 2, 1))
 	block(Rect2i(4, 9, 14, 1))
 
-	# La scala per l'ultimo piano: la Presidenza. Si apre dal LV 4.
-	var stairs := ColorRect.new()
-	stairs.color = Color("3a2a30")
-	stairs.position = Vector2(14 * T, 8 * T + 4)
-	stairs.size = Vector2(2 * T, T - 4)
-	stairs.z_index = -1
-	add_child(stairs)
-	add_spot(cell_center(Vector2i(14, 8)) + Vector2(8, 0), _stairs)
-	spawns["stairs"] = cell_feet(Vector2i(14, 7))
+	# Le scale per la Presidenza, contro il muro: lassù c'è papà
+	add_stairs_up(Vector2i(15, 3), Router.PRESIDENCY, "from_below", "cima")
+	examine(cell_center(Vector2i(14, 4)), ["* Le scale per la Presidenza. Dall'alto arriva un silenzio che costa caro."])
+	spawns["stairs"] = cell_feet(Vector2i(15, 5))
+	spawns["from_above"] = spawns["stairs"]
+	spawn_facing["from_above"] = "down"
 	spawns["default"] = cell_feet(Vector2i(3, 7))
 	spawns["elevator"] = spawns["default"]
 	spawn_facing["default"] = "up"

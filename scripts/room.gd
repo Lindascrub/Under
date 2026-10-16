@@ -170,7 +170,7 @@ func _station(j: Dictionary) -> void:
 	if j.has("game") and GameState.hard_work % 3 != 2:
 		GameState.minigame = {
 			"kind": "work", "game": j["game"], "name": str(j.get("title", "Il turno")),
-			"pay": int(int(cfg.get("pay", 300)) * (1.0 + 0.2 * GameState.floor_index(GameState.floor_id))),
+			"pay": int(int(cfg.get("pay", 300)) * (1.0 + 0.1 * GameState.floor_index(GameState.floor_id))),
 			"intro": [str(cfg.get("intro", "* Si comincia."))],
 			"tired": str(cfg.get("tired", "* Ti fa male tutto.")),
 			"return": scene_file_path, "return_pos": player.global_position,
