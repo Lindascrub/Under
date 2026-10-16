@@ -12,6 +12,8 @@ const H := 14
 const FERMO_CELL := Vector2i(14, 4)
 ## Il recinto di buio intorno all'ascensore, finché non hai parlato con Fermo.
 const DARK_BOX := Rect2i(9, 3, 8, 4)
+## Altezza del tubo che corre lungo la base del muro.
+const PIPE_Y := 2 * T + 9
 
 var _modulate: CanvasModulate
 var _dark_walls: Node2D
@@ -75,10 +77,10 @@ func build() -> void:
 	add_stairs_up(Vector2i(21, 3), Router.SOTTOUFFICIO, "from_below", "-4")
 
 	# Cose dimenticate quaggiù
-	add_prop("props/boxes.png", Vector2i(1, 4), 1, Vector2i(32, 32), ["* Scatoloni di lampadine fulminate. Su uno c'è scritto: \"RESI DAL PIANO TERRA\"."])
-	add_prop("street/trash_bags.png", Vector2i(20, 12), 1, Vector2i(32, 32), ["* Sacchi neri. Uno si muove. Meglio non sapere."])
+	add_prop("props/boxes.png", Vector2i(1, 4), 2, Vector2i(32, 32), ["* Scatoloni di lampadine fulminate. Su uno c'è scritto: \"RESI DAL PIANO TERRA\"."])
+	add_prop("street/trash_bags.png", Vector2i(20, 12), 2, Vector2i(32, 32), ["* Sacchi neri. Uno si muove. Meglio non sapere."])
 	add_prop("bath/bucket.png", Vector2i(16, 11), 1, Vector2i(16, 32), ["* Un secchio sotto una goccia che cade dal soffitto. È pieno da anni."])
-	add_prop("props/boxes_small.png", Vector2i(9, 12), 1, Vector2i(16, 32))
+	add_prop("props/boxes_small.png", Vector2i(9, 12), 2, Vector2i(16, 32))
 	examine(cell_center(Vector2i(8, 1)) + Vector2(0, 16), ["* Una targa: PIANO -5. Sotto, graffiato a mano: \"il fondo non è mai il fondo\"."])
 	add_save_point(Vector2i(12, 9))
 
@@ -136,20 +138,27 @@ func _lights() -> void:
 	_modulate = CanvasModulate.new()
 	_modulate.color = _lit_color() if lit else Color(0.035, 0.03, 0.05)
 	add_child(_modulate)
-	# il cerchio di Fermo: una lampadina appesa a un filo
-	var bulb_pos := cell_center(FERMO_CELL) + Vector2(-4, -26)
+	# il cerchio di Fermo: una lampadina appesa con un filo al tubo che corre lungo il muro.
+	# Sta nel mondo ordinato per y, all'altezza della riga sotto al muro: chi passa davanti la copre.
+	var bulb_pos := Vector2(FERMO_CELL.x * T - 7, PIPE_Y + 9)
+	var hang := Node2D.new()
+	hang.position = Vector2(bulb_pos.x, 3 * T + 2)
+	world.add_child(hang)
+	var clamp_ := ColorRect.new()
+	clamp_.color = Color("6b6878")
+	clamp_.position = Vector2(-2, PIPE_Y - 1 - hang.position.y)
+	clamp_.size = Vector2(5, 5)
+	hang.add_child(clamp_)
 	var wire := ColorRect.new()
 	wire.color = Color("1a1622")
-	wire.position = Vector2(bulb_pos.x, 2 * T + 6)
-	wire.size = Vector2(1, bulb_pos.y - 2 * T - 6)
-	wire.z_index = 5
-	add_child(wire)
+	wire.position = Vector2(0, PIPE_Y + 3 - hang.position.y)
+	wire.size = Vector2(1, bulb_pos.y - PIPE_Y - 3)
+	hang.add_child(wire)
 	var bulb := ColorRect.new()
 	bulb.color = Color("ffe9a8")
-	bulb.position = bulb_pos - Vector2(2, 0)
+	bulb.position = Vector2(-2, bulb_pos.y - hang.position.y)
 	bulb.size = Vector2(4, 4)
-	bulb.z_index = 5
-	add_child(bulb)
+	hang.add_child(bulb)
 	_fermo_light = _add_light(bulb_pos + Vector2(0, 22), 1.15, Color(1.0, 0.86, 0.6) if not lit else Color(0.7, 0.6, 0.45), 1.25)
 	var fermo_light := _fermo_light
 	var tw := fermo_light.create_tween().set_loops()
@@ -159,10 +168,10 @@ func _lights() -> void:
 	for x in [4, 18]:
 		var lamp := ColorRect.new()
 		lamp.color = Color("ffe9a8") if lit else Color("3a3644")
-		lamp.position = Vector2(x * T + 4, 2 * T + 10)
-		lamp.size = Vector2(8, 3)
-		lamp.z_index = 5
+		lamp.position = Vector2(x * T + 4, 2 * T + 2)
+		lamp.size = Vector2(8, 4)
 		add_child(lamp)
+		move_child(lamp, world.get_index())
 		_lamps.append(lamp)
 		if lit:
 			_add_light(Vector2(x * T + 8, 6 * T), 2.2, Color(1.0, 0.9, 0.7), 0.7)
@@ -351,11 +360,11 @@ func _broken_lift(top_left: Vector2i) -> void:
 	])
 
 
+## Il tubo lungo il muro: fa parte del muro, quindi sta dietro alle persone.
 func _pipes() -> void:
-	for y in [2 * T + 12]:
-		var pipe := ColorRect.new()
-		pipe.color = Color("3d3a48")
-		pipe.position = Vector2(T, y)
-		pipe.size = Vector2((W - 2) * T, 3)
-		pipe.z_index = 1
-		add_child(pipe)
+	var pipe := ColorRect.new()
+	pipe.color = Color("3d3a48")
+	pipe.position = Vector2(T, PIPE_Y)
+	pipe.size = Vector2((W - 2) * T, 3)
+	add_child(pipe)
+	move_child(pipe, world.get_index())

@@ -34,10 +34,10 @@ func build() -> void:
 	add_prop("props/office_desk.png", Vector2i(10, 4), 1, Vector2i(16, 32))
 	add_prop("props/office_desk.png", Vector2i(11, 4), 1, Vector2i(16, 32))
 	add_spot(cell_center(Vector2i(10, 5)) + Vector2(8, 0), _bread)
-	add_prop("props/boxes.png", Vector2i(13, 3), 1, Vector2i(32, 48), [
+	add_prop("props/boxes.png", Vector2i(13, 3), 2, Vector2i(32, 48), [
 		"* Scatoloni con scritto sopra: VESTITI, LIBRI, ATTREZZI. Chi ha bisogno prende, chi può lascia.",
 	])
-	add_prop("props/boxes_small.png", Vector2i(14, 8), 1, Vector2i(16, 32), [
+	add_prop("props/boxes_small.png", Vector2i(14, 8), 2, Vector2i(16, 32), [
 		"* Una scatola piena di chiavi inglesi e cacciaviti. \"Per riparare, non per comprare\".",
 	])
 	add_prop("props/plant.png", Vector2i(1, 8), 1, Vector2i(16, 32), [

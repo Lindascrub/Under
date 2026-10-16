@@ -490,6 +490,15 @@ func _run() -> void:
 	fondo.call("_badge_machine")
 	await _idle()
 	_check(GameState.has_badge("-4") and GameState.debt == GameState.START_DEBT - GameState.badge_cost("-4"), "il badge dovrebbe scalare dal debito")
+	# la stellina fa passare la notte: il giorno dopo si può lavorare di nuovo
+	var day_star := GameState.day
+	choose_queue = [1]
+	fondo.call("_save_here", Vector2i(12, 9))
+	await get_tree().create_timer(0.5).timeout
+	await _wait_scene(Router.FONDO)
+	await _idle()
+	_check(GameState.day == day_star + 1 and not GameState.worked_today, "la stellina dovrebbe far passare la notte (e ridare il turno)")
+	fondo = get_tree().current_scene
 	# le scale: con il badge si sale al -4
 	fondo.player.position = fondo.cell_feet(Vector2i(21, 3))
 	await _wait_scene(Router.SOTTOUFFICIO)

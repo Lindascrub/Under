@@ -140,7 +140,7 @@ func add_station(room_key: String) -> void:
 func _station(j: Dictionary) -> void:
 	if GameState.worked_today:
 		await Ui.say(["* " + str(j.get("station_text", "Un posto di lavoro.")),
-			"* (Per oggi hai già dato. Il prossimo turno è dopo la notte: se vuoi farla passare, cerca una stellina.)"])
+			"* (Per oggi hai già dato. Il prossimo turno è domani: tocca una stellina e scegli di lasciar passare la notte.)"])
 		return
 	var c: int = await Ui.choose(str(j.get("station_text", "")) + "\nIniziare il turno? (10 ore)", ["Inizia", "Non ancora"])
 	if c != 0:
@@ -349,14 +349,25 @@ func add_save_point(cell: Vector2i) -> void:
 	add_spot(cell_center(cell), func() -> void: _save_here(cell))
 
 
+## La stellina salva, ridà energia e, se vuoi, fa passare la notte (così il giorno dopo si può
+## lavorare di nuovo). La notte però costa: gli interessi corrono.
 func _save_here(cell: Vector2i) -> void:
 	GameState.restore(GameState.MAX_ENERGY)
-	GameState.save_game(scene_file_path, cell_feet(cell + Vector2i(0, 1)))
+	var here := cell_feet(cell + Vector2i(0, 1))
+	var c: int = await Ui.choose("* (Una stellina brilla a mezz'aria. Guardarla ti fa tornare la voglia di andare avanti.)",
+		["Salva", "Salva e lascia passare la notte", "Lascia stare"])
+	if c == 2:
+		return
+	if c == 1:
+		GameState.spend(GameState.MIDNIGHT - GameState.minutes)
+		GameState.save_game(scene_file_path, here)
+		Sound.sfx("spare")
+		Router.save_pos = here
+		Router.goto(scene_file_path, "_save", ["Ti siedi vicino alla stellina e chiudi gli occhi.", "La notte passa. Da qualche parte, sopra di te, qualcuno conta gli interessi.", "{floor}, ore {clock}."])
+		return
+	GameState.save_game(scene_file_path, here)
 	Sound.sfx("spare")
-	await Ui.say([
-		"* (Una stellina brilla a mezz'aria. Guardarla ti fa tornare la voglia di andare avanti.)",
-		"* Energia al massimo. Partita salvata: {day_name}, ore {clock}.",
-	])
+	await Ui.say(["* Energia al massimo. Partita salvata: {floor}, ore {clock}."])
 
 
 ## Un punto che, guardato, mostra una descrizione.

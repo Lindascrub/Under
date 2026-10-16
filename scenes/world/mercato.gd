@@ -42,7 +42,7 @@ func build() -> void:
 
 	# Il magazzino, a destra
 	for c in [Vector2i(33, 8), Vector2i(33, 11), Vector2i(35, 13)]:
-		add_prop("market/box_%d.png" % [1, 2, 5, 1][(c.x + c.y) % 4], c, 1, Vector2i(32, 32), [
+		add_prop("market/box_%d.png" % [1, 2, 5, 1][(c.x + c.y) % 4], c, 2, Vector2i(32, 32), [
 			"* Scatole della CHEAP. Su una c'è scritto: \"Fragile. Come chi la porta\".",
 		])
 

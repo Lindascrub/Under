@@ -46,10 +46,10 @@ func build() -> void:
 	add_prop("props/lamp.png", Vector2i(1, 9), 1, Vector2i(16, 32), [
 		"* Una lampada. La accendi. La spegni. La bolletta della luce ti guarda male.",
 	])
-	add_prop("props/boxes.png", Vector2i(9, 3), 1, Vector2i(32, 48), [
+	add_prop("props/boxes.png", Vector2i(9, 3), 2, Vector2i(32, 48), [
 		"* Scatoloni del trasloco. Dentro: bollette, bollette, una tua foto da bambino, bollette.",
 	])
-	add_prop("props/boxes_small.png", Vector2i(4, 3), 1, Vector2i(16, 32), [
+	add_prop("props/boxes_small.png", Vector2i(4, 3), 2, Vector2i(16, 32), [
 		"* Su questo scatolone c'è scritto \"COSE IMPORTANTI\". Dentro c'è solo un'altra bolletta.",
 	])
 

@@ -127,7 +127,7 @@ func _props() -> void:
 	add_prop("street/dumpster_graffiti.png", Vector2i(62, 7), 1, Vector2i(32, 32), [
 		"* Un cassonetto. Sopra qualcuno ha scritto con lo spray: IL DEBITO È UNA CATENA.",
 	])
-	add_prop("street/trash_bags.png", Vector2i(25, 6), 1, Vector2i(32, 32), ["* Sacchi della spazzatura. Odorano di lunedì."])
+	add_prop("street/trash_bags.png", Vector2i(25, 6), 2, Vector2i(32, 32), ["* Sacchi della spazzatura. Odorano di lunedì."])
 	for x in [2, 10, 26, 40, 50, 58]:
 		add_prop("street/tree.png", Vector2i(x, 18), 1, Vector2i(32, 48), ["* Un albero. Qualcuno ci ha inciso: \"M + figli, per sempre\"."])
 	for x in [6, 14, 20, 30, 46, 54]:
