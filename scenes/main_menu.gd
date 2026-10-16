@@ -43,10 +43,51 @@ func _ready() -> void:
 	credits.position = Vector2(0, 338)
 
 	if GameState.has_save():
-		_options.assign(["Continua", "Nuova partita", "Esci"])
+		_options.assign(["Continua", "Nuova partita", "Audio", "Esci"])
 	else:
-		_options.assign(["Nuova partita", "Esci"])
+		_options.assign(["Nuova partita", "Audio", "Esci"])
 	_render()
+
+
+## Prima di cominciare: come ti chiami? (Sul telefono si apre la tastiera.)
+func _ask_name() -> String:
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, 0.85)
+	shade.size = Vector2(640, 360)
+	add_child(shade)
+	var q := _label("Come ti chiami?", 22, Color.WHITE)
+	q.position = Vector2(0, 110)
+	var edit := LineEdit.new()
+	edit.max_length = 12
+	edit.placeholder_text = "il tuo nome"
+	edit.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	edit.add_theme_font_size_override("font_size", 20)
+	edit.position = Vector2(220, 150)
+	edit.size = Vector2(200, 36)
+	add_child(edit)
+	var ok := Button.new()
+	ok.text = "Comincia"
+	ok.add_theme_font_size_override("font_size", 18)
+	ok.position = Vector2(260, 200)
+	ok.size = Vector2(120, 34)
+	add_child(ok)
+	edit.grab_focus()
+	var done := [false]
+	edit.text_submitted.connect(func(_t: String) -> void: done[0] = true)
+	ok.pressed.connect(func() -> void: done[0] = true)
+	while not done[0]:
+		await get_tree().process_frame
+		if name_override != "":
+			edit.text = name_override
+			done[0] = true
+	var who := edit.text.strip_edges()
+	for n in [shade, q, edit, ok]:
+		n.queue_free()
+	return who if who != "" else "Tu"
+
+
+## Solo per i test: un nome già scritto.
+var name_override := ""
 
 
 func _label(text: String, size: int, color: Color) -> Label:
@@ -93,9 +134,14 @@ func _choose(option: String) -> void:
 	_locked = true
 	match option:
 		"Nuova partita":
+			var who := await _ask_name()
 			GameState.new_game()
+			GameState.player_name = who
 			GameState.delete_save()
 			Router.goto(Router.ELEVATOR, "", INTRO)
+		"Audio":
+			await Ui.audio_menu()
+			_locked = false
 		"Continua":
 			Router.continue_game()
 		"Esci":

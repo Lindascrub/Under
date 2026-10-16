@@ -76,6 +76,31 @@ func _unhandled_input(event: InputEvent) -> void:
 		Ui.show_status()
 
 
+## Cammina sulle scale fino a `to`, un gradino alla volta. `fade_out`: la luce cala (stai
+## lasciando il piano); altrimenti torna (stai arrivando).
+func climb(to: Vector2, dir: String, fade_out: bool) -> void:
+	facing = dir
+	_sprite.play("walk_" + dir)
+	_shadow.visible = false
+	var t := 1.2
+	var tw := create_tween()
+	tw.tween_property(self, "position", to, t)
+	tw.parallel().tween_property(_sprite, "modulate", Color(0.3, 0.3, 0.36) if fade_out else Color.WHITE, t)
+	var steps := create_tween()
+	for i in 5:
+		steps.tween_callback(Sound.sfx.bind("step", 1.05 - i * 0.05))
+		steps.tween_interval(t / 5.0)
+	await tw.finished
+	_shadow.visible = not fade_out
+	_sprite.play("idle_" + dir)
+
+
+func set_dark(dark: bool) -> void:
+	if _sprite == null:
+		await ready
+	_sprite.modulate = Color(0.3, 0.3, 0.36) if dark else Color.WHITE
+
+
 func face(dir: String) -> void:
 	facing = dir
 	_sprite.play("idle_" + dir)

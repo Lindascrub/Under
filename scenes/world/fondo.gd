@@ -54,6 +54,7 @@ func build() -> void:
 	_fermo.play("sit_left")
 	world.add_child(_fermo)
 	add_prop("street/cardboard.png", FERMO_CELL + Vector2i(1, 0), 0, Vector2i(16, 16), ["* Il cartone dove dorme Fermo. Ha la forma di Fermo."])
+	block(Rect2i(FERMO_CELL, Vector2i.ONE))
 	add_spot(cell_center(FERMO_CELL), _talk_fermo)
 
 	# A sinistra: il lavoro. Due cyclette con la dinamo, una occupata.
@@ -293,7 +294,8 @@ func _first_talk() -> void:
 	GameState.flags["met_fermo"] = true
 	await Ui.say(["...Oh. Un'altra persona.",
 		"Pensavo che l'ascensore non portasse più nessuno, quaggiù. Di solito si rompe prima.",
-		"Io sono Fermo. Di nome e di fatto, dicono. Ridono sempre, quelli che lo dicono. Io no."], who)
+		"Io sono Fermo. Di nome e di fatto, dicono. Ridono sempre, quelli che lo dicono. Io no.",
+		"E tu? ...{name}. Bel nome. Tienilo stretto: quaggiù i nomi si consumano in fretta."], who)
 	var c: int = await Ui.choose("Tu quanto devi?", ["Seimila euro.", "Non sono affari tuoi."], who)
 	if c == 0:
 		await Ui.say(["Seimila. Ah. Io, quando sono arrivato, ne dovevo quattromila.",

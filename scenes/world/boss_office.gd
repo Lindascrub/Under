@@ -48,8 +48,8 @@ func build() -> void:
 	])
 	add_prop("props/palm.png", Vector2i(1, 3), 1, Vector2i(32, 32))
 	add_prop("props/palm.png", Vector2i(15, 3), 1, Vector2i(32, 32))
-	add_prop("props/office_desk.png", Vector2i(8, 6), 1, Vector2i(16, 32))
-	add_prop("props/office_desk.png", Vector2i(9, 6), 1, Vector2i(16, 32))
+	add_computer_desk(Vector2i(8, 6))
+	add_computer_desk(Vector2i(9, 6))
 	add_prop("props/computer.png", Vector2i(10, 6))
 
 	_boss = AnimatedSprite2D.new()

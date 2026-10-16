@@ -33,26 +33,21 @@ func build() -> void:
 	add_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
 
 	# Lo sportello del collocamento
-	_art("res://art/sign_collocamento.png", Vector2(86, 1 * T + 6))
-	add_prop("props/office_desk.png", Vector2i(6, 5))
-	add_prop("props/office_desk.png", Vector2i(7, 5))
+	add_computer_desk(Vector2i(6, 5))
+	add_computer_desk(Vector2i(7, 5))
 	var agenda := AnimatedSprite2D.new()
 	agenda.sprite_frames = Assets.character("char_20")
 	agenda.centered = false
-	agenda.offset = Vector2(-8, -42)
+	agenda.offset = Vector2(-8, -48)
 	agenda.position = cell_feet(Vector2i(7, 4))
 	agenda.play("idle_down")
 	world.add_child(agenda)
 	block(Rect2i(7, 4, 1, 1))
 	add_spot(cell_center(Vector2i(7, 5)), _collocamento)
-	_art("res://art/board_jobs.png", Vector2(172, 1 * T + 2))
-	examine(cell_center(Vector2i(13, 3)), _board_lines())
-	_art("res://art/poster_smile.png", Vector2(286, 1 * T + 4))
-	add_signpost("res://art/poster_rest.png", Vector2(12 * T, 9 * T))
 
 	# La sala del call center
 	for x in [4, 5, 8, 9]:
-		add_prop("props/office_desk.png", Vector2i(x, 10))
+		add_computer_desk(Vector2i(x, 10), ["* Una cuffia sudata e un copione: \"Grazie per la sua pazienza\"."])
 	# i colleghi del call center, seduti dietro le scrivanie col telefono
 	for c: Array in [[Vector2i(4, 8), "char_18"], [Vector2i(5, 8), "char_19"], [Vector2i(9, 8), "char_14"]]:
 		var w := AnimatedSprite2D.new()
@@ -65,11 +60,11 @@ func build() -> void:
 		block(Rect2i(c[0], Vector2i.ONE))
 	examine(cell_center(Vector2i(4, 8)) + Vector2(0, 4), ["* \"Grazie per la sua pazienza. Grazie per la sua pazienza. Grazie per la sua pazienza.\"", "* Non ti guarda nemmeno."])
 
-	# I bagni
-	for x in [15, 17, 19, 21]:
-		add_prop("bath/stall.png", Vector2i(x, 3), 1, Vector2i(32, 48), ["* Un bagno. Sulla porta qualcuno ha inciso: \"Anche io ero un sogno\"."])
-	add_prop("bath/sink.png", Vector2i(19, 11), 1, Vector2i(32, 48), ["* Il lavandino. L'acqua calda è \"un benefit riservato ai dirigenti\"."])
-	add_prop("bath/sink.png", Vector2i(21, 11), 1, Vector2i(32, 48))
+	# I bagni: due gabinetti e due lavandini, tutti contro il muro
+	for x in [15, 17]:
+		add_prop("bath/stall.png", Vector2i(x, 3), 2, Vector2i(32, 48), ["* Un bagno. Sulla porta qualcuno ha inciso: \"Anche io ero un sogno\"."])
+	add_prop("bath/sink.png", Vector2i(19, 3), 2, Vector2i(32, 48), ["* Il lavandino. L'acqua calda è \"un benefit riservato ai dirigenti\"."])
+	add_prop("bath/sink.png", Vector2i(21, 3), 2, Vector2i(32, 48))
 	add_prop("bath/mop.png", Vector2i(16, 5), 1, Vector2i(16, 32))
 	add_prop("bath/bucket.png", Vector2i(18, 5), 1, Vector2i(16, 32))
 	add_prop("props/trash.png", Vector2i(15, 11), 1, Vector2i(16, 32), ["* Il cestino dei bagni. Meglio non guardare."])
@@ -89,7 +84,7 @@ func enter() -> void:
 		GameState.flags["sotto_intro"] = true
 		await Ui.say([
 			"* Il piano -4. Luci al neon che ronzano, un odore di candeggina e caffè freddo.",
-			"* Su un poster: IL RIPOSO È UN FURTO. Su un altro: SORRIDI, TI OSSERVIAMO.",
+			"* Sui muri, macchie di umidità a forma di grafici in discesa.",
 			"* Allo sportello, una signora ti fa segno di avvicinarti. Sorride troppo.",
 			"* Qui la luce c'è. Viene dalle cyclette di sotto. Nessuno, quassù, ci pensa.",
 		])
@@ -111,7 +106,8 @@ func _collocamento() -> void:
 	if not GameState.flags.get("agenda_intro", false):
 		GameState.flags["agenda_intro"] = true
 		await Ui.say([
-			"Oh! Qualcuno che sale dal Fondo! Benvenuto al piano -4. Io sono la Signora Agenda.",
+			"Oh! Qualcuno che sale dal Fondo! {name}, vero? Ho già il tuo nome sul registro. Ce li ho tutti.",
+			"Benvenuto al piano -4. Io sono la Signora Agenda.",
 			"Qui distribuiamo il lavoro a chi ha un debito. Cioè a tutti.",
 			"I bagni o il call center: scegli tu! Non è un obbligo, è un'opportunità. Che poi è la stessa cosa, ma detta meglio.",
 			"Il badge per il Mercato costa 400. Te lo dico subito, così non ti illudi. Cioè: così ti motivi!",

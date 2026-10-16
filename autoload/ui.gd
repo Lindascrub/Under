@@ -252,6 +252,7 @@ func show_status() -> void:
 	var options: Array = []
 	for item in GameState.items:
 		options.append(item)
+	options.append("Audio")
 	options.append("Chiudi")
 	var prompt := "{rank}. {floor}, ore {clock}. Badge: %d. Energia %d/%d." % [
 		GameState.badges.size(), GameState.energy, GameState.MAX_ENERGY]
@@ -263,10 +264,38 @@ Missioni: " + ", ".join(missions) + "."
 		prompt += "
 Non hai oggetti."
 	var i: int = await choose(prompt, options, "Stato")
+	if i == GameState.items.size():
+		await audio_menu()
+		return
 	if i < GameState.items.size():
 		Sound.sfx("heal")
 		await say(GameState.use_item(i).split("
 "))
+
+
+## Il volume di musica ed effetti: ogni scelta abbassa di un gradino (dopo lo zero si ricomincia dal massimo).
+func audio_menu() -> void:
+	while true:
+		var m := Sound.volume("Music")
+		var s := Sound.volume("SFX")
+		var c: int = await choose("Volume (scegli per cambiarlo)", ["Musica: %s" % _vol_text(m), "Effetti: %s" % _vol_text(s), "Fatto"], "Audio")
+		match c:
+			0:
+				Sound.set_volume("Music", _next_vol(m))
+			1:
+				Sound.set_volume("SFX", _next_vol(s))
+				Sound.sfx("coin")
+			_:
+				return
+
+
+func _next_vol(v: float) -> float:
+	return 1.0 if v <= 0.01 else maxf(0.0, snappedf(v - 0.2, 0.2))
+
+
+func _vol_text(v: float) -> String:
+	var n := int(round(v * 5.0))
+	return "[" + "#".repeat(n) + "-".repeat(5 - n) + "] %d%%" % int(round(v * 100.0))
 
 
 func _type(label: Label, text: String) -> void:

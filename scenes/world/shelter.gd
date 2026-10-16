@@ -31,8 +31,8 @@ func build() -> void:
 	add_spot(Vector2(60, 72), _rest)
 	add_prop("props/dresser.png", Vector2i(6, 3), 1, Vector2i(32, 48))
 	add_spot(cell_center(Vector2i(6, 3)), _board)
-	add_prop("props/office_desk.png", Vector2i(10, 4), 1, Vector2i(16, 32))
-	add_prop("props/office_desk.png", Vector2i(11, 4), 1, Vector2i(16, 32))
+	add_computer_desk(Vector2i(10, 4))
+	add_computer_desk(Vector2i(11, 4))
 	add_spot(cell_center(Vector2i(10, 5)) + Vector2(8, 0), _bread)
 	add_prop("props/boxes.png", Vector2i(13, 3), 2, Vector2i(32, 48), [
 		"* Scatoloni con scritto sopra: VESTITI, LIBRI, ATTREZZI. Chi ha bisogno prende, chi può lascia.",

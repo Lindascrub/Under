@@ -99,6 +99,10 @@ func _wait_scene(path: String, max_frames := 30000) -> void:
 	if n >= max_frames:
 		_fail("timeout aspettando %s (scena attuale %s)" % [path, _scene_path()])
 	await get_tree().process_frame
+	# l'arrivo dalle scale (pochi secondi di scena scriptata)
+	var t0 := Time.get_ticks_msec()
+	while Ui.cutscene and Time.get_ticks_msec() - t0 < 3000 and path in Router.WORLD:
+		await get_tree().process_frame
 
 
 func _idle(max_frames := 8000) -> void:

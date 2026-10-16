@@ -37,6 +37,8 @@ var _light: CanvasModulate
 var _blocked_cells := {}
 var _people_cells := {}
 var _grey_rect: ColorRect
+var _stairs_up_pos := Vector2.INF
+var _stairs_down_pos := Vector2.INF
 
 
 func _ready() -> void:
@@ -54,6 +56,7 @@ func _ready() -> void:
 	if floor_id != "":
 		GameState.enter_floor(floor_id)
 	_spawn_player()
+	var arrive_to := _prepare_arrival()
 	Ui.show_hud(true)
 	Sound.music(music)
 	_grey_world()
@@ -64,6 +67,8 @@ func _ready() -> void:
 		GameState.changed.connect(_update_light)
 	if Ui.transitioning:
 		await Ui.faded_in
+	if arrive_to != Vector2.INF:
+		await _do_arrival(arrive_to)
 	enter()
 
 
@@ -91,6 +96,9 @@ func _grey_world() -> void:
 
 ## Il filtro grigio segue quello che inquadra la telecamera (anche ai bordi della mappa).
 func _process(_delta: float) -> void:
+	if camera_lift > 0 and player:
+		var t := clampf((10.0 * T - player.position.y) / (4.0 * T), 0.0, 1.0)
+		player.camera.offset.y = lerpf(player.camera.offset.y, -camera_lift * t, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
 
@@ -207,7 +215,7 @@ func _pity_offer() -> void:
 	var tw := rata.create_tween()
 	tw.tween_property(rata, "modulate:a", 1.0, 0.4)
 	Sound.sfx("stamp")
-	await Ui.say(["...Oppure.", "Signor Rata, ufficio contratti. Somiglio al Dottor Prezzi, lo so. Me lo dicono tutti. Forse siamo parenti. Forse no.",
+	await Ui.say(["...Oppure.", "Signor Rata, ufficio contratti. Lei è {name}, lo so: so il nome di tutti quelli che firmano. Somiglio al Dottor Prezzi, lo so. Me lo dicono tutti. Forse siamo parenti. Forse no.",
 		"Perché accettare la pietà, che è umiliante, quando può firmare un contratto, che è dignitoso?",
 		"Il badge del %s, adesso, subito. Senza un centesimo." % GameState.floor_name(need),
 		"Clausola uno: il prezzo, più la metà, va sul suo debito. Clausola due: gli interessi di ogni notte salgono un pochino. Pochino.",
@@ -606,10 +614,19 @@ func add_art(path: String, bottom_left: Vector2i, solid_rows := 0, nudge := Vect
 	return s
 
 
+## Le scale di legno del foglio "Generic" di LimeZu (2 caselle di larghezza, 4 di altezza).
+const GENERIC := "tiles/generic.png"
+const GENERIC_SIZE := Vector2i(256, 1248)
+const STAIRS_REGION := Rect2(168, 864, 32, 64)
+## La scrivania bianca con il computer, sempre dal foglio "Generic".
+const DESK_REGION := Rect2(96, 8, 16, 40)
+
+
 ## Scale che salgono al piano di sopra, dentro al muro, con il tornello accanto: si passa
 ## solo con il badge di quel piano. `bottom_left` è il primo gradino (sul pavimento).
 func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
-	add_art("res://art/stairs_up.png", bottom_left)
+	add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
+	_stairs_up_pos = Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T)
 	var turn := add_art("res://art/turnstile.png", bottom_left + Vector2i(-1, 0), 1)
 	if GameState.has_badge(need):
 		turn.modulate = Color(0.85, 1.0, 0.85)
@@ -632,7 +649,13 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 			var lines: Array = []
 			if not GameState.flags.get(key, false):
 				GameState.flags[key] = true
-				lines = ["Sali le scale. Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
+				lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
+			# sali davvero: un gradino alla volta, verso la luce del piano di sopra
+			Ui.cutscene = true
+			var p := b as Player
+			p.z_index = 2
+			await p.climb(Vector2(bottom_left.x * T + T, (bottom_left.y - 2) * T - 4), "up", true)
+			Ui.cutscene = false
 			Router.goto(path, spawn_name, lines)
 			return
 		Sound.sfx("deny")
@@ -642,33 +665,87 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 	)
 
 
-## Scale che scendono al piano di sotto (una botola nel pavimento, 2x2 caselle).
+## Scale che scendono al piano di sotto: le stesse scale di legno, viste dall'alto mentre
+## spariscono nel pavimento (2 caselle di larghezza, 3 di altezza).
 func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) -> void:
-	add_art("res://art/stairs_down.png", bottom_left)
+	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
+	s.flip_v = true
+	# è un buco nel pavimento: sta sopra le piastrelle ma sotto a persone e oggetti
+	world.remove_child(s)
+	add_child(s)
+	move_child(s, world.get_index())
+	# più si scende, più è buio
+	var g := Gradient.new()
+	g.set_color(0, Color(0, 0, 0, 0.0))
+	g.set_color(1, Color(0, 0, 0, 0.85))
+	var gt := GradientTexture2D.new()
+	gt.gradient = g
+	gt.fill_from = Vector2(0, 0)
+	gt.fill_to = Vector2(0, 1)
+	gt.width = 28
+	gt.height = 40
+	var shade := Sprite2D.new()
+	shade.texture = gt
+	shade.centered = false
+	shade.position = Vector2(2, -42)
+	s.add_child(shade)
+	_stairs_down_pos = Vector2(bottom_left.x * T + T, bottom_left.y * T + 2)
 	var a := Area2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(2 * T - 8, T)
 	var col := CollisionShape2D.new()
 	col.shape = shape
-	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 4)
+	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T)
 	a.add_child(col)
 	add_child(a)
 	a.body_entered.connect(func(b: Node2D) -> void:
-		if b is Player and not Ui.blocks_input():
-			Router.goto(path, spawn_name)
+		if not (b is Player) or Ui.blocks_input():
+			return
+		Ui.cutscene = true
+		await (b as Player).climb(Vector2(bottom_left.x * T + T, (bottom_left.y + 1) * T), "down", true)
+		Ui.cutscene = false
+		Router.goto(path, spawn_name)
 	)
+
+
+## La scrivania bianca con il computer (16x40): il piano e le gambe bloccano il passaggio.
+func add_computer_desk(bottom_left: Vector2i, text: Array = []) -> Sprite2D:
+	var s := add_region(GENERIC, GENERIC_SIZE, DESK_REGION, bottom_left)
+	block_px(Rect2(bottom_left.x * T + 1, (bottom_left.y + 1) * T - 22, T - 2, 22))
+	_blocked_cells[bottom_left] = true
+	if not text.is_empty():
+		examine(cell_center(bottom_left), text)
+	return s
+
+
+## Arrivando dalle scale, il personaggio sale fuori dalla botola o scende dagli scalini.
+func _prepare_arrival() -> Vector2:
+	var from := Vector2.INF
+	if Router.spawn == "from_below":
+		from = _stairs_down_pos
+	elif Router.spawn == "from_above":
+		from = _stairs_up_pos
+	if from == Vector2.INF or player == null:
+		return Vector2.INF
+	var to := player.position
+	player.position = from
+	player.z_index = 2
+	player.set_dark(true)
+	return to
+
+
+func _do_arrival(to: Vector2) -> void:
+	Ui.cutscene = true
+	await player.climb(to, "up" if Router.spawn == "from_below" else "down", false)
+	player.z_index = 0
+	player.face(spawn_facing.get(Router.spawn, "down"))
+	Ui.cutscene = false
 
 
 ## Il distributore dei badge: paghi una parte del debito e ricevi il badge del piano di sopra.
 func add_badge_machine(bottom_left: Vector2i) -> void:
 	var m := add_prop("props/terminal.png", bottom_left)
 	m.modulate = Color(0.85, 1.0, 0.9)
-	if ResourceLoader.exists("res://art/plate_badge.png"):
-		var plate := Sprite2D.new()
-		plate.texture = load("res://art/plate_badge.png")
-		plate.position = Vector2(bottom_left.x * T + T / 2.0, (bottom_left.y + 1) * T - 32 - 6)
-		plate.z_index = 1
-		add_child(plate)
 	add_spot(cell_center(bottom_left), _badge_machine)
 
 
@@ -744,4 +821,4 @@ func _spawn_player() -> void:
 	cam.limit_right = w + pad_x
 	cam.limit_top = -camera_top - pad_y
 	cam.limit_bottom = h + pad_y
-	cam.offset.y = -camera_lift
+

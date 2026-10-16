@@ -35,9 +35,8 @@ func build() -> void:
 	_building("market/shop_big.png", 13, Vector2i(112, 144))
 	_building("market/kiosk.png", 21, Vector2i(112, 192))
 	_building("market/shop_1.png", 29, Vector2i(80, 128))
-	block(Rect2i(0, 0, W, 6))
-	_art("res://art/sign_occupata.png" if look == "baratto" and GameState.barter_level() != "pochi" else "res://art/sign_banca.png",
-		Vector2(13 * T + 18, 6 * T - 144 + 40))
+	# sopra alla scritta MARKET del palazzo grande: è la banca
+	_bank_plate(13, look == "baratto" and GameState.barter_level() != "pochi")
 	add_spot(Vector2(13 * T + 56, 6 * T - 2), _bank_door)
 
 	# Il magazzino, a destra
@@ -47,7 +46,7 @@ func build() -> void:
 		])
 
 	# Il banco della frutta (dove lavora Vito)
-	add_prop("market/table_2.png", Vector2i(17, 11), 1, Vector2i(48, 32))
+	add_prop("market/table_2.png", Vector2i(17, 11), 2, Vector2i(48, 32))
 
 	match look:
 		"capitalismo":
@@ -61,6 +60,7 @@ func build() -> void:
 	add_badge_machine(Vector2i(12, 6))
 	add_station("mercato")
 	spawn_people("mercato")
+	_shoppers()
 	add_save_point(Vector2i(38, 14))
 
 	spawns["default"] = cell_feet(Vector2i(36, 9))
@@ -88,13 +88,13 @@ func enter() -> void:
 
 func _auction() -> void:
 	for x in [2, 8, 25, 30]:
-		add_prop("market/shutter_%d.png" % (1 + x % 2), Vector2i(x, 9), 1, Vector2i(48, 48), [
+		add_prop("market/shutter_%d.png" % (1 + x % 2), Vector2i(x, 9), 2, Vector2i(48, 48), [
 			"* Una saracinesca abbassata. Sopra, un cartello: \"Acquisito da CHEAP S.p.A.\"",
 		])
-	add_prop("market/table_3.png", Vector2i(10, 12), 1, Vector2i(48, 48), [
+	add_prop("market/table_3.png", Vector2i(10, 12), 2, Vector2i(48, 48), [
 		"* Il palco dell'asta. Sul banco c'è un martelletto d'oro e una lista di nomi.",
 	])
-	add_signpost("res://art/sign_asta.png", Vector2(14 * T + 8, 12 * T))
+	add_signpost("res://art/sign_asta.png", Vector2(8 * T + 8, 13 * T))
 	_static("char_18", Vector2i(11, 11), "idle_down", false)
 	for x in [9, 11, 13]:
 		_static("char_19" if x % 2 else "char_20", Vector2i(x, 14), "idle_up", true)
@@ -105,7 +105,7 @@ func _auction() -> void:
 
 
 func _queue() -> void:
-	add_prop("market/table_1.png", Vector2i(26, 11), 1, Vector2i(48, 32), [
+	add_prop("market/table_1.png", Vector2i(26, 11), 2, Vector2i(48, 32), [
 		"* Il banco delle razioni. Un timbro, una busta, avanti il prossimo.",
 		"* Sulla busta c'è scritto: \"Razione standard. Come te\".",
 	])
@@ -126,8 +126,8 @@ func _barter() -> void:
 		add_prop("market/cloth_%d.png" % (1 + (c.x % 4)), c, 0, Vector2i(48, 32), [
 			"* Un telo pieno di cose: pane, libri, viti, una radio. \"Prendi quello che ti serve, lascia quello che puoi.\"",
 		])
-	add_prop("market/table_4.png", Vector2i(25, 10), 1, Vector2i(48, 48))
-	add_prop("market/cart.png", Vector2i(4, 10), 1, Vector2i(48, 48), ["* Il carretto dei dolci. Oggi si paga con una storia."])
+	add_prop("market/table_4.png", Vector2i(25, 10), 2, Vector2i(48, 48))
+	add_prop("market/cart.png", Vector2i(4, 10), 2, Vector2i(48, 48), ["* Il carretto dei dolci. Oggi si paga con una storia."])
 	add_signpost("res://art/sign_scambi.png", Vector2(14 * T, 9 * T))
 	_static("char_19", Vector2i(6, 12), "idle_right", false)
 	_static("char_20", Vector2i(10, 12), "idle_left", false)
@@ -163,6 +163,7 @@ func _bank_door() -> void:
 	Router.goto(Router.BANCA, "mercato")
 
 
+## Un edificio sullo sfondo: blocca solo dove c'è davvero (tra un negozio e l'altro si passa).
 func _building(rel: String, x: int, size: Vector2i) -> void:
 	var tex := Assets.tex(rel, size)
 	var s := Sprite2D.new()
@@ -171,6 +172,85 @@ func _building(rel: String, x: int, size: Vector2i) -> void:
 	s.offset = Vector2(0, -tex.get_height())
 	s.position = Vector2(x * T, 6 * T)
 	world.add_child(s)
+	var r := _solid_rect(tex, 6)
+	if r.size.x <= 0:
+		r = Rect2(0, -6 * T, tex.get_width(), 6 * T)
+	r.position.y = -6 * T
+	r.size.y = 6 * T - 2
+	block_px(Rect2(s.position + r.position, r.size))
+	for cx in range(int(floor((s.position.x + r.position.x) / T)), int(ceil((s.position.x + r.end.x) / T))):
+		for cy in 6:
+			_blocked_cells[Vector2i(cx, cy)] = true
+
+
+## La targa della banca, sopra la scritta MARKET del palazzo grande.
+func _bank_plate(x: int, occupied: bool) -> void:
+	var base := Vector2(x * T + 32, 6 * T - 144 + 79)
+	var border := ColorRect.new()
+	border.color = Color("3a3644")
+	border.position = base
+	border.size = Vector2(48, 22)
+	border.z_index = 1
+	add_child(border)
+	var plate := ColorRect.new()
+	plate.color = Color("d8dbe6") if not occupied else Color("f2e6c8")
+	plate.position = base + Vector2(2, 2)
+	plate.size = Vector2(44, 18)
+	plate.z_index = 1
+	add_child(plate)
+	var l := Label.new()
+	l.text = "OCCUPATA" if occupied else "BANCA"
+	l.add_theme_font_size_override("font_size", 13 if not occupied else 9)
+	l.add_theme_color_override("font_color", Color("3a3644") if not occupied else Color("c0302a"))
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.position = base
+	l.size = Vector2(48, 22)
+	l.z_index = 1
+	add_child(l)
+
+
+## La gente del mercato: passanti che girano tra i banchi, con frasi diverse a seconda del mondo.
+func _shoppers() -> void:
+	var talk: Array
+	match look:
+		"capitalismo":
+			talk = [
+				"Ho comprato un banco all'asta. Non so cosa vendere. Allora vendo il banco.",
+				"Tutto ha un prezzo. Io, per esempio, sono in saldo.",
+				"Offerta speciale: compri due debiti e il terzo è gratis. Ne ho presi sei.",
+				"Il banditore è bravissimo. Ieri ha venduto sua madre. Tre volte.",
+				"Sorridi! Quelli che non sorridono vengono messi all'asta.",
+			]
+		"baratto":
+			talk = [
+				"Ho scambiato un orologio con un pomeriggio libero. Miglior affare della mia vita.",
+				"Qui nessuno ha soldi. Eppure nessuno ha fame. Strano, no?",
+				"Ti do una storia in cambio di una mela? Le mie storie sono buone. Le mele meno.",
+				"Ho riparato una bici e mi hanno insegnato a fare il pane. Adesso faccio il pane per le bici.",
+				"Il primo giorno avevo paura. Il secondo ho riso. Il terzo ho dormito, per la prima volta da anni.",
+			]
+		_:
+			talk = [
+				"Ho il numero 4.512. Stanno servendo il 12. Torno domani. Cioè tra un anno.",
+				"La razione di oggi è uguale a quella di ieri. Almeno non ci sono sorprese.",
+				"Mio figlio mi ha chiesto cos'è una fragola. Gliel'ho disegnata.",
+				"Non fare la fila due volte. Se ne accorgono. Se ne accorgono sempre.",
+				"Una volta qui si sentiva gridare: \"Pomodori! Pomodori freschi!\". Adesso si sente solo il timbro.",
+			]
+	var sheets := ["char_05", "char_09", "char_12", "char_07", "char_11", "char_06"]
+	var rows := [7, 15, 15, 7, 14]
+	for i in rows.size():
+		var w := Walker.new()
+		w.sheet = sheets[i % sheets.size()]
+		w.lines = talk
+		w.direction = 1.0 if i % 2 == 0 else -1.0
+		w.min_x = T
+		w.max_x = (W - 2) * T
+		w.position = Vector2(randf_range(3 * T, (W - 4) * T), (rows[i] + 1) * T - 2)
+		if look == "capitalismo":
+			w.modulate = Color(0.82, 0.84, 0.9)
+		world.add_child(w)
 
 
 func _art(path: String, pos: Vector2) -> void:

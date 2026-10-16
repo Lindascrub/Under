@@ -29,7 +29,7 @@ func build() -> void:
 		"_floor": floor_def,
 	})
 	for x in range(5, 13):
-		add_prop("props/office_desk.png", Vector2i(x, 5))
+		add_computer_desk(Vector2i(x, 5))
 	add_prop("props/portrait.png", Vector2i(3, 2), 0, Vector2i(16, 32), [
 		"* Il ritratto del Presidente della banca. Sotto: \"Fondatore, garante, amico di tutti i debitori\".",
 		"* Ha qualcosa di familiare. Il naso, forse. O lo sguardo stanco.",
@@ -44,7 +44,7 @@ func build() -> void:
 	var teller := AnimatedSprite2D.new()
 	teller.sprite_frames = Assets.character("char_04")
 	teller.centered = false
-	teller.offset = Vector2(-8, -42)
+	teller.offset = Vector2(-8, -48)
 	teller.position = cell_feet(Vector2i(8, 4))
 	teller.play("idle_down")
 	if look == "capitalismo":

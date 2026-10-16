@@ -64,6 +64,8 @@ var minutes := DAY_START
 ## Il piano in cui ti trovi adesso (lo imposta ogni stanza) e i badge che hai già.
 var floor_id := "-5"
 var badges: Array[String] = []
+## Come si chiama il giocatore (lo chiede il menu quando si comincia).
+var player_name := "Tu"
 var money := 0
 var debt := START_DEBT
 var energy := MAX_ENERGY
@@ -602,11 +604,12 @@ func assign_job(id: String) -> void:
 # --- la telefonata del capo: le promozioni ----------------------------------
 
 ## Dopo un turno il capo ti chiama per proporti una promozione: sfruttare qualcuno.
-## Il primo giorno è una cosa piccola e ambigua (il buono pasto di Gino); poi sceglie
+## La prima volta è una cosa piccola e ambigua (il buono pasto di Gino); poi sceglie
 ## sempre qualcuno che hai conosciuto, così la scelta fa male.
 func promotion_victim() -> String:
 	var order := ["gino", "vito", "marta", "dario", "sig_bruno", "lea", "giulia", "ragazzo_sami", "portiere_ivo"]
-	if day == 1 and not is_robot("gino") and "gino" not in freed:
+	# la prima telefonata (nessuna promozione firmata o rifiutata) è sempre la cosetta di Gino
+	if exploited == 0 and int(flags.get("promotions_refused", 0)) == 0 and not is_robot("gino") and "gino" not in freed:
 		return "gino"
 	for id: String in order:
 		if flags.get("met_" + id, false) and not is_robot(id) and id not in freed:
@@ -717,7 +720,8 @@ func fmt(text: String) -> String:
 		.replace("{day_name}", day_name()) \
 		.replace("{clock}", clock()) \
 		.replace("{last_day}", str(LAST_DAY)) \
-		.replace("{floor}", floor_name())
+		.replace("{floor}", floor_name()) \
+		.replace("{name}", player_name)
 
 
 static func euros(n: int) -> String:
@@ -743,7 +747,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
 		"worked_today": worked_today, "flags": flags, "quests": quests,
 		"freed": freed, "motives_known": motives_known, "room": room,
-		"floor_id": floor_id, "badges": badges,
+		"floor_id": floor_id, "badges": badges, "player_name": player_name,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -781,6 +785,7 @@ func load_game() -> Dictionary:
 	motives_known.assign(d.get("motives_known", []))
 	floor_id = str(d.get("floor_id", "-5"))
 	badges.assign(d.get("badges", []))
+	player_name = str(d.get("player_name", "Tu"))
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {

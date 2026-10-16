@@ -60,7 +60,7 @@ func build() -> void:
 		for x in [3, 4, 14, 15]:
 			if not (x == 4 and y == 8):
 				add_prop("props/office_chair.png", Vector2i(x, y - 1), 0, Vector2i(16, 32), [], Vector2(0, -4))
-			add_prop("props/office_desk.png", Vector2i(x, y), 1, Vector2i(16, 32), DESK_TEXTS[k % DESK_TEXTS.size()])
+			add_computer_desk(Vector2i(x, y), DESK_TEXTS[k % DESK_TEXTS.size()])
 			k += 1
 
 	add_spot(cell_center(Vector2i(9, 3)), _terminal)

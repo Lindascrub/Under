@@ -18,6 +18,8 @@ var direction := 1.0
 var min_x := 0.0
 var max_x := 1000.0
 var speed := 26.0
+## Frasi proprie (per esempio quelle del mercato); se è vuoto usa quelle della strada.
+var lines: Array = []
 var _sprite: AnimatedSprite2D
 var _robot := false
 var _line := 0
@@ -83,7 +85,8 @@ func interact() -> void:
 	if _robot:
 		await Ui.say([GameState.robot_line(sheet)], "Passante", sheet)
 	else:
-		await Ui.say([LINES[_line]], "Passante", sheet)
+		var pool: Array = lines if not lines.is_empty() else LINES
+		await Ui.say([pool[_line % pool.size()]], "Passante", sheet)
 
 
 ## Se compare sopra qualcuno (o dentro un oggetto), si sposta finché non è libero.
