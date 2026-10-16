@@ -28,12 +28,17 @@ var flash := 0.0
 var soul := Vector2.ZERO
 var items: Array[Vector2] = []
 var time_left := 15.0
+var hazards: Array[Dictionary] = []
+var hurt_t := 0.0
 # sequence
 var seq: Array[String] = []
 var shown := 0
 var show_t := 0.0
 var typed: Array[String] = []
 var round_n := 0
+var show_len := 0.75
+## Ogni direzione ha il suo suono, così si capisce anche a orecchio.
+const ARROW_PITCH := {"up": 1.5, "right": 1.25, "down": 0.75, "left": 1.0}
 
 var _title: Label
 var _info: Label
@@ -72,14 +77,19 @@ func _start() -> void:
 	phase = "play"
 	match type:
 		"timing":
-			_info.text = "Premi Z quando il segno è nel verde"
+			_info.text = GameState.fmt("Premi {ok} quando il segno è nel verde")
 			_new_zone()
 		"collect":
-			_info.text = "Raccogli tutto con le frecce"
+			_info.text = "Raccogli tutto con le frecce ed evita le cose rosse"
 			soul = BOX.get_center()
 			for i in int(cfg.get("count", 10)):
 				items.append(Vector2(randf_range(BOX.position.x + 12, BOX.end.x - 12), randf_range(BOX.position.y + 12, BOX.end.y - 12)))
-			time_left = float(cfg.get("time", 15.0))
+			time_left = float(cfg.get("time", 15.0)) * 0.7
+			for i in 3:
+				var hp := Vector2(randf_range(BOX.position.x + 20, BOX.end.x - 20), randf_range(BOX.position.y + 20, BOX.end.y - 20))
+				if hp.distance_to(soul) < 50.0:
+					hp.x = BOX.position.x + 30 if soul.x > BOX.get_center().x else BOX.end.x - 30
+				hazards.append({"pos": hp, "vel": Vector2.from_angle(randf() * TAU) * randf_range(55.0, 85.0)})
 		"sequence":
 			_next_round()
 
@@ -102,8 +112,12 @@ func _next_round() -> void:
 	_info.text = "Guarda bene... (%d/2)" % round_n
 
 
+var t_spin := 0.0
+
+
 func _process(delta: float) -> void:
 	flash = maxf(0.0, flash - delta)
+	t_spin += delta * 4.0
 	match phase:
 		"play":
 			if type == "timing":
@@ -118,6 +132,22 @@ func _process(delta: float) -> void:
 					if items[i].distance_to(soul) < 10.0:
 						items.remove_at(i)
 						Sound.sfx("blip", 1.5)
+				hurt_t = maxf(0.0, hurt_t - delta)
+				for h in hazards:
+					var hp: Vector2 = h["pos"]
+					var hv: Vector2 = h["vel"]
+					hp += hv * delta
+					if hp.x < BOX.position.x + 8 or hp.x > BOX.end.x - 8:
+						hv.x = -hv.x
+					if hp.y < BOX.position.y + 8 or hp.y > BOX.end.y - 8:
+						hv.y = -hv.y
+					h["pos"] = hp.clamp(BOX.position + Vector2(8, 8), BOX.end - Vector2(8, 8))
+					h["vel"] = hv
+					if hurt_t <= 0.0 and hp.distance_to(soul) < 11.0:
+						hurt_t = 1.0
+						time_left -= 2.0
+						flash = 0.3
+						Sound.sfx("hurt")
 				time_left -= delta
 				_info.text = "Tempo: %d   Mancano: %d" % [int(ceil(time_left)), items.size()]
 				if items.is_empty():
@@ -128,8 +158,10 @@ func _process(delta: float) -> void:
 			show_t -= delta
 			if show_t <= 0.0:
 				shown += 1
-				show_t = maxf(0.4, 0.75 - round_n * 0.1)
-				Sound.sfx("move")
+				show_len = maxf(0.55, 0.85 - round_n * 0.1)
+				show_t = show_len
+				if shown <= seq.size():
+					Sound.sfx("blip", ARROW_PITCH[seq[shown - 1]])
 				if shown > seq.size():
 					phase = "play"
 					_info.text = "Ora ripeti con le frecce!"
@@ -158,6 +190,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		for a: String in ARROWS:
 			if event.is_action_pressed("move_" + a):
 				typed.append(a)
+				Sound.sfx("blip", ARROW_PITCH[a])
 				if typed[typed.size() - 1] != seq[typed.size() - 1]:
 					flash = 0.3
 					Sound.sfx("deny")
@@ -168,7 +201,6 @@ func _unhandled_input(event: InputEvent) -> void:
 						round_n -= 1
 						_next_round()
 					return
-				Sound.sfx("blip", 1.3)
 				if typed.size() == seq.size():
 					if round_n >= 2:
 						_finish(true)
@@ -222,11 +254,22 @@ func _draw() -> void:
 			for it in items:
 				draw_rect(Rect2(it - Vector2(3, 2), Vector2(6, 4)), col)
 				draw_rect(Rect2(it - Vector2(1, 3), Vector2(2, 1)), col.lightened(0.3))
-			_heart(soul, RED)
+			# gli imprevisti: rossi, con le punte
+			for h in hazards:
+				var hp: Vector2 = h["pos"]
+				draw_circle(hp, 6, Color("c0302a"))
+				for k in 4:
+					var a := t_spin + k * PI / 2.0
+					draw_line(hp, hp + Vector2.from_angle(a) * 10.0, Color("ff6a5a"), 2.0)
+			if hurt_t <= 0.0 or int(hurt_t * 12) % 2 == 0:
+				_heart(soul, RED)
 		"sequence":
 			var cx := BOX.get_center()
-			if phase == "show" and shown >= 1 and shown <= seq.size():
+			# la freccia resta accesa per due terzi del tempo, poi si spegne: così si vede quando cambia
+			if phase == "show" and shown >= 1 and shown <= seq.size() and show_t > show_len * 0.33:
 				_arrow(cx, seq[shown - 1], 18.0, YELLOW)
+			if phase == "show" and shown >= 1 and shown <= seq.size():
+				draw_string(font, Vector2(BOX.position.x, BOX.end.y - 14), "%d / %d" % [shown, seq.size()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color("8a8494"))
 			elif phase == "play":
 				var n := seq.size()
 				for i in n:

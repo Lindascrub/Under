@@ -15,10 +15,13 @@ const SOUL_R := 5.0
 ## Ritmo dei combattimenti: 1.0 = veloce come all'inizio, più basso = più lento e più facile.
 ## Proiettili, comparse e avvisi vanno a questa velocità; ATTACK_TIME è in tempo "rallentato"
 ## (4.0 con PACE 0.6 = circa 6,7 secondi veri).
-const PACE := 0.6
 const ATTACK_TIME := 4.0
-## Quanta energia toglie un colpo rispetto al valore della battaglia (3 -> 2).
-const DAMAGE_SCALE := 0.6
+## Il ritmo cresce piano con i turni fatti e con il piano (vedi Work.difficulty()):
+## da 0.6 (all'inizio) a 0.95. Lo stesso per il danno.
+var pace := 0.6
+var damage_scale := 0.6
+## Quanti dei proiettili nuovi puntano verso il cuore (il gioco "segue" dove ti muovi).
+var aim := 0.0
 const RED := Color("ff2a3c")
 const ORANGE := Color("ff8a1f")
 const YELLOW := Color("ffe14d")
@@ -69,6 +72,10 @@ var _shake := 0.0
 
 
 func _ready() -> void:
+	var dif := clampf(GameState.hard_work * 0.07 + GameState.floor_index(GameState.floor_id) * 0.06, 0.0, 1.0)
+	pace = lerpf(0.6, 0.95, dif)
+	damage_scale = lerpf(0.6, 0.9, dif)
+	aim = dif * 0.5
 	cfg = GameState.battle
 	kind = str(cfg.get("kind", "person"))
 	Ui.show_hud(false)
@@ -491,11 +498,17 @@ func _dodge(delta: float) -> void:
 	iframes = maxf(0.0, iframes - delta)
 
 	# il mondo dei proiettili va più piano del cuore: così si schiva con calma
-	var wd := delta * PACE
+	var wd := delta * pace
 	attack_t += wd
 	spawn_t -= wd
 	var bullets_before := bullets.size()
 	Patterns.update(self, attack, wd)
+	for i in range(bullets_before, bullets.size()):
+		var nb: Dictionary = bullets[i]
+		if randf() < aim and str(nb["type"]) in ["bill", "mail", "pigeon", "crumb", "book", "postit", "rain", "drop"]:
+			var sp := (nb["vel"] as Vector2).length()
+			if sp > 1.0:
+				nb["vel"] = ((soul - (nb["pos"] as Vector2)).normalized() * sp)
 	if work_style == "insieme":
 		# chi lavora con te ne para qualcuno
 		for i in range(bullets.size() - 1, bullets_before - 1, -1):
@@ -519,7 +532,7 @@ func _dodge(delta: float) -> void:
 			if b.get("blue", false) and not soul_moved:
 				continue
 			if _hits(b):
-				var dmg := maxi(1, int(round(int(cfg.get("damage", 3)) * DAMAGE_SCALE)))
+				var dmg := maxi(1, int(round(int(cfg.get("damage", 3)) * damage_scale)))
 				GameState.hurt(dmg)
 				hits += 1
 				iframes = 1.4

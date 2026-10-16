@@ -76,6 +76,7 @@ foreach ($k in $props.Keys) { $exteriors[($cityProp -f $k)] = "street/$($props[$
 # Parco
 $garden = "$ext/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_{0}.png"
 $exteriors["$ext/1_Terrains_and_Fences_16x16.png"] = "tiles/terrains.png"
+$exteriors["$ext/17_Garden_16x16.png"] = "tiles/garden.png"
 $exteriors[($cityProp -f "Fountain_1")] = "park/fountain.png"
 $exteriors[($garden -f "Statue_Angel_1")] = "park/angel.png"
 $exteriors[($garden -f "Medium_Bench_Horizontal")] = "park/bench.png"

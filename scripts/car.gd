@@ -17,10 +17,10 @@ func _ready() -> void:
 	_sprite.centered = false
 	add_child(_sprite)
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(52, 12)
+	shape.size = Vector2(56, 24)
 	var col := CollisionShape2D.new()
 	col.shape = shape
-	col.position = Vector2(0, -8)
+	col.position = Vector2(0, -13)
 	add_child(col)
 	_new_look()
 	_wait = randf_range(0.0, 6.0)

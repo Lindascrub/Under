@@ -13,7 +13,7 @@ var look := ""
 func build() -> void:
 	look = GameState.world_look()
 	floor_id = "-2"
-	music = "ufficio"
+	music = "banca"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(38 + c.x % 3, 11 + c.y % 2)}
 	var wall := Vector2i(22, 11) if look == "capitalismo" else Vector2i(1, 13)
 	var rows: Array = ["##################", "#WWWWWWWWWWWWWWWW#", "#wwwwwwwwwwwwwwww#"]
@@ -73,6 +73,7 @@ func build() -> void:
 			for i in 4:
 				_static(["char_13", "char_18", "char_14", "char_15"][i], Vector2i(10, 6 + i), "idle_up", true)
 
+	spawn_people("banca")
 	spawns["default"] = cell_feet(Vector2i(8, 10))
 	spawns["mercato"] = spawns["default"]
 	spawns["from_above"] = cell_feet(Vector2i(15, 5))

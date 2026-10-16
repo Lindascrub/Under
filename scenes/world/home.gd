@@ -67,6 +67,13 @@ func build() -> void:
 	spawn_facing["street"] = "up"
 
 
+## Al risveglio sei già sdraiato prima che lo schermo si accenda (non in piedi e poi a letto).
+func after_spawn() -> void:
+	if Router.spawn == "wake":
+		Ui.cutscene = true
+		player.lie_down(BED_TOP)
+
+
 func enter() -> void:
 	if Router.spawn == "wake":
 		await _wake_up()
@@ -74,12 +81,12 @@ func enter() -> void:
 		GameState.flags.erase("forced_sleep")
 		await _sleep(true)
 		return
-	if GameState.day == 1 and not GameState.flags.get("home_intro", false):
+	if not GameState.flags.get("home_intro", false):
 		GameState.flags["home_intro"] = true
 		await Ui.say([
-			"* La casa di tuo padre. Vuota, a parte qualche mobile e gli scatoloni.",
-			"* Sul computer lampeggia una email.",
-			"* (Guarda in alto: sono le {clock}. A mezzanotte la giornata finisce.)",
+			"* Questa è casa tua. Cioè: era di tuo padre. Adesso è tua, con tutto quello che c'era dentro.",
+			"* I mobili, gli scatoloni, il robot giocattolo. E il debito, che non sta in nessuno scatolone ma occupa tutta la stanza.",
+			"* Nel letto puoi far passare la notte. Sul computer lampeggia una email.",
 		])
 	await show_pending()
 
@@ -87,12 +94,10 @@ func enter() -> void:
 func _computer() -> void:
 	var lines := [
 		"* BANCA FIDUCIA S.p.A. - Estratto conto.",
-		"* Debito residuo: {debt}. Interessi: 2% ogni notte.",
-		"* Rata minima: %s al giorno. Se non paghi: mora di %s." % [
-			GameState.euros(GameState.MIN_PAYMENT), GameState.euros(GameState.LATE_FEE)],
+		"* Debito residuo: {debt}. Gli interessi corrono ogni notte.",
 	]
-	if GameState.day == 1 and not GameState.worked_today:
-		lines.append("* Nuova email da CHEAP S.p.A.: \"Benvenuto! Ogni mattina il collocamento, al piano -4 della torre, ti assegna un lavoro. La torre è in fondo alla strada, a destra.\"")
+	if not GameState.has_badge("cima") and not GameState.worked_today:
+		lines.append("* Nuova email da CHEAP S.p.A.: \"Per salire: badge. Per il badge: lavoro. Per il lavoro: sorriso. La Cima la aspetta.\"")
 	elif GameState.worked_today:
 		lines.append("* Nessuna nuova email. Il lavoro di oggi è fatto: puoi andare a dormire quando vuoi.")
 	else:
@@ -115,25 +120,8 @@ func _sleep(forced := false) -> void:
 	if not GameState.worked_today:
 		GameState.refuse_work()
 
-	var paid_minimum := GameState.debt <= 0
-	if GameState.debt > 0:
-		var minimum := mini(GameState.MIN_PAYMENT, GameState.debt)
-		var all_you_can := mini(GameState.money, GameState.debt)
-		var options: Array = []
-		var amounts: Array[int] = []
-		if GameState.money >= minimum:
-			options.append("Paga la rata (%s)" % GameState.euros(minimum))
-			amounts.append(minimum)
-		if all_you_can > 0 and all_you_can != minimum:
-			options.append("Paga tutto quello che puoi (%s)" % GameState.euros(all_you_can))
-			amounts.append(all_you_can)
-		options.append("Non pagare (mora di %s)" % GameState.euros(GameState.LATE_FEE))
-		amounts.append(0)
-		var i: int = await Ui.choose("Prima di dormire: la banca aspetta la rata. Debito: {debt}.", options)
-		if amounts[i] > 0:
-			GameState.pay_debt(amounts[i])
-			Sound.sfx("coin")
-			paid_minimum = amounts[i] >= minimum
+	# i soldi si danno alla banca o allo sportello dei badge: il letto fa solo passare la notte
+	var paid_minimum := true
 
 	# Ti sdrai davvero nel letto, con la musica della notte.
 	var bedtime := GameState.minutes
@@ -147,25 +135,21 @@ func _sleep(forced := false) -> void:
 	if GameState.debt <= 0:
 		Router.goto(Router.ENDING, "", ["Il debito è pagato.", "Per la prima volta da quando sei arrivato, dormi senza sognare la banca.", "Al risveglio, però, qualcosa è cambiato."])
 		return
-	if GameState.is_over():
-		Router.goto(Router.ENDING, "", ["I giorni sono finiti.", "La banca ha fatto i suoi conti.", "Adesso tocca a te fare i tuoi."])
-		return
 	GameState.save_game(Router.HOME)
-	Router.goto(Router.HOME, "wake", ["{day_name}.", "Durante la notte gli interessi hanno lavorato al posto tuo.\nDebito: {debt}."])
+	Router.goto(Router.HOME, "wake", ["Un'altra mattina.", "Durante la notte gli interessi hanno lavorato al posto tuo.\nDebito: {debt}."])
 
 
 ## Il risveglio: sei ancora nel letto, la sveglia suona (prima del testo, così si sente sempre),
 ## poi esci dal letto.
 func _wake_up() -> void:
 	Ui.cutscene = true
-	player.lie_down(BED_TOP)
 	Sound.music("notte")
 	Sound.sfx("alarm")
 	await get_tree().create_timer(0.9).timeout
 	Sound.sfx("alarm")
 	await get_tree().create_timer(0.6).timeout
 	Sound.sfx("alarm")
-	await Ui.say(["* DRIIIIN! DRIIIIN!", "* Sono le 7:00. Devi svegliarti.", "* Il debito si è svegliato prima di te."])
+	await Ui.say(["* DRIIIIN! DRIIIIN!", "* Sono le {clock}. Devi svegliarti.", "* Il debito si è svegliato prima di te."])
 	Sound.music(music)
 	await player.get_up(cell_feet(Vector2i(4, 4)))
 	Ui.cutscene = false

@@ -17,6 +17,8 @@ var immortal := false
 
 
 func _ready() -> void:
+	# i test non toccano il salvataggio della partita vera
+	GameState.save_path = "user://test_save.json"
 	var placeholder := Node.new()
 	get_tree().root.add_child.call_deferred(placeholder)
 	await get_tree().process_frame
@@ -33,6 +35,9 @@ func _process(_delta: float) -> void:
 		_drive_battle(scene)
 	elif scene and scene.scene_file_path == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play":
 		scene.call("_finish", true)
+	elif scene and scene.scene_file_path == Router.WORK and not Ui.transitioning and scene.get("phase") == "play":
+		scene.set("score", scene.get("target"))
+		scene.set("time_left", 0.0)
 	elif Ui.busy and _frame % 3 == 0:
 		if Ui.get("_mode") == "choose":
 			var idx: int = choose_queue.pop_front() if not choose_queue.is_empty() else choose_index
@@ -266,7 +271,7 @@ func _run() -> void:
 	plan = []
 	fallback = [0, 0]
 	sotto.call("_station", GameState.job("bagni"))
-	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.SOTTOUFFICIO)
 	await _idle()
 	await _idle()
@@ -388,6 +393,7 @@ func _run() -> void:
 	GameState.new_game()
 	GameState.exploited = 2
 	GameState.money = 10000
+	GameState.pay_debt(GameState.debt)
 	home = await _go(Router.HOME, "bed")
 	choose_queue = [0, 1]
 	home.call("_sleep")
@@ -403,7 +409,7 @@ func _run() -> void:
 	choose_queue = []
 	choose_index = 0
 	await _go(Router.STREET, "home")
-	plan = [[1, 3], [1, 0], [3, 1]]
+	plan = [[1, 3], [1, 0], [1, 0], [1, 0], [3, 1]]
 	fallback = [3, 2]
 	_npc("marta").call("interact")
 	await _wait_scene(Router.BATTLE)
@@ -476,7 +482,7 @@ func _run() -> void:
 	plan = []
 	fallback = [0, 0]
 	fondo.call("_station", GameState.job("dinamo"))
-	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.FONDO)
 	await _idle()
 	await _idle()

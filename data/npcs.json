@@ -172,7 +172,7 @@
         "bills",
         "toys"
       ],
-      "trust_goal": 2,
+      "trust_goal": 3,
       "exploit": {
         "name": "Prestale soldi al 40%",
         "pay": 150,
@@ -292,7 +292,7 @@
         "title": "Le scale del signor Bruno",
         "intro": [
           "* Quattro piani di scale con le borse della spesa.",
-          "* Premi Z al momento giusto per fare ogni gradino senza inciampare."
+          "* Premi {ok} al momento giusto per fare ogni gradino senza inciampare."
         ],
         "reward": 10,
         "hits": 4
@@ -512,7 +512,7 @@
         "books",
         "notifications"
       ],
-      "trust_goal": 2,
+      "trust_goal": 4,
       "exploit": {
         "name": "Offrile un prestito d'onore CHEAP",
         "pay": 160,
@@ -677,7 +677,7 @@
         "title": "La catena di Sami",
         "intro": [
           "* La catena della bici è saltata di nuovo.",
-          "* Premi Z quando il segno è nel verde per agganciare ogni maglia."
+          "* Premi {ok} quando il segno è nel verde per agganciare ogni maglia."
         ],
         "reward": 10,
         "hits": 5
@@ -726,7 +726,7 @@
         "cars",
         "rain"
       ],
-      "trust_goal": 2,
+      "trust_goal": 3,
       "exploit": {
         "name": "Fagli firmare il contratto \"flessibile\"",
         "pay": 170,
@@ -1146,7 +1146,7 @@
         "papers",
         "emails"
       ],
-      "trust_goal": 2,
+      "trust_goal": 4,
       "exploit": {
         "name": "Prenditi il merito del suo lavoro",
         "pay": 220,
@@ -1335,7 +1335,7 @@
         "postits",
         "notifications"
       ],
-      "trust_goal": 2,
+      "trust_goal": 3,
       "exploit": {
         "name": "Segnala le sue assenze al capo",
         "pay": 200,
@@ -1439,7 +1439,7 @@
         "title": "La chitarra di Tano",
         "intro": [
           "* Tano pizzica le corde una alla volta.",
-          "* Premi Z quando il segno è nel verde per accordare ogni corda."
+          "* Premi {ok} quando il segno è nel verde per accordare ogni corda."
         ],
         "reward": 10,
         "hits": 4
@@ -1842,7 +1842,7 @@
         "coffee",
         "crumbs"
       ],
-      "trust_goal": 2,
+      "trust_goal": 3,
       "exploit": {
         "name": "Compragli il banco per la CHEAP",
         "pay": 180,
@@ -1876,6 +1876,415 @@
         11
       ],
       "anim": "idle_down"
+    }
+  },
+  "bulbo": {
+    "name": "Nonno Bulbo",
+    "sheet": "char_15",
+    "schedule": [
+      {
+        "room": "fondo",
+        "cell": [
+          8,
+          8
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Ehi, ehi. Piano coi piedi: qui per terra ci sono i fili.",
+      "Io sono Bulbo. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
+      "Adesso le cambio qui sotto. Quelle fulminate tornano sempre giù. Come noi."
+    ],
+    "days": [
+      [
+        "Una lampadina dura mille ore. Io ne ho fatte centomila. Fai tu il conto di chi dura di più."
+      ],
+      [
+        "Il segreto è non guardare la luce. Se la guardi, poi il buio ti sembra più buio."
+      ],
+      [
+        "Fermo è un brav'uomo. Ha solo smesso di aspettarsi qualcosa. È contagioso, sta' attento."
+      ]
+    ],
+    "helped": [
+      "Grazie per i fili. Da quando me li hai sistemati, la lampadina di Fermo non sfarfalla più."
+    ],
+    "emote": "note",
+    "help": {
+      "kind": "time",
+      "ask": "Nonno Bulbo ha un groviglio di fili colorati e gli tremano le mani.",
+      "yes": [
+        "Bravo! Rosso, blu, giallo... tu hai le dita giuste. Io avevo le dita giuste, una volta."
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "I fili di Bulbo",
+        "intro": [
+          "* Bulbo ti indica i fili, uno alla volta.",
+          "* Ricorda l'ordine e ripetilo con le frecce."
+        ],
+        "reward": 10
+      }
+    }
+  },
+  "mina": {
+    "name": "Mina",
+    "sheet": "char_08",
+    "schedule": [
+      {
+        "room": "fondo",
+        "cell": [
+          17,
+          10
+        ],
+        "anim": "idle_left"
+      }
+    ],
+    "intro": [
+      "Non calpestare le lampadine. Sono rotte, ma sono mie.",
+      "Mi chiamo Mina. Smisto le lampadine fulminate: queste si buttano, queste si aggiustano, queste si fingono buone.",
+      "Le ultime le rimandano di sopra. Nessuno se ne accorge mai."
+    ],
+    "days": [
+      [
+        "Sai che una lampadina fulminata fa ancora un po' di luce, se la scuoti? Come le persone."
+      ],
+      [
+        "Ho diciannove anni. Al Fondo da due. Bulbo dice che sono giovane. Il debito dice di no."
+      ],
+      [
+        "Un giorno salgo. Non col badge: salgo e basta. Non chiedermi come."
+      ]
+    ],
+    "helped": [
+      "Mi hai aiutata a raccogliere tutto. Te ne devo una. Al Fondo i debiti veri sono questi."
+    ],
+    "emote": "dots",
+    "help": {
+      "kind": "time",
+      "ask": "Mina ha rovesciato una cassetta di lampadine e i cocci sono dappertutto.",
+      "yes": [
+        "Grazie! Quasi tutte intere. Quasi."
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "Le lampadine di Mina",
+        "intro": [
+          "* Raccogli le lampadine prima che arrivi il controllo.",
+          "* Attento ai cocci rossi: fanno male."
+        ],
+        "count": 10,
+        "time": 15,
+        "color": "#f0e070",
+        "reward": 10
+      }
+    }
+  },
+  "tilde": {
+    "name": "Tilde",
+    "sheet": "char_06",
+    "schedule": [
+      {
+        "room": "sottoufficio",
+        "cell": [
+          11,
+          8
+        ],
+        "anim": "phone"
+      }
+    ],
+    "intro": [
+      "Grazie per la sua pazienza. ...Oh, scusa. Sei una persona vera.",
+      "Io sono Tilde. Dodici anni di call center. Dico \"grazie per la sua pazienza\" anche a mia madre.",
+      "Il trucco è non ascoltare quello che dici. Se ti ascolti, ti metti a piangere."
+    ],
+    "days": [
+      [
+        "Oggi una signora mi ha urlato per un'ora. Alla fine le ho detto grazie. Mi ha ringraziato anche lei. Siamo pazzi tutti e due."
+      ],
+      [
+        "Il copione cambia ogni lunedì. Le parole sono diverse, il senso è lo stesso: \"non possiamo fare niente\"."
+      ],
+      [
+        "Ho sognato un telefono che squillava. Mi sono svegliata e ho risposto alla sveglia."
+      ]
+    ],
+    "helped": [
+      "Mi hai aiutata col copione. Oggi ho detto una frase mia, al telefono. Una sola. Nessuno se n'è accorto."
+    ],
+    "emote": "dots",
+    "help": {
+      "kind": "time",
+      "ask": "Tilde ha un copione nuovo da imparare a memoria entro la pausa.",
+      "yes": [
+        "Ce l'hai fatta! Tu sì che sei portato. Non dirlo all'Agenda, ti mette qui per sempre."
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "Il copione di Tilde",
+        "intro": [
+          "* Ogni freccia è una frase del copione.",
+          "* Ricordale nell'ordine giusto."
+        ],
+        "reward": 10
+      }
+    }
+  },
+  "ercole": {
+    "name": "Ercole",
+    "sheet": "char_10",
+    "schedule": [
+      {
+        "room": "sottoufficio",
+        "cell": [
+          6,
+          11
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Zzz... chi va là? Ah. Un dipendente. Riposo.",
+      "Ercole, guardia del piano -4. Faccio il turno di notte, il turno di giorno e quello in mezzo.",
+      "Se mi vedi dormire, non sto dormendo. Sto sorvegliando con gli occhi chiusi."
+    ],
+    "days": [
+      [
+        "Ho fatto i conti: dormo quattro ore a settimana. Ma le dormo benissimo."
+      ],
+      [
+        "Una volta ho fermato un ladro. Rubava tempo. L'ho arrestato e poi l'hanno promosso."
+      ],
+      [
+        "L'Agenda dice che il riposo è un furto. Allora sono un ladro bravissimo."
+      ]
+    ],
+    "helped": [
+      "Grazie per avermi tenuto sveglio durante l'ispezione. Mi hanno dato un timbro: \"vigile\". Sono commosso. Credo."
+    ],
+    "emote": "dots",
+    "help": {
+      "kind": "time",
+      "ask": "Ercole sta per addormentarsi in piedi e fra poco passa l'ispettore.",
+      "yes": [
+        "Sveglio! Sono sveglio! ...Grazie, ragazzo. Non dirlo a nessuno."
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "Tieni sveglio Ercole",
+        "intro": [
+          "* Ogni volta che Ercole chiude gli occhi, dagli una gomitata.",
+          "* Premi {ok} quando il segno è nel verde."
+        ],
+        "hits": 4,
+        "reward": 10
+      }
+    }
+  },
+  "rosa": {
+    "name": "Rosa",
+    "sheet": "char_12",
+    "schedule": [
+      {
+        "room": "mercato",
+        "cell": [
+          22,
+          8
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Fragole! Fragole vere! ...Va be', quasi vere. Sono di plastica, ma profumano.",
+      "Io sono Rosa. Vendevo frutta quando la frutta cresceva sugli alberi e non nei magazzini della CHEAP.",
+      "Adesso vendo quello che mi danno. Ma lo vendo con passione."
+    ],
+    "days": [
+      [
+        "Una mela costa come un'ora del tuo lavoro. Una mela! Mia nonna ne regalava una cassa."
+      ],
+      [
+        "Vito è un brav'uomo. Burbero, ma brav'uomo. Lo dice anche lui, che è burbero."
+      ],
+      [
+        "Quando chiudo il banco, mi siedo e mangio una fragola di plastica. Fa schifo. Ma è un rito."
+      ]
+    ],
+    "helped": [
+      "Grazie per la frutta. Ti ho messo da parte una mela vera. Una. Non dirlo a nessuno."
+    ],
+    "emote": "note",
+    "help": {
+      "kind": "time",
+      "ask": "Rosa ha rovesciato la cassetta della frutta e i clienti stanno arrivando.",
+      "yes": [
+        "Che svelto! Tieni, per il disturbo. E per la gentilezza, che qui sotto vale di più."
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "La frutta di Rosa",
+        "intro": [
+          "* La frutta è rotolata dappertutto.",
+          "* Raccoglila con le frecce. Evita le cose rosse che rotolano!"
+        ],
+        "count": 12,
+        "time": 15,
+        "color": "#e05050",
+        "reward": 10
+      }
+    }
+  },
+  "ottavio": {
+    "name": "Ottavio",
+    "sheet": "char_11",
+    "schedule": [
+      {
+        "room": "mercato",
+        "cell": [
+          7,
+          14
+        ],
+        "anim": "idle_up"
+      }
+    ],
+    "intro": [
+      "Ombrelli! Ombrelli! Ne vuole uno?",
+      "Sì, lo so: qui sotto non piove. Ma non si sa mai. Io sono Ottavio, e sono un ottimista.",
+      "Ho venduto un ombrello solo, in sei anni. A un signore che voleva sentirsi protetto."
+    ],
+    "days": [
+      [
+        "Ieri ha gocciolato un tubo. Ho venduto zero ombrelli, ma per un momento ci ho creduto."
+      ],
+      [
+        "Un ombrello è un tetto che ti porti dietro. È l'unica casa che posso permettermi."
+      ],
+      [
+        "Dicono che lassù, in cima, ci sia il cielo vero. Allora porterò gli ombrelli lassù."
+      ]
+    ],
+    "helped": [
+      "Mi hai aiutato ad aggiustare gli ombrelli. Te ne regalo uno. Non piove, ma è un bel gesto."
+    ],
+    "emote": "note",
+    "help": {
+      "kind": "time",
+      "ask": "Ottavio ha un ombrello che non si apre più, e senza quello non ha niente da mostrare.",
+      "yes": [
+        "Si apre! Si apre! Guarda che meraviglia. Ora deve solo piovere."
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "L'ombrello di Ottavio",
+        "intro": [
+          "* Le stecche dell'ombrello vanno rimesse una alla volta.",
+          "* Premi {ok} quando il segno è nel verde."
+        ],
+        "hits": 4,
+        "reward": 10
+      }
+    }
+  },
+  "ines": {
+    "name": "Ines",
+    "sheet": "char_09",
+    "schedule": [
+      {
+        "room": "banca",
+        "cell": [
+          3,
+          8
+        ],
+        "anim": "idle_right"
+      }
+    ],
+    "intro": [
+      "Sportello due. Chiuso. Sempre chiuso. Io però ci lavoro lo stesso.",
+      "Ines, impiegata di concetto. Il concetto è: tu paghi, noi sorridiamo.",
+      "Non guardarmi così. Anche io ho un mutuo. Con questa stessa banca. Mi pago da sola gli interessi."
+    ],
+    "days": [
+      [
+        "Oggi ho timbrato quattrocento pratiche. Erano tutte uguali. Anche le persone, alla fine."
+      ],
+      [
+        "Il Signor Tasso non sbatte mai le palpebre. Una volta l'ho visto dormire con gli occhi aperti."
+      ],
+      [
+        "Il ritratto del Presidente mi guarda tutto il giorno. Ho girato la scrivania. Mi guarda lo stesso."
+      ]
+    ],
+    "helped": [
+      "Grazie per le pratiche. Ne ho persa una apposta: era il debito di una signora anziana. Shh."
+    ],
+    "emote": "dots",
+    "help": {
+      "kind": "time",
+      "ask": "Ines ha una pila di pratiche da rimettere in ordine prima del controllo.",
+      "yes": [
+        "Perfetto. In ordine. Quasi mi dispiace: in disordine sembravano più umane."
+      ],
+      "minigame": {
+        "type": "sequence",
+        "title": "Le pratiche di Ines",
+        "intro": [
+          "* Ogni pratica va in un cassetto: su, giù, sinistra, destra.",
+          "* Ricorda l'ordine e ripetilo."
+        ],
+        "reward": 10
+      }
+    }
+  },
+  "sandro": {
+    "name": "Sandro",
+    "sheet": "char_07",
+    "schedule": [
+      {
+        "room": "banca",
+        "cell": [
+          15,
+          9
+        ],
+        "anim": "idle_left"
+      }
+    ],
+    "intro": [
+      "Alt. ...Ah, sei un cliente. Allora prego, si accomodi a perdere.",
+      "Sandro, guardia giurata. Ho giurato di proteggere i soldi. Nessuno mi ha chiesto di proteggere le persone.",
+      "Non è cattiveria. È il contratto."
+    ],
+    "days": [
+      [
+        "Il caveau è pieno di carta. Non soldi: carta. Contratti. Il debito di tutta la città sta in tre armadi."
+      ],
+      [
+        "A volte apro il caveau solo per guardare. Mi sento importante. Poi richiudo."
+      ],
+      [
+        "Se un giorno qualcuno bruciasse quei tre armadi... no, niente. Non ho detto niente."
+      ]
+    ],
+    "helped": [
+      "Grazie per avermi aiutato col lucchetto. Mi hai salvato il posto. Non so se è una cosa buona."
+    ],
+    "emote": "dots",
+    "help": {
+      "kind": "time",
+      "ask": "Sandro si è chiuso fuori dalla sua guardiola e la chiave è rimasta dentro.",
+      "yes": [
+        "Aperto! Sei un mago. Mi raccomando: non dirlo al direttore."
+      ],
+      "minigame": {
+        "type": "timing",
+        "title": "Il lucchetto di Sandro",
+        "intro": [
+          "* Il lucchetto ha quattro scatti.",
+          "* Premi {ok} quando il segno è nel verde."
+        ],
+        "hits": 4,
+        "reward": 10
+      }
     }
   }
 }

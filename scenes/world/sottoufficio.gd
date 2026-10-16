@@ -8,7 +8,7 @@ const RB := "tiles/room_builder.png"
 
 func build() -> void:
 	floor_id = "-4"
-	music = "ufficio"
+	music = "sotto"
 	var dark := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(46 + c.x % 3, 25 + c.y % 2)}
 	var tiles := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(42 + c.x % 3, 25 + c.y % 2)}
 	var rows: Array = ["########################", "#WWWWWWWWWWWWWWWWWWWWWW#", "#wwwwwwwwwwwwwwwwwwwwww#"]
@@ -67,7 +67,7 @@ func build() -> void:
 	add_prop("bath/sink.png", Vector2i(21, 3), 2, Vector2i(32, 48))
 	add_prop("bath/mop.png", Vector2i(16, 5), 1, Vector2i(16, 32))
 	add_prop("bath/bucket.png", Vector2i(18, 5), 1, Vector2i(16, 32))
-	add_prop("props/trash.png", Vector2i(15, 11), 1, Vector2i(16, 32), ["* Il cestino dei bagni. Meglio non guardare."])
+	add_prop("props/trash.png", Vector2i(15, 11), 2, Vector2i(16, 32), ["* Il cestino dei bagni. Meglio non guardare."])
 
 	add_station("sottoufficio")
 	spawn_people("sottoufficio")

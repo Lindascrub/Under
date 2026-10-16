@@ -61,7 +61,7 @@ func build() -> void:
 	add_art("res://art/generator.png", Vector2i(3, 6), 1)
 	add_art("res://art/generator.png", Vector2i(3, 10), 1)
 	var rider := AnimatedSprite2D.new()
-	rider.sprite_frames = Assets.character("char_13")
+	rider.sprite_frames = Assets.character("char_16")
 	rider.centered = false
 	rider.offset = Vector2(-8, -36)
 	rider.position = cell_feet(Vector2i(4, 10)) + Vector2(2, -3)
@@ -72,6 +72,7 @@ func build() -> void:
 		await Ui.say(["* Una ragazza pedala nel buio. Non si gira.",
 			"Non parlo. Se parlo perdo il ritmo. Se perdo il ritmo, lassù si spegne qualcosa."], "Qualcuno al buio"))
 	add_station("fondo")
+	spawn_people("fondo")
 
 	# A destra: il distributore dei badge, il tornello, le scale per il -4
 	add_badge_machine(Vector2i(18, 3))

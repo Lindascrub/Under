@@ -28,7 +28,11 @@ func build() -> void:
 	for gap in [0, 8, 15, 22, 27, 34, 41, 56, 62, 63]:
 		block(Rect2i(gap, 0, 1, BASE + 1))
 	add_exit(Rect2i(23, 0, 4, 1), Router.PARK, "street")
-	_art("res://art/park_sign.png", Vector2(21 * T - 12, 2 * T - 8))
+	# l'arco di siepe all'ingresso del parco: si passa in mezzo, le "gambe" sono solide
+	add_region("tiles/garden.png", Vector2i(512, 3136), Rect2(304, 128, 64, 64), Vector2i(23, 1))
+	block_px(Rect2(23 * T + 2, 1 * T, 13, T))
+	block_px(Rect2(26 * T + 1, 1 * T, 13, T))
+	examine(cell_center(Vector2i(24, 2)), ["* Un arco di siepe. Di là c'è il parco: l'unico posto della città che non costa niente."])
 
 	# Porte
 	add_spot(Vector2(1 * T + 56, (BASE + 1) * T - 2), func() -> void: Router.goto(Router.HOME, "street"))
@@ -114,9 +118,11 @@ func _props() -> void:
 		world.add_child(pg)
 	add_side_bench(Vector2i(34, 17))
 	add_spot(cell_center(Vector2i(35, 16)), _rest)
-	add_prop("street/trash_pile_1.png", Vector2i(17, 10), 1, Vector2i(64, 32), [
+	# un mucchio basso: solo il bordo in fondo è solido, ci si può passare accanto
+	add_prop("street/trash_pile_1.png", Vector2i(17, 10), 0, Vector2i(64, 32), [
 		"* Spazzatura che nessuno passa a ritirare. Il servizio è stato \"ottimizzato\" dalla CHEAP.",
 	])
+	block_px(Rect2(17 * T + 6, 11 * T - 6, 52, 6))
 	add_prop("street/cardboard.png", Vector2i(21, 9), 0, Vector2i(16, 16), ["* Un cartone schiacciato. Qualcuno ci ha dormito sopra."])
 	add_prop("street/hydrant.png", Vector2i(22, 10), 1, Vector2i(16, 32), ["* Un idrante. È l'unica cosa gratis in tutta la strada: l'acqua. Per ora."])
 	add_prop("street/trashbin.png", Vector2i(8, 7), 1, Vector2i(16, 32), [

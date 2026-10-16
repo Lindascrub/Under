@@ -95,6 +95,22 @@ func climb(to: Vector2, dir: String, fade_out: bool) -> void:
 	_sprite.play("idle_" + dir)
 
 
+## Cammina fino a `to` (senza fisica), guardando nella direzione in cui va.
+func walk_to(to: Vector2) -> void:
+	var delta_pos := to - position
+	if delta_pos.length() < 1.0:
+		return
+	if absf(delta_pos.x) > absf(delta_pos.y):
+		facing = "right" if delta_pos.x > 0 else "left"
+	else:
+		facing = "down" if delta_pos.y > 0 else "up"
+	_sprite.play("walk_" + facing)
+	var tw := create_tween()
+	tw.tween_property(self, "position", to, delta_pos.length() / SPEED)
+	await tw.finished
+	_sprite.play("idle_" + facing)
+
+
 func set_dark(dark: bool) -> void:
 	if _sprite == null:
 		await ready

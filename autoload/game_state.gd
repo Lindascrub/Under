@@ -8,6 +8,8 @@ extends Node
 signal changed
 
 const SAVE_PATH := "user://cheap_save.json"
+## Dove si salva: i test usano un file a parte, per non toccare la partita vera.
+var save_path := SAVE_PATH
 const START_DEBT := 6000
 const DAILY_INTEREST := 0.02
 const MIN_PAYMENT := 150
@@ -64,6 +66,8 @@ var minutes := DAY_START
 ## Il piano in cui ti trovi adesso (lo imposta ogni stanza) e i badge che hai già.
 var floor_id := "-5"
 var badges: Array[String] = []
+## Il piano della stanza in cui sei adesso ("" in città: strada, parco, casa).
+var room_floor := ""
 ## Come si chiama il giocatore (lo chiede il menu quando si comincia).
 var player_name := "Tu"
 var money := 0
@@ -721,7 +725,8 @@ func fmt(text: String) -> String:
 		.replace("{clock}", clock()) \
 		.replace("{last_day}", str(LAST_DAY)) \
 		.replace("{floor}", floor_name()) \
-		.replace("{name}", player_name)
+		.replace("{name}", player_name) \
+		.replace("{ok}", "Z" if TouchControls.enabled else "INVIO")
 
 
 static func euros(n: int) -> String:
@@ -736,7 +741,7 @@ static func euros(n: int) -> String:
 # --- salvataggio ------------------------------------------------------------
 
 func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+	return FileAccess.file_exists(save_path)
 
 
 ## Salva tutto: anche stanza, posizione e ora (punti di salvataggio e letto).
@@ -750,7 +755,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"floor_id": floor_id, "badges": badges, "player_name": player_name,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	var file := FileAccess.open(save_path, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(data))
 
@@ -759,7 +764,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 func load_game() -> Dictionary:
 	if not has_save():
 		return {}
-	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(save_path))
 	if typeof(d) != TYPE_DICTIONARY:
 		return {}
 	new_game()
@@ -796,4 +801,4 @@ func load_game() -> Dictionary:
 
 func delete_save() -> void:
 	if has_save():
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))

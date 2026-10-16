@@ -16,7 +16,7 @@ var look := ""
 func build() -> void:
 	look = GameState.world_look()
 	floor_id = "-3"
-	music = "quartiere"
+	music = {"capitalismo": "asta", "baratto": "scambi"}.get(look, "razioni")
 	camera_top = 96
 	camera_lift = 40
 	var rows: Array = []

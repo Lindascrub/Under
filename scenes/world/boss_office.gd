@@ -33,11 +33,13 @@ func build() -> void:
 	frame.position = Vector2(10 * T, T + 2)
 	frame.size = Vector2(5 * T, 2 * T - 4)
 	add_child(frame)
+	move_child(frame, world.get_index())
 	var sky := ColorRect.new()
 	sky.color = Color("8ec5ff")
 	sky.position = frame.position + Vector2(3, 3)
 	sky.size = frame.size - Vector2(6, 6)
 	add_child(sky)
+	move_child(sky, world.get_index())
 	examine(cell_center(Vector2i(12, 3)), [
 		"* Dalla finestra si vede tutta la città. Da quassù le persone sembrano formiche.",
 		"* Da quassù è facile dimenticare che non lo sono.",

@@ -39,6 +39,9 @@ var _people_cells := {}
 var _grey_rect: ColorRect
 var _stairs_up_pos := Vector2.INF
 var _stairs_down_pos := Vector2.INF
+## Dove finiscono gli scalini: si esce dritti fin lì, poi si gira.
+var _stairs_up_exit := Vector2.INF
+var _stairs_down_exit := Vector2.INF
 
 
 func _ready() -> void:
@@ -53,9 +56,11 @@ func _ready() -> void:
 	world.y_sort_enabled = true
 	add_child(world)
 	build()
+	GameState.room_floor = floor_id
 	if floor_id != "":
 		GameState.enter_floor(floor_id)
 	_spawn_player()
+	after_spawn()
 	var arrive_to := _prepare_arrival()
 	Ui.show_hud(true)
 	Sound.music(music)
@@ -73,6 +78,11 @@ func _ready() -> void:
 
 
 func build() -> void:
+	pass
+
+
+## Subito dopo aver messo il giocatore nella stanza, prima che lo schermo si accenda.
+func after_spawn() -> void:
 	pass
 
 
@@ -131,13 +141,14 @@ func add_station(room_key: String) -> void:
 		var cell := Vector2i(int(j["station"][0]), int(j["station"][1]))
 		if not GameState.worked_today:
 			# un segnale che lampeggia sopra il posto di lavoro
+			# una targhetta "TURNO" che ondeggia sopra al posto di lavoro di oggi
 			var mark := Label.new()
-			mark.text = "!"
-			mark.add_theme_font_size_override("font_size", 12)
+			mark.text = "TURNO"
+			mark.add_theme_font_size_override("font_size", 8)
 			mark.add_theme_color_override("font_color", Color("ffe14d"))
 			mark.add_theme_constant_override("outline_size", 3)
 			mark.add_theme_color_override("font_outline_color", Color.BLACK)
-			mark.position = cell_center(cell) + Vector2(-3, -26)
+			mark.position = cell_center(cell) + Vector2(-13, -30)
 			mark.z_index = 30
 			add_child(mark)
 			var tw := mark.create_tween().set_loops()
@@ -156,6 +167,18 @@ func _station(j: Dictionary) -> void:
 	if c != 0:
 		return
 	var cfg: Dictionary = (j.get("battle", {}) as Dictionary).duplicate(true)
+	if j.has("game") and GameState.hard_work % 3 != 2:
+		GameState.minigame = {
+			"kind": "work", "game": j["game"], "name": str(j.get("title", "Il turno")),
+			"pay": int(int(cfg.get("pay", 300)) * (1.0 + 0.2 * GameState.floor_index(GameState.floor_id))),
+			"intro": [str(cfg.get("intro", "* Si comincia."))],
+			"tired": str(cfg.get("tired", "* Ti fa male tutto.")),
+			"return": scene_file_path, "return_pos": player.global_position,
+		}
+		Router.goto(Router.WORK)
+		return
+	# ogni tanto il caporeparto ti sta addosso: il turno diventa una battaglia
+	cfg["intro"] = "* Oggi il caporeparto ti sta addosso. Ogni tuo movimento è un problema.\n" + str(cfg.get("intro", ""))
 	cfg["kind"] = "work"
 	cfg["return"] = scene_file_path
 	cfg["return_pos"] = player.global_position
@@ -264,13 +287,15 @@ func _boss_call() -> void:
 		await Ui.say(["Peccato. Ci sono altri cento come lei, sa? Ci pensi."], "Il capo")
 		return
 	var data := GameState.npc_data(victim)
+	var victim_name := str(data.get("name", "qualcuno"))
+	await Ui.say(["Le mando la pratica. Riguarda %s: lo conosce, vero? Meglio, così firma con più convinzione." % victim_name], "Il capo")
 	Router.battle({
 		"kind": "sign",
 		"promotion": true,
 		"id": victim,
 		"name": str(data.get("name", "Qualcuno")),
 		"sheet": str(data.get("sheet", "char_02")),
-		"intro": "* " + str(promo.get("title", "Una pratica")) + ".\n* Qualunque cosa tu scelga, la risposta è sempre la stessa.",
+		"intro": "* Davanti a te, la pratica di %s: %s.\n* Tutti i pulsanti dicono FIRMA. Qualunque cosa tu scelga, la risposta è sempre la stessa." % [str(data.get("name", "qualcuno")), str(promo.get("title", "una pratica")).to_lower()],
 		"return": scene_file_path,
 		"return_pos": player.global_position,
 	})
@@ -407,8 +432,20 @@ func _solid_rect(tex: Texture2D, rows: int) -> Rect2:
 		if img.is_compressed():
 			img.decompress()
 		var h := img.get_height()
-		# Oggetti bassi (lampioni, alberi): conta solo la base, i "piedi" dell'oggetto.
-		var top := maxi(0, h - (rows * T if rows > 1 else 6))
+		# Oggetti con una riga sola: se la base è larga (tavoli, cassette, auto) conta mezza casella,
+		# se è stretta (lampioni, tronchi) solo i "piedi" dell'oggetto.
+		var foot := 6
+		if rows == 1:
+			var lo := img.get_width()
+			var hi := -1
+			for x in img.get_width():
+				for y in range(maxi(0, h - 4), h):
+					if img.get_pixel(x, y).a > 0.3:
+						lo = mini(lo, x)
+						hi = maxi(hi, x)
+			if hi - lo > 24:
+				foot = 12
+		var top := maxi(0, h - (rows * T if rows > 1 else foot))
 		var minx := img.get_width()
 		var maxx := -1
 		var miny := h
@@ -627,6 +664,7 @@ const DESK_REGION := Rect2(96, 8, 16, 40)
 func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
 	add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
 	_stairs_up_pos = Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T)
+	_stairs_up_exit = Vector2(bottom_left.x * T + T, (bottom_left.y + 1) * T + 10)
 	var turn := add_art("res://art/turnstile.png", bottom_left + Vector2i(-1, 0), 1)
 	if GameState.has_badge(need):
 		turn.modulate = Color(0.85, 1.0, 0.85)
@@ -690,6 +728,7 @@ func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) ->
 	shade.position = Vector2(2, -42)
 	s.add_child(shade)
 	_stairs_down_pos = Vector2(bottom_left.x * T + T, bottom_left.y * T + 2)
+	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 2) * T - 2)
 	var a := Area2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(2 * T - 8, T)
@@ -736,17 +775,33 @@ func _prepare_arrival() -> Vector2:
 
 func _do_arrival(to: Vector2) -> void:
 	Ui.cutscene = true
-	await player.climb(to, "up" if Router.spawn == "from_below" else "down", false)
+	var up := Router.spawn == "from_below"
+	var exit := _stairs_down_exit if up else _stairs_up_exit
+	# prima dritti lungo gli scalini, poi verso il punto d'arrivo
+	await player.climb(exit, "up" if up else "down", false)
+	await player.walk_to(to)
 	player.z_index = 0
 	player.face(spawn_facing.get(Router.spawn, "down"))
 	Ui.cutscene = false
 
 
 ## Il distributore dei badge: paghi una parte del debito e ricevi il badge del piano di sopra.
-func add_badge_machine(bottom_left: Vector2i) -> void:
-	var m := add_prop("props/terminal.png", bottom_left)
-	m.modulate = Color(0.85, 1.0, 0.9)
-	add_spot(cell_center(bottom_left), _badge_machine)
+## Lo sportello dei badge: l'addetta sta nella casella `cell`, la scrivania sotto di lei.
+func add_badge_machine(cell: Vector2i) -> void:
+	var desk := cell + Vector2i(0, 1)
+	add_computer_desk(desk)
+	var clerk := AnimatedSprite2D.new()
+	clerk.sprite_frames = Assets.character(BADGE_CLERK)
+	clerk.centered = false
+	clerk.offset = Vector2(-8, -48)
+	clerk.position = cell_feet(cell)
+	clerk.play("idle_down")
+	world.add_child(clerk)
+	block(Rect2i(cell, Vector2i.ONE))
+	add_spot(cell_center(desk), _badge_machine)
+
+
+const BADGE_CLERK := "char_13"
 
 
 func _badge_machine() -> void:
@@ -755,22 +810,34 @@ func _badge_machine() -> void:
 		await Ui.say(["* Il distributore è spento. Più su di così non si va."])
 		return
 	var cost := GameState.badge_cost(need)
+	var who := "Addetta ai badge"
 	if GameState.has_badge(need):
-		await Ui.say(["* \"Hai già il badge del %s. Il distributore ti augura una buona salita.\"" % GameState.floor_name(need)])
+		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
 		return
-	await Ui.say(["* Il distributore di badge. Sullo schermo: \"BADGE %s: %s.\"" % [GameState.floor_name(need).to_upper(), GameState.euros(cost)],
-		"* Più in piccolo: \"L'importo verrà scalato dal suo debito. Grazie per la fiducia.\""])
-	var c: int = await Ui.choose("Comprare il badge? Hai %s." % GameState.euros(GameState.money), ["Compra (%s)" % GameState.euros(cost), "Non ora"])
+	if not GameState.flags.get("badge_clerk_intro", false):
+		GameState.flags["badge_clerk_intro"] = true
+		await Ui.say(["Sportello badge. Senza badge il tornello non ti fa salire le scale.",
+			"Sì, ci sono io su ogni piano. Siamo una per piano. Siamo tutte uguali. Non chiedere."], who, BADGE_CLERK)
+	await Ui.say(["Il badge del %s costa %s. Va tutto a scalare dal tuo debito." % [GameState.floor_name(need), GameState.euros(cost)]], who, BADGE_CLERK)
+	var c: int = await Ui.choose("Comprare il badge? Hai %s." % GameState.euros(GameState.money), ["Compra (%s)" % GameState.euros(cost), "Non ora"], who)
 	if c != 0:
 		return
 	if not GameState.buy_badge(need):
 		Sound.sfx("deny")
-		await Ui.say(["* Non hai abbastanza soldi. Il distributore fa un rumore che somiglia a una risata."])
+		await Ui.say(["Non bastano. Torna quando avrai lavorato abbastanza. Cioè sempre un po' di più di adesso."], who, BADGE_CLERK)
 		return
 	Sound.sfx("coin")
 	Sound.sfx("stamp")
-	await Ui.say(["* Il badge esce caldo, come un biglietto della lotteria che hai già perso.",
-		"* Debito: {debt}. Il tornello adesso ha la lucina verde."])
+	await Ui.say(["Ecco il badge. Ancora caldo, come un biglietto della lotteria che hai già perso.",
+		"Debito: {debt}. Il tornello adesso ha la lucina verde."], who, BADGE_CLERK)
+	if need == "cima":
+		Sound.sfx("ding")
+		await Ui.say(["* Dietro di te, un \"din\". Le porte dell'ascensore si aprono da sole.",
+			"Oh! Hanno appena aggiustato l'ascensore. Proprio adesso che hai il badge. Che tempismo, eh?",
+			"Qui le cose si aggiustano sempre quando servono a qualcuno di importante. Congratulazioni: adesso sei qualcuno."], who, BADGE_CLERK)
+		if has_method("_open_elevator"):
+			call("_open_elevator")
+		await Ui.say(["* Le porte dell'ascensore sono aperte, con la luce verde. Basta entrarci."])
 	for n in world.get_children():
 		if n is Sprite2D and (n as Sprite2D).texture and (n as Sprite2D).texture.resource_path.ends_with("turnstile.png"):
 			n.modulate = Color(0.85, 1.0, 0.85)

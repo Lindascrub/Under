@@ -14,7 +14,7 @@
       "name": "La Dinamo",
       "sheet": "char_18",
       "goal": 4,
-      "pay": 220,
+      "pay": 340,
       "damage": 3,
       "intro": "* Pedali. La dinamo ronza. Da qualche parte, sopra di te, si accende una lampadina che non vedrai mai.",
       "work_line": "Pedala finché il contatore segna un'altra ora.",
@@ -60,7 +60,8 @@
         "bills"
       ],
       "tired": "* Le gambe tremano. In alto, da qualche parte, una stanza è rimasta accesa tutta la notte grazie a te."
-    }
+    },
+    "game": "pedal"
   },
   {
     "id": "bagni",
@@ -77,7 +78,7 @@
       "name": "I Bagni",
       "sheet": "char_13",
       "goal": 4,
-      "pay": 200,
+      "pay": 380,
       "damage": 3,
       "intro": "* Sei bagni. Un solo mocio. Il capoturno ha cronometrato tutto.",
       "work_line": "Pulisci un bagno da cima a fondo.",
@@ -123,7 +124,8 @@
         "camera"
       ],
       "tired": "* Hai le mani rosse di candeggina e l'odore non va via."
-    }
+    },
+    "game": "clean"
   },
   {
     "id": "callcenter",
@@ -140,7 +142,7 @@
       "name": "Il Copione",
       "sheet": "char_14",
       "goal": 4,
-      "pay": 220,
+      "pay": 420,
       "damage": 3,
       "intro": "* Il telefono squilla prima ancora che ti siedi. Poi non smette più.",
       "work_line": "Rispondi a una chiamata leggendo il copione.",
@@ -186,7 +188,8 @@
         "papers"
       ],
       "tired": "* Senti ancora i telefoni squillare, anche nel silenzio."
-    }
+    },
+    "game": "calls"
   },
   {
     "id": "banco",
@@ -203,7 +206,7 @@
       "name": "La Folla",
       "sheet": "char_15",
       "goal": 4,
-      "pay": 210,
+      "pay": 460,
       "damage": 3,
       "intro": "* Il mercato apre. Tutti vogliono tutto, subito, al prezzo più basso.",
       "work_line": "Servi un cliente al banco.",
@@ -248,7 +251,8 @@
         "emails"
       ],
       "tired": "* Hai le braccia stanche e le orecchie piene di prezzi."
-    }
+    },
+    "game": "scale"
   },
   {
     "id": "magazzino",
@@ -265,7 +269,7 @@
       "name": "Il Caporeparto",
       "sheet": "char_13",
       "goal": 4,
-      "pay": 230,
+      "pay": 500,
       "damage": 3,
       "intro": "* Il caporeparto ti aspetta davanti a una montagna di scatole.",
       "work_line": "Sposti una pila di scatole.",
@@ -312,7 +316,8 @@
         "papers"
       ],
       "tired": "* Hai la schiena a pezzi e le mani piene di tagli di cartone."
-    }
+    },
+    "game": "sort"
   },
   {
     "id": "consegne",
@@ -329,7 +334,7 @@
       "name": "La Strada",
       "sheet": "char_14",
       "goal": 4,
-      "pay": 220,
+      "pay": 520,
       "damage": 3,
       "intro": "* Piove. L'app ti assegna quaranta consegne. La strada ti aspetta.",
       "work_line": "Consegni un pacco sotto la pioggia.",
@@ -375,6 +380,7 @@
         "cars"
       ],
       "tired": "* Hai le gambe a pezzi e la pioggia ti è entrata nelle ossa."
-    }
+    },
+    "game": "deliver"
   }
 ]

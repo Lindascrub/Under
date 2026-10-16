@@ -44,7 +44,7 @@ func build() -> void:
 	add_prop("props/portrait.png", Vector2i(6, 2), 0, Vector2i(16, 32), [
 		"* Il ritratto del fondatore della CHEAP. Ti sorride come sorride una banca.",
 	])
-	add_prop("props/trash.png", Vector2i(17, 3), 1, Vector2i(16, 32), [
+	add_prop("props/trash.png", Vector2i(17, 3), 2, Vector2i(16, 32), [
 		"* Il cestino è pieno di curriculum. Alcuni sono ancora chiusi nella busta.",
 	])
 	add_prop("props/palm.png", Vector2i(1, 3), 1, Vector2i(32, 32), [
@@ -67,7 +67,7 @@ func build() -> void:
 	_elevator(Vector2i(12, 1))
 	add_exit(Rect2i(9, 11, 2, 1), Router.STREET, "office")
 	add_stairs_down(Vector2i(1, 9), Router.BANCA, "from_above")
-	add_badge_machine(Vector2i(15, 3))
+	add_badge_machine(Vector2i(16, 3))
 	spawn_people("office")
 
 	spawns["default"] = cell_feet(Vector2i(9, 9))
@@ -106,34 +106,91 @@ func _terminal() -> void:
 	], "Terminale")
 
 
+var _lift_doors: Array[ColorRect] = []
+var _lift_light: ColorRect
+var _lift_cell := Vector2i.ZERO
+var _lift_open := false
+
+
+## L'ascensore del piano terra: guasto (porte chiuse, luce rossa) finché non hai il badge della Cima;
+## poi le porte restano aperte con la luce verde, e basta entrarci per salire.
 func _elevator(top_left: Vector2i) -> void:
+	_lift_cell = top_left
 	var frame := ColorRect.new()
 	frame.color = Color("4a4658")
 	frame.position = Vector2(top_left.x * T, top_left.y * T + 4)
 	frame.size = Vector2(2 * T, 2 * T - 4)
 	world.add_child(frame)
+	var inside := ColorRect.new()
+	inside.color = Color("1a1622")
+	inside.position = frame.position + Vector2(2, 3)
+	inside.size = Vector2(2 * T - 4, frame.size.y - 3)
+	world.add_child(inside)
 	for i in 2:
 		var door := ColorRect.new()
 		door.color = Color("aeb4c4")
 		door.position = frame.position + Vector2(2 + i * 15, 3)
 		door.size = Vector2(13, frame.size.y - 3)
 		world.add_child(door)
-	var light := ColorRect.new()
-	light.color = Color("3ddc84") if GameState.has_badge("cima") else Color("d0302f")
-	light.position = frame.position + Vector2(14, -3)
-	light.size = Vector2(4, 2)
-	world.add_child(light)
+		_lift_doors.append(door)
+	_lift_light = ColorRect.new()
+	_lift_light.color = Color("d0302f")
+	_lift_light.position = frame.position + Vector2(14, -3)
+	_lift_light.size = Vector2(4, 2)
+	world.add_child(_lift_light)
+	if GameState.has_badge("cima"):
+		_open_elevator(false)
 	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
 
 
-func _ride_elevator() -> void:
-	var up_ok := GameState.has_badge("cima")
-	var c: int = await Ui.choose("L'ascensore. C'è un solo pulsante: SU.", ["Ultimo piano: Direzione" + ("" if up_ok else " (serve il badge)"), "Resta qui"])
-	if c != 0:
+## Le porte si aprono e resta aperto: chi ci entra sale alla Cima.
+func _open_elevator(animate := true) -> void:
+	if _lift_open:
 		return
-	if not up_ok:
+	_lift_open = true
+	_lift_light.color = Color("3ddc84")
+	for i in _lift_doors.size():
+		var door := _lift_doors[i]
+		var to_x := door.position.x + (-10.0 if i == 0 else 10.0)
+		if animate:
+			var tw := door.create_tween()
+			tw.tween_property(door, "size:x", 3.0, 0.8)
+			if i == 1:
+				tw.parallel().tween_property(door, "position:x", to_x, 0.8)
+		else:
+			door.size.x = 3.0
+			if i == 1:
+				door.position.x = to_x
+	var a := Area2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(2 * T - 8, 8)
+	var col := CollisionShape2D.new()
+	col.shape = shape
+	col.position = Vector2(_lift_cell.x * T + T, (_lift_cell.y + 2) * T + 4)
+	a.add_child(col)
+	add_child(a)
+	a.body_entered.connect(func(b: Node2D) -> void:
+		if b is Player and not Ui.blocks_input():
+			_ride_up(b as Player))
+
+
+func _ride_up(p: Player) -> void:
+	Ui.cutscene = true
+	p.z_index = 2
+	await p.climb(Vector2(_lift_cell.x * T + T, (_lift_cell.y + 2) * T - 2), "up", true)
+	Sound.sfx("ding")
+	Ui.cutscene = false
+	Router.goto(Router.BOSS, "elevator", ["Le porte si chiudono. L'ascensore sale.", "1. 10. 30. 50.", "Più sale, più l'aria sa di profumo e di nessuno."])
+
+
+func _ride_elevator() -> void:
+	if not GameState.has_badge("cima"):
 		Sound.sfx("deny")
-		await Ui.say(["* Il lettore di badge lampeggia rosso.", "* \"La Cima. Accesso con badge (%s).\"" % GameState.euros(GameState.badge_cost("cima"))])
+		await Ui.say(["* L'ascensore. Sulla porta, un foglio scritto a mano: \"GUASTO\".",
+			"* Sotto, più in piccolo: \"Verrà riparato quando servirà a qualcuno di importante\"."])
+		return
+	var c: int = await Ui.choose("L'ascensore funziona. C'è un solo pulsante: SU.", ["Ultimo piano: la Cima", "Resta qui"])
+	if c != 0:
 		return
 	Router.goto(Router.BOSS, "elevator")
 

@@ -33,7 +33,7 @@ var _talk_t := 0.0
 ## Ritratti extra per chi non è in npcs.json.
 const EXTRA_PORTRAITS := {
 	"Dottor Prezzi": "char_18", "Il Presidente": "char_19", "Papà": "char_19",
-	"Signora Agenda": "char_20", "Il capo": "char_18", "Signor Tasso": "char_04", "Fermo": "char_14", "Signor Rata": "char_18",
+	"Signora Agenda": "char_20", "Il capo": "char_18", "Signor Tasso": "char_04", "Fermo": "char_14", "Signor Rata": "char_18", "Addetta ai badge": "char_13",
 }
 
 var _mode := ""
@@ -65,9 +65,15 @@ func show_hud(visible_: bool) -> void:
 		_time_bar.visible = visible_
 
 
-## La giornata in 24 caselle: sonno, ore passate, lavoro che ti aspetta e il poco tempo davvero tuo.
+## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).
 func _draw_time_bar() -> void:
 	var font := Assets.font()
+	if GameState.worked_today:
+		_time_bar.draw_string(font, Vector2(0, 8), "Turno di oggi: fatto. Per il prossimo, fai passare la notte a una stellina.", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3ddc84"))
+	else:
+		_time_bar.draw_string(font, Vector2(0, 8), "Turno di oggi: da fare (cerca la scritta TURNO).", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("ffb03a"))
+	return
+	@warning_ignore("unreachable_code")
 	var w := 7.0
 	var now := GameState.minutes / 60.0
 	var work_left := 0.0 if GameState.worked_today else 10.0

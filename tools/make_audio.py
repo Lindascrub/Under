@@ -203,9 +203,78 @@ def music_fondo():
     write("music_fondo.wav", track(mel, bas, 0.3, lead_vol=0.06, bass_vol=0.2, duty=0.5))
 
 
+def music_piani():
+    # "Sotto" (-4): ufficio sotterraneo, marcetta stanca in Mi minore, tutto un po' storto.
+    mel = ("E4 - G4 - B4 - A4 G4 F#4 - E4 - D4 - E4 - "
+           "E4 - G4 - B4 - C5 B4 A4 - G4 - F#4 - - - "
+           "G4 - B4 - D5 - C5 B4 A4 - G4 - F#4 - E4 - "
+           "D#4 - F#4 - A4 - G4 F#4 E4 - - - - - - - ").split()
+    bas = ("E2 - B2 - E2 - B2 - D2 - A2 - D2 - A2 - "
+           "C2 - G2 - C2 - G2 - B1 - F#2 - B1 - F#2 - "
+           "E2 - B2 - E2 - B2 - A1 - E2 - A1 - E2 - "
+           "B1 - F#2 - B1 - F#2 - E2 - B2 - E2 - - ").split()
+    write("music_sotto.wav", track(mel, bas, 0.19, lead_vol=0.08, duty=0.5, drums="k...s..."))
+
+    # "Asta" (mercato, capitalismo): valzer finto-elegante, freddo, in La minore armonica.
+    mel = ("A4 - - C5 - - E5 - - G#5 - - A5 - - - - - "
+           "F5 - - E5 - - D5 - - C5 - - B4 - - - - - "
+           "A4 - - C5 - - E5 - - A5 - - G#5 - - E5 - - "
+           "F5 - - D5 - - B4 - - G#4 - - A4 - - - - - ").split()
+    bas = ("A2 - - E3 - - E3 - - E2 - - E3 - - E3 - - "
+           "D2 - - A2 - - A2 - - E2 - - G#2 - - G#2 - - "
+           "A2 - - E3 - - E3 - - E2 - - B2 - - B2 - - "
+           "D2 - - F2 - - F2 - - E2 - - A2 - - A2 - - ").split()
+    write("music_asta.wav", track(mel, bas, 0.18, lead_vol=0.08, duty=0.125))
+
+    # "Razioni" (mercato, comunismo): sempre la stessa frase, come la coda. Lenta, in Re minore.
+    mel = ("D4 - - - F4 - - - E4 - - - D4 - - - "
+           "D4 - - - F4 - - - E4 - - - C4 - - - "
+           "D4 - - - F4 - - - E4 - - - D4 - - - "
+           "D4 - - - F4 - - - G4 - - - A4 - - - ").split()
+    bas = ("D2 - - - D2 - - - A1 - - - D2 - - - "
+           "D2 - - - D2 - - - A1 - - - A1 - - - "
+           "D2 - - - D2 - - - A1 - - - D2 - - - "
+           "D2 - - - D2 - - - C2 - - - A1 - - - ").split()
+    write("music_razioni.wav", track(mel, bas, 0.22, lead_vol=0.07, bass_vol=0.15, duty=0.5, drums="k.......k......."))
+
+    # "Scambi" (mercato, baratto): allegra e un po' sgangherata, in Sol maggiore.
+    mel = ("G4 B4 D5 B4 C5 E5 D5 B4 A4 C5 B4 G4 A4 - D4 - "
+           "G4 B4 D5 G5 E5 C5 D5 B4 C5 A4 B4 G4 A4 F#4 G4 - "
+           "E5 - D5 C5 B4 - C5 D5 E5 - D5 C5 B4 A4 G4 - "
+           "A4 B4 C5 A4 D5 C5 B4 A4 G4 - B4 - G4 - - - ").split()
+    bas = ("G2 - D3 - C3 - G2 - D2 - A2 - D2 - F#2 - "
+           "G2 - D3 - E2 - C3 - D2 - G2 - D2 - G2 - "
+           "C3 - G2 - C3 - E2 - A2 - E2 - D2 - D2 - "
+           "D2 - A2 - D2 - F#2 - G2 - D2 - G2 - - ").split()
+    write("music_scambi.wav", track(mel, bas, 0.15, lead_vol=0.1, duty=0.25, drums="k.s.k.s.k.s.kss."))
+
+    # "Banca" (-2): elegante, vuota, con le pause lunghe. Fa minore.
+    mel = ("F4 - - - G#4 - C5 - - - - - C#5 - C5 - "
+           "A#4 - - - - - G#4 - G4 - - - - - - - "
+           "F4 - - - G#4 - C5 - - - F5 - - - D#5 - "
+           "C#5 - - - C5 - A#4 - C5 - - - - - - - ").split()
+    bas = ("F2 - - - - - - - C#2 - - - - - - - "
+           "A#1 - - - - - - - C2 - - - - - - - "
+           "F2 - - - - - - - G#1 - - - - - - - "
+           "C#2 - - - A#1 - - - C2 - - - - - - - ").split()
+    write("music_banca.wav", track(mel, bas, 0.24, lead_vol=0.07, bass_vol=0.14, duty=0.5))
+
+    # "Lavoro" (i turni): un ritmo da catena di montaggio, veloce e ripetitivo, in Do minore.
+    mel = ("C5 - C5 D#5 G4 - G4 - C5 - C5 D#5 F5 - D#5 - "
+           "D5 - D5 F5 G4 - G4 - D5 - D5 F5 G5 - F5 - "
+           "D#5 - D#5 G5 C5 - C5 - D#5 - D#5 G5 G#5 - G5 - "
+           "F5 - D#5 - D5 - C5 - B4 - D5 - G4 - - - ").split()
+    bas = ("C3 C3 G2 G2 C3 C3 G2 G2 C3 C3 G2 G2 C3 C3 G2 G2 "
+           "G2 G2 D3 D3 G2 G2 D3 D3 G2 G2 D3 D3 G2 G2 D3 D3 "
+           "G#2 G#2 D#3 D#3 G#2 G#2 D#3 D#3 F2 F2 C3 C3 F2 F2 C3 C3 "
+           "G2 G2 D3 D3 G2 G2 D3 D3 G2 G2 B2 B2 G2 - - - ").split()
+    write("music_lavoro.wav", track(mel, bas, 0.11, lead_vol=0.08, bass_vol=0.13, duty=0.25, drums="k.s.k.s.k.s.k.s."))
+
+
 if __name__ == "__main__":
     random.seed(7)
     sfx()
     music()
     music_fondo()
+    music_piani()
     print("Audio generato in", os.path.abspath(OUT))
