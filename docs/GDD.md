@@ -4,6 +4,26 @@
 
 Un RPG narrativo in stile Undertale in cui il giocatore, schiacciato da un debito, può diventare ricco senza fatica sfruttando gli altri. Scopre solo alla fine che, firma dopo firma, intorno a lui sono rimasti solo robot.
 
+## La torre a piani (nuova struttura, ottobre 2026)
+
+I giorni non sono più contati: si sale la Torre CHEAP un piano alla volta. Questa parte sostituisce il "ciclo di 4 giorni" descritto più sotto.
+
+- **L'inizio:** sei dentro l'ascensore e scendi. Sul display scorre il tuo debito (6.000 €). Al **piano -5** l'ascensore si rompe e le porte si aprono a metà sul buio.
+- **Fermo:** l'unica luce è intorno a lui, seduto accanto all'ascensore. Finché non gli parli, il buio non ti lascia andare. Ti spiega le regole con la sua vita piatta ("lavora fino a morire"), poi accende la luce.
+- **Lavoro, badge, scale:** su ogni piano c'è un lavoro (una battaglia di lavoro, una volta al giorno). Coi soldi compri al distributore il **badge** del piano di sopra: il prezzo va tutto a scalare dal debito. Il badge apre il tornello delle scale.
+- **Il tempo:** non finisce mai, ma costa. A mezzanotte comincia un altro giorno e il debito cresce (interessi). Le stelline salvano e ti lasciano "sprecare" il tempo.
+
+| Piano | Posto | Badge per arrivarci |
+|---|---|---|
+| -5 | Il Fondo: buio, le cyclette che accendono le luci di sopra, Fermo | — |
+| -4 | Il Sottoufficio: collocamento, bagni, call center | 200 € |
+| -3 | Il Mercato sotterraneo (asta, razioni o scambi, a seconda della strada) | 400 € |
+| -2 | La Banca Fiducia | 600 € |
+| Piano terra | L'ufficio; da qui si esce in città (strada, parco, casa, rifugio) | 800 € |
+| La Cima | Direzione e Presidenza (tuo padre), con l'ascensore del piano terra | 1.000 € |
+
+Da fare: chi non lavora e non ha soldi viene "aiutato" a salire da personaggi che lo fanno in modo meschino; chi sale troppo in fretta (senza conoscere nessuno) avrà il finale brutto (`flags.floor_met_*` e `flags.floor_day_*` già lo registrano); su ogni piano persone nuove con caratteri diversi.
+
 ## Cosa deve provare il giocatore
 
 - **Pressione:** il debito è sempre a schermo e sale ogni notte. Lavorare sembra un dovere.

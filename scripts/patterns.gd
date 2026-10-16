@@ -82,6 +82,14 @@ static func update(b: Node, attack: String, _delta: float) -> void:
 				var left := randf() < 0.5
 				_spawn(b, "drop", Vector2(box.position.x + 4 if left else box.end.x - 4, box.end.y),
 					Vector2(randf_range(30, 90) * (1 if left else -1), randf_range(-190, -150)), Vector2(6, 8), {"acc": Vector2(0, 230)})
+		"stains":
+			# macchie che compaiono sul pavimento: prima un alone innocuo, poi diventano pericolose
+			if _every(b, 0.42):
+				var p := Vector2(randf_range(box.position.x + 12, box.end.x - 12), randf_range(box.position.y + 12, box.end.y - 12))
+				_spawn(b, "stain", p, Vector2.ZERO, Vector2(16, 12), {"harmless": true, "life": 1.6})
+			for d in b.bullets:
+				if d["type"] == "stain":
+					d["harmless"] = float(d["t"]) < 0.7
 		"notifications":
 			if _every(b, 0.5):
 				var p := Vector2(randf_range(box.position.x + 14, box.end.x - 14), randf_range(box.position.y + 14, box.end.y - 14))
@@ -177,6 +185,13 @@ static func draw_all(b: Node2D, bullets: Array[Dictionary]) -> void:
 				b.draw_circle(p, s.x / 2.0, col)
 				b.draw_rect(Rect2(p + Vector2(-1, -5), Vector2(2, 6)), Color.WHITE)
 				b.draw_rect(Rect2(p + Vector2(-1, 3), Vector2(2, 2)), Color.WHITE)
+			"stain":
+				var warn2: bool = d["harmless"]
+				var sc := Color("6b4a1e")
+				sc.a = 0.35 if warn2 else 1.0
+				b.draw_circle(p, 7.0, sc)
+				b.draw_circle(p + Vector2(5, 2), 4.0, sc)
+				b.draw_circle(p + Vector2(-5, 3), 3.0, sc)
 			"key":
 				b.draw_circle(p + Vector2(-3, 0), 3.0, Color("f0c040"))
 				b.draw_rect(Rect2(p + Vector2(0, -1), Vector2(6, 2)), Color("f0c040"))

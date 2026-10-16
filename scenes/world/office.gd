@@ -1,6 +1,6 @@
 extends Room
-## L'ufficio della CHEAP S.p.A. Al terminale si sceglie il lavoro del giorno:
-## facile (una firma, un'ora, una persona in meno), duro (un turno-battaglia di 10 ore) o rifiuto.
+## Il piano terra della torre CHEAP. La botola scende alla Banca (-2), l'ascensore sale alla
+## Direzione (con il badge della Cima), la porta esce in città. Qui lavorano Dario e Giulia.
 
 const RB := "tiles/room_builder.png"
 const DESK_TEXTS := [
@@ -16,6 +16,7 @@ const DESK_TEXTS := [
 
 
 func build() -> void:
+	floor_id = "0"
 	music = "ufficio"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(38 + c.x % 3, 11 + c.y % 2)}
 	paint([
@@ -65,6 +66,8 @@ func build() -> void:
 	add_spot(cell_center(Vector2i(9, 3)), _terminal)
 	_elevator(Vector2i(12, 1))
 	add_exit(Rect2i(9, 11, 2, 1), Router.STREET, "office")
+	add_stairs_down(Vector2i(1, 9), Router.BANCA, "from_above")
+	add_badge_machine(Vector2i(15, 3))
 	spawn_people("office")
 
 	spawns["default"] = cell_feet(Vector2i(9, 9))
@@ -74,6 +77,8 @@ func build() -> void:
 	spawns["terminal"] = cell_feet(Vector2i(9, 4))
 	spawns["elevator"] = cell_feet(Vector2i(12, 4))
 	spawn_facing["elevator"] = "down"
+	spawns["from_below"] = cell_feet(Vector2i(3, 9))
+	spawn_facing["from_below"] = "right"
 	spawn_facing["terminal"] = "up"
 
 
@@ -81,72 +86,26 @@ func enter() -> void:
 	if not GameState.flags.get("office_intro", false) and not GameState.is_robot("giulia"):
 		GameState.flags["office_intro"] = true
 		await Ui.say([
-			"Ah, sei il nuovo! Io sono Giulia, ti faccio vedere come funziona.",
-			"Ogni mattina vai al terminale contro il muro e scegli un incarico.",
-			"Ci sono quelli che pagano bene e durano un'ora. E quelli che ti prendono tutta la giornata e ti spaccano la schiena.",
-			"...Io ti consiglio i secondi. Ma non te l'ho detto io.",
+			"...Sei salito dalla Banca? Da sotto? Non ci credo. Nessuno sale da sotto.",
+			"Io sono Giulia. Qui è il piano terra: luce vera, finestre vere. Là fuori c'è la città.",
+			"L'ascensore va solo in su, alla Direzione. Serve il badge della Cima, e costa come un rene.",
+			"Il capo, intanto, ti telefonerà. Ti offre le promozioni. Sembrano regali. ...Non sono regali. Ma non te l'ho detto io.",
 		], "Giulia")
 	await show_pending()
 
 
+## Il terminale del piano terra rimanda al collocamento, al piano -4. Dopo il turno
+## propone gli straordinari.
 func _terminal() -> void:
 	if GameState.worked_today:
 		await _overtime()
 		return
-	var job := GameState.job_today()
-	var easy: Dictionary = job.get("easy", {})
-	var hard: Dictionary = job.get("hard", {})
-	var options := [
+	await Ui.say([
+		"* Sul terminale lampeggia un avviso: \"Il COLLOCAMENTO è al piano -4.\"",
+		"* \"Per chi viene dal piano terra: scendere è facile. È salire che costa.\"",
+	], "Terminale")
 
 
-		"%s  (+%s, 1 ora)" % [easy.get("title", "?"), GameState.euros(GameState.easy_pay())],
-		"%s  (10 ore, paga bassa)" % hard.get("title", "?"),
-		"Rifiuta di lavorare",
-	]
-	var i: int = await Ui.choose("CHEAP S.p.A. - Incarichi di {day_name}. Ruolo: {rank}. Ore {clock}.", options, "Terminale")
-	match i:
-		0:
-			await Ui.say(easy.get("desc", []), "Terminale")
-			var go: int = await Ui.choose("Basta un clic.", ["Apri il modulo", "Annulla"], "Terminale")
-			if go != 0:
-				return
-			var victim := str(job.get("victim", ""))
-			var vdata := GameState.npc_data(victim)
-			Router.battle({
-				"kind": "sign",
-				"id": victim,
-				"name": str(vdata.get("name", "Qualcuno")),
-				"sheet": str(vdata.get("sheet", "char_02")),
-				"intro": "* Il modulo è pronto. In fondo c'è la foto di %s.\n* Qualunque cosa tu scelga, la risposta è sempre la stessa." % vdata.get("name", "qualcuno"),
-				"return": Router.OFFICE,
-				"spawn": "terminal",
-			})
-		1:
-			if not GameState.has_time(GameState.COST_HARD_JOB):
-				await Ui.say(["* Sono le {clock}. Non ti restano dieci ore prima di mezzanotte."], "Terminale")
-				return
-			await Ui.say(hard.get("desc", []), "Terminale")
-			var accept: int = await Ui.choose("Accetti il turno?", ["Accetta", "Annulla"], "Terminale")
-			if accept != 0:
-				return
-			var cfg: Dictionary = (hard.get("battle", {}) as Dictionary).duplicate(true)
-			cfg["kind"] = "work"
-			cfg["return"] = Router.OFFICE
-			cfg["spawn"] = "terminal"
-			Router.battle(cfg)
-		2:
-			var really: int = await Ui.choose("Sicuro? Oggi non guadagnerai niente.", ["Rifiuta", "Annulla"], "Terminale")
-			if really != 0:
-				return
-			GameState.refuse_work()
-			await Ui.say([
-				"* Spegni il terminale.",
-				"* Dall'ufficio del capo, qualcuno ti guarda male.",
-				"* Per la prima volta dopo tanto tempo, respiri. E hai tutta la giornata davanti.",
-			])
-
-
-## L'ascensore per l'ultimo piano: serve un badge da Supervisore (2 promozioni).
 func _elevator(top_left: Vector2i) -> void:
 	var frame := ColorRect.new()
 	frame.color = Color("4a4658")
@@ -160,7 +119,7 @@ func _elevator(top_left: Vector2i) -> void:
 		door.size = Vector2(13, frame.size.y - 3)
 		world.add_child(door)
 	var light := ColorRect.new()
-	light.color = Color("3ddc84") if GameState.rank >= 2 else Color("d0302f")
+	light.color = Color("3ddc84") if GameState.has_badge("cima") else Color("d0302f")
 	light.position = frame.position + Vector2(14, -3)
 	light.size = Vector2(4, 2)
 	world.add_child(light)
@@ -168,9 +127,13 @@ func _elevator(top_left: Vector2i) -> void:
 
 
 func _ride_elevator() -> void:
-	if GameState.rank < 2:
-		await Ui.say(["* L'ascensore per l'ultimo piano. Accanto c'è un lettore di badge.",
-			"* Sul display: \"Accesso riservato. Dal grado di Supervisore in su.\""])
+	var up_ok := GameState.has_badge("cima")
+	var c: int = await Ui.choose("L'ascensore. C'è un solo pulsante: SU.", ["Ultimo piano: Direzione" + ("" if up_ok else " (serve il badge)"), "Resta qui"])
+	if c != 0:
+		return
+	if not up_ok:
+		Sound.sfx("deny")
+		await Ui.say(["* Il lettore di badge lampeggia rosso.", "* \"La Cima. Accesso con badge (%s).\"" % GameState.euros(GameState.badge_cost("cima"))])
 		return
 	Router.goto(Router.BOSS, "elevator")
 

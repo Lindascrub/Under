@@ -70,6 +70,12 @@ def sfx():
     write("flap.wav", sum((noise(0.04, 0.18) + [0.0] * int(RATE * 0.03) for _ in range(4)), []))
     write("step.wav", noise(0.035, 0.12))
     write("glitch.wav", [square(random.choice([110, 220, 880, 1760]), i / RATE) * 0.2 for i in range(int(RATE * 0.35))])
+    # L'ascensore: il "din" dei piani, lo schianto quando si blocca, le scintille dei fili scoperti.
+    write("ding.wav", tone(784, 0.18, 0.2, triangle) + tone(622, 0.4, 0.2, triangle))
+    write("clunk.wav", [a + b for a, b in zip(tone(70, 0.5, 0.55, triangle, slide=-30), noise(0.5, 0.35))]
+          + [square(random.choice([300, 410, 520]), i / RATE) * 0.06 * (1 - i / (RATE * 0.3)) for i in range(int(RATE * 0.3))])
+    write("spark.wav", sum((noise(0.015, 0.3) + [0.0] * int(RATE * random.uniform(0.01, 0.05)) for _ in range(7)), []))
+    write("pedal.wav", [a + b for a, b in zip(tone(110, 0.09, 0.18, triangle, slide=30), noise(0.09, 0.05))])
 
 
 NOTES = {n: i for i, n in enumerate(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"])}
@@ -184,8 +190,22 @@ def music():
     write("music_notte.wav", track(mel, bas, 0.28, lead_vol=0.08, duty=0.25))
 
 
+def music_fondo():
+    # "Fondo": il piano -5. Quasi niente: un basso che respira e qualche goccia che cade.
+    mel = ("- - - - D5 - - - - - - - - - A4 - "
+           "- - - - - - F4 - - - - - - - - - "
+           "- - - - D5 - - - - - - - C5 - - - "
+           "- - A4 - - - - - - - - - - - - - ").split()
+    bas = ("D2 - - - - - - - - - - - - - - - "
+           "A#1 - - - - - - - - - - - - - - - "
+           "D2 - - - - - - - - - - - - - - - "
+           "A1 - - - - - - - - - - - - - - - ").split()
+    write("music_fondo.wav", track(mel, bas, 0.3, lead_vol=0.06, bass_vol=0.2, duty=0.5))
+
+
 if __name__ == "__main__":
     random.seed(7)
     sfx()
     music()
+    music_fondo()
     print("Audio generato in", os.path.abspath(OUT))

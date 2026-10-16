@@ -10,11 +10,17 @@ const PARK := "res://scenes/world/park.tscn"
 const SHELTER := "res://scenes/world/shelter.tscn"
 const BOSS := "res://scenes/world/boss_office.tscn"
 const PRESIDENCY := "res://scenes/world/presidency.tscn"
+const FALL := "res://scenes/world/fall.tscn"
+const SOTTOUFFICIO := "res://scenes/world/sottoufficio.tscn"
+const MERCATO := "res://scenes/world/mercato.tscn"
+const BANCA := "res://scenes/world/banca.tscn"
+const ELEVATOR := "res://scenes/world/elevator_intro.tscn"
+const FONDO := "res://scenes/world/fondo.tscn"
 const MINIGAME := "res://scenes/minigame/minigame.tscn"
 const BATTLE := "res://scenes/battle/battle.tscn"
 const ENDING := "res://scenes/endings/ending.tscn"
 const ENDING_CITY := "res://scenes/endings/city_below.tscn"
-const WORLD: Array[String] = [HOME, STREET, OFFICE, PARK, SHELTER, BOSS, PRESIDENCY]
+const WORLD: Array[String] = [HOME, STREET, OFFICE, PARK, SHELTER, BOSS, PRESIDENCY, SOTTOUFFICIO, MERCATO, BANCA, FONDO]
 
 ## Nome del punto di arrivo nella prossima stanza (vedi Room.spawns).
 var spawn := ""
@@ -32,11 +38,6 @@ func goto(path: String, spawn_name: String = "", narration: Array = []) -> void:
 	if path in WORLD and from in WORLD and from != path:
 		GameState.spend(GameState.COST_WALK)
 		Sound.sfx("door")
-	if path in WORLD and GameState.is_midnight() and not GameState.flags.get("forced_sleep", false):
-		GameState.flags["forced_sleep"] = true
-		path = HOME
-		spawn_name = "bed"
-		narration = ["È mezzanotte.", "Crolli dal sonno. Ti risvegli a casa, senza ricordare come ci sei arrivato."]
 	spawn = spawn_name
 	await Ui.fade_out()
 	if not narration.is_empty():
@@ -71,4 +72,4 @@ func continue_game() -> void:
 	if where.is_empty():
 		return
 	save_pos = where["pos"]
-	goto(str(where["room"]), "_save" if save_pos != Vector2.INF else "bed", ["{day_name}, ore {clock}."])
+	goto(str(where["room"]), "_save" if save_pos != Vector2.INF else "bed", ["{floor}, ore {clock}."])

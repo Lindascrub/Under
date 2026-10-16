@@ -3,13 +3,8 @@ extends Control
 
 const INTRO := [
 	"Tuo padre se n'è andato in silenzio, come faceva tutto.",
-	"Ti ha lasciato una casa vuota...",
-	"...e un debito di {debt}.",
-	"La banca ti ha già scritto. Gli interessi corrono ogni notte.",
-	"Domani inizi a lavorare alla CHEAP S.p.A.",
-	"Una giornata, qui, è fatta così:\ndieci ore di lavoro, otto di sonno, tre per mangiare.\nTre ore libere. Che poi le faccende si mangiano quasi tutte.",
-	"Il tempo che è davvero tuo è quasi niente. Guardalo bene, in alto a sinistra.",
-	"Hai {last_day} giorni.",
+	"Ti ha lasciato una casa vuota e un debito di {debt}.",
+	"La lettera della banca diceva solo:\n\"Si presenti alla Torre CHEAP. Piano -5.\"",
 ]
 
 var _options: Array[String] = []
@@ -100,7 +95,7 @@ func _choose(option: String) -> void:
 		"Nuova partita":
 			GameState.new_game()
 			GameState.delete_save()
-			Router.goto(Router.HOME, "bed", INTRO)
+			Router.goto(Router.ELEVATOR, "", INTRO)
 		"Continua":
 			Router.continue_game()
 		"Esci":

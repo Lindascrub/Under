@@ -1,0 +1,66 @@
+{
+  "gino": {
+    "title": "Il buono pasto di Gino",
+    "desc": [
+      "Il capo: Ottimo primo giorno! Senta, una cosetta da niente.",
+      "Il capo: Gino, quello dei bagni, ha un buono pasto aziendale. Non lo usa quasi mai.",
+      "Il capo: Basta una sua firma per revocarlo. Nessuno se ne accorgerà. E lei avrà una piccola promozione."
+    ]
+  },
+  "vito": {
+    "title": "L'affitto del banco di Vito",
+    "desc": [
+      "Il capo: Il banco di frutta di Vito, al mercato. L'affitto è troppo basso da anni.",
+      "Il capo: Una firma, e lo raddoppiamo. Se non può pagare, il banco torna a noi."
+    ]
+  },
+  "marta": {
+    "title": "Lo sfratto di Marta",
+    "desc": [
+      "Il capo: Inquilini in ritardo con l'affitto. Nella lista c'è il suo palazzo: Marta R., due figli.",
+      "Il capo: La lettera è già scritta. Manca solo la sua firma."
+    ]
+  },
+  "sig_bruno": {
+    "title": "Il rimborso del signor Bruno",
+    "desc": [
+      "Il capo: Un pensionato chiede un rimborso. Bruno T., 81 anni.",
+      "Il capo: Gli abbiamo venduto un'assicurazione che non copre niente. Basta respingere la richiesta."
+    ]
+  },
+  "dario": {
+    "title": "Il licenziamento di Dario",
+    "desc": [
+      "Il capo: Dobbiamo ottimizzare il personale. Dario lo conosce, vero? Quello col contatore.",
+      "Il capo: Lo sostituirà un software. Lo saprà dall'email automatica. Lei deve solo firmare."
+    ]
+  },
+  "lea": {
+    "title": "L'affitto di Lea",
+    "desc": [
+      "Il capo: Aumentiamo del 30% gli affitti delle case per studenti.",
+      "Il capo: C'è una certa Lea M., fa tre lavori. Ce la farà. Basta cambiare un numero."
+    ]
+  },
+  "giulia": {
+    "title": "L'assicurazione di Giulia",
+    "desc": [
+      "Il capo: Tagliamo l'assicurazione sanitaria ai dipendenti.",
+      "Il capo: Giulia ha un intervento il mese prossimo, lo so. Ma i costi sono costi."
+    ]
+  },
+  "ragazzo_sami": {
+    "title": "I turni di Sami",
+    "desc": [
+      "Il capo: Nuovi turni da 14 ore per i rider. Chi rifiuta viene disattivato dall'app.",
+      "Il capo: Tra loro c'è Sami, il ragazzo della bici. Lo chiamano \"flessibilità\"."
+    ]
+  },
+  "portiere_ivo": {
+    "title": "Lo sgabuzzino di Ivo",
+    "desc": [
+      "Il capo: Il suo palazzo diventerà uffici. Il portiere, Ivo, vive nello sgabuzzino al piano terra.",
+      "Il capo: Una firma e da domani lo sgabuzzino è nostro."
+    ]
+  }
+}

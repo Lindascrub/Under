@@ -40,6 +40,9 @@ func build() -> void:
 	examine(Vector2(57 * T + 40, (BASE + 1) * T - 2), ["* Il cartellone dice: CHEAP - SORRIDI!", "* Qualcuno ha aggiunto sotto, a pennarello: \"...e paga\"."])
 
 	_props()
+	examine(cell_center(Vector2i(W - 2, 9)), ["* Transenne e un cartello: \"Il MERCATO si è trasferito sotto terra, al piano -3 della Torre\".",
+		"* \"Ci si arriva solo dal basso.\""])
+	add_station("street")
 	spawn_people("street")
 	_traffic()
 	add_save_point(Vector2i(32, 9))
@@ -48,6 +51,8 @@ func build() -> void:
 	spawns["home"] = spawns["default"]
 	spawns["office"] = cell_feet(Vector2i(48, 9))
 	spawns["park"] = cell_feet(Vector2i(24, 2))
+	spawns["mercato"] = cell_feet(Vector2i(W - 2, 9))
+	spawn_facing["mercato"] = "left"
 	spawns["shelter"] = cell_feet(Vector2i(12, 8))
 
 

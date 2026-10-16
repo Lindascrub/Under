@@ -15,6 +15,7 @@ $singles = "1_Interiors/16x16/Theme_Sorter_Black_Shadow_Singles"
 $bedroom = "$singles/4_Bedroom_Black_Shadow_SIngles_16x16/Bedroom_Black_Shadow_Singles_{0}.png"
 $conference = "$singles/13_Conference_Hall_Black_Shadow_Singles_16x16/Conference_Hall_Shadow_Singles_{0}.png"
 $living = "$singles/2_LivingRoom_Black_Shadow_Singles_16x16/Living_Room_Black_Shadow_Singles_{0}.png"
+$bathroom = "$singles/3_Bathroom_Black_Shadow_Singles_16x16/Bathroom_Black_Shadow_Singles_{0}.png"
 $ext = "Modern_Exteriors_16x16/ME_Theme_Sorter_16x16"
 $building = "$ext/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_{0}.png"
 $cityProp = "$ext/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_{0}.png"
@@ -37,6 +38,13 @@ $interiors = [ordered]@{
     ($conference -f 45)  = "props/trash.png"
     ($conference -f 54)  = "props/portrait.png"
     "3_Animated_objects/16x16/spritesheets/animated_cat.png" = "props/cat.png"
+    ($bathroom -f 31)    = "bath/toilet.png"
+    ($bathroom -f 6)     = "bath/sink.png"
+    ($bathroom -f 61)    = "bath/stall.png"
+    ($bathroom -f 58)    = "bath/mop.png"
+    ($bathroom -f 59)    = "bath/plunger.png"
+    ($bathroom -f 66)    = "bath/mirror.png"
+    ($bathroom -f 143)   = "bath/bucket.png"
 }
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i
@@ -73,6 +81,20 @@ $exteriors[($garden -f "Bush_1")] = "park/bush.png"
 $exteriors[($garden -f "Bush_5")] = "park/bush_2.png"
 $exteriors[($garden -f "Big_Sunflower")] = "park/sunflower.png"
 $exteriors[($cityProp -f "Tree_2")] = "park/tree_2.png"
+
+# Mercato: bancarelle (tavoli, teli, scatoloni), saracinesche, negozi, carretti
+$garage = "$ext/6_Garage_Sales_Singles_16x16/ME_Singles_Garage_Sales_16x16_{0}.png"
+$shop = "$ext/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_{0}.png"
+foreach ($n in 1..4) {
+    $exteriors[($garage -f "Table_$n")] = "market/table_$n.png"
+    $exteriors[($garage -f "Cloth_$n")] = "market/cloth_$n.png"
+}
+foreach ($k in @("Box_1", "Box_2", "Box_5", "Shutter_1", "Shutter_2", "Sign_1")) { $exteriors[($garage -f $k)] = "market/$($k.ToLower()).png" }
+$exteriors[($shop -f "Market_Small_1")] = "market/shop_1.png"
+$exteriors[($shop -f "Market_Small_5")] = "market/shop_2.png"
+$exteriors[($shop -f "Market_Medium_1")] = "market/shop_big.png"
+$exteriors[($cityProp -f "Candies_Cart_1")] = "market/cart.png"
+$exteriors[($cityProp -f "Kiosk_Icecream")] = "market/kiosk.png"
 
 # Auto per il traffico (viste di lato)
 $vehicle = "$ext/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_{0}.png"

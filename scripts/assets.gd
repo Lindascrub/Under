@@ -38,7 +38,8 @@ static func tex(rel: String, fallback_size := Vector2i(16, 16)) -> Texture2D:
 
 static func font() -> Font:
 	if _font == null:
-		_font = load("res://fonts/PixelifySans.ttf") if ResourceLoader.exists("res://fonts/PixelifySans.ttf") else ThemeDB.fallback_font
+		# pixelify.tres = PixelifySans senza legature (la "fi" del font si disegna come una A)
+		_font = load("res://fonts/pixelify.tres") if ResourceLoader.exists("res://fonts/pixelify.tres") else ThemeDB.fallback_font
 	return _font
 
 

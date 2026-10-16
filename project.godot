@@ -40,7 +40,7 @@ window/handheld/orientation=4
 theme/default_font_antialiasing=0
 theme/default_font_hinting=0
 theme/default_font_subpixel_positioning=0
-theme/custom_font="res://fonts/PixelifySans.ttf"
+theme/custom_font="res://fonts/pixelify.tres"
 
 [input_devices]
 

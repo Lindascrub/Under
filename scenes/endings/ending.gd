@@ -47,7 +47,7 @@ func enter() -> void:
 ## Come in Undertale, il finale ricorda cosa hai fatto in ogni zona.
 func _zone_lines() -> String:
 	var out: Array = []
-	var names := {"ufficio": "In ufficio", "strada": "In strada", "parco": "Al parco"}
+	var names := {"sottoufficio": "Al piano -4", "ufficio": "In ufficio", "strada": "In strada", "mercato": "Al mercato", "parco": "Al parco"}
 	var sums := GameState.zone_summary()
 	for z: String in sums:
 		var c: Dictionary = sums[z]
@@ -58,12 +58,14 @@ func _zone_lines() -> String:
 			parts.append("%d liberi" % c["libero"])
 		if c["ingranaggio"] > 0:
 			parts.append("%d ancora al lavoro" % c["ingranaggio"])
-		out.append("%s: %s." % [names[z], ", ".join(parts)])
+		out.append("%s: %s." % [names.get(z, z.capitalize()), ", ".join(parts)])
 	return "\n".join(out)
 
 
 func _finish(lines: Array) -> void:
 	lines = lines.duplicate()
+	if GameState.flags.get("father_met", false):
+		lines.insert(lines.size() - 1, "Tuo padre, lassù, guarda la stessa città dalla stessa finestra." if not GameState.flags.get("sat_with_president", false) else "Ogni tanto sali a trovare tuo padre. Vi sedete. Non dite niente. Basta.")
 	lines.insert(lines.size() - 1, "LV finale: %d." % GameState.lv())
 	lines.insert(lines.size() - 1, _zone_lines())
 	GameState.delete_save()

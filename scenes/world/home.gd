@@ -92,7 +92,7 @@ func _computer() -> void:
 			GameState.euros(GameState.MIN_PAYMENT), GameState.euros(GameState.LATE_FEE)],
 	]
 	if GameState.day == 1 and not GameState.worked_today:
-		lines.append("* Nuova email da CHEAP S.p.A.: \"Benvenuto! Il tuo primo turno ti aspetta. La nostra torre è in fondo alla strada, a destra.\"")
+		lines.append("* Nuova email da CHEAP S.p.A.: \"Benvenuto! Ogni mattina il collocamento, al piano -4 della torre, ti assegna un lavoro. La torre è in fondo alla strada, a destra.\"")
 	elif GameState.worked_today:
 		lines.append("* Nessuna nuova email. Il lavoro di oggi è fatto: puoi andare a dormire quando vuoi.")
 	else:

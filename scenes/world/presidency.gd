@@ -1,9 +1,11 @@
 extends Room
-## L'ultimo piano: la Presidenza. Il giocatore sale per trovare il responsabile di tutto,
-## e in cima non c'è nessun cattivo: c'è un uomo che ha già tutto e non sa cosa farne,
-## bloccato quanto te. Si apre dal LV 4.
+## La Cima: la Presidenza. Il giocatore sale per trovare il responsabile di tutto,
+## e in cima non c'è nessun cattivo: c'è tuo padre, che ha già tutto e non sa cosa farne,
+## bloccato quanto te. Si apre dal LV 4 oppure dal quarto giorno.
 
 const RB := "tiles/room_builder.png"
+
+var _president: AnimatedSprite2D
 
 
 func build() -> void:
@@ -36,7 +38,8 @@ func build() -> void:
 	])
 	add_prop("props/office_chair.png", Vector2i(9, 4), 0, Vector2i(16, 32))
 
-	var president := AnimatedSprite2D.new()
+	_president = AnimatedSprite2D.new()
+	var president := _president
 	president.sprite_frames = Assets.character("char_19")
 	president.centered = false
 	president.offset = Vector2(-8, -31)
@@ -64,20 +67,28 @@ func enter() -> void:
 
 func _talk() -> void:
 	if GameState.flags.get("president_done", false):
-		await Ui.say(["...Sei ancora qui? Nessuno resta mai, qui sopra.", "Nemmeno io, a dire il vero. Io ci sono solo."], "Il Presidente")
+		await Ui.say(["...Sei ancora qui? Nessuno resta mai, qui sopra.", "Nemmeno io, a dire il vero. Io ci sono solo."], "Papà")
 		return
 	await Ui.say([
 		"Lo so perché sei salito. Tutti salgono per trovare chi comanda.",
-		"Il capo si lamenta di me. Io mi lamento di quelli sopra di me. Poi sono arrivato in cima, e sopra non c'era nessuno.",
-		"Ho comprato tutto. La torre, il quartiere, la banca. Non so cosa farne. Non è mai abbastanza, e non so nemmeno abbastanza per cosa.",
-		"Conoscevo tuo padre, sai? Lavorava per me. Il debito che ti ha lasciato era con la mia banca.",
-		"Cioè con me. Cioè con nessuno. È solo un numero che ho in un cassetto.",
+		"Il capo si lamenta di me. Io mi lamentavo di quelli sopra di me. Poi sono arrivato in cima, e sopra non c'era nessuno.",
 	], "Il Presidente")
+	_president.play("idle_down")
+	Sound.sfx("glitch", 0.5)
+	await Ui.say(["* L'uomo si gira.", "* Lo riconosci prima ancora di vederlo bene."])
+	GameState.flags["father_met"] = true
+	await Ui.say([
+		"Ciao. Sono io.",
+		"Non sono sparito. Sono salito.",
+		"Avevo perso tutto. Per riprendermelo ho fatto quello che la torre voleva: una firma alla volta. Proprio come te.",
+		"Il debito che ti ho lasciato è con la mia banca. Cioè con me. Cioè con nessuno: è solo un numero in un cassetto.",
+		"Ho comprato tutto. Non so cosa farne. Non è mai abbastanza, e non so nemmeno abbastanza per cosa.",
+	], "Papà")
 	var c: int = await Ui.choose("Cosa fai?", [
 		"Chiedigli di cancellare il debito",
 		"Siediti accanto a lui (1 ora)",
 		"Vattene",
-	], "Il Presidente")
+	], "Papà")
 	match c:
 		0:
 			GameState.flags["president_done"] = true
@@ -86,18 +97,18 @@ func _talk() -> void:
 			Sound.sfx("stamp")
 			await Ui.say([
 				"Va bene. Tieni. È solo carta.",
-				"* Il Presidente strappa un foglio. Il tuo debito non esiste più.",
+				"* Tuo padre strappa un foglio. Il tuo debito non esiste più.",
 				"Ecco. Ora sei come me: non devi niente a nessuno. E nessuno è più qui con te.",
-			], "Il Presidente")
+			], "Papà")
 		1:
 			GameState.flags["president_done"] = true
 			GameState.flags["sat_with_president"] = true
 			GameState.spend(60)
 			await Ui.say([
 				"* Ti siedi accanto a lui. Per un'ora guardate la città senza dire niente.",
-				"Nessuno si era mai seduto qui. Venivano tutti a chiedere qualcosa.",
+				"Nessuno si era mai seduto qui. Venivano tutti a chiedere qualcosa. Anche io, da te, ho solo preso.",
 				"Sai cosa mi manca? Il tempo. L'ho venduto tutto, un'ora alla volta, e coi soldi non si ricompra.",
 				"Non fare come me. Ti prego.",
-			], "Il Presidente")
+			], "Papà")
 		_:
-			await Ui.say(["Fai bene. Qui sopra non c'è niente da vedere."], "Il Presidente")
+			await Ui.say(["Fai bene. Qui sopra non c'è niente da vedere. Neanche io."], "Papà")

@@ -1595,5 +1595,287 @@
     "after_help": {
       "room": "none"
     }
+  },
+  "gino": {
+    "name": "Gino",
+    "sheet": "char_02",
+    "schedule": [
+      {
+        "room": "sottoufficio",
+        "cell": [
+          20,
+          7
+        ],
+        "anim": "idle_left"
+      }
+    ],
+    "evening": [
+      {
+        "room": "street",
+        "cell": [
+          45,
+          16
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Nuovo? Benvenuto nei bagni della CHEAP. Io sono Gino. Trent'anni qui sotto.",
+      "Prima lavoravo in banca. Poi la banca ha comprato la mia banca, e mi hanno messo qui.",
+      "Il trucco è fischiettare. Se fischietti, non senti l'odore. Quasi."
+    ],
+    "days": [
+      [
+        "Sai qual è la cosa più triste? Ci sono abituato. Mi manca, quando non vengo."
+      ],
+      [
+        "Il bagno del Presidente lo pulisco io. È d'oro. Il water, dico. D'oro."
+      ],
+      [
+        "Mio figlio dice che dovrei smettere. Ma poi chi sono, se smetto?"
+      ],
+      [
+        "Hai mai visto il cielo da qui sotto? No. Neanche io."
+      ]
+    ],
+    "helped": [
+      "Grazie per avermi dato una mano coi bagni. In due si fischietta meglio."
+    ],
+    "help": {
+      "kind": "time",
+      "ask": "Gino ha ancora tre bagni da pulire e la schiena a pezzi.",
+      "yes": [
+        "Ah, la gioventù! Grazie, ragazzo."
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "I bagni di Gino",
+        "intro": [
+          "* Le macchie sono ovunque.",
+          "* Puliscile tutte con le frecce prima che arrivi il capoturno."
+        ],
+        "count": 12,
+        "time": 15,
+        "color": "#8a6a30",
+        "reward": 10
+      }
+    },
+    "battle": {
+      "hook": "Gino si appoggia al mocio. Sembra che voglia parlare, per una volta.",
+      "intro": "* Gino ti viene incontro con un secchio d'acqua sporca.",
+      "flavor": [
+        "* Gino fischietta una canzone degli anni '70.",
+        "* Odore di candeggina.",
+        "* Gino si massaggia la schiena."
+      ],
+      "talk": [
+        "Trent'anni! Trent'anni di bagni!",
+        "Scusa, non volevo lamentarmi.",
+        "Tu non fare come me, eh."
+      ],
+      "acts": [
+        {
+          "name": "Fischietta con lui",
+          "trust": 1,
+          "lines": [
+            "* Fischiettate insieme. L'eco del bagno vi fa sembrare un'orchestra.",
+            "* Gino ride."
+          ]
+        },
+        {
+          "name": "Chiedigli della banca",
+          "trust": 1,
+          "lines": [
+            "* Gino ti racconta di quando aveva una scrivania e una cravatta.",
+            "* \"Pensavo di essere importante. Ero solo in un piano più alto.\""
+          ]
+        },
+        {
+          "name": "Dagli consigli di carriera",
+          "trust": -1,
+          "lines": [
+            "* Gli consigli di chiedere una promozione.",
+            "* Gino ti guarda come si guarda un bambino."
+          ]
+        }
+      ],
+      "attacks": [
+        "stains",
+        "rain"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Fagli coprire il tuo turno",
+        "pay": 120,
+        "lines": [
+          "* Gli chiedi di fare anche i tuoi bagni. \"Per stavolta\", dici.",
+          "* Gino accetta. Non sa dire di no a nessuno."
+        ]
+      }
+    },
+    "motive": {
+      "kind": "abitudine",
+      "act": "Chiedigli perché resta qui sotto",
+      "lines": [
+        "Perché ci sono abituato. Trent'anni. Se esco, il sole mi fa male agli occhi.",
+        "* Il suo motivo è l'ABITUDINE: ha dimenticato com'è fuori."
+      ],
+      "free_ask": "Digli che su, al parco, c'è un mercato dove nessuno pulisce i bagni degli altri.",
+      "free_lines": [
+        "Il parco... Mio figlio ci giocava. Non ci vado da vent'anni.",
+        "...Va bene. Domani salgo. Mi porto il mocio, non si sa mai."
+      ],
+      "freed_lines": [
+        "Ho visto il cielo. È più grande di come me lo ricordavo.",
+        "Al Rifugio pulisco lo stesso, ma è casa nostra. È diverso."
+      ]
+    },
+    "freed_place": {
+      "room": "park",
+      "cell": [
+        11,
+        17
+      ],
+      "anim": "idle_up"
+    }
+  },
+  "vito": {
+    "name": "Vito",
+    "sheet": "char_03",
+    "schedule": [
+      {
+        "room": "mercato",
+        "cell": [
+          14,
+          11
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "evening": [
+      {
+        "room": "mercato",
+        "cell": [
+          14,
+          11
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Arance! Mele! Disperazione al chilo!",
+      "Scherzo. Sono Vito. Questo banco era di mio nonno. Adesso è della CHEAP: io sono in affitto, dentro il mio banco."
+    ],
+    "days": [
+      [
+        "Il prezzo delle mele lo decide un computer. Io le mele le conosco una per una."
+      ],
+      [
+        "Ieri un signore mi ha pagato in bottoni. Gli ho dato le mele lo stesso."
+      ],
+      [
+        "Se chiudono il mercato, dove va la gente? Al supermercato della CHEAP, ovvio."
+      ]
+    ],
+    "helped": [
+      "Grazie per avermi aiutato col banco. Tieni, una mela. Una vera."
+    ],
+    "help": {
+      "kind": "time",
+      "ask": "Vito deve sistemare tutta la frutta prima dell'apertura.",
+      "yes": [
+        "Che bella squadra! Sembriamo una famiglia. Una famiglia di frutta."
+      ],
+      "minigame": {
+        "type": "collect",
+        "title": "La frutta di Vito",
+        "intro": [
+          "* Le arance sono rotolate dappertutto.",
+          "* Raccoglile con le frecce prima che le pestino."
+        ],
+        "count": 10,
+        "time": 14,
+        "color": "#ff9a2a",
+        "reward": 10
+      }
+    },
+    "battle": {
+      "hook": "Vito guarda la cassa vuota. Ha voglia di sfogarsi.",
+      "intro": "* Vito ti lancia addosso arance e conti da pagare.",
+      "flavor": [
+        "* Vito lucida una mela che nessuno comprerà.",
+        "* Un piccione ruba un'uva.",
+        "* Vito conta le monete. Poi le riconta."
+      ],
+      "talk": [
+        "Il nonno vendeva a credito! Ora il credito mi vende!",
+        "Arance! Mele! Debiti!",
+        "Scusa, sono un po' agitato."
+      ],
+      "acts": [
+        {
+          "name": "Compra una mela",
+          "trust": 1,
+          "lines": [
+            "* Compri una mela. È la migliore che hai mai mangiato.",
+            "* Vito si commuove."
+          ]
+        },
+        {
+          "name": "Chiedi del nonno",
+          "trust": 1,
+          "lines": [
+            "* Vito ti parla di suo nonno, che regalava le pere ai bambini.",
+            "* \"Era povero. Ma la gente lo salutava.\""
+          ]
+        },
+        {
+          "name": "Tratta sul prezzo",
+          "trust": -1,
+          "lines": [
+            "* Gli chiedi lo sconto.",
+            "* Vito sospira. \"Anche tu?\""
+          ]
+        }
+      ],
+      "attacks": [
+        "coffee",
+        "crumbs"
+      ],
+      "trust_goal": 2,
+      "exploit": {
+        "name": "Compragli il banco per la CHEAP",
+        "pay": 180,
+        "lines": [
+          "* Gli offri di comprare il banco per conto della CHEAP. Pochi soldi, subito.",
+          "* Vito accetta. Il nonno, da qualche parte, si gira."
+        ]
+      }
+    },
+    "motive": {
+      "kind": "orgoglio",
+      "act": "Chiedigli perché non chiude",
+      "lines": [
+        "Perché è il banco di mio nonno. Se chiudo, ha perso lui.",
+        "* Il suo motivo è l'ORGOGLIO: chiudere vorrebbe dire tradire la famiglia."
+      ],
+      "free_ask": "Digli che il nonno vendeva a credito alla gente, non alla CHEAP: il banco può tornare del quartiere.",
+      "free_lines": [
+        "Del quartiere... Come ai tempi del nonno.",
+        "Va bene. Da domani niente cassa: si scambia. Una mela per una riparazione."
+      ],
+      "freed_lines": [
+        "Ho tolto la cassa. Ora la gente mi porta pane, bottoni, storie.",
+        "Il nonno sarebbe fiero. E pure un po' confuso."
+      ]
+    },
+    "freed_place": {
+      "room": "mercato",
+      "cell": [
+        14,
+        11
+      ],
+      "anim": "idle_down"
+    }
   }
 }

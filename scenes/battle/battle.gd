@@ -319,7 +319,7 @@ func _help() -> void:
 # --- lavoro facile ----------------------------------------------------------
 
 func _sign() -> void:
-	var pay := GameState.do_easy_job()
+	var pay := GameState.do_promotion(str(cfg.get("id", ""))) if cfg.get("promotion", false) else GameState.do_easy_job()
 	Sound.sfx("stamp")
 	phase = "anim"
 	_text.text = ""

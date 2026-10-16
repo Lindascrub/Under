@@ -31,7 +31,10 @@ var _portrait: TextureRect
 var _portrait_tex: AtlasTexture
 var _talk_t := 0.0
 ## Ritratti extra per chi non è in npcs.json.
-const EXTRA_PORTRAITS := {"Dottor Prezzi": "char_18"}
+const EXTRA_PORTRAITS := {
+	"Dottor Prezzi": "char_18", "Il Presidente": "char_19", "Papà": "char_19",
+	"Signora Agenda": "char_20", "Il capo": "char_18", "Signor Tasso": "char_04", "Fermo": "char_14",
+}
 
 var _mode := ""
 var _label: Label
@@ -168,8 +171,8 @@ func _build() -> void:
 
 
 func _refresh_hud() -> void:
-	_hud.text = "%s %s   LV %d   Giorno %d/%d   Debito %s   Soldi %s   Energia %d/%d" % [
-		GameState.day_name(), GameState.clock(), GameState.lv(), mini(GameState.day, GameState.LAST_DAY), GameState.LAST_DAY,
+	_hud.text = "%s   %s   LV %d   Debito %s   Soldi %s   Energia %d/%d" % [
+		GameState.floor_name(), GameState.clock(), GameState.lv(),
 		GameState.euros(GameState.debt), GameState.euros(GameState.money),
 		GameState.energy, GameState.MAX_ENERGY,
 	]
@@ -250,8 +253,8 @@ func show_status() -> void:
 	for item in GameState.items:
 		options.append(item)
 	options.append("Chiudi")
-	var prompt := "{rank}. {day_name} {clock}: mancano %d ore a mezzanotte. Energia %d/%d." % [
-		int(hours), GameState.energy, GameState.MAX_ENERGY]
+	var prompt := "{rank}. {floor}, ore {clock}. Badge: %d. Energia %d/%d." % [
+		GameState.badges.size(), GameState.energy, GameState.MAX_ENERGY]
 	var missions := Quests.active_titles()
 	if not missions.is_empty():
 		prompt += "

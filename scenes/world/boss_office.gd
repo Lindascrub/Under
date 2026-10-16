@@ -144,7 +144,7 @@ func _pick_victim() -> String:
 
 
 func _stairs() -> void:
-	if GameState.lv() < 4:
-		await Ui.say(["* Una scala stretta che sale verso la Presidenza.", "* Una catenella e un cartello: \"Solo LV 4 e superiori\"."])
+	if GameState.lv() < 4 and not GameState.has_badge("cima"):
+		await Ui.say(["* Una scala stretta che sale verso la Presidenza.", "* Una catenella e un cartello: \"Solo LV 4 e superiori. Oppure su invito\"."])
 		return
 	Router.goto(Router.PRESIDENCY, "stairs")

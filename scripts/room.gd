@@ -17,9 +17,13 @@ var spawns: Dictionary = {}
 var spawn_facing: Dictionary = {}
 ## Quanto la camera può salire sopra la mappa (per mostrare edifici alti).
 var camera_top := 0
+## Sposta la visuale verso l'alto (per vedere gli edifici sullo sfondo).
+var camera_lift := 0
 ## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
 var music := "quartiere"
 var outdoor := false
+## Il piano della torre in cui si trova la stanza ("" per le stanze fuori dalla torre).
+var floor_id := ""
 var player: Player
 ## Contenitore con y-sort: oggetti e persone si coprono nel giusto ordine.
 var world: Node2D
@@ -47,6 +51,8 @@ func _ready() -> void:
 	world.y_sort_enabled = true
 	add_child(world)
 	build()
+	if floor_id != "":
+		GameState.enter_floor(floor_id)
 	_spawn_player()
 	Ui.show_hud(true)
 	Sound.music(music)
@@ -99,11 +105,80 @@ func enter() -> void:
 
 
 func show_pending() -> void:
-	if GameState.pending_lines.is_empty():
+	if not GameState.pending_lines.is_empty():
+		var lines := GameState.pending_lines.duplicate()
+		GameState.pending_lines.clear()
+		await Ui.say(lines)
+	if GameState.boss_call_pending():
+		await _boss_call()
+
+
+## Il posto di lavoro del lavoro assegnato oggi, se si trova in questa stanza.
+func add_station(room_key: String) -> void:
+	for j: Dictionary in GameState.jobs_available():
+		if j.get("room", "") != room_key:
+			continue
+		var cell := Vector2i(int(j["station"][0]), int(j["station"][1]))
+		if not GameState.worked_today:
+			# un segnale che lampeggia sopra il posto di lavoro
+			var mark := Label.new()
+			mark.text = "!"
+			mark.add_theme_font_size_override("font_size", 12)
+			mark.add_theme_color_override("font_color", Color("ffe14d"))
+			mark.add_theme_constant_override("outline_size", 3)
+			mark.add_theme_color_override("font_outline_color", Color.BLACK)
+			mark.position = cell_center(cell) + Vector2(-3, -26)
+			mark.z_index = 30
+			add_child(mark)
+			var tw := mark.create_tween().set_loops()
+			tw.tween_property(mark, "position:y", mark.position.y - 3, 0.4)
+			tw.tween_property(mark, "position:y", mark.position.y, 0.4)
+		var jj := j
+		add_spot(cell_center(cell), func() -> void: _station(jj))
+
+
+func _station(j: Dictionary) -> void:
+	if GameState.worked_today:
+		await Ui.say(["* " + str(j.get("station_text", "Un posto di lavoro.")),
+			"* (Per oggi hai già dato. Il prossimo turno è dopo la notte: se vuoi farla passare, cerca una stellina.)"])
 		return
-	var lines := GameState.pending_lines.duplicate()
-	GameState.pending_lines.clear()
-	await Ui.say(lines)
+	var c: int = await Ui.choose(str(j.get("station_text", "")) + "\nIniziare il turno? (10 ore)", ["Inizia", "Non ancora"])
+	if c != 0:
+		return
+	var cfg: Dictionary = (j.get("battle", {}) as Dictionary).duplicate(true)
+	cfg["kind"] = "work"
+	cfg["return"] = scene_file_path
+	cfg["return_pos"] = player.global_position
+	Router.battle(cfg)
+
+
+## Il capo telefona dopo il turno: una promozione, cioè sfruttare qualcuno che conosci.
+func _boss_call() -> void:
+	GameState.flags["boss_call_done_%d" % GameState.day] = true
+	var victim := GameState.promotion_victim()
+	var promo := GameState.promotion(victim)
+	if victim == "" or promo.is_empty():
+		return
+	Sound.sfx("alarm", 0.7)
+	await Ui.say(["* Il telefono vibra. È il capo."])
+	await Ui.say(promo.get("desc", []), "Il capo")
+	var c: int = await Ui.choose("Una firma, e sei promosso. (+%s)" % GameState.euros(GameState.easy_pay()),
+		["Firma", "Rifiuta"], "Il capo")
+	if c != 0:
+		GameState.flags["promotions_refused"] = int(GameState.flags.get("promotions_refused", 0)) + 1
+		await Ui.say(["Peccato. Ci sono altri cento come lei, sa? Ci pensi."], "Il capo")
+		return
+	var data := GameState.npc_data(victim)
+	Router.battle({
+		"kind": "sign",
+		"promotion": true,
+		"id": victim,
+		"name": str(data.get("name", "Qualcuno")),
+		"sheet": str(data.get("sheet", "char_02")),
+		"intro": "* " + str(promo.get("title", "Una pratica")) + ".\n* Qualunque cosa tu scelga, la risposta è sempre la stessa.",
+		"return": scene_file_path,
+		"return_pos": player.global_position,
+	})
 
 
 # --- mappa ------------------------------------------------------------------
@@ -352,6 +427,31 @@ func add_region(rel: String, sheet_size: Vector2i, region: Rect2, bottom_left: V
 	return s
 
 
+## Un cartello su due pali piantati a terra: `foot` è il punto a terra sotto il centro del cartello,
+## `post` l'altezza dei pali. Va nel mondo ordinato per y, così ci si passa dietro.
+func add_signpost(path: String, foot: Vector2, post := 14) -> void:
+	if not ResourceLoader.exists(path):
+		return
+	var tex: Texture2D = load(path)
+	var holder := Node2D.new()
+	holder.position = foot
+	for k in 2:
+		var pole := ColorRect.new()
+		pole.color = Color("5a3e2b")
+		pole.size = Vector2(2, post + 2)
+		pole.position = Vector2(-tex.get_width() / 2.0 + 4 + k * (tex.get_width() - 10), -post - 2)
+		holder.add_child(pole)
+	var s := Sprite2D.new()
+	s.texture = tex
+	s.centered = false
+	s.position = Vector2(-tex.get_width() / 2.0, -post - tex.get_height())
+	holder.add_child(s)
+	world.add_child(holder)
+	var x0 := int(foot.x - tex.get_width() / 2.0 + 4) / T
+	var x1 := int(foot.x + tex.get_width() / 2.0 - 5) / T
+	block(Rect2i(x0, int(foot.y - 1) / T, x1 - x0 + 1, 1))
+
+
 ## Casella libera più vicina a quella voluta: niente muri e nessun'altra persona attaccata.
 ## Chi è seduto resta sulla sua panchina.
 func free_cell(cell: Vector2i, keep := false) -> Vector2i:
@@ -390,6 +490,115 @@ func add_npc(id: String, cell: Vector2i, activity := "idle_down") -> Npc:
 	n.position = cell_feet(cell)
 	world.add_child(n)
 	return n
+
+
+## Uno sprite dalla cartella art/ (grafica fatta per Cheap), con l'angolo in basso a sinistra sulla cella.
+func add_art(path: String, bottom_left: Vector2i, solid_rows := 0, nudge := Vector2.ZERO) -> Sprite2D:
+	var s := Sprite2D.new()
+	s.texture = load(path)
+	s.centered = false
+	s.offset = Vector2(0, -s.texture.get_height())
+	s.position = Vector2(bottom_left.x * T, (bottom_left.y + 1) * T) + nudge
+	world.add_child(s)
+	if solid_rows > 0:
+		var r := _solid_rect(s.texture, solid_rows)
+		if r.size.x > 0:
+			block_px(Rect2(s.position + r.position, r.size))
+			_blocked_cells[bottom_left] = true
+	return s
+
+
+## Scale che salgono al piano di sopra, dentro al muro, con il tornello accanto: si passa
+## solo con il badge di quel piano. `bottom_left` è il primo gradino (sul pavimento).
+func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
+	add_art("res://art/stairs_up.png", bottom_left)
+	var turn := add_art("res://art/turnstile.png", bottom_left + Vector2i(-1, 0), 1)
+	if GameState.has_badge(need):
+		turn.modulate = Color(0.85, 1.0, 0.85)
+	examine(cell_center(bottom_left + Vector2i(-1, 0)), [
+		"* Il tornello. Sopra il lettore c'è scritto: \"%s. Solo con badge\"." % GameState.floor_name(need),
+	])
+	var a := Area2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(2 * T - 6, 8)
+	var col := CollisionShape2D.new()
+	col.shape = shape
+	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 4)
+	a.add_child(col)
+	add_child(a)
+	a.body_entered.connect(func(b: Node2D) -> void:
+		if not (b is Player) or Ui.blocks_input():
+			return
+		if GameState.has_badge(need):
+			var key := "stairs_" + need
+			var lines: Array = []
+			if not GameState.flags.get(key, false):
+				GameState.flags[key] = true
+				lines = ["Sali le scale. Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
+			Router.goto(path, spawn_name, lines)
+			return
+		Sound.sfx("deny")
+		b.position.y += 10
+		await Ui.say(["* Il tornello lampeggia rosso. \"Badge del %s richiesto.\"" % GameState.floor_name(need),
+			"* (Il badge si compra al distributore: %s, a scalare dal debito.)" % GameState.euros(GameState.badge_cost(need))])
+	)
+
+
+## Scale che scendono al piano di sotto (una botola nel pavimento, 2x2 caselle).
+func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) -> void:
+	add_art("res://art/stairs_down.png", bottom_left)
+	var a := Area2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(2 * T - 8, T)
+	var col := CollisionShape2D.new()
+	col.shape = shape
+	col.position = Vector2(bottom_left.x * T + T, bottom_left.y * T + 4)
+	a.add_child(col)
+	add_child(a)
+	a.body_entered.connect(func(b: Node2D) -> void:
+		if b is Player and not Ui.blocks_input():
+			Router.goto(path, spawn_name)
+	)
+
+
+## Il distributore dei badge: paghi una parte del debito e ricevi il badge del piano di sopra.
+func add_badge_machine(bottom_left: Vector2i) -> void:
+	var m := add_prop("props/terminal.png", bottom_left)
+	m.modulate = Color(0.85, 1.0, 0.9)
+	if ResourceLoader.exists("res://art/plate_badge.png"):
+		var plate := Sprite2D.new()
+		plate.texture = load("res://art/plate_badge.png")
+		plate.position = Vector2(bottom_left.x * T + T / 2.0, (bottom_left.y + 1) * T - 32 - 6)
+		plate.z_index = 1
+		add_child(plate)
+	add_spot(cell_center(bottom_left), _badge_machine)
+
+
+func _badge_machine() -> void:
+	var need := GameState.floor_above()
+	if need == "":
+		await Ui.say(["* Il distributore è spento. Più su di così non si va."])
+		return
+	var cost := GameState.badge_cost(need)
+	if GameState.has_badge(need):
+		await Ui.say(["* \"Hai già il badge del %s. Il distributore ti augura una buona salita.\"" % GameState.floor_name(need)])
+		return
+	await Ui.say(["* Il distributore di badge. Sullo schermo: \"BADGE %s: %s.\"" % [GameState.floor_name(need).to_upper(), GameState.euros(cost)],
+		"* Più in piccolo: \"L'importo verrà scalato dal suo debito. Grazie per la fiducia.\""])
+	var c: int = await Ui.choose("Comprare il badge? Hai %s." % GameState.euros(GameState.money), ["Compra (%s)" % GameState.euros(cost), "Non ora"])
+	if c != 0:
+		return
+	if not GameState.buy_badge(need):
+		Sound.sfx("deny")
+		await Ui.say(["* Non hai abbastanza soldi. Il distributore fa un rumore che somiglia a una risata."])
+		return
+	Sound.sfx("coin")
+	Sound.sfx("stamp")
+	await Ui.say(["* Il badge esce caldo, come un biglietto della lotteria che hai già perso.",
+		"* Debito: {debt}. Il tornello adesso ha la lucina verde."])
+	for n in world.get_children():
+		if n is Sprite2D and (n as Sprite2D).texture and (n as Sprite2D).texture.resource_path.ends_with("turnstile.png"):
+			n.modulate = Color(0.85, 1.0, 0.85)
 
 
 func add_spot(pos: Vector2, action: Callable) -> Interactable:
@@ -437,3 +646,4 @@ func _spawn_player() -> void:
 	cam.limit_right = w + pad_x
 	cam.limit_top = -camera_top - pad_y
 	cam.limit_bottom = h + pad_y
+	cam.offset.y = -camera_lift

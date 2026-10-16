@@ -254,21 +254,26 @@ func _run() -> void:
 	_check(GameState.is_robot("marta"), "sfruttare Marta dovrebbe renderla un robot")
 	_check(GameState.exploited == 1, "lo sfruttamento non è stato contato")
 
-	# --- ufficio: turno duro (battaglia di lavoro)
+	# --- il Sottoufficio (-4): un turno ai bagni, poi la telefonata del capo (rifiutata)
 	GameState.minutes = GameState.DAY_START
-	var office := await _go(Router.OFFICE, "street")
-	choose_queue = [1, 0]
+	GameState.worked_today = false
+	var sotto: Room = await _go(Router.SOTTOUFFICIO, "from_below")
+	choose_queue = [0, 1]
 	plan = []
 	fallback = [0, 0]
-	office.call("_terminal")
+	sotto.call("_station", GameState.job("bagni"))
 	await _wait_scene(Router.BATTLE)
-	await _wait_scene(Router.OFFICE)
+	await _wait_scene(Router.SOTTOUFFICIO)
 	await _idle()
-	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno duro non è stato pagato")
+	await _idle()
+	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno ai bagni non è stato pagato")
+	_check(GameState.flags.get("boss_call_done_%d" % GameState.day, false), "dopo il turno il capo dovrebbe telefonare")
+	_check(GameState.flags.get("promotions_refused", 0) == 1, "rifiutare la promozione dovrebbe essere ricordato")
 
-	# --- ascensore per l'ufficio del Capo (serve il grado di Supervisore)
-	GameState.rank = 2
-	office = await _go(Router.OFFICE, "street")
+	# --- ascensore per la Direzione (serve il badge della Cima)
+	GameState.badges.append("cima")
+	var office := await _go(Router.OFFICE, "street")
+	choose_queue = [0]
 	office.call("_ride_elevator")
 	await _wait_scene(Router.BOSS)
 	await _idle()
@@ -277,17 +282,19 @@ func _run() -> void:
 	get_tree().current_scene.call("_talk")
 	await _idle()
 	_check(GameState.exploited == ex_before + 1, "l'incarico extra del Capo dovrebbe contare come promozione")
-	GameState.rank = 1
+	GameState.badges.clear()
 
-	# --- ufficio: firma (lavoro facile) il giorno dopo
+	# --- la telefonata del capo il giorno dopo: firmare la promozione
 	GameState.end_day(true)
-	choose_queue = [0, 0]
-	office = await _go(Router.OFFICE, "street")
-	office.call("_terminal")
+	GameState.flags["met_marta"] = true
+	var victim := GameState.promotion_victim()
+	GameState.flags["boss_call_day"] = GameState.day
+	choose_queue = [0]
+	await _go(Router.STREET, "home")
 	await _wait_scene(Router.BATTLE)
-	await _wait_scene(Router.OFFICE)
+	await _wait_scene(Router.STREET)
 	await _idle()
-	_check(GameState.is_robot("sig_bruno"), "la firma del giorno 2 dovrebbe colpire il signor Bruno")
+	_check(victim != "" and GameState.is_robot(victim), "firmare la promozione dovrebbe colpire qualcuno che conosci (" + victim + ")")
 
 	# --- tutti gli attacchi, giocati per intero
 	immortal = true
@@ -314,18 +321,16 @@ func _run() -> void:
 	fast_dodge = true
 	fallback = [3, 1]
 
-	# --- mezzanotte: si torna a casa e si dorme per forza
+	# --- i giorni non sono contati: a mezzanotte comincia un altro giorno, e il debito cresce
 	await _idle()
 	var day_before := GameState.day
+	var debt_night := GameState.debt
 	GameState.minutes = GameState.MIDNIGHT - 5
-	Router.goto(Router.STREET, "home")
-	var guard_m := 0
-	while (GameState.day == day_before or Ui.transitioning or Ui.cutscene or _scene_path() != Router.HOME) and guard_m < 30000:
-		await get_tree().process_frame
-		guard_m += 1
-	await _idle()
-	_check(GameState.day == day_before + 1, "a mezzanotte dovrebbe finire la giornata")
-	_check(GameState.minutes == GameState.DAY_START, "il nuovo giorno dovrebbe iniziare alle 7:00")
+	GameState.spend(10)
+	_check(GameState.day == day_before + 1, "a mezzanotte dovrebbe cominciare un altro giorno")
+	_check(GameState.minutes == GameState.DAY_START + 5, "il nuovo giorno dovrebbe ripartire dalle 7:00")
+	_check(GameState.debt > debt_night, "ogni notte il debito dovrebbe crescere")
+	GameState.pending_lines.clear()
 
 	# --- missioni: trovare il gatto di Elsa e portare il pacco di Sami
 	GameState.quests.clear()
@@ -436,13 +441,106 @@ func _run() -> void:
 							if absf(dd.x) < 14 and absf(dd.y) < 24:
 								_fail("%s e %s sovrapposti in %s (giorno %d, ore %d, %s)" % [ps[i].get("id"), ps[j].get("id"), room.get_file(), day, minutes / 60, state])
 
+	# --- una nuova partita: l'ascensore scende e si rompe al piano -5
+	GameState.new_game()
+	choose_queue = []
+	choose_index = 0
+	Router.goto(Router.ELEVATOR)
+	await _wait_scene(Router.FONDO, 40000)
+	await _idle()
+	var fondo: Room = get_tree().current_scene
+	_check(GameState.floor_id == "-5", "la partita dovrebbe cominciare al piano -5")
+	# il buio non lascia andare da nessuna parte finché non parli con Fermo
+	fondo.player.position = fondo.cell_feet(Vector2i(11, 4))
+	await get_tree().physics_frame
+	_check(fondo.player.test_move(fondo.player.global_transform, Vector2(-64, 0)), "prima di parlare con Fermo il buio dovrebbe bloccare")
+	await get_tree().create_timer(1.5).timeout
+	await _idle()
+	choose_queue = [0, 0]
+	fondo.call("_talk_fermo")
+	var gf := 0
+	while not GameState.flags.get("fermo_talked", false) and gf < 30000:
+		await get_tree().process_frame
+		gf += 1
+	await get_tree().create_timer(2.5).timeout
+	await _idle()
+	await get_tree().physics_frame
+	_check(GameState.flags.get("fermo_talked", false), "si dovrebbe poter parlare con Fermo")
+	_check(not fondo.player.test_move(fondo.player.global_transform, Vector2(-64, 0)), "dopo Fermo il buio non dovrebbe più bloccare")
+	# il lavoro: la cyclette
+	choose_queue = [0, 1]
+	plan = []
+	fallback = [0, 0]
+	fondo.call("_station", GameState.job("dinamo"))
+	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.FONDO)
+	await _idle()
+	await _idle()
+	_check(GameState.worked_today and GameState.money >= GameState.badge_cost("-4"), "pedalare alla dinamo dovrebbe pagare il badge del -4")
+	fondo = get_tree().current_scene
+	# il distributore: senza soldi niente badge, con i soldi sì (e il debito scende)
+	var cash := GameState.money
+	GameState.money = 0
+	choose_queue = [0]
+	fondo.call("_badge_machine")
+	await _idle()
+	_check(not GameState.has_badge("-4"), "senza soldi il distributore non dovrebbe dare il badge")
+	GameState.money = cash
+	choose_queue = [0]
+	fondo.call("_badge_machine")
+	await _idle()
+	_check(GameState.has_badge("-4") and GameState.debt == GameState.START_DEBT - GameState.badge_cost("-4"), "il badge dovrebbe scalare dal debito")
+	# le scale: con il badge si sale al -4
+	fondo.player.position = fondo.cell_feet(Vector2i(21, 3))
+	await _wait_scene(Router.SOTTOUFFICIO)
+	await _idle()
+	_check(GameState.floor_id == "-4", "con il badge le scale dovrebbero portare al piano -4")
+	# senza il badge del -3 il tornello respinge
+	var s4: Room = get_tree().current_scene
+	s4.player.position = s4.cell_feet(Vector2i(2, 3))
+	for i in 10:
+		await get_tree().physics_frame
+	await _idle()
+	_check(_scene_path() == Router.SOTTOUFFICIO, "senza badge il tornello non dovrebbe far passare")
+
+	# --- mercato e banca: i piani -3 e -2, con tre aspetti diversi
+	for look in ["comunismo", "capitalismo", "baratto"]:
+		GameState.new_game()
+		GameState.flags["fermo_talked"] = true
+		GameState.badges.assign(["-4", "-3", "-2"])
+		if look == "capitalismo":
+			GameState.exploited = 1
+		elif look == "baratto":
+			GameState.freed.assign(["marta"])
+		_check(GameState.world_look() == look, "l'aspetto del mondo dovrebbe essere " + look)
+		await _go(Router.MERCATO, "from_below")
+		_check(_scene_path() == Router.MERCATO and GameState.floor_id == "-3", "il mercato dovrebbe aprirsi (" + look + ")")
+		get_tree().current_scene.call("_bank_door")
+		await _wait_scene(Router.BANCA)
+		await _idle()
+		_check(GameState.floor_id == "-2", "la porta della banca dovrebbe portare al piano -2 (" + look + ")")
+	GameState.money = 500
+	var debt_before := GameState.debt
+	choose_queue = [0]
+	get_tree().current_scene.call("_teller")
+	await _idle()
+	_check(GameState.debt < debt_before, "pagare allo sportello della banca dovrebbe ridurre il debito")
+
+	# --- in cima c'è tuo padre
+	GameState.day = 4
+	var pres: Room = await _go(Router.PRESIDENCY, "stairs")
+	choose_queue = [1]
+	pres.call("_talk")
+	await _idle()
+	_check(GameState.flags.get("father_met", false) and GameState.flags.get("sat_with_president", false), "in cima dovresti incontrare tuo padre")
+
 	# --- i finali: capitalismo, comunismo e le tre varianti del baratto
 	var cases := [
 		["capitalismo", 3, [], ""],
 		["comunismo", 0, [], ""],
 		["baratto", 0, ["marta"], "pochi"],
-		["baratto", 0, ["marta", "lea", "dario"], "soglia"],
-		["baratto", 0, ["marta", "lea", "dario", "giulia", "ragazzo_sami"], "quasi_tutti"],
+		["baratto", 0, GameState.workers().slice(0, ceili(GameState.workers().size() * 0.6)), "soglia"],
+		["baratto", 0, GameState.workers().slice(0, ceili(GameState.workers().size() * 0.9)), "quasi_tutti"],
 	]
 	for c: Array in cases:
 		GameState.new_game()
