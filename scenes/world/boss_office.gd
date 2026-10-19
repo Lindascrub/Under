@@ -119,20 +119,16 @@ Ma il Presidente dice che sto andando benissimo.",
 		await Ui.say(["Non c'è più nessuno da promuovere. Che splendida efficienza."], "Dottor Prezzi")
 		return
 	var who := str(GameState.npc_data(victim).get("name", victim))
-	var pay := GameState.easy_pay() / 2
-	var c: int = await Ui.choose("Ho qui una pratica a nome di %s. Basta una sua firma. (+%s)" % [who, GameState.euros(pay)],
-		["Firma", "Non oggi"], "Dottor Prezzi")
+	var c: int = await Ui.choose("%s ha un'idea che vale oro e non lo sa. Se la presenta lei, il merito è suo. (+%s)" % [who, GameState.euros(GameState.easy_pay())],
+		["Accetta", "Non oggi"], "Dottor Prezzi")
 	if c != 0:
 		await Ui.say(["Peccato. L'esitazione è un lusso per chi non ha debiti."], "Dottor Prezzi")
 		return
 	GameState.flags["boss_job_day"] = GameState.day
-	GameState.exploit(victim, pay)
-	Sound.sfx("stamp")
-	await Ui.say([
-		"* Firmi. Il Dottor Prezzi sorride. Ha un sorriso troppo regolare.",
-		"* +%s. Ora sei {rank}." % GameState.euros(pay),
-		GameState.level_up_line(),
-	])
+	var promo := GameState.promotion(victim)
+	if promo.is_empty():
+		promo = {"title": "L'idea di " + who, "item": "il quaderno di " + who}
+	start_steal(victim, promo)
 
 
 func _pick_victim() -> String:

@@ -142,6 +142,7 @@ func show_pending() -> void:
 		await _boss_call()
 	if floor_id != "" and GameState.pity_pending():
 		await _pity_offer()
+	await _floor_gift()
 
 
 ## Il posto di lavoro del lavoro assegnato oggi, se si trova in questa stanza.
@@ -281,7 +282,49 @@ func _pity_offer() -> void:
 	tw2.tween_callback(rata.queue_free)
 
 
-## Il capo telefona dopo il turno: una promozione, cioè sfruttare qualcuno che conosci.
+## La promozione è un furto: copiare il lavoro di `victim` quando non guarda (minigioco "steal").
+func start_steal(victim: String, promo: Dictionary) -> void:
+	var data := GameState.npc_data(victim)
+	var who := str(data.get("name", "il collega"))
+	GameState.minigame = {
+		"kind": "steal", "game": "steal", "name": str(promo.get("title", "Il merito degli altri")),
+		"victim": victim, "victim_name": who, "victim_sheet": str(data.get("sheet", "char_02")),
+		"item": str(promo.get("item", "il lavoro di " + who)),
+		"intro": ["* %s è alla sua scrivania. Davanti a lui, %s." % [who, str(promo.get("item", "il suo lavoro"))],
+			"* Nessuno ti ha visto entrare. Per ora."],
+		"return": scene_file_path, "return_pos": player.global_position,
+	}
+	Router.goto(Router.WORK)
+
+
+## Se hai aiutato tutti quelli del piano, l'addetta ai badge te lo regala (e il tornello si apre).
+func _floor_gift() -> void:
+	if floor_id == "" or not GameState.floor_all_helped(floor_id):
+		return
+	var need := GameState.floor_above(floor_id)
+	if need == "" or GameState.has_badge(need) or GameState.flags.get("gift_" + floor_id, false):
+		return
+	GameState.flags["gift_" + floor_id] = true
+	var who := "Addetta ai badge"
+	var first_friend: bool = not GameState.flags.get("clerk_friend", false)
+	GameState.flags["clerk_friend"] = true
+	GameState.badges.append(need)
+	GameState.self_esteem += 3
+	GameState.changed.emit()
+	Sound.sfx("spare")
+	if first_friend:
+		await Ui.say(["* L'addetta ai badge esce da dietro la scrivania. Non l'avevi mai vista in piedi.",
+			"Ho sentito. Hai dato una mano a tutti, qui. A tutti.",
+			"Sai quante persone l'hanno fatto, in vent'anni? Nessuna. Io, per esempio, no.",
+			"Questo badge te lo regalo io. E il tornello te lo apro io. Siamo amici, adesso. Io mi chiamo Nives, a proposito. Nessuno me l'aveva mai chiesto."], who, BADGE_CLERK)
+	else:
+		await Ui.say(["{name}! L'ho saputo: anche qui hai aiutato tutti.",
+			"Siamo tutte uguali, noi addette. Ma io mi ricordo di te. Tieni: offre Nives."], who, BADGE_CLERK)
+	open_turnstiles()
+	await Ui.say(["* Hai ricevuto il badge del %s. La tua autostima sale: %d." % [GameState.floor_name(need), GameState.self_esteem]])
+
+
+## Il capo telefona dopo il turno: una promozione, cioè prendersi il merito di qualcuno che conosci.
 func _boss_call() -> void:
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
 	var victim := GameState.promotion_victim()
@@ -291,15 +334,16 @@ func _boss_call() -> void:
 	Sound.sfx("alarm", 0.7)
 	await Ui.say(["* Il telefono vibra. È il capo."])
 	await Ui.say(promo.get("desc", []), "Il capo")
-	var c: int = await Ui.choose("Una firma, e sei promosso. (+%s)" % GameState.euros(GameState.easy_pay()),
-		["Firma", "Rifiuta"], "Il capo")
+	var c: int = await Ui.choose("Prenditi il merito, e sei promosso. (+%s)" % GameState.euros(GameState.easy_pay()),
+		["Accetta", "Rifiuta"], "Il capo")
 	if c != 0:
 		GameState.flags["promotions_refused"] = int(GameState.flags.get("promotions_refused", 0)) + 1
 		await Ui.say(["Peccato. Ci sono altri cento come lei, sa? Ci pensi."], "Il capo")
 		return
 	var data := GameState.npc_data(victim)
-	var victim_name := str(data.get("name", "qualcuno"))
-	await Ui.say(["Le mando la pratica. Riguarda %s: lo conosce, vero? Meglio, così firma con più convinzione." % victim_name], "Il capo")
+	start_steal(victim, promo)
+	return
+	@warning_ignore("unreachable_code")
 	Router.battle({
 		"kind": "sign",
 		"promotion": true,
@@ -860,7 +904,9 @@ func _badge_machine() -> void:
 	if GameState.has_badge(need):
 		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
 		return
-	if not GameState.flags.get("badge_clerk_intro", false):
+	if GameState.flags.get("clerk_friend", false):
+		await Ui.say(["Ciao, {name}! Sono io, Nives. Cioè: una Nives. Ma quella che ti conosce."], who, BADGE_CLERK)
+	elif not GameState.flags.get("badge_clerk_intro", false):
 		GameState.flags["badge_clerk_intro"] = true
 		await Ui.say(["Sportello badge. Senza badge il tornello non ti fa salire le scale.",
 			"Sì, ci sono io su ogni piano. Siamo una per piano. Siamo tutte uguali. Non chiedere."], who, BADGE_CLERK)

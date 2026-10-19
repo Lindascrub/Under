@@ -289,6 +289,8 @@ func _run() -> void:
 	var ex_before := GameState.exploited
 	choose_queue = [0]
 	get_tree().current_scene.call("_talk")
+	await _wait_scene(Router.WORK)
+	await _wait_scene(Router.BOSS)
 	await _idle()
 	_check(GameState.exploited == ex_before + 1, "l'incarico extra del Capo dovrebbe contare come promozione")
 	GameState.badges.clear()
@@ -300,7 +302,7 @@ func _run() -> void:
 	GameState.flags["boss_call_day"] = GameState.day
 	choose_queue = [0]
 	await _go(Router.STREET, "home")
-	await _wait_scene(Router.BATTLE)
+	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.STREET)
 	await _idle()
 	_check(victim != "" and GameState.is_robot(victim), "firmare la promozione dovrebbe colpire qualcuno che conosci (" + victim + ")")
@@ -554,6 +556,18 @@ func _run() -> void:
 		await get_tree().physics_frame
 	await _idle()
 	_check(_scene_path() == Router.SOTTOUFFICIO, "senza badge il tornello non dovrebbe far passare")
+
+	# --- chi aiuta tutti quelli del piano riceve il badge in regalo (e un'amica)
+	GameState.new_game()
+	GameState.flags["fermo_talked"] = true
+	GameState.flags["fermo_called"] = true
+	var esteem0 := GameState.self_esteem
+	GameState.helped_ids.assign(GameState.floor_people("-5"))
+	await _go(Router.FONDO, "elevator")
+	await get_tree().create_timer(0.5).timeout
+	await _idle()
+	_check(not GameState.floor_people("-5").is_empty() and GameState.has_badge("-4"), "aiutando tutti al -5 dovresti ricevere il badge in regalo")
+	_check(GameState.flags.get("clerk_friend", false) and GameState.self_esteem > esteem0, "l'addetta ai badge dovrebbe diventare tua amica e l'autostima salire")
 
 	# --- mercato e banca: i piani -3 e -2, con tre aspetti diversi
 	for look in ["comunismo", "capitalismo", "baratto"]:

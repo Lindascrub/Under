@@ -1,66 +1,75 @@
 {
   "gino": {
-    "title": "Il buono pasto di Gino",
+    "title": "L'idea di Gino",
+    "item": "il foglietto con l'idea di Gino",
     "desc": [
       "Il capo: Ottimo turno! Senta, una cosetta da niente.",
-      "Il capo: Gino, quello dei bagni, ha un buono pasto aziendale. Non lo usa quasi mai.",
-      "Il capo: Basta una sua firma per revocarlo. Nessuno se ne accorgerà. E lei avrà una piccola promozione."
+      "Il capo: Gino, quello dei bagni, ha avuto un'idea per risparmiare acqua. L'ha scritta su un foglietto. Lo tiene nel taschino.",
+      "Il capo: Domani c'è la riunione. Se l'idea la presenta lei, la promozione va a lei. Gino non viene mai alle riunioni, comunque."
     ]
   },
   "vito": {
-    "title": "L'affitto del banco di Vito",
+    "title": "Il trucco di Vito",
+    "item": "il quaderno dei trucchi di Vito",
     "desc": [
-      "Il capo: Il banco di frutta di Vito, al mercato. L'affitto è troppo basso da anni.",
-      "Il capo: Una firma, e lo raddoppiamo. Se non può pagare, il banco torna a noi."
+      "Il capo: Vito, al mercato, ha un trucco per tenere la frutta fresca il doppio. Trent'anni di esperienza in un quaderno.",
+      "Il capo: Lo brevettiamo. A nome suo, si capisce: il suo, non quello di Vito."
     ]
   },
   "marta": {
-    "title": "Lo sfratto di Marta",
+    "title": "Il piano di Marta",
+    "item": "il piano del condominio di Marta",
     "desc": [
-      "Il capo: Inquilini in ritardo con l'affitto. Nella lista c'è il suo palazzo: Marta R., due figli.",
-      "Il capo: La lettera è già scritta. Manca solo la sua firma."
+      "Il capo: Marta R. ha scritto un piano per far risparmiare il condominio. Geniale. Troppo geniale per una che non ha un titolo.",
+      "Il capo: Lo presenti lei all'assemblea dei proprietari. Marta può sempre scriverne un altro."
     ]
   },
   "sig_bruno": {
-    "title": "Il rimborso del signor Bruno",
+    "title": "Le memorie del signor Bruno",
+    "item": "il quaderno delle storie del signor Bruno",
     "desc": [
-      "Il capo: Un pensionato chiede un rimborso. Bruno T., 81 anni.",
-      "Il capo: Gli abbiamo venduto un'assicurazione che non copre niente. Basta respingere la richiesta."
+      "Il capo: Il signor Bruno racconta storie bellissime sulla città di una volta. Le scrive in un quaderno.",
+      "Il capo: Una casa editrice nostra le vuole. Con un autore giovane in copertina. Lei, per esempio."
     ]
   },
   "dario": {
-    "title": "Il licenziamento di Dario",
+    "title": "Il rapporto di Dario",
+    "item": "il rapporto sulla produttività di Dario",
     "desc": [
-      "Il capo: Dobbiamo ottimizzare il personale. Dario lo conosce, vero? Quello col contatore.",
-      "Il capo: Lo sostituirà un software. Lo saprà dall'email automatica. Lei deve solo firmare."
+      "Il capo: Dario ha passato tre mesi a scrivere un rapporto. Contava tutto, col suo contatore.",
+      "Il capo: Se lo firma lei, il merito è suo. E se il rapporto dice che il reparto è lento... beh, il reparto era di Dario."
     ]
   },
   "lea": {
-    "title": "L'affitto di Lea",
+    "title": "La tesi di Lea",
+    "item": "la chiavetta con la tesi di Lea",
     "desc": [
-      "Il capo: Aumentiamo del 30% gli affitti delle case per studenti.",
-      "Il capo: C'è una certa Lea M., fa tre lavori. Ce la farà. Basta cambiare un numero."
+      "Il capo: Lea, quella dei tre lavori, ha scritto una tesi su come rendere la città più umana. Ironico, vero?",
+      "Il capo: Ne facciamo il nuovo progetto aziendale. Serve qualcuno che la presenti con un sorriso. E con il suo nome sopra."
     ]
   },
   "giulia": {
-    "title": "L'assicurazione di Giulia",
+    "title": "Il progetto di Giulia",
+    "item": "il progetto di Giulia",
     "desc": [
-      "Il capo: Tagliamo l'assicurazione sanitaria ai dipendenti.",
-      "Il capo: Giulia ha un intervento il mese prossimo, lo so. Ma i costi sono costi."
+      "Il capo: Giulia lavora da un anno a un progetto per l'ufficio. Ci tiene. Troppo.",
+      "Il capo: Il consiglio vuole vederlo lunedì. Se lo presenta lei, lunedì lei è Direttore. Giulia resterà dov'è: le piace, lì."
     ]
   },
   "ragazzo_sami": {
-    "title": "I turni di Sami",
+    "title": "Il percorso di Sami",
+    "item": "la mappa dei percorsi di Sami",
     "desc": [
-      "Il capo: Nuovi turni da 14 ore per i rider. Chi rifiuta viene disattivato dall'app.",
-      "Il capo: Tra loro c'è Sami, il ragazzo della bici. Lo chiamano \"flessibilità\"."
+      "Il capo: Sami, il rider, ha trovato il modo di fare il doppio delle consegne nello stesso tempo. Ha disegnato una mappa.",
+      "Il capo: Diventa l'algoritmo della nostra app. L'algoritmo ha bisogno di un inventore. Uno serio. Uno come lei."
     ]
   },
   "portiere_ivo": {
-    "title": "Lo sgabuzzino di Ivo",
+    "title": "Le chiavi di Ivo",
+    "item": "il registro delle chiavi di Ivo",
     "desc": [
-      "Il capo: Il suo palazzo diventerà uffici. Il portiere, Ivo, vive nello sgabuzzino al piano terra.",
-      "Il capo: Una firma e da domani lo sgabuzzino è nostro."
+      "Il capo: Ivo, il portiere, sa tutto di ogni palazzo del quartiere. Chi entra, chi esce, chi non paga.",
+      "Il capo: Quel registro vale oro. Lo porti a me, e lei diventa l'esperto del quartiere."
     ]
   }
 }

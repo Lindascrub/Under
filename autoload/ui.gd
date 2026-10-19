@@ -177,10 +177,10 @@ func _build() -> void:
 
 
 func _refresh_hud() -> void:
-	_hud.text = "%s   %s   LV %d   Debito %s   Soldi %s   Energia %d/%d" % [
+	_hud.text = "%s   %s   LV %d   Debito %s   Soldi %s   Energia %d/%d   Autostima %d" % [
 		GameState.floor_name(), GameState.clock(), GameState.lv(),
 		GameState.euros(GameState.debt), GameState.euros(GameState.money),
-		GameState.energy, GameState.MAX_ENERGY,
+		GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
 	]
 	if _time_bar:
 		_time_bar.queue_redraw()

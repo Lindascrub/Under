@@ -98,7 +98,10 @@ func _label(pos: Vector2, size: int, col: Color) -> Label:
 
 func _rules() -> String:
 	if game in Arcade.GAMES:
-		return Arcade.new().set_game(game).rules()
+		var a := Arcade.new().set_game(game)
+		a.st_name = str(cfg.get("victim_name", ""))
+		a.st_item = str(cfg.get("item", ""))
+		return a.rules()
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
@@ -330,6 +333,9 @@ func _new_weight() -> void:
 
 func _finish() -> void:
 	phase = "end"
+	if game == "steal":
+		await _finish_steal()
+		return
 	var ratio := clampf((score - mistakes * 0.5) / target, 0.0, 1.25)
 	var base := int(cfg.get("pay", 300))
 	var pay := maxi(40, int(round(base * maxf(0.25, ratio))))
@@ -347,6 +353,26 @@ func _finish() -> void:
 		lines.append("* Turno finito. Dieci ore della tua vita.")
 	lines.append("* Paga: %s." % GameState.euros(pay))
 	lines.append(str(cfg.get("tired", "* Ti fa male tutto.")))
+	await Ui.say(lines)
+	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
+
+
+## Com'è andato il furto dell'idea: preso il merito (promozione) o beccato (niente).
+func _finish_steal() -> void:
+	var who := str(cfg.get("victim_name", "il collega"))
+	var victim := str(cfg.get("victim", ""))
+	var lines: Array = []
+	if score >= target:
+		var pay := GameState.do_promotion(victim)
+		Sound.sfx("stamp")
+		lines.append("* Hai copiato tutto. Domani, alla riunione, l'idea sarà tua. %s applaudirà con gli altri, senza capire." % who)
+		lines.append("* Promozione: +%s. Ora sei {rank}." % GameState.euros(pay))
+		lines.append(GameState.level_up_line())
+	else:
+		GameState.flags["promotions_failed"] = int(GameState.flags.get("promotions_failed", 0)) + 1
+		Sound.sfx("deny")
+		lines.append("* %s ti ha visto. Si stringe il foglio al petto e ti guarda come non ti aveva mai guardato." % who)
+		lines.append("* Niente promozione. Però, stanotte, forse dormirai.")
 	await Ui.say(lines)
 	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
 

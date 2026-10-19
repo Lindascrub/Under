@@ -68,6 +68,8 @@ var floor_id := "-5"
 var badges: Array[String] = []
 ## Il piano della stanza in cui sei adesso ("" in città: strada, parco, casa).
 var room_floor := ""
+## L'autostima: sale ogni volta che aiuti qualcuno (e quando un piano intero ti vuole bene).
+var self_esteem := 0
 ## Come si chiama il giocatore (lo chiede il menu quando si comincia).
 var player_name := "Tu"
 var money := 0
@@ -128,6 +130,7 @@ func new_game() -> void:
 	minutes = DAY_START
 	floor_id = "-5"
 	badges.clear()
+	self_esteem = 0
 	money = 0
 	debt = START_DEBT
 	energy = MAX_ENERGY
@@ -342,6 +345,8 @@ func help(id: String, kind: String, cost: int) -> bool:
 			return false
 		spend(COST_HELP_TIME)
 	helped += 1
+	if id not in helped_ids:
+		self_esteem += 1
 	var unlock: Dictionary = npc_data(id).get("help", {}).get("unlock", {})
 	if not unlock.is_empty() and not flags.get(unlock.get("flag", ""), false):
 		flags[unlock["flag"]] = true
@@ -559,6 +564,31 @@ func sign_contract() -> void:
 	changed.emit()
 
 
+## Le persone che lavorano su un piano (quelle che si possono aiutare).
+const FLOOR_ROOM := {"-5": "fondo", "-4": "sottoufficio", "-3": "mercato", "-2": "banca", "0": "office"}
+
+
+func floor_people(id := "") -> Array:
+	var room := str(FLOOR_ROOM.get(floor_id if id == "" else id, ""))
+	var out: Array = []
+	for n: String in npc_ids():
+		var sched: Array = npc_data(n).get("schedule", [])
+		if not sched.is_empty() and str(sched[0].get("room", "")) == room and npc_data(n).has("help"):
+			out.append(n)
+	return out
+
+
+## Hai aiutato tutti quelli del piano? Allora il piano ti apre la porta.
+func floor_all_helped(id := "") -> bool:
+	var people := floor_people(id)
+	if people.is_empty():
+		return false
+	for n: String in people:
+		if n not in helped_ids:
+			return false
+	return true
+
+
 ## Quante persone hai conosciuto davvero (parlato almeno una volta).
 func met_count() -> int:
 	var n := 0
@@ -752,7 +782,7 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
 		"worked_today": worked_today, "flags": flags, "quests": quests,
 		"freed": freed, "motives_known": motives_known, "room": room,
-		"floor_id": floor_id, "badges": badges, "player_name": player_name,
+		"floor_id": floor_id, "badges": badges, "player_name": player_name, "self_esteem": self_esteem,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
 	var file := FileAccess.open(save_path, FileAccess.WRITE)
@@ -791,6 +821,7 @@ func load_game() -> Dictionary:
 	floor_id = str(d.get("floor_id", "-5"))
 	badges.assign(d.get("badges", []))
 	player_name = str(d.get("player_name", "Tu"))
+	self_esteem = int(d.get("self_esteem", 0))
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {
