@@ -116,7 +116,7 @@ func _make_label(size: int, color := COL_TEXT) -> Label:
 
 
 func _build() -> void:
-	_hud = _make_label(13)
+	_hud = _make_label(11)
 	_hud.position = Vector2(8, 6)
 	_hud.add_theme_constant_override("outline_size", 5)
 	_hud.add_theme_color_override("font_outline_color", Color.BLACK)
@@ -177,7 +177,7 @@ func _build() -> void:
 
 
 func _refresh_hud() -> void:
-	_hud.text = "%s   %s   LV %d   Debito %s   Soldi %s   Energia %d/%d   Autostima %d" % [
+	_hud.text = "%s  %s  LV %d  Debito %s  Soldi %s  Energia %d/%d  Autostima %d" % [
 		GameState.floor_name(), GameState.clock(), GameState.lv(),
 		GameState.euros(GameState.debt), GameState.euros(GameState.money),
 		GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
