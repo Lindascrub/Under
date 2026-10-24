@@ -133,7 +133,7 @@ func _build() -> void:
 	_box.position = Vector2(16, 258)
 	_box.size = Vector2(608, 90)
 	add_child(_box)
-	_name = _make_label(13, COL_NAME)
+	_name = _make_label(11, COL_NAME)
 	_name.position = Vector2(14, 6)
 	_box.add_child(_name)
 	_portrait_tex = AtlasTexture.new()
@@ -144,7 +144,7 @@ func _build() -> void:
 	_portrait.stretch_mode = TextureRect.STRETCH_SCALE
 	_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_box.add_child(_portrait)
-	_text = _make_label(16)
+	_text = _make_label(12)
 	_text.position = Vector2(14, 24)
 	_text.size = Vector2(580, 62)
 	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -154,7 +154,7 @@ func _build() -> void:
 	_choice_box = Panel.new()
 	_choice_box.add_theme_stylebox_override("panel", _panel_style())
 	add_child(_choice_box)
-	_choice_label = _make_label(16)
+	_choice_label = _make_label(12)
 	_choice_label.position = Vector2(12, 8)
 	_choice_box.add_child(_choice_label)
 	_choice_box.visible = false
@@ -166,7 +166,7 @@ func _build() -> void:
 	_fade.size = Vector2(640, 360)
 	add_child(_fade)
 
-	_narr = _make_label(18)
+	_narr = _make_label(14)
 	_narr.position = Vector2(60, 40)
 	_narr.size = Vector2(520, 280)
 	_narr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -324,7 +324,7 @@ func _render_choices() -> void:
 	var w := 0.0
 	var font := _choice_label.get_theme_font("font")
 	for l in lines:
-		w = maxf(w, font.get_string_size(l, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x)
+		w = maxf(w, font.get_string_size(l, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x)
 	_choice_box.size = Vector2(w + 28, _options.size() * 23 + 14)
 	_choice_box.position = Vector2(624 - _choice_box.size.x, 252 - _choice_box.size.y)
 

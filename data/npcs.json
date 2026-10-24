@@ -1898,8 +1898,7 @@
     ],
     "days": [
       [
-        "Scusa, ragazzo, non posso parlare adesso. Devo mantenere il mio colore.",
-        "* Mina torna ai suoi fili. Fischietta, ma stona."
+        "Scusa, ragazzo, non ho molto tempo. Devo mantenere il mio colore."
       ]
     ],
     "helped": [
@@ -1922,7 +1921,17 @@
         "time": 30,
         "reward": 10
       }
-    }
+    },
+    "busy_line": [
+      "Ora lasciami stare, ragazzo. Devo lavorare, sennò perdo il mio colore.",
+      "* Nonno Mina torna ai suoi fili. Fischietta, e stona."
+    ],
+    "reveal": [
+      "Ah. Si è spenta. Succede sempre, prima o poi, a chi guarda bene.",
+      "Li ho attaccati io, quei fili, quarant'anni fa. Tutti portano in alto. Nessuno porta giù.",
+      "Per questo qui sotto è buio, quando smetti: la luce che fai tu la usano di sopra.",
+      "Non dirlo in giro, ragazzo. Ma non dimenticartelo."
+    ]
   },
   "mina": {
     "name": "Bulbo",
@@ -1944,8 +1953,7 @@
     ],
     "days": [
       [
-        "Scusa, non posso parlare. Devo mantenere il mio colore.",
-        "* Bulbo continua a smistare lampadine. Sorride, ma le tremano le mani."
+        "Scusa, non posso parlare tanto. Devo mantenere il mio colore."
       ]
     ],
     "helped": [
@@ -1969,7 +1977,17 @@
         "time": 25,
         "reward": 10
       }
-    }
+    },
+    "busy_line": [
+      "Ora lasciami stare, devo lavorare. Se smetto, perdo il mio colore.",
+      "* Bulbo torna alle sue lampadine. Sorride, ma non a te."
+    ],
+    "reveal": [
+      "...Lo sapevo. Lo sapevo e sorridevo lo stesso.",
+      "Se smetti di sorridere, ti notano. E se ti notano, ti chiedono perché non lavori.",
+      "I colori sono nostri, sai? Solo che non li vediamo mai addosso a noi. Li vediamo sulle pareti, sui palloncini. Su di loro.",
+      "Adesso che sono grigia... è strano. Mi sento più io."
+    ]
   },
   "tilde": {
     "name": "Tilde",

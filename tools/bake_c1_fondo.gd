@@ -152,12 +152,15 @@ func _sprite(parent: Node, nm: String, tex: String, region: Rect2, cell: Vector2
 	return s
 
 
-func _examine(parent: Node, nm: String, cell: Vector2i, lines: Array, method := "") -> void:
+func _examine(parent: Node, nm: String, cell: Vector2i, lines: Array, method := "", after: Array = []) -> void:
 	var e := Examine.new()
 	e.name = nm
 	e.position = Vector2(cell.x * T + 8, cell.y * T + 8)
 	e.lines = PackedStringArray(lines)
 	e.method = method
+	if not after.is_empty():
+		e.lines_after = PackedStringArray(after)
+		e.after_flag = "c1_rivelazione"
 	_add(parent, e)
 
 
@@ -169,13 +172,26 @@ func _party() -> void:
 		g.z_index = 1
 	# palloncini legati qua e là
 	var balloons := [[Vector2i(2, 3), 0], [Vector2i(3, 3), 16], [Vector2i(9, 3), 32], [Vector2i(16, 3), 48], [Vector2i(20, 12), 0], [Vector2i(1, 12), 32]]
+	# ogni palloncino ha la sua frase (e un'altra dopo che la festa si spegne)
+	var balloon_lines := [
+		[["* Un palloncino giallo. Ci hanno stampato sopra: \"BENVENUTO AL FONDO!\".", "* Non c'è scritto il nome di nessuno. Va bene per tutti quelli che arrivano."],
+			["* Il palloncino giallo è afflosciato. La scritta adesso dice \"BENVE...\". Il resto è una piega."]],
+		[["* Un palloncino blu. Lo tocchi: è tiepido. Come se qualcuno ci avesse soffiato dentro poco fa.", "* Su un'etichetta: \"Gonfiato al piano terra. Non riutilizzabile\"."],
+			["* Il palloncino blu è grigio e floscio. Tiepido non lo è più."]],
+		[["* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via. Come te."],
+			["* Il cuore rosso si è sgonfiato. Adesso sembra un portafoglio vuoto."]],
+		[["* Un palloncino verde. Dentro c'è un bigliettino: \"Hai vinto un turno extra!\".", "* Sul retro, in piccolo: \"Il premio non è convertibile in tempo libero\"."],
+			["* Il palloncino verde è per terra. Il bigliettino è rimasto dentro, ma ormai non lo legge nessuno."]],
+		[["* Un palloncino in fondo alla stanza, lontano da tutti. Anche le decorazioni, qui, fanno i turni.", "* Questo è di guardia."],
+			["* Anche quello di guardia si è sgonfiato. Nessuno gli darà il cambio."]],
+		[["* Un palloncino che qualcuno ha disegnato a pennarello con una faccina. La faccina è triste.", "* L'unico onesto della festa."],
+			["* La faccina triste, adesso che è tutto grigio, sembra quasi sollevata."]],
+	]
 	for i in balloons.size():
 		var b: Array = balloons[i]
 		_sprite(mondo, "Palloncino%d" % i, BDAY, Rect2(int(b[1]), 80, 16, 32), b[0], 4)
-	_examine(mondo, "GuardaPalloncini", Vector2i(9, 3), [
-		"* Un palloncino. Ci hanno stampato sopra: \"BENVENUTO AL FONDO!\".",
-		"* Non c'è scritto il nome di nessuno. Va bene per tutti quelli che arrivano.",
-	])
+		var bl: Array = balloon_lines[i % balloon_lines.size()]
+		_examine(mondo, "GuardaPalloncino%d" % i, b[0], bl[0], "", bl[1])
 	# il tavolo della festa con la torta, i regali e il cibo
 	_sprite(mondo, "TavoloFesta", "res://assets/limezu/market/table_1.png", Rect2(), Vector2i(10, 10), 14)
 	var cake := _sprite(mondo, "Torta", BDAY, Rect2(0, 40, 32, 24), Vector2i(10, 10), 0, Vector2(8, -12))
@@ -183,13 +199,17 @@ func _party() -> void:
 	_examine(mondo, "GuardaTorta", Vector2i(11, 10), [
 		"* Una torta con le candeline. Sulla glassa c'è scritto: \"AUGURI ALLA CHEAP\".",
 		"* La festa è per l'azienda. Tu sei l'invitato che porta il regalo.",
-	])
+	], "", ["* La torta, adesso, si vede per quello che è: plastica. Le candeline sono lampadine. Spente."])
 	_sprite(mondo, "RegaloRosso", BDAY, Rect2(160, 0, 16, 24), Vector2i(13, 10), 6)
 	_sprite(mondo, "RegaloBlu", BDAY, Rect2(176, 0, 16, 24), Vector2i(9, 11), 6)
-	_examine(mondo, "GuardaRegali", Vector2i(13, 10), [
+	_examine(mondo, "GuardaRegaloRosso", Vector2i(13, 10), [
 		"* Un regalo impacchettato benissimo. Lo scuoti: è vuoto.",
 		"* Sul biglietto: \"Il regalo sei tu. Con affetto, l'Ufficio Risorse Umane\".",
-	])
+	], "", ["* Il regalo rosso è grigio. Il fiocco si è sciolto da solo. Dentro, sempre niente."])
+	_examine(mondo, "GuardaRegaloBlu", Vector2i(9, 11), [
+		"* Un regalo blu, con il tuo nome scritto a mano sul biglietto. Come facevano a saperlo?",
+		"* Dentro c'è un modulo: \"Dichiarazione di disponibilità al lavoro straordinario\". Già firmato. Con la tua firma.",
+	], "", ["* Il regalo blu, spento, sembra solo una scatola. Il modulo dentro è ancora firmato."])
 	# coriandoli per terra
 	var conf := [Vector2i(5, 5), Vector2i(12, 7), Vector2i(17, 6), Vector2i(7, 11), Vector2i(19, 9), Vector2i(14, 12), Vector2i(3, 9)]
 	for i in conf.size():
@@ -280,7 +300,7 @@ func _features() -> void:
 	_sprite(mondo, "CycletteDinamo", "res://art/generator.png", Rect2(), Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
 	_feature("SportelloBadge", "badge", Vector2i(18, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://scenes/world/sottoufficio.tscn", "spawn": "from_below", "need": "-4"})
+	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c1/fine_capitolo.tscn", "spawn": "", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
 

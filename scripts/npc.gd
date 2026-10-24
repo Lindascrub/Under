@@ -156,6 +156,23 @@ func interact() -> void:
 		return
 	if await Quests.handle_npc(self):
 		return
+	# dopo la rivelazione del capitolo 1, chi ha perso il colore ti dice la verità (campo "reveal")
+	if data.has("reveal") and GameState.flags.get("c1_rivelazione", false) and not GameState.flags.get("svelato_" + id, false):
+		GameState.flags["svelato_" + id] = true
+		await Ui.say(data["reveal"], who)
+		return
+	# chi lavora per restare colorato, dopo un po' ti manda via (campo "busy_line")
+	if data.has("busy_line"):
+		var talks := int(GameState.flags.get("talks_" + id, 0)) + 1
+		GameState.flags["talks_" + id] = talks
+		var thanked: bool = GameState.flags.get("thanked_" + id, false)
+		if id in GameState.helped_ids and not thanked:
+			GameState.flags["thanked_" + id] = true
+			await Ui.say(data.get("helped", ["Grazie."]), who)
+			return
+		if talks >= 3 or id in GameState.helped_ids:
+			await Ui.say(data["busy_line"], who)
+			return
 	await Ui.say(_lines(), who)
 	if id == "nico" and GameState.flags.get("coffee_day", 0) != GameState.day:
 		GameState.flags["coffee_day"] = GameState.day

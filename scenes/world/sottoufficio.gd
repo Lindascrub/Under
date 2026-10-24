@@ -30,7 +30,10 @@ func build() -> void:
 	# Le scale per il Mercato (-3), il distributore dei badge, la botola per il Fondo (-5).
 	add_stairs_up(Vector2i(2, 3), Router.MERCATO, "from_below", "-3")
 	add_badge_machine(Vector2i(4, 3))
-	add_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
+	if GameState.flags.get("c1_sbarrato", false):
+		_barred_hole(Vector2i(1, 12))
+	else:
+		add_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
 
 	# Lo sportello del collocamento
 	add_computer_desk(Vector2i(6, 5))
@@ -125,6 +128,28 @@ func _collocamento() -> void:
 		_:
 			GameState.refuse_work()
 			await Ui.say(["...Interessante. Lo segnerò. Lo segno sempre, sai.", "* Per la prima volta dopo tanto tempo, respiri."], who)
+
+
+## La botola per il Fondo, sbarrata: sei salito senza voltarti.
+func _barred_hole(bottom_left: Vector2i) -> void:
+	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
+	s.flip_v = true
+	s.modulate = Color(0.45, 0.45, 0.5)
+	world.remove_child(s)
+	add_child(s)
+	move_child(s, world.get_index())
+	for k in 4:
+		var bar := ColorRect.new()
+		bar.color = Color("5a5666")
+		bar.position = Vector2(bottom_left.x * T + 2 + k * 8, (bottom_left.y - 2) * T)
+		bar.size = Vector2(3, 3 * T)
+		bar.z_index = 1
+		add_child(bar)
+	block(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 3))
+	examine(cell_center(bottom_left + Vector2i(0, -1)) + Vector2(8, 0), [
+		"* La botola per il Fondo. Ci hanno saldato sopra delle sbarre.",
+		"* Sei salito senza voltarti. Il Fondo, adesso, resta là sotto. Con quello che non hai voluto sapere.",
+	])
 
 
 func _lift(top_left: Vector2i) -> void:

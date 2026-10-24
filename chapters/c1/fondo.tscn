@@ -63,22 +63,22 @@ size = Vector2(12, 16)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y4htq"]
 size = Vector2(28, 10)
 
-[node name="Fondo" type="Node2D" unique_id=1698915740]
+[node name="Fondo" type="Node2D" unique_id=1231935874]
 script = ExtResource("1_1dlsi")
 room_music = "festa"
 room_floor = "-5"
 
-[node name="Pavimento" type="TileMapLayer" parent="." unique_id=1439956202]
+[node name="Pavimento" type="TileMapLayer" parent="." unique_id=1010510964]
 tile_map_data = PackedByteArray("AAABAAMAAAArACIAAAACAAMAAAAkABIAAAADAAMAAAAiABIAAAAEAAMAAAArABIAAAAFAAMAAAAsABIAAAAGAAMAAAAqACIAAAAHAAMAAAArACIAAAAIAAMAAAAkABIAAAAJAAMAAAAiABIAAAAKAAMAAAArABIAAAALAAMAAAAsABIAAAAMAAMAAAAqACIAAAANAAMAAAArACIAAAAOAAMAAAAkABIAAAAPAAMAAAAiABIAAAAQAAMAAAArABIAAAARAAMAAAAsABIAAAASAAMAAAAqACIAAAATAAMAAAArACIAAAAUAAMAAAAkABIAAAAVAAMAAAAiABIAAAAWAAMAAAArABIAAAABAAQAAAAjABEAAAACAAQAAAAsABEAAAADAAQAAAAqABEAAAAEAAQAAAArACEAAAAFAAQAAAAsACEAAAAGAAQAAAAiABEAAAAHAAQAAAAjABEAAAAIAAQAAAAsABEAAAAJAAQAAAAqABEAAAAKAAQAAAArACEAAAALAAQAAAAsACEAAAAMAAQAAAAiABEAAAANAAQAAAAjABEAAAAOAAQAAAAsABEAAAAPAAQAAAAqABEAAAAQAAQAAAArACEAAAARAAQAAAAsACEAAAASAAQAAAAiABEAAAATAAQAAAAjABEAAAAUAAQAAAAsABEAAAAVAAQAAAAqABEAAAAWAAQAAAArACEAAAABAAUAAAAjABIAAAACAAUAAAAsABIAAAADAAUAAAAqABIAAAAEAAUAAAArACIAAAAFAAUAAAAsACIAAAAGAAUAAAAiABIAAAAHAAUAAAAjABIAAAAIAAUAAAAsABIAAAAJAAUAAAAqABIAAAAKAAUAAAArACIAAAALAAUAAAAsACIAAAAMAAUAAAAiABIAAAANAAUAAAAjABIAAAAOAAUAAAAsABIAAAAPAAUAAAAqABIAAAAQAAUAAAArACIAAAARAAUAAAAsACIAAAASAAUAAAAiABIAAAATAAUAAAAjABIAAAAUAAUAAAAsABIAAAAVAAUAAAAqABIAAAAWAAUAAAArACIAAAABAAYAAAArABEAAAACAAYAAAAsACEAAAADAAYAAAAqACEAAAAEAAYAAAAjABEAAAAFAAYAAAAkABEAAAAGAAYAAAAqABEAAAAHAAYAAAArABEAAAAIAAYAAAAsACEAAAAJAAYAAAAqACEAAAAKAAYAAAAjABEAAAALAAYAAAAkABEAAAAMAAYAAAAqABEAAAANAAYAAAArABEAAAAOAAYAAAAsACEAAAAPAAYAAAAqACEAAAAQAAYAAAAjABEAAAARAAYAAAAkABEAAAASAAYAAAAqABEAAAATAAYAAAArABEAAAAUAAYAAAAsACEAAAAVAAYAAAAqACEAAAAWAAYAAAAjABEAAAABAAcAAAArABIAAAACAAcAAAAsACIAAAADAAcAAAAqACIAAAAEAAcAAAAjABIAAAAFAAcAAAAkABIAAAAGAAcAAAAqABIAAAAHAAcAAAArABIAAAAIAAcAAAAsACIAAAAJAAcAAAAqACIAAAAKAAcAAAAjABIAAAALAAcAAAAkABIAAAAMAAcAAAAqABIAAAANAAcAAAArABIAAAAOAAcAAAAsACIAAAAPAAcAAAAqACIAAAAQAAcAAAAjABIAAAARAAcAAAAkABIAAAASAAcAAAAqABIAAAATAAcAAAArABIAAAAUAAcAAAAsACIAAAAVAAcAAAAqACIAAAAWAAcAAAAjABIAAAABAAgAAAArACEAAAACAAgAAAAkABEAAAADAAgAAAAiABEAAAAEAAgAAAArABEAAAAFAAgAAAAsABEAAAAGAAgAAAAqACEAAAAHAAgAAAArACEAAAAIAAgAAAAkABEAAAAJAAgAAAAiABEAAAAKAAgAAAArABEAAAALAAgAAAAsABEAAAAMAAgAAAAqACEAAAANAAgAAAArACEAAAAOAAgAAAAkABEAAAAPAAgAAAAiABEAAAAQAAgAAAArABEAAAARAAgAAAAsABEAAAASAAgAAAAqACEAAAATAAgAAAArACEAAAAUAAgAAAAkABEAAAAVAAgAAAAiABEAAAAWAAgAAAArABEAAAABAAkAAAArACIAAAACAAkAAAAkABIAAAADAAkAAAAiABIAAAAEAAkAAAArABIAAAAFAAkAAAAsABIAAAAGAAkAAAAqACIAAAAHAAkAAAArACIAAAAIAAkAAAAkABIAAAAJAAkAAAAiABIAAAAKAAkAAAArABIAAAALAAkAAAAsABIAAAAMAAkAAAAqACIAAAANAAkAAAArACIAAAAOAAkAAAAkABIAAAAPAAkAAAAiABIAAAAQAAkAAAArABIAAAARAAkAAAAsABIAAAASAAkAAAAqACIAAAATAAkAAAArACIAAAAUAAkAAAAkABIAAAAVAAkAAAAiABIAAAAWAAkAAAArABIAAAABAAoAAAAjABEAAAACAAoAAAAsABEAAAADAAoAAAAqABEAAAAEAAoAAAArACEAAAAFAAoAAAAsACEAAAAGAAoAAAAiABEAAAAHAAoAAAAjABEAAAAIAAoAAAAsABEAAAAJAAoAAAAqABEAAAAKAAoAAAArACEAAAALAAoAAAAsACEAAAAMAAoAAAAiABEAAAANAAoAAAAjABEAAAAOAAoAAAAsABEAAAAPAAoAAAAqABEAAAAQAAoAAAArACEAAAARAAoAAAAsACEAAAASAAoAAAAiABEAAAATAAoAAAAjABEAAAAUAAoAAAAsABEAAAAVAAoAAAAqABEAAAAWAAoAAAArACEAAAABAAsAAAAjABIAAAACAAsAAAAsABIAAAADAAsAAAAqABIAAAAEAAsAAAArACIAAAAFAAsAAAAsACIAAAAGAAsAAAAiABIAAAAHAAsAAAAjABIAAAAIAAsAAAAsABIAAAAJAAsAAAAqABIAAAAKAAsAAAArACIAAAALAAsAAAAsACIAAAAMAAsAAAAiABIAAAANAAsAAAAjABIAAAAOAAsAAAAsABIAAAAPAAsAAAAqABIAAAAQAAsAAAArACIAAAARAAsAAAAsACIAAAASAAsAAAAiABIAAAATAAsAAAAjABIAAAAUAAsAAAAsABIAAAAVAAsAAAAqABIAAAAWAAsAAAArACIAAAABAAwAAAArABEAAAACAAwAAAAsACEAAAADAAwAAAAqACEAAAAEAAwAAAAjABEAAAAFAAwAAAAkABEAAAAGAAwAAAAqABEAAAAHAAwAAAArABEAAAAIAAwAAAAsACEAAAAJAAwAAAAqACEAAAAKAAwAAAAjABEAAAALAAwAAAAkABEAAAAMAAwAAAAqABEAAAANAAwAAAArABEAAAAOAAwAAAAsACEAAAAPAAwAAAAqACEAAAAQAAwAAAAjABEAAAARAAwAAAAkABEAAAASAAwAAAAqABEAAAATAAwAAAArABEAAAAUAAwAAAAsACEAAAAVAAwAAAAqACEAAAAWAAwAAAAjABEAAAA=")
 tile_set = ExtResource("2_4eur7")
 
-[node name="Muri" type="TileMapLayer" parent="." unique_id=1070173482]
+[node name="Muri" type="TileMapLayer" parent="." unique_id=1231708338]
 tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAABAAAAAAAMAAAAAAACAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAEAAAAAAAMAAAAAAAFAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAHAAAAAAAMAAAAAAAIAAAAAAAMAAAAAAAJAAAAAAAMAAAAAAAKAAAAAAAMAAAAAAALAAAAAAAMAAAAAAAMAAAAAAAMAAAAAAANAAAAAAAMAAAAAAAOAAAAAAAMAAAAAAAPAAAAAAAMAAAAAAAQAAAAAAAMAAAAAAARAAAAAAAMAAAAAAASAAAAAAAMAAAAAAATAAAAAAAMAAAAAAAUAAAAAAAMAAAAAAAVAAAAAAAMAAAAAAAWAAAAAAAMAAAAAAAXAAAAAAAMAAAAAAAAAAEAAAAMAAAAAAABAAEAAAAXAB0AAAACAAEAAAAYAB0AAAADAAEAAAAWAB0AAAAEAAEAAAAXAB0AAAAFAAEAAAAYAB0AAAAGAAEAAAAWAB0AAAAHAAEAAAAXAB0AAAAIAAEAAAAYAB0AAAAJAAEAAAAWAB0AAAAKAAEAAAAXAB0AAAALAAEAAAAYAB0AAAAMAAEAAAAWAB0AAAANAAEAAAAXAB0AAAAOAAEAAAAYAB0AAAAPAAEAAAAWAB0AAAAQAAEAAAAXAB0AAAARAAEAAAAYAB0AAAASAAEAAAAWAB0AAAATAAEAAAAXAB0AAAAUAAEAAAAYAB0AAAAVAAEAAAAWAB0AAAAWAAEAAAAXAB0AAAAXAAEAAAAMAAAAAAAAAAIAAAAMAAAAAAABAAIAAAAXAB4AAAACAAIAAAAYAB4AAAADAAIAAAAWAB4AAAAEAAIAAAAXAB4AAAAFAAIAAAAYAB4AAAAGAAIAAAAWAB4AAAAHAAIAAAAXAB4AAAAIAAIAAAAYAB4AAAAJAAIAAAAWAB4AAAAKAAIAAAAXAB4AAAALAAIAAAAYAB4AAAAMAAIAAAAWAB4AAAANAAIAAAAXAB4AAAAOAAIAAAAYAB4AAAAPAAIAAAAWAB4AAAAQAAIAAAAXAB4AAAARAAIAAAAYAB4AAAASAAIAAAAWAB4AAAATAAIAAAAXAB4AAAAUAAIAAAAYAB4AAAAVAAIAAAAWAB4AAAAWAAIAAAAXAB4AAAAXAAIAAAAMAAAAAAAAAAMAAAAMAAAAAAAXAAMAAAAMAAAAAAAAAAQAAAAMAAAAAAAXAAQAAAAMAAAAAAAAAAUAAAAMAAAAAAAXAAUAAAAMAAAAAAAAAAYAAAAMAAAAAAAXAAYAAAAMAAAAAAAAAAcAAAAMAAAAAAAXAAcAAAAMAAAAAAAAAAgAAAAMAAAAAAAXAAgAAAAMAAAAAAAAAAkAAAAMAAAAAAAXAAkAAAAMAAAAAAAAAAoAAAAMAAAAAAAXAAoAAAAMAAAAAAAAAAsAAAAMAAAAAAAXAAsAAAAMAAAAAAAAAAwAAAAMAAAAAAAXAAwAAAAMAAAAAAAAAA0AAAAMAAAAAAABAA0AAAAMAAAAAAACAA0AAAAMAAAAAAADAA0AAAAMAAAAAAAEAA0AAAAMAAAAAAAFAA0AAAAMAAAAAAAGAA0AAAAMAAAAAAAHAA0AAAAMAAAAAAAIAA0AAAAMAAAAAAAJAA0AAAAMAAAAAAAKAA0AAAAMAAAAAAALAA0AAAAMAAAAAAAMAA0AAAAMAAAAAAANAA0AAAAMAAAAAAAOAA0AAAAMAAAAAAAPAA0AAAAMAAAAAAAQAA0AAAAMAAAAAAARAA0AAAAMAAAAAAASAA0AAAAMAAAAAAATAA0AAAAMAAAAAAAUAA0AAAAMAAAAAAAVAA0AAAAMAAAAAAAWAA0AAAAMAAAAAAAXAA0AAAAMAAAAAAA=")
 tile_set = ExtResource("2_4eur7")
 
-[node name="Decori" type="Node2D" parent="." unique_id=534379183]
+[node name="Decori" type="Node2D" parent="." unique_id=2139381735]
 
-[node name="Festone0" type="Sprite2D" parent="Decori" unique_id=1316690634]
+[node name="Festone0" type="Sprite2D" parent="Decori" unique_id=1946822256]
 z_index = 1
 position = Vector2(20, 36)
 texture = ExtResource("3_t4s7a")
@@ -87,7 +87,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(0, 64, 32, 16)
 
-[node name="Festone1" type="Sprite2D" parent="Decori" unique_id=2044657243]
+[node name="Festone1" type="Sprite2D" parent="Decori" unique_id=249893458]
 z_index = 1
 position = Vector2(68, 36)
 texture = ExtResource("3_t4s7a")
@@ -96,7 +96,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(32, 64, 48, 16)
 
-[node name="Festone2" type="Sprite2D" parent="Decori" unique_id=946895890]
+[node name="Festone2" type="Sprite2D" parent="Decori" unique_id=536110525]
 z_index = 1
 position = Vector2(116, 36)
 texture = ExtResource("3_t4s7a")
@@ -105,7 +105,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(0, 64, 32, 16)
 
-[node name="Festone3" type="Sprite2D" parent="Decori" unique_id=707599489]
+[node name="Festone3" type="Sprite2D" parent="Decori" unique_id=599327195]
 z_index = 1
 position = Vector2(164, 36)
 texture = ExtResource("3_t4s7a")
@@ -114,7 +114,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(32, 64, 48, 16)
 
-[node name="Festone4" type="Sprite2D" parent="Decori" unique_id=2077100348]
+[node name="Festone4" type="Sprite2D" parent="Decori" unique_id=1388266130]
 z_index = 1
 position = Vector2(212, 36)
 texture = ExtResource("3_t4s7a")
@@ -123,7 +123,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(0, 64, 32, 16)
 
-[node name="Festone5" type="Sprite2D" parent="Decori" unique_id=1147608252]
+[node name="Festone5" type="Sprite2D" parent="Decori" unique_id=1410461794]
 z_index = 1
 position = Vector2(260, 36)
 texture = ExtResource("3_t4s7a")
@@ -132,7 +132,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(32, 64, 48, 16)
 
-[node name="Festone6" type="Sprite2D" parent="Decori" unique_id=929041192]
+[node name="Festone6" type="Sprite2D" parent="Decori" unique_id=1402011920]
 z_index = 1
 position = Vector2(308, 36)
 texture = ExtResource("3_t4s7a")
@@ -141,7 +141,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(0, 64, 32, 16)
 
-[node name="Coriandoli0" type="Sprite2D" parent="Decori" unique_id=640799102]
+[node name="Coriandoli0" type="Sprite2D" parent="Decori" unique_id=1985200449]
 position = Vector2(80, 96)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -149,7 +149,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(64, 80, 16, 16)
 
-[node name="Coriandoli1" type="Sprite2D" parent="Decori" unique_id=617634936]
+[node name="Coriandoli1" type="Sprite2D" parent="Decori" unique_id=715242780]
 position = Vector2(192, 128)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -157,7 +157,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(144, 32, 16, 16)
 
-[node name="Coriandoli2" type="Sprite2D" parent="Decori" unique_id=107336382]
+[node name="Coriandoli2" type="Sprite2D" parent="Decori" unique_id=823956317]
 position = Vector2(272, 112)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -165,7 +165,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(64, 80, 16, 16)
 
-[node name="Coriandoli3" type="Sprite2D" parent="Decori" unique_id=997845478]
+[node name="Coriandoli3" type="Sprite2D" parent="Decori" unique_id=179245836]
 position = Vector2(112, 192)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -173,7 +173,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(144, 32, 16, 16)
 
-[node name="Coriandoli4" type="Sprite2D" parent="Decori" unique_id=807824383]
+[node name="Coriandoli4" type="Sprite2D" parent="Decori" unique_id=1360899085]
 position = Vector2(304, 160)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -181,7 +181,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(64, 80, 16, 16)
 
-[node name="Coriandoli5" type="Sprite2D" parent="Decori" unique_id=1826664158]
+[node name="Coriandoli5" type="Sprite2D" parent="Decori" unique_id=332833470]
 position = Vector2(224, 208)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -189,7 +189,7 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(144, 32, 16, 16)
 
-[node name="Coriandoli6" type="Sprite2D" parent="Decori" unique_id=1773251150]
+[node name="Coriandoli6" type="Sprite2D" parent="Decori" unique_id=244790646]
 position = Vector2(48, 160)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -197,34 +197,34 @@ offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(64, 80, 16, 16)
 
-[node name="AloneFermo" type="Sprite2D" parent="Decori" unique_id=1786829730]
+[node name="AloneFermo" type="Sprite2D" parent="Decori" unique_id=1918689566]
 position = Vector2(232, 74)
 texture = SubResource("GradientTexture2D_i6r6f")
 
-[node name="Cavo0" type="Line2D" parent="Decori" unique_id=1212479776]
+[node name="Cavo0" type="Line2D" parent="Decori" unique_id=2004308390]
 points = PackedVector2Array(68, 135, 73, 139.81482, 78, 129.78514, 83, 123.732895, 88, 132.2744, 93, 136.15854, 98, 129.70483, 103, 131.29076, 108, 138.98003)
 width = 1.5
 default_color = Color(0.8235294, 0.23137255, 0.23137255, 1)
 
-[node name="Cavo1" type="Line2D" parent="Decori" unique_id=1488120251]
+[node name="Cavo1" type="Line2D" parent="Decori" unique_id=185753477]
 points = PackedVector2Array(68, 141.80017, 73, 130.35898, 78, 127.940094, 83, 137.21771, 88, 137.66966, 93, 131.58936, 98, 136.40016, 103, 142.52188, 108, 134.03032)
 width = 1.5
 default_color = Color(0.22352941, 0.7137255, 1, 1)
 
-[node name="Cavo2" type="Line2D" parent="Decori" unique_id=30756855]
+[node name="Cavo2" type="Line2D" parent="Decori" unique_id=1708747365]
 points = PackedVector2Array(68, 131.52211, 73, 132.84387, 78, 141.43462, 83, 138.70956, 88, 134.32675, 93, 141.72916, 98, 145.10959, 103, 134.41344, 108, 129.87225)
 width = 1.5
 default_color = Color(1, 0.88235295, 0.3019608, 1)
 
-[node name="Cavo3" type="Line2D" parent="Decori" unique_id=1003600524]
+[node name="Cavo3" type="Line2D" parent="Decori" unique_id=1750912147]
 points = PackedVector2Array(68, 138.1309, 73, 144.75835, 78, 139.63193, 83, 137.98817, 88, 146.90266, 93, 146.76942, 98, 135.17142, 103, 134.39433, 108, 144.06306)
 width = 1.5
 default_color = Color(0.23921569, 0.8627451, 0.5176471, 1)
 
-[node name="Mondo" type="Node2D" parent="." unique_id=1923222578]
+[node name="Mondo" type="Node2D" parent="." unique_id=418102195]
 y_sort_enabled = true
 
-[node name="Palloncino0" type="Sprite2D" parent="Mondo" unique_id=2105774927]
+[node name="Palloncino0" type="Sprite2D" parent="Mondo" unique_id=1398265225]
 position = Vector2(32, 64)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -232,13 +232,20 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(0, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino0" unique_id=1941484450]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino0" unique_id=1210198108]
 
-[node name="@CollisionShape2D@20" type="CollisionShape2D" parent="Mondo/Palloncino0/Collisione" unique_id=145736699]
+[node name="@CollisionShape2D@20" type="CollisionShape2D" parent="Mondo/Palloncino0/Collisione" unique_id=1252324462]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_vse3m")
 
-[node name="Palloncino1" type="Sprite2D" parent="Mondo" unique_id=2039148954]
+[node name="GuardaPalloncino0" type="Node2D" parent="Mondo" unique_id=2047788928]
+position = Vector2(40, 56)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un palloncino giallo. Ci hanno stampato sopra: \"BENVENUTO AL FONDO!\".", "* Non c\'è scritto il nome di nessuno. Va bene per tutti quelli che arrivano.")
+lines_after = PackedStringArray("* Il palloncino giallo è afflosciato. La scritta adesso dice \"BENVE...\". Il resto è una piega.")
+after_flag = "c1_rivelazione"
+
+[node name="Palloncino1" type="Sprite2D" parent="Mondo" unique_id=676172855]
 position = Vector2(48, 64)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -246,13 +253,20 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(16, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino1" unique_id=1540372017]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino1" unique_id=269231125]
 
-[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/Palloncino1/Collisione" unique_id=1911263884]
+[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/Palloncino1/Collisione" unique_id=696457662]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_susag")
 
-[node name="Palloncino2" type="Sprite2D" parent="Mondo" unique_id=1032298048]
+[node name="GuardaPalloncino1" type="Node2D" parent="Mondo" unique_id=2034205657]
+position = Vector2(56, 56)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un palloncino blu. Lo tocchi: è tiepido. Come se qualcuno ci avesse soffiato dentro poco fa.", "* Su un\'etichetta: \"Gonfiato al piano terra. Non riutilizzabile\".")
+lines_after = PackedStringArray("* Il palloncino blu è grigio e floscio. Tiepido non lo è più.")
+after_flag = "c1_rivelazione"
+
+[node name="Palloncino2" type="Sprite2D" parent="Mondo" unique_id=54879853]
 position = Vector2(144, 64)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -260,13 +274,20 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(32, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino2" unique_id=1426866147]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino2" unique_id=156313585]
 
-[node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/Palloncino2/Collisione" unique_id=627215908]
+[node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/Palloncino2/Collisione" unique_id=365883516]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_um4k8")
 
-[node name="Palloncino3" type="Sprite2D" parent="Mondo" unique_id=1276037062]
+[node name="GuardaPalloncino2" type="Node2D" parent="Mondo" unique_id=1499378114]
+position = Vector2(152, 56)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via. Come te.")
+lines_after = PackedStringArray("* Il cuore rosso si è sgonfiato. Adesso sembra un portafoglio vuoto.")
+after_flag = "c1_rivelazione"
+
+[node name="Palloncino3" type="Sprite2D" parent="Mondo" unique_id=1094948775]
 position = Vector2(256, 64)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -274,13 +295,20 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(48, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino3" unique_id=2070599735]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino3" unique_id=1960033971]
 
-[node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/Palloncino3/Collisione" unique_id=1444044112]
+[node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/Palloncino3/Collisione" unique_id=354212445]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_u05vs")
 
-[node name="Palloncino4" type="Sprite2D" parent="Mondo" unique_id=708198095]
+[node name="GuardaPalloncino3" type="Node2D" parent="Mondo" unique_id=569114998]
+position = Vector2(264, 56)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un palloncino verde. Dentro c\'è un bigliettino: \"Hai vinto un turno extra!\".", "* Sul retro, in piccolo: \"Il premio non è convertibile in tempo libero\".")
+lines_after = PackedStringArray("* Il palloncino verde è per terra. Il bigliettino è rimasto dentro, ma ormai non lo legge nessuno.")
+after_flag = "c1_rivelazione"
+
+[node name="Palloncino4" type="Sprite2D" parent="Mondo" unique_id=1337980367]
 position = Vector2(320, 208)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -288,13 +316,20 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(0, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino4" unique_id=731294369]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino4" unique_id=1023084392]
 
-[node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/Palloncino4/Collisione" unique_id=699988319]
+[node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/Palloncino4/Collisione" unique_id=835775096]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_20qjt")
 
-[node name="Palloncino5" type="Sprite2D" parent="Mondo" unique_id=501880747]
+[node name="GuardaPalloncino4" type="Node2D" parent="Mondo" unique_id=2108531671]
+position = Vector2(328, 200)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un palloncino in fondo alla stanza, lontano da tutti. Anche le decorazioni, qui, fanno i turni.", "* Questo è di guardia.")
+lines_after = PackedStringArray("* Anche quello di guardia si è sgonfiato. Nessuno gli darà il cambio.")
+after_flag = "c1_rivelazione"
+
+[node name="Palloncino5" type="Sprite2D" parent="Mondo" unique_id=1936693461]
 position = Vector2(16, 208)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -302,30 +337,32 @@ offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(32, 80, 16, 32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino5" unique_id=1593100840]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino5" unique_id=581230939]
 
-[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Palloncino5/Collisione" unique_id=937967044]
+[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Palloncino5/Collisione" unique_id=1039396738]
 position = Vector2(8, -2)
 shape = SubResource("RectangleShape2D_6clgy")
 
-[node name="GuardaPalloncini" type="Node2D" parent="Mondo" unique_id=1765898290]
-position = Vector2(152, 56)
+[node name="GuardaPalloncino5" type="Node2D" parent="Mondo" unique_id=1292026582]
+position = Vector2(24, 200)
 script = ExtResource("4_n0ai6")
-lines = PackedStringArray("* Un palloncino. Ci hanno stampato sopra: \"BENVENUTO AL FONDO!\".", "* Non c\'è scritto il nome di nessuno. Va bene per tutti quelli che arrivano.")
+lines = PackedStringArray("* Un palloncino che qualcuno ha disegnato a pennarello con una faccina. La faccina è triste.", "* L\'unico onesto della festa.")
+lines_after = PackedStringArray("* La faccina triste, adesso che è tutto grigio, sembra quasi sollevata.")
+after_flag = "c1_rivelazione"
 
-[node name="TavoloFesta" type="Sprite2D" parent="Mondo" unique_id=1259938567]
+[node name="TavoloFesta" type="Sprite2D" parent="Mondo" unique_id=1265359143]
 position = Vector2(160, 176)
 texture = ExtResource("5_0i2l6")
 centered = false
 offset = Vector2(0, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/TavoloFesta" unique_id=2031113663]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TavoloFesta" unique_id=2110158067]
 
-[node name="@CollisionShape2D@26" type="CollisionShape2D" parent="Mondo/TavoloFesta/Collisione" unique_id=789242173]
+[node name="@CollisionShape2D@26" type="CollisionShape2D" parent="Mondo/TavoloFesta/Collisione" unique_id=1072531714]
 position = Vector2(24, -7)
 shape = SubResource("RectangleShape2D_cvym0")
 
-[node name="Torta" type="Sprite2D" parent="Mondo" unique_id=792788868]
+[node name="Torta" type="Sprite2D" parent="Mondo" unique_id=1282985975]
 z_index = 1
 position = Vector2(168, 164)
 texture = ExtResource("3_t4s7a")
@@ -334,12 +371,14 @@ offset = Vector2(0, -24)
 region_enabled = true
 region_rect = Rect2(0, 40, 32, 24)
 
-[node name="GuardaTorta" type="Node2D" parent="Mondo" unique_id=316933833]
+[node name="GuardaTorta" type="Node2D" parent="Mondo" unique_id=202962919]
 position = Vector2(184, 168)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray("* Una torta con le candeline. Sulla glassa c\'è scritto: \"AUGURI ALLA CHEAP\".", "* La festa è per l\'azienda. Tu sei l\'invitato che porta il regalo.")
+lines_after = PackedStringArray("* La torta, adesso, si vede per quello che è: plastica. Le candeline sono lampadine. Spente.")
+after_flag = "c1_rivelazione"
 
-[node name="RegaloRosso" type="Sprite2D" parent="Mondo" unique_id=675720077]
+[node name="RegaloRosso" type="Sprite2D" parent="Mondo" unique_id=1844155070]
 position = Vector2(208, 176)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -347,13 +386,13 @@ offset = Vector2(0, -24)
 region_enabled = true
 region_rect = Rect2(160, 0, 16, 24)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/RegaloRosso" unique_id=1169643220]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/RegaloRosso" unique_id=791758584]
 
-[node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/RegaloRosso/Collisione" unique_id=1384837884]
+[node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/RegaloRosso/Collisione" unique_id=26127502]
 position = Vector2(8, -3)
 shape = SubResource("RectangleShape2D_0sumg")
 
-[node name="RegaloBlu" type="Sprite2D" parent="Mondo" unique_id=1868459598]
+[node name="RegaloBlu" type="Sprite2D" parent="Mondo" unique_id=503143507]
 position = Vector2(144, 192)
 texture = ExtResource("3_t4s7a")
 centered = false
@@ -361,69 +400,81 @@ offset = Vector2(0, -24)
 region_enabled = true
 region_rect = Rect2(176, 0, 16, 24)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/RegaloBlu" unique_id=513290844]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/RegaloBlu" unique_id=1033926775]
 
-[node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/RegaloBlu/Collisione" unique_id=1016833379]
+[node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/RegaloBlu/Collisione" unique_id=1031357578]
 position = Vector2(8, -3)
 shape = SubResource("RectangleShape2D_gul0e")
 
-[node name="GuardaRegali" type="Node2D" parent="Mondo" unique_id=190381839]
+[node name="GuardaRegaloRosso" type="Node2D" parent="Mondo" unique_id=249821546]
 position = Vector2(216, 168)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray("* Un regalo impacchettato benissimo. Lo scuoti: è vuoto.", "* Sul biglietto: \"Il regalo sei tu. Con affetto, l\'Ufficio Risorse Umane\".")
+lines_after = PackedStringArray("* Il regalo rosso è grigio. Il fiocco si è sciolto da solo. Dentro, sempre niente.")
+after_flag = "c1_rivelazione"
 
-[node name="GuardaStriscione" type="Node2D" parent="Mondo" unique_id=968902333]
+[node name="GuardaRegaloBlu" type="Node2D" parent="Mondo" unique_id=273380945]
+position = Vector2(152, 184)
+script = ExtResource("4_n0ai6")
+lines = PackedStringArray("* Un regalo blu, con il tuo nome scritto a mano sul biglietto. Come facevano a saperlo?", "* Dentro c\'è un modulo: \"Dichiarazione di disponibilità al lavoro straordinario\". Già firmato. Con la tua firma.")
+lines_after = PackedStringArray("* Il regalo blu, spento, sembra solo una scatola. Il modulo dentro è ancora firmato.")
+after_flag = "c1_rivelazione"
+
+[node name="GuardaStriscione" type="Node2D" parent="Mondo" unique_id=724017089]
 position = Vector2(104, 56)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray("* Uno striscione: \"IL POSTO PIÙ FELICE DELLA TORRE!\".", "* Più in piccolo: \"Felicità garantita fino a esaurimento scorte\".")
+lines_after = PackedStringArray()
 
-[node name="ScatolaLampadine1" type="Sprite2D" parent="Mondo" unique_id=1742195922]
+[node name="ScatolaLampadine1" type="Sprite2D" parent="Mondo" unique_id=906309898]
 position = Vector2(288, 176)
 texture = ExtResource("6_xp5ou")
 centered = false
 offset = Vector2(0, -24)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine1" unique_id=1272710664]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine1" unique_id=1057743573]
 
-[node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/ScatolaLampadine1/Collisione" unique_id=608520664]
+[node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/ScatolaLampadine1/Collisione" unique_id=996522233]
 position = Vector2(16, -4)
 shape = SubResource("RectangleShape2D_xgsui")
 
-[node name="ScatolaLampadine2" type="Sprite2D" parent="Mondo" unique_id=1761376847]
+[node name="ScatolaLampadine2" type="Sprite2D" parent="Mondo" unique_id=898494830]
 position = Vector2(294, 194)
 texture = ExtResource("6_xp5ou")
 centered = false
 offset = Vector2(0, -24)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine2" unique_id=120239750]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine2" unique_id=72836032]
 
-[node name="@CollisionShape2D@30" type="CollisionShape2D" parent="Mondo/ScatolaLampadine2/Collisione" unique_id=1155970111]
+[node name="@CollisionShape2D@30" type="CollisionShape2D" parent="Mondo/ScatolaLampadine2/Collisione" unique_id=1087931165]
 position = Vector2(16, -4)
 shape = SubResource("RectangleShape2D_icwa2")
 
-[node name="GuardaScatole" type="Node2D" parent="Mondo" unique_id=93798184]
+[node name="GuardaScatole" type="Node2D" parent="Mondo" unique_id=1660904230]
 position = Vector2(312, 168)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray("* Scatole piene di lampadine. Alcune accese, alcune rotte, alcune che non hanno ancora deciso.")
+lines_after = PackedStringArray()
 
-[node name="GuardaCavi" type="Node2D" parent="Mondo" unique_id=1807563676]
+[node name="GuardaCavi" type="Node2D" parent="Mondo" unique_id=2113151068]
 position = Vector2(88, 136)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray("* Un groviglio di cavi colorati. Rosso con rosso, blu con blu. In teoria.")
+lines_after = PackedStringArray()
 
-[node name="CassettaFermo" type="Sprite2D" parent="Mondo" unique_id=1013596850]
+[node name="CassettaFermo" type="Sprite2D" parent="Mondo" unique_id=1193867]
 position = Vector2(224, 80)
 texture = ExtResource("7_jee0l")
 centered = false
 offset = Vector2(0, -16)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/CassettaFermo" unique_id=910819512]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/CassettaFermo" unique_id=929010291]
 
-[node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/CassettaFermo/Collisione" unique_id=1541007921]
+[node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/CassettaFermo/Collisione" unique_id=1877791642]
 position = Vector2(8, -8)
 shape = SubResource("RectangleShape2D_jrs5x")
 
-[node name="Fermo" type="AnimatedSprite2D" parent="Mondo" unique_id=904254085]
+[node name="Fermo" type="AnimatedSprite2D" parent="Mondo" unique_id=1965709372]
 position = Vector2(232, 79)
 script = ExtResource("8_ya8wr")
 sheet = "char_14"
@@ -431,68 +482,68 @@ anim = "sit_left"
 nudge = Vector2(-3, -6)
 grey = true
 
-[node name="ParlaConFermo" type="Node2D" parent="Mondo" unique_id=999607431]
+[node name="ParlaConFermo" type="Node2D" parent="Mondo" unique_id=1106304258]
 position = Vector2(232, 72)
 script = ExtResource("4_n0ai6")
 lines = PackedStringArray()
+lines_after = PackedStringArray()
 method = "_talk_fermo"
 
-[node name="Bulbo" type="Node2D" parent="Mondo" unique_id=1264432764]
+[node name="Bulbo" type="Node2D" parent="Mondo" unique_id=760348347]
 position = Vector2(280, 174)
 script = ExtResource("9_70trp")
 npc_id = "mina"
 activity = "idle_left"
 
-[node name="NonnoMina" type="Node2D" parent="Mondo" unique_id=1074351174]
+[node name="NonnoMina" type="Node2D" parent="Mondo" unique_id=616595925]
 position = Vector2(104, 142)
 script = ExtResource("9_70trp")
 npc_id = "bulbo"
 
-[node name="CycletteDinamo" type="Sprite2D" parent="Mondo" unique_id=837672999]
+[node name="CycletteDinamo" type="Sprite2D" parent="Mondo" unique_id=1762524109]
 position = Vector2(48, 112)
 texture = ExtResource("10_e48jl")
 centered = false
 offset = Vector2(0, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/CycletteDinamo" unique_id=1595403232]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/CycletteDinamo" unique_id=779968279]
 
-[node name="@CollisionShape2D@32" type="CollisionShape2D" parent="Mondo/CycletteDinamo/Collisione" unique_id=877279201]
+[node name="@CollisionShape2D@32" type="CollisionShape2D" parent="Mondo/CycletteDinamo/Collisione" unique_id=1921260022]
 position = Vector2(16, -5)
 shape = SubResource("RectangleShape2D_y4htq")
 
-[node name="Cyclette" type="Node2D" parent="Mondo" unique_id=46798063]
+[node name="Cyclette" type="Node2D" parent="Mondo" unique_id=1969591489]
 position = Vector2(64, 96)
 script = ExtResource("11_kwl31")
 kind = "station"
 job = "dinamo"
 
-[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=851916766]
+[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=24361304]
 position = Vector2(288, 48)
 script = ExtResource("11_kwl31")
 kind = "badge"
 
-[node name="ScaleSu" type="Node2D" parent="Mondo" unique_id=1429861367]
+[node name="ScaleSu" type="Node2D" parent="Mondo" unique_id=1430455181]
 position = Vector2(336, 48)
 script = ExtResource("11_kwl31")
 kind = "stairs_up"
-target = "res://scenes/world/sottoufficio.tscn"
-spawn = "from_below"
+target = "res://chapters/c1/fine_capitolo.tscn"
 need = "-4"
 
-[node name="Stellina" type="Node2D" parent="Mondo" unique_id=1009282998]
+[node name="Stellina" type="Node2D" parent="Mondo" unique_id=1003915242]
 position = Vector2(80, 176)
 script = ExtResource("11_kwl31")
 
-[node name="Arrivi" type="Node2D" parent="." unique_id=1938007225]
+[node name="Arrivi" type="Node2D" parent="." unique_id=1859897450]
 
-[node name="default" type="Marker2D" parent="Arrivi" unique_id=2103905973]
+[node name="default" type="Marker2D" parent="Arrivi" unique_id=688613789]
 position = Vector2(184, 62)
 metadata/facing = "down"
 
-[node name="elevator" type="Marker2D" parent="Arrivi" unique_id=1583972344]
+[node name="elevator" type="Marker2D" parent="Arrivi" unique_id=391246378]
 position = Vector2(184, 62)
 metadata/facing = "down"
 
-[node name="from_above" type="Marker2D" parent="Arrivi" unique_id=1548857635]
+[node name="from_above" type="Marker2D" parent="Arrivi" unique_id=662176449]
 position = Vector2(344, 94)
 metadata/facing = "down"

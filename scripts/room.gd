@@ -769,6 +769,19 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 	examine(cell_center(bottom_left + Vector2i(-1, 0)), [
 		"* Il tornello. Sopra il lettore c'è scritto: \"%s. Solo con badge\"." % GameState.floor_name(need),
 	])
+	# sul primo gradino (col badge) la stanza può far succedere qualcosa: on_stairs_step()
+	var step := Area2D.new()
+	var st := RectangleShape2D.new()
+	st.size = Vector2(2 * T - 6, 6)
+	var stc := CollisionShape2D.new()
+	stc.shape = st
+	stc.position = Vector2(bottom_left.x * T + T, bottom_left.y * T - 4)
+	step.add_child(stc)
+	add_child(step)
+	step.body_entered.connect(func(b: Node2D) -> void:
+		if b is Player and not Ui.blocks_input() and GameState.has_badge(need):
+			on_stairs_step(b as Player, need)
+	)
 	# in cima agli scalini si cambia piano
 	var top := Area2D.new()
 	var ts := RectangleShape2D.new()
@@ -788,6 +801,11 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 			lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
 		Router.goto(path, spawn_name, lines)
 	)
+
+
+## Da scrivere nelle stanze che vogliono un momento speciale sul primo gradino (il Fondo).
+func on_stairs_step(_p: Player, _need: String) -> void:
+	pass
 
 
 ## Il tornello si apre (appena compri il badge, senza dover cambiare stanza).
@@ -893,8 +911,10 @@ func _do_arrival(_to: Vector2) -> void:
 ## Lo sportello dei badge: l'addetta sta nella casella `cell`, la scrivania sotto di lei.
 func add_badge_machine(cell: Vector2i) -> void:
 	var desk := cell + Vector2i(0, 1)
-	add_computer_desk(desk)
+	# lo sportello fa parte del sistema: resta colorato anche quando il resto si spegne
+	add_computer_desk(desk).set_meta("finto", true)
 	var clerk := AnimatedSprite2D.new()
+	clerk.set_meta("finto", true)
 	clerk.sprite_frames = Assets.character(BADGE_CLERK)
 	clerk.centered = false
 	clerk.offset = Vector2(-8, -48)

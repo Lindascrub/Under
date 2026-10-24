@@ -87,10 +87,17 @@ func blip(pitch := 1.0) -> void:
 	sfx("blip", pitch)
 
 
+## Rallenta (o riporta normale) la musica: 1.0 = normale.
+func music_pitch(p: float, time := 2.0) -> void:
+	var tw := create_tween()
+	tw.tween_property(_music, "pitch_scale", p, time)
+
+
 func music(name: String) -> void:
 	if name == _music_name:
 		return
 	_music_name = name
+	_music.pitch_scale = 1.0
 	if name == "":
 		_music.stop()
 		return
