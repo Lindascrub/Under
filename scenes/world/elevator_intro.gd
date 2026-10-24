@@ -36,7 +36,7 @@ func _ready() -> void:
 func _sequence() -> void:
 	await _wait(0.8)
 	await Ui.say(["* L'ascensore della Torre CHEAP. Odora di metallo e di gente che ci ha pianto dentro.",
-		"* Sul display, sotto il numero del piano, scorre una scritta: il tuo debito."])
+		"* Una musichetta allegra esce da un altoparlante. Una voce registrata: \"Benvenuto nella Torre CHEAP! Il futuro costa poco!\""])
 	for f in ["-1", "-2", "-3"]:
 		await _wait(0.9)
 		_floor_text = f
@@ -131,13 +131,6 @@ func _draw() -> void:
 	draw_rect(disp, Color("0c0a10"))
 	if _display_on:
 		draw_string(font, Vector2(disp.position.x, disp.position.y + 20), _floor_text, HORIZONTAL_ALIGNMENT_CENTER, disp.size.x, 20, Color("e8453a"))
-	var led := Rect2(262, r.position.y + 44, 116, 13)
-	draw_rect(led.grow(1), Color("1a1622"))
-	draw_rect(led, Color("0c0a10"))
-	# il debito lampeggia piano, come un promemoria che non si spegne mai
-	if _display_on and fmod(_t, 1.6) < 1.2:
-		draw_string(font, Vector2(led.position.x, led.position.y + 10), "DEBITO %s" % GameState.euros(GameState.debt),
-			HORIZONTAL_ALIGNMENT_CENTER, led.size.x, 10, Color("f2b23a"))
 	# pulsantiera
 	var panel := Rect2(r.end.x - 34, r.position.y + 16, 18, 40)
 	draw_rect(panel, dim.call(Color("b7b3c2")))

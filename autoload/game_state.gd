@@ -642,9 +642,14 @@ func assign_job(id: String) -> void:
 ## sempre qualcuno che hai conosciuto, così la scelta fa male.
 func promotion_victim() -> String:
 	var order := ["gino", "vito", "marta", "dario", "sig_bruno", "lea", "giulia", "ragazzo_sami", "portiere_ivo"]
-	# la prima telefonata (nessuna promozione firmata o rifiutata) è sempre la cosetta di Gino
-	if exploited == 0 and int(flags.get("promotions_refused", 0)) == 0 and not is_robot("gino") and "gino" not in freed:
-		return "gino"
+	# prima di tutto qualcuno che hai conosciuto qui, su questo piano (al Fondo: Fermo)
+	var here: Array = []
+	if floor_id == "-5":
+		here.append("fermo")
+	here.append_array(floor_people())
+	for id: String in here:
+		if flags.get("met_" + id, false) and not is_robot(id) and id not in freed and not promotion(id).is_empty():
+			return id
 	for id: String in order:
 		if flags.get("met_" + id, false) and not is_robot(id) and id not in freed:
 			return id

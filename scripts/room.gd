@@ -55,9 +55,13 @@ func _ready() -> void:
 	add_child(_tiles)
 	_solids = StaticBody2D.new()
 	add_child(_solids)
-	world = Node2D.new()
-	world.y_sort_enabled = true
-	add_child(world)
+	# le stanze fatte nell'editor hanno già il loro nodo "Mondo" (ordinato per y)
+	if has_node("Mondo"):
+		world = get_node("Mondo")
+	else:
+		world = Node2D.new()
+		world.y_sort_enabled = true
+		add_child(world)
 	build()
 	GameState.room_floor = floor_id
 	if floor_id != "":
@@ -150,24 +154,27 @@ func add_station(room_key: String) -> void:
 	for j: Dictionary in GameState.jobs_available():
 		if j.get("room", "") != room_key:
 			continue
-		var cell := Vector2i(int(j["station"][0]), int(j["station"][1]))
-		if not GameState.worked_today:
-			# un segnale che lampeggia sopra il posto di lavoro
-			# una targhetta "TURNO" che ondeggia sopra al posto di lavoro di oggi
-			var mark := Label.new()
-			mark.text = "TURNO"
-			mark.add_theme_font_size_override("font_size", 8)
-			mark.add_theme_color_override("font_color", Color("ffe14d"))
-			mark.add_theme_constant_override("outline_size", 3)
-			mark.add_theme_color_override("font_outline_color", Color.BLACK)
-			mark.position = cell_center(cell) + Vector2(-13, -30)
-			mark.z_index = 30
-			add_child(mark)
-			var tw := mark.create_tween().set_loops()
-			tw.tween_property(mark, "position:y", mark.position.y - 3, 0.4)
-			tw.tween_property(mark, "position:y", mark.position.y, 0.4)
-		var jj := j
-		add_spot(cell_center(cell), func() -> void: _station(jj))
+		add_station_at(j, Vector2i(int(j["station"][0]), int(j["station"][1])))
+
+
+## Un posto di lavoro in una casella precisa (usato anche dalle stanze fatte nell'editor).
+func add_station_at(j: Dictionary, cell: Vector2i) -> void:
+	if not GameState.worked_today:
+		# una targhetta "TURNO" che ondeggia sopra al posto di lavoro di oggi
+		var mark := Label.new()
+		mark.text = "TURNO"
+		mark.add_theme_font_size_override("font_size", 8)
+		mark.add_theme_color_override("font_color", Color("ffe14d"))
+		mark.add_theme_constant_override("outline_size", 3)
+		mark.add_theme_color_override("font_outline_color", Color.BLACK)
+		mark.position = cell_center(cell) + Vector2(-13, -30)
+		mark.z_index = 30
+		add_child(mark)
+		var tw := mark.create_tween().set_loops()
+		tw.tween_property(mark, "position:y", mark.position.y - 3, 0.4)
+		tw.tween_property(mark, "position:y", mark.position.y, 0.4)
+	var jj := j
+	add_spot(cell_center(cell), func() -> void: _station(jj))
 
 
 func _station(j: Dictionary) -> void:
@@ -285,10 +292,11 @@ func _pity_offer() -> void:
 ## La promozione è un furto: copiare il lavoro di `victim` quando non guarda (minigioco "steal").
 func start_steal(victim: String, promo: Dictionary) -> void:
 	var data := GameState.npc_data(victim)
-	var who := str(data.get("name", "il collega"))
+	var who := str(data.get("name", promo.get("victim_name", "il collega")))
 	GameState.minigame = {
 		"kind": "steal", "game": "steal", "name": str(promo.get("title", "Il merito degli altri")),
-		"victim": victim, "victim_name": who, "victim_sheet": str(data.get("sheet", "char_02")),
+		"victim": victim, "victim_name": who, "victim_sheet": str(data.get("sheet", promo.get("victim_sheet", "char_02"))),
+		"seated": victim == "fermo",
 		"item": str(promo.get("item", "il lavoro di " + who)),
 		"intro": ["* %s è alla sua scrivania. Davanti a lui, %s." % [who, str(promo.get("item", "il suo lavoro"))],
 			"* Nessuno ti ha visto entrare. Per ora."],
@@ -794,6 +802,12 @@ func open_turnstiles() -> void:
 
 ## Toglie i muri (le caselle solide) in un rettangolo di caselle.
 func unblock(r: Rect2i) -> void:
+	# nelle stanze fatte nell'editor i muri sono tessere del livello "Muri"
+	if has_node("Muri"):
+		var walls := get_node("Muri") as TileMapLayer
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				walls.erase_cell(Vector2i(x, y))
 	var area := Rect2(r.position * T, r.size * T)
 	for c in _solids.get_children():
 		if c is CollisionShape2D and area.has_point((c as CollisionShape2D).position):

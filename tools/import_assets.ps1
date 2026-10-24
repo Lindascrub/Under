@@ -23,6 +23,7 @@ $cityProp = "$ext/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_{0}.png
 $interiors = [ordered]@{
     "1_Interiors/16x16/Room_Builder_16x16.png" = "tiles/room_builder.png"
     "1_Interiors/16x16/Theme_Sorter/1_Generic_16x16.png" = "tiles/generic.png"
+    "1_Interiors/16x16/Theme_Sorter/10_Birthday_party_16x16.png" = "tiles/birthday.png"
     "1_Interiors/16x16/Theme_Sorter/17_Visibile_Upstairs_System_16x16.png" = "tiles/upstairs.png"
     ($bedroom -f 99)     = "props/bed.png"
     ($bedroom -f 267)    = "props/dresser.png"

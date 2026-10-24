@@ -99,6 +99,12 @@ var st_caught_t := 0.0
 var st_victim: SpriteFrames
 var st_name := ""
 var st_item := ""
+## un, due, tre, stella: tu ti avvicini (st_x) mentre il collega ti dà le spalle
+var st_x := 0.0
+var st_seated := false
+var st_bump := 0.0
+const ST_START := 168.0
+const ST_DESK := 352.0
 
 
 func setup(scene: Node2D, which: String) -> void:
@@ -147,6 +153,8 @@ func setup(scene: Node2D, which: String) -> void:
 			st_item = str(w.cfg.get("item", "il suo lavoro"))
 			hero = Assets.character("char_01")
 			st_t = randf_range(1.5, 2.5)
+			st_x = ST_START
+			st_seated = bool(w.cfg.get("seated", false))
 		"pong":
 			w.duration = 40.0
 			w.target = 4.0 + d * 2.0
@@ -176,7 +184,7 @@ func rules() -> String:
 		"breakout":
 			return "* SINISTRA e DESTRA muovono la barra, {ok} lancia la pallina. Ogni lampadina che rompi si accende al piano di sopra."
 		"steal":
-			return "* Tieni premuto {ok} per copiare %s, ma solo quando %s ti dà le spalle. Quando si gira (lo vedi muovere la testa), lascia subito!" % [st_item if st_item != "" else "il suo lavoro", st_name if st_name != "" else "il collega"]
+			return "* Un, due, tre, stella. Avvicinati di soppiatto a %s tenendo premuto DESTRA, poi tieni premuto {ok} per copiare %s. Quando si gira (vedi \"?\"), fermati: se ti vede muovere, ti rimanda indietro. C'è poco tempo." % [st_name if st_name != "" else "il collega", st_item if st_item != "" else "il suo lavoro"]
 		"pong":
 			return "* SU e GIÙ muovono la tua racchetta. Rimanda la moneta al Signor Tasso: se gli passa, è un punto per te."
 	return ""
@@ -279,31 +287,41 @@ func update(delta: float) -> void:
 		"steal":
 			st_progress = maxf(st_progress, w.score)
 			st_caught_t = maxf(0.0, st_caught_t - delta)
+			st_bump = maxf(0.0, st_bump - delta * 4.0)
 			st_t -= delta
 			if st_t <= 0.0:
 				match st_state:
 					"work":
 						st_state = "turn"
 						st_t = maxf(0.3, 0.7 - d * 0.35)
+						Sound.sfx("step", 0.7)
 					"turn":
 						st_state = "look"
+						st_bump = 1.0
 						st_t = randf_range(0.9, 1.6)
 					_:
 						st_state = "work"
 						st_t = randf_range(maxf(0.7, 1.4 - d * 0.6), maxf(1.4, 2.8 - d * 1.0))
-			var copying := Input.is_action_pressed("confirm") and st_caught_t <= 0.0
-			if copying:
-				if st_state == "look":
-					# beccato!
-					w.mistakes += 1
-					st_progress = maxf(0.0, st_progress - 0.25)
-					st_caught_t = 1.2
-					w.flash_now(Color("ff2a3c"))
-					Sound.sfx("deny")
-				else:
-					st_progress = minf(1.0, st_progress + (0.2 - d * 0.06) * delta)
-					if int(t * 8) % 2 == 0:
-						Sound.sfx("step", 1.8)
+			if st_caught_t > 0.0:
+				return
+			var walking := Input.is_action_pressed("move_right") and st_x < ST_DESK
+			var copying := Input.is_action_pressed("confirm") and st_x >= ST_DESK
+			if (walking or copying) and st_state == "look":
+				# beccato! torni indietro, e quello che avevi copiato in parte si perde
+				w.mistakes += 1
+				st_progress = maxf(0.0, st_progress - 0.25)
+				st_x = maxf(ST_START, st_x - 70.0)
+				st_caught_t = 1.2
+				w.flash_now(Color("ff2a3c"))
+				Sound.sfx("deny")
+			elif walking:
+				st_x = minf(ST_DESK, st_x + (55.0 + d * 15.0) * delta)
+				if int(t * 6) % 2 == 0:
+					Sound.sfx("step", 1.2)
+			elif copying:
+				st_progress = minf(1.0, st_progress + (0.22 - d * 0.06) * delta)
+				if int(t * 8) % 2 == 0:
+					Sound.sfx("step", 1.8)
 			w.score = st_progress
 			if st_progress >= 1.0 or w.mistakes >= 3:
 				w.time_left = 0.0
@@ -545,34 +563,58 @@ func _draw_breakout(font: Font) -> void:
 
 
 func _draw_steal(font: Font) -> void:
-	# l'ufficio: il pavimento, la scrivania del collega, lui seduto di spalle
+	# il pavimento dell'ufficio (o del Fondo)
 	w.draw_rect(BOX.grow(-3), Color("d9cbb0"))
 	for x in range(int(BOX.position.x) + 3, int(BOX.end.x) - 3, 24):
 		w.draw_rect(Rect2(x, BOX.position.y + 3, 1, BOX.size.y - 6), Color("cbbd9f"))
-	var desk_sheet := Assets.tex("tiles/generic.png", Vector2i(256, 1248))
-	var dpos := Vector2(BOX.get_center().x + 40, BOX.position.y + 20)
-	w.draw_texture_rect_region(desk_sheet, Rect2(dpos, Vector2(48, 120)), Rect2(96, 8, 16, 40))
-	var anim := {"work": "idle_up", "turn": "idle_left", "look": "idle_down"}[st_state] as String
+	var floor_y := BOX.position.y + 150
+	var vpos := Vector2(ST_DESK + 56, floor_y)
+	# il collega: di spalle mentre lavora, si gira, ti guarda
+	var anim := ""
+	if st_seated:
+		anim = {"work": "sit_right", "turn": "idle_up", "look": "sit_left"}[st_state]
+
+	else:
+		anim = {"work": "idle_up", "turn": "idle_left", "look": "idle_down"}[st_state]
+	var hop := -6.0 * st_bump
+	var shake := Vector2(sin(t * 60.0) * 2.0, 0) if st_state == "turn" else Vector2.ZERO
 	var vf := st_victim.get_frame_texture(anim, int(t * 6) % 6)
-	w.draw_texture_rect(vf, Rect2(dpos + Vector2(0, 46), Vector2(48, 96)), false)
-	# il foglio con l'idea, sul bordo della scrivania
-	var paper := Rect2(dpos + Vector2(-34, 70), Vector2(26, 32))
-	w.draw_rect(paper, Color("f6f2e6"))
-	for k in 5:
-		w.draw_rect(Rect2(paper.position + Vector2(4, 6 + k * 5), Vector2(18, 1)), Color("8a8494"))
-	# tu, che sbirci
-	var copying := Input.is_action_pressed("confirm") and st_caught_t <= 0.0
-	var hf := hero.get_frame_texture("walk_right" if copying else "idle_right", int(t * 10) % 6)
-	w.draw_texture_rect(hf, Rect2(Vector2(BOX.position.x + 60, BOX.position.y + 66), Vector2(48, 96)), false)
+	var vrect := Rect2(vpos + Vector2(-24, -96 + hop) + shake, Vector2(48, 96))
+	if st_seated:
+		vrect.position.y -= 14
+	w.draw_texture_rect(vf, vrect, false)
+	if st_seated:
+		# la cassetta davanti alle gambe: Fermo ci sta seduto sopra
+		var crate := Assets.tex("street/box_trash.png", Vector2i(16, 16))
+		w.draw_texture_rect(crate, Rect2(vpos + Vector2(-22, -40), Vector2(44, 40)), false)
+	# il quaderno, per terra accanto a lui
+	var book := Rect2(ST_DESK - 10, floor_y - 22, 24, 18)
+	w.draw_rect(book, Color("5a3e2b"))
+	w.draw_rect(book.grow(-2), Color("f6f2e6"))
+	for k in 3:
+		w.draw_rect(Rect2(book.position + Vector2(4, 5 + k * 4), Vector2(16, 1)), Color("8a8494"))
+	# tu: cammini di soppiatto, ti fermi, copi
+	var walking := Input.is_action_pressed("move_right") and st_x < ST_DESK and st_caught_t <= 0.0
+	var copying := Input.is_action_pressed("confirm") and st_x >= ST_DESK and st_caught_t <= 0.0
+	var hanim := "walk_right" if walking else ("phone" if copying else "idle_right")
+	var hf := hero.get_frame_texture(hanim, int(t * 10) % 6)
+	w.draw_texture_rect(hf, Rect2(Vector2(st_x - 24, floor_y - 96), Vector2(48, 96)), false)
 	# i segnali: la testa che si gira, lo sguardo che ti becca
+	var sign_pos := vpos + Vector2(-6, -112 if not st_seated else -142)
 	if st_state == "turn":
-		w.draw_string(font, dpos + Vector2(10, 40), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color("ffe14d"))
+		w.draw_string(font, sign_pos, "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color("ffe14d"))
 	elif st_state == "look":
-		w.draw_string(font, dpos + Vector2(10, 40), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color("ff2a3c"))
+		w.draw_string(font, sign_pos, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("ff2a3c"))
 	if st_caught_t > 0.0:
-		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "\"Ehi! Cosa stai guardando?\"", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 13, Color("ff2a3c"))
+		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "\"Ehi! Cosa stai facendo?\"", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color("ff2a3c"))
+	elif st_x < ST_DESK:
+		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "Tieni premuto DESTRA per avvicinarti. Fermati quando si gira!", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
+	else:
+		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), GameState.fmt("Tieni premuto {ok} per copiare. Lascia quando si gira!"), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
+	# il tempo che resta, grande
+	w.draw_string(font, Vector2(BOX.end.x - 70, BOX.position.y + 44), "%d" % int(ceil(maxf(0.0, w.time_left))), HORIZONTAL_ALIGNMENT_RIGHT, 60, 26, Color("c0302a") if w.time_left < 10.0 else Color("3a3644"))
 	# quanto hai copiato
-	var bar := Rect2(BOX.position.x + 30, BOX.end.y - 22, BOX.size.x - 60, 10)
+	var bar := Rect2(BOX.position.x + 30, BOX.end.y - 18, BOX.size.x - 60, 8)
 	w.draw_rect(bar, Color("3a3644"))
 	w.draw_rect(Rect2(bar.position, Vector2(bar.size.x * st_progress, bar.size.y)), Color("3ddc84"))
 	w.draw_string(font, Vector2(bar.position.x, bar.position.y - 4), "Copiato: %d%%" % int(st_progress * 100.0), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3a3644"))

@@ -462,10 +462,6 @@ func _run() -> void:
 	await _idle()
 	var fondo: Room = get_tree().current_scene
 	_check(GameState.floor_id == "-5", "la partita dovrebbe cominciare al piano -5")
-	# il buio non lascia andare da nessuna parte finché non parli con Fermo
-	fondo.player.position = fondo.cell_feet(Vector2i(11, 4))
-	await get_tree().physics_frame
-	_check(fondo.player.test_move(fondo.player.global_transform, Vector2(-64, 0)), "prima di parlare con Fermo il buio dovrebbe bloccare")
 	await get_tree().create_timer(1.5).timeout
 	await _idle()
 	choose_queue = [0, 0]
@@ -478,7 +474,6 @@ func _run() -> void:
 	await _idle()
 	await get_tree().physics_frame
 	_check(GameState.flags.get("fermo_talked", false), "si dovrebbe poter parlare con Fermo")
-	_check(not fondo.player.test_move(fondo.player.global_transform, Vector2(-64, 0)), "dopo Fermo il buio non dovrebbe più bloccare")
 	# il lavoro: la cyclette
 	choose_queue = [0, 1]
 	plan = []
@@ -563,6 +558,7 @@ func _run() -> void:
 	GameState.flags["fermo_called"] = true
 	var esteem0 := GameState.self_esteem
 	GameState.helped_ids.assign(GameState.floor_people("-5"))
+	GameState.flags["c1_arrivo"] = true
 	await _go(Router.FONDO, "elevator")
 	await get_tree().create_timer(0.5).timeout
 	await _idle()

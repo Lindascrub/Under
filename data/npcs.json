@@ -1879,7 +1879,7 @@
     }
   },
   "bulbo": {
-    "name": "Nonno Bulbo",
+    "name": "Nonno Mina",
     "sheet": "char_15",
     "schedule": [
       {
@@ -1893,18 +1893,13 @@
     ],
     "intro": [
       "Ehi, ehi. Piano coi piedi: qui per terra ci sono i fili.",
-      "Io sono Bulbo. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
+      "Mi chiamano Nonno Mina. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
       "Adesso le cambio qui sotto. Quelle fulminate tornano sempre giù. Come noi."
     ],
     "days": [
       [
-        "Una lampadina dura mille ore. Io ne ho fatte centomila. Fai tu il conto di chi dura di più."
-      ],
-      [
-        "Il segreto è non guardare la luce. Se la guardi, poi il buio ti sembra più buio."
-      ],
-      [
-        "Fermo è un brav'uomo. Ha solo smesso di aspettarsi qualcosa. È contagioso, sta' attento."
+        "Scusa, ragazzo, non posso parlare adesso. Devo mantenere il mio colore.",
+        "* Mina torna ai suoi fili. Fischietta, ma stona."
       ]
     ],
     "helped": [
@@ -1913,23 +1908,24 @@
     "emote": "note",
     "help": {
       "kind": "time",
-      "ask": "Nonno Bulbo ha un groviglio di fili colorati e gli tremano le mani.",
+      "ask": "Nonno Mina ha un pannello con i fili tutti staccati, e gli tremano le mani.",
       "yes": [
         "Bravo! Rosso, blu, giallo... tu hai le dita giuste. Io avevo le dita giuste, una volta."
       ],
       "minigame": {
-        "type": "sequence",
-        "title": "I fili di Bulbo",
+        "type": "wires",
+        "title": "I fili di Mina",
         "intro": [
-          "* Bulbo ti indica i fili, uno alla volta.",
-          "* Ricorda l'ordine e ripetilo con le frecce."
+          "* Il pannello ha i fili staccati.",
+          "* Collega ogni filo a quello dello stesso colore: SU e GIÙ per scegliere, {ok} per collegare."
         ],
+        "time": 30,
         "reward": 10
       }
     }
   },
   "mina": {
-    "name": "Mina",
+    "name": "Bulbo",
     "sheet": "char_08",
     "schedule": [
       {
@@ -1943,18 +1939,13 @@
     ],
     "intro": [
       "Non calpestare le lampadine. Sono rotte, ma sono mie.",
-      "Mi chiamo Mina. Smisto le lampadine fulminate: queste si buttano, queste si aggiustano, queste si fingono buone.",
+      "Mi chiamo Bulbo. Smisto le lampadine fulminate: queste si buttano, queste si aggiustano, queste si fingono buone.",
       "Le ultime le rimandano di sopra. Nessuno se ne accorge mai."
     ],
     "days": [
       [
-        "Sai che una lampadina fulminata fa ancora un po' di luce, se la scuoti? Come le persone."
-      ],
-      [
-        "Ho diciannove anni. Al Fondo da due. Bulbo dice che sono giovane. Il debito dice di no."
-      ],
-      [
-        "Un giorno salgo. Non col badge: salgo e basta. Non chiedermi come."
+        "Scusa, non posso parlare. Devo mantenere il mio colore.",
+        "* Bulbo continua a smistare lampadine. Sorride, ma le tremano le mani."
       ]
     ],
     "helped": [
@@ -1963,20 +1954,19 @@
     "emote": "dots",
     "help": {
       "kind": "time",
-      "ask": "Mina ha rovesciato una cassetta di lampadine e i cocci sono dappertutto.",
+      "ask": "Bulbo ha tre scatole di lampadine da smistare prima del controllo, e non ce la fa da sola.",
       "yes": [
-        "Grazie! Quasi tutte intere. Quasi."
+        "Grazie! Le buone restano accese, le rotte vanno via. Come le persone, quaggiù."
       ],
       "minigame": {
-        "type": "collect",
-        "title": "Le lampadine di Mina",
+        "type": "bulbs",
+        "title": "Le lampadine di Bulbo",
         "intro": [
-          "* Raccogli le lampadine prima che arrivi il controllo.",
-          "* Attento ai cocci rossi: fanno male."
+          "* Una lampadina alla volta.",
+          "* Le buone a DESTRA, le rotte a SINISTRA. Quelle che sfarfallano si avvitano con SU o GIÙ."
         ],
         "count": 10,
-        "time": 15,
-        "color": "#f0e070",
+        "time": 25,
         "reward": 10
       }
     }

@@ -271,10 +271,25 @@ def music_piani():
     write("music_lavoro.wav", track(mel, bas, 0.11, lead_vol=0.08, bass_vol=0.13, duty=0.25, drums="k.s.k.s.k.s.k.s."))
 
 
+def music_festa():
+    # "Festa" (il Fondo del capitolo 1): allegra da filastrocca in Do maggiore, ma ogni
+    # quattro battute torna una nota stonata (il Fa diesis al posto del Fa): qualcosa non va.
+    mel = ("C5 E5 G5 E5 F#5 - E5 - D5 F5 A5 F5 E5 - - - "
+           "C5 E5 G5 C6 B5 - G5 - A5 F#5 D5 F5 E5 - - - "
+           "G5 G5 A5 G5 F#5 - E5 - F5 F5 G5 F5 E5 - D5 - "
+           "C5 E5 G5 E5 F#5 E5 D5 - C5 - G4 - C5 - - - ").split()
+    bas = ("C3 - G2 - C3 - G2 - D3 - A2 - C3 - G2 - "
+           "C3 - G2 - E3 - G2 - F2 - C3 - G2 - - - "
+           "C3 - G2 - C3 - G2 - D3 - A2 - G2 - B2 - "
+           "C3 - G2 - C3 - G2 - G2 - D3 - C3 - - - ").split()
+    write("music_festa.wav", track(mel, bas, 0.17, lead_vol=0.09, bass_vol=0.14, duty=0.25, drums="k.s.k.s.k.s.k.s."))
+
+
 if __name__ == "__main__":
     random.seed(7)
     sfx()
     music()
     music_fondo()
     music_piani()
+    music_festa()
     print("Audio generato in", os.path.abspath(OUT))

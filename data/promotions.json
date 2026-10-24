@@ -71,5 +71,16 @@
       "Il capo: Ivo, il portiere, sa tutto di ogni palazzo del quartiere. Chi entra, chi esce, chi non paga.",
       "Il capo: Quel registro vale oro. Lo porti a me, e lei diventa l'esperto del quartiere."
     ]
+  },
+  "fermo": {
+    "title": "Il quaderno di Fermo",
+    "item": "il quaderno di Fermo",
+    "victim_name": "Fermo",
+    "victim_sheet": "char_14",
+    "desc": [
+      "Il capo: Ottimo turno! Senta, una cosetta da niente.",
+      "Il capo: Quel signore grigio, Fermo. In undici anni ha riempito un quaderno di idee per far rendere la dinamo il doppio. Non le ha mai date a nessuno.",
+      "Il capo: Se quel quaderno arriva sulla mia scrivania con il suo nome sopra, lei sale. Fermo non se ne accorgerà: non si accorge più di niente."
+    ]
   }
 }
