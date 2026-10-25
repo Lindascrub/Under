@@ -335,6 +335,7 @@ func _floor_gift() -> void:
 ## Il capo telefona dopo il turno: una promozione, cioè prendersi il merito di qualcuno che conosci.
 func _boss_call() -> void:
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
+	GameState.flags["boss_call_floor_" + GameState.floor_id] = true
 	var victim := GameState.promotion_victim()
 	var promo := GameState.promotion(victim)
 	if victim == "" or promo.is_empty():
@@ -794,6 +795,8 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 	top.body_entered.connect(func(b: Node2D) -> void:
 		if not (b is Player) or Ui.transitioning:
 			return
+		if on_stairs_top(b as Player):
+			return
 		var key := "stairs_" + need
 		var lines: Array = []
 		if not GameState.flags.get(key, false):
@@ -801,6 +804,12 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 			lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
 		Router.goto(path, spawn_name, lines)
 	)
+
+
+## Da scrivere nelle stanze che vogliono fare qualcosa in cima alle scale, al posto di cambiare
+## piano subito (il Fondo: lo sguardo indietro). Restituisce true se ci pensa la stanza.
+func on_stairs_top(_p: Player) -> bool:
+	return false
 
 
 ## Da scrivere nelle stanze che vogliono un momento speciale sul primo gradino (il Fondo).

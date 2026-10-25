@@ -278,6 +278,10 @@ func _run() -> void:
 	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno ai bagni non è stato pagato")
 	_check(GameState.flags.get("boss_call_done_%d" % GameState.day, false), "dopo il turno il capo dovrebbe telefonare")
 	_check(GameState.flags.get("promotions_refused", 0) == 1, "rifiutare la promozione dovrebbe essere ricordato")
+	GameState.flags["boss_call_day"] = GameState.day
+	GameState.flags.erase("boss_call_done_%d" % GameState.day)
+	_check(not GameState.boss_call_pending(), "il capo dovrebbe chiamare una volta sola per piano")
+	GameState.flags["boss_call_done_%d" % GameState.day] = true
 
 	# --- ascensore per la Direzione (serve il badge della Cima)
 	GameState.badges.append("cima")
@@ -300,6 +304,7 @@ func _run() -> void:
 	GameState.flags["met_marta"] = true
 	var victim := GameState.promotion_victim()
 	GameState.flags["boss_call_day"] = GameState.day
+	GameState.flags.erase("boss_call_floor_" + GameState.floor_id)
 	choose_queue = [0]
 	await _go(Router.STREET, "home")
 	await _wait_scene(Router.WORK)
@@ -394,7 +399,7 @@ func _run() -> void:
 	# --- debito pagato: dormendo si va al finale
 	GameState.new_game()
 	GameState.exploited = 2
-	GameState.money = 10000
+	GameState.money = GameState.debt + 10000
 	GameState.pay_debt(GameState.debt)
 	home = await _go(Router.HOME, "bed")
 	choose_queue = [0, 1]

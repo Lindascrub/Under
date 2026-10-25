@@ -297,7 +297,7 @@ func _first_talk() -> void:
 		"Pensavo che l'ascensore non portasse più nessuno, quaggiù. Di solito si rompe prima.",
 		"Io sono Fermo. Di nome e di fatto, dicono. Ridono sempre, quelli che lo dicono. Io no.",
 		"E tu? ...{name}. Bel nome. Tienilo stretto: quaggiù i nomi si consumano in fretta."], who)
-	var c: int = await Ui.choose("Tu quanto devi?", ["Seimila euro.", "Non sono affari tuoi."], who)
+	var c: int = await Ui.choose("Tu quanto devi?", ["Sette miliardi.", "Non sono affari tuoi."], who)
 	if c == 0:
 		await Ui.say(["Seimila. Ah. Io, quando sono arrivato, ne dovevo quattromila.",
 			"Lavoro qui da undici anni. Adesso ne devo novemila. Non chiedermi come. Non lo so più neanche io."], who)

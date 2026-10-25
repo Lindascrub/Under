@@ -8,7 +8,7 @@ Un RPG narrativo in stile Undertale in cui il giocatore, schiacciato da un debit
 
 I giorni non sono più contati: si sale la Torre CHEAP un piano alla volta. Questa parte sostituisce il "ciclo di 4 giorni" descritto più sotto.
 
-- **L'inizio:** sei dentro l'ascensore e scendi. Sul display scorre il tuo debito (6.000 €). Al **piano -5** l'ascensore si rompe e le porte si aprono a metà sul buio.
+- **L'inizio:** sei dentro l'ascensore e scendi. Sul display scorre il tuo debito (7 miliardi di €). Al **piano -5** l'ascensore si rompe e le porte si aprono a metà sul buio.
 - **Fermo:** l'unica luce è intorno a lui, seduto accanto all'ascensore. Finché non gli parli, il buio non ti lascia andare. Ti spiega le regole con la sua vita piatta ("lavora fino a morire"), poi accende la luce.
 - **Lavoro, badge, scale:** su ogni piano c'è un lavoro (una battaglia di lavoro, una volta al giorno). Coi soldi compri al distributore il **badge** del piano di sopra: il prezzo va tutto a scalare dal debito. Il badge apre il tornello delle scale.
 - **Il tempo:** non finisce mai, ma costa. A mezzanotte comincia un altro giorno e il debito cresce (interessi). Le stelline salvano e ti lasciano "sprecare" il tempo.
@@ -157,7 +157,7 @@ Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende q
 
 | Valore | Numero | Perché |
 |---|---|---|
-| Debito iniziale | 6.000 € | Lavorando onestamente scende un po', ma non sparisce |
+| Debito iniziale | 7 miliardi di € | Lavorando onestamente scende un po', ma non sparisce |
 | Interessi | 2% a notte | |
 | Rata minima | 150 € al giorno | Se non la paghi: mora di 100 € |
 | Lavoro facile | 900 € × 1,7 per ogni sfruttamento precedente | Più sfrutti, più vali: in 3 giorni ripaghi tutto |

@@ -10,7 +10,7 @@ signal changed
 const SAVE_PATH := "user://cheap_save.json"
 ## Dove si salva: i test usano un file a parte, per non toccare la partita vera.
 var save_path := SAVE_PATH
-const START_DEBT := 6000
+const START_DEBT := 7_000_000_000
 const DAILY_INTEREST := 0.02
 const MIN_PAYMENT := 150
 const LATE_FEE := 100
@@ -55,10 +55,10 @@ const ITEMS := {
 const FLOORS: Array[Dictionary] = [
 	{"id": "-5", "name": "Piano -5", "badge": 0},
 	{"id": "-4", "name": "Piano -4", "badge": 500},
-	{"id": "-3", "name": "Piano -3", "badge": 800},
-	{"id": "-2", "name": "Piano -2", "badge": 1000},
-	{"id": "0", "name": "Piano terra", "badge": 1200},
-	{"id": "cima", "name": "La Cima", "badge": 1500},
+	{"id": "-3", "name": "Piano -3", "badge": 1000},
+	{"id": "-2", "name": "Piano -2", "badge": 2000},
+	{"id": "0", "name": "Piano terra", "badge": 4000},
+	{"id": "cima", "name": "La Cima", "badge": 8000},
 ]
 
 var day := 1
@@ -671,8 +671,9 @@ func do_promotion(victim: String) -> int:
 	return pay
 
 
+## Il capo telefona dopo un turno, ma una volta sola per piano: l'idea da rubare è una.
 func boss_call_pending() -> bool:
-	return int(flags.get("boss_call_day", 0)) == day and not flags.get("boss_call_done_%d" % day, false)
+	return int(flags.get("boss_call_day", 0)) == day and not flags.get("boss_call_done_%d" % day, false) 		and not flags.get("boss_call_floor_" + floor_id, false)
 
 
 func zone_summary() -> Dictionary:
@@ -752,6 +753,9 @@ func nico_lines() -> Array:
 # --- testo ------------------------------------------------------------------
 
 func fmt(text: String) -> String:
+	if TouchControls.enabled:
+		# sul telefono si gioca col dito: le vecchie istruzioni da tastiera diventano tocchi
+		text = text.replace("Premi {ok}", "Tocca lo schermo").replace("premi {ok}", "tocca lo schermo") 			.replace("con le frecce", "col dito")
 	return text.replace("{rank}", rank_name()) \
 		.replace("{debt}", euros(debt)) \
 		.replace("{money}", euros(money)) \
@@ -761,7 +765,16 @@ func fmt(text: String) -> String:
 		.replace("{last_day}", str(LAST_DAY)) \
 		.replace("{floor}", floor_name()) \
 		.replace("{name}", player_name) \
-		.replace("{ok}", "Z" if TouchControls.enabled else "INVIO")
+		.replace("{ok}", "OK" if TouchControls.enabled else "INVIO")
+
+
+## Le cifre enormi (il debito) scritte corte: "7,00 mld €".
+static func euros_short(n: int) -> String:
+	if absi(n) >= 1_000_000_000:
+		return ("%.2f mld €" % (n / 1e9)).replace(".", ",")
+	if absi(n) >= 1_000_000:
+		return ("%.2f mln €" % (n / 1e6)).replace(".", ",")
+	return euros(n)
 
 
 static func euros(n: int) -> String:

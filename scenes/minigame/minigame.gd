@@ -45,6 +45,8 @@ var wire_sel := 0
 var wire_pick := -1
 var wire_round := 0
 var hurt_t := 0.0
+## dove tiene il dito chi gioca col telefono (il cuore della raccolta); x < 0: nessun dito
+var finger := Vector2(-1, -1)
 # sequence
 var seq: Array[String] = []
 var shown := 0
@@ -108,11 +110,11 @@ func _start() -> void:
 		"sequence":
 			_next_round()
 		"bulbs":
-			_info.text = "DESTRA buona   SINISTRA rotta   SU/GIÙ aggiusta"
+			_info.text = "SCORRI: a destra buona, a sinistra rotta, su e giù aggiusta" if TouchControls.enabled else "DESTRA buona   SINISTRA rotta   SU/GIÙ aggiusta"
 			time_left = float(cfg.get("time", 25.0))
 			_new_bulb()
 		"wires":
-			_info.text = "SU/GIÙ scegli il filo, %s per collegarlo" % GameState.fmt("{ok}")
+			_info.text = "Tocca un filo a sinistra, poi il suo posto a destra" if TouchControls.enabled else "SU/GIÙ scegli il filo, %s per collegarlo" % GameState.fmt("{ok}")
 			time_left = float(cfg.get("time", 30.0))
 			_new_wires()
 
@@ -145,6 +147,69 @@ func _new_wires() -> void:
 	wire_done.clear()
 	wire_sel = 0
 	wire_pick = -1
+
+
+## Il filo di sinistra `wire_pick` va al posto di destra `wire_sel`: giusto o sbagliato?
+func _wire_connect() -> void:
+	if wire_right[wire_sel] == wire_pick:
+		wire_done.append(wire_pick)
+		Sound.sfx("coin")
+		if wire_done.size() >= 4:
+			wire_round += 1
+			if wire_round >= 2:
+				_finish(true)
+				return
+			_new_wires()
+			return
+	else:
+		misses += 1
+		flash = 0.3
+		Sound.sfx("deny")
+		if misses >= 4:
+			_finish(false)
+			return
+	wire_pick = -1
+	for i in 4:
+		if i not in wire_done:
+			wire_sel = i
+			break
+
+
+# --- col dito (vedi TouchControls) -------------------------------------------------
+
+func touch_scheme() -> String:
+	if phase != "play":
+		return ""
+	match type:
+		"timing":
+			return "tap"
+		"sequence":
+			return "dirs"
+		"bulbs":
+			return "swipe"
+	return "point"
+
+
+func touch_center() -> Vector2:
+	return BOX.get_center()
+
+
+func touch_point(pos: Vector2, step: int) -> void:
+	if type == "collect":
+		finger = pos if step != 2 else Vector2(-1, -1)
+	elif type == "wires" and step == 0:
+		# tocca un filo a sinistra, poi il posto a destra dove va
+		var y0 := BOX.position.y + 26
+		var gap := (BOX.size.y - 52) / 3.0
+		var row := clampi(int(round((pos.y - y0) / gap)), 0, 3)
+		if pos.x < BOX.get_center().x:
+			if row not in wire_done:
+				wire_pick = row
+				wire_sel = row
+				Sound.sfx("select")
+		elif wire_pick >= 0:
+			wire_sel = row
+			_wire_connect()
 
 
 func _new_zone() -> void:
@@ -188,8 +253,11 @@ func _process(delta: float) -> void:
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "collect":
-				var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-				soul = (soul + v * 140.0 * delta).clamp(BOX.position + Vector2(8, 8), BOX.end - Vector2(8, 8))
+				if finger.x >= 0.0:
+					soul = soul.move_toward(finger, 140.0 * delta)
+				else:
+					soul += Input.get_vector("move_left", "move_right", "move_up", "move_down") * 140.0 * delta
+				soul = soul.clamp(BOX.position + Vector2(8, 8), BOX.end - Vector2(8, 8))
 				for i in range(items.size() - 1, -1, -1):
 					if items[i].distance_to(soul) < 10.0:
 						items.remove_at(i)
@@ -226,7 +294,7 @@ func _process(delta: float) -> void:
 					Sound.sfx("blip", ARROW_PITCH[seq[shown - 1]])
 				if shown > seq.size():
 					phase = "play"
-					_info.text = "Ora ripeti con le frecce!"
+					_info.text = "Ora ripeti: tocca sopra, sotto, a sinistra o a destra!" if TouchControls.enabled else "Ora ripeti con le frecce!"
 	queue_redraw()
 
 
@@ -280,29 +348,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				wire_sel = 0
 				Sound.sfx("select")
 			else:
-				# il filo di sinistra `wire_pick` va al posto di destra `wire_sel`
-				if wire_right[wire_sel] == wire_pick:
-					wire_done.append(wire_pick)
-					Sound.sfx("coin")
-					if wire_done.size() >= 4:
-						wire_round += 1
-						if wire_round >= 2:
-							_finish(true)
-							return
-						_new_wires()
-						return
-				else:
-					misses += 1
-					flash = 0.3
-					Sound.sfx("deny")
-					if misses >= 4:
-						_finish(false)
-						return
-				wire_pick = -1
-				for i in 4:
-					if i not in wire_done:
-						wire_sel = i
-						break
+				_wire_connect()
 		elif event.is_action_pressed("move_left") and wire_pick >= 0:
 			wire_sel = wire_pick
 			wire_pick = -1
@@ -433,7 +479,7 @@ func _draw_bulbs(font: Font) -> void:
 		draw_line(c + Vector2(-10, -10), c + Vector2(4, 2), Color("221c28"), 2.0)
 		draw_line(c + Vector2(4, 2), c + Vector2(-2, 12), Color("221c28"), 2.0)
 	if bulb == "fioca":
-		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), "Sfarfalla! SU o GIÙ per avvitarla (%d/2)" % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, YELLOW)
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/2)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/2)") % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, YELLOW)
 
 
 func _draw_wires(font: Font) -> void:

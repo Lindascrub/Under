@@ -105,6 +105,8 @@ var st_seated := false
 var st_bump := 0.0
 const ST_START := 168.0
 const ST_DESK := 352.0
+## dove tiene il dito chi gioca col telefono (barra di Breakout, racchetta di Pong); < 0: nessuno
+var finger := -1.0
 
 
 func setup(scene: Node2D, which: String) -> void:
@@ -172,6 +174,22 @@ func set_game(which: String) -> Arcade:
 
 
 func rules() -> String:
+	if TouchControls.enabled:
+		match game:
+			"snake":
+				return "* Scorri il dito per girare il mocio. Ogni macchia pulita lo allunga. Non sbattere contro i muri o contro te stesso."
+			"simon":
+				return "* I telefoni squillano in sequenza. Guarda e ascolta, poi ripeti toccando i telefoni. Ogni giro, uno squillo in più."
+			"tetris":
+				return "* Le scatole cadono: scorri a SINISTRA e a DESTRA per spostarle, tocca per girarle, scorri in GIÙ per farle cadere. Ogni riga piena viene spedita."
+			"frogger":
+				return "* Tocca davanti, dietro o di fianco al fattorino per fare un passo. Arriva alle porte in alto. Le auto non si fermano."
+			"breakout":
+				return "* Trascina il dito per muovere la barra, staccalo per lanciare la pallina. Ogni lampadina che rompi si accende al piano di sopra."
+			"steal":
+				return "* Un, due, tre, stella. Tieni il dito sullo schermo per avvicinarti a %s, e tienilo ancora per copiare %s. Quando si gira (vedi \"?\"), STACCA il dito: se ti vede muovere, ti rimanda indietro. C'è poco tempo." % [st_name if st_name != "" else "il collega", st_item if st_item != "" else "il suo lavoro"]
+			"pong":
+				return "* Trascina il dito su e giù per muovere la tua racchetta. Rimanda la moneta al Signor Tasso: se gli passa, è un punto per te."
 	match game:
 		"snake":
 			return "* Muovi il mocio con le frecce. Ogni macchia pulita lo allunga. Non sbattere contro i muri o contro te stesso."
@@ -252,8 +270,11 @@ func update(delta: float) -> void:
 						fr_pos = Vector2i(6, 6)
 						break
 		"breakout":
-			var v := Input.get_axis("move_left", "move_right")
-			br_paddle = clampf(br_paddle + v * 260.0 * delta, BOX.position.x + 30, BOX.end.x - 30)
+			if finger >= 0.0:
+				br_paddle = move_toward(br_paddle, finger, 360.0 * delta)
+			else:
+				br_paddle += Input.get_axis("move_left", "move_right") * 260.0 * delta
+			br_paddle = clampf(br_paddle, BOX.position.x + 30, BOX.end.x - 30)
 			if br_stuck:
 				br_ball = Vector2(br_paddle, BOX.end.y - 24)
 				return
@@ -326,8 +347,11 @@ func update(delta: float) -> void:
 			if st_progress >= 1.0 or w.mistakes >= 3:
 				w.time_left = 0.0
 		"pong":
-			var vy := Input.get_axis("move_up", "move_down")
-			po_left = clampf(po_left + vy * 200.0 * delta, BOX.position.y + 22, BOX.end.y - 22)
+			if finger >= 0.0:
+				po_left = move_toward(po_left, finger, 260.0 * delta)
+			else:
+				po_left += Input.get_axis("move_up", "move_down") * 200.0 * delta
+			po_left = clampf(po_left, BOX.position.y + 22, BOX.end.y - 22)
 			# il Signor Tasso segue la moneta, ma non troppo in fretta
 			var ai := 80.0 + d * 70.0
 			po_right = move_toward(po_right, po_ball.y, ai * delta)
@@ -389,8 +413,13 @@ func input(event: InputEvent) -> void:
 				_te_move(Vector2i(-1, 0))
 			elif event.is_action_pressed("move_right"):
 				_te_move(Vector2i(1, 0))
-			elif event.is_action_pressed("move_up"):
+			elif event.is_action_pressed("move_up") or event.is_action_pressed("confirm"):
 				_te_rotate()
+			elif event.is_action_pressed("move_down") and TouchControls.enabled:
+				# col dito: scorrere in giù la fa cadere fino in fondo
+				while _te_move(Vector2i(0, 1)):
+					pass
+				_te_lock()
 		"frogger":
 			var map2 := {"move_up": Vector2i.UP, "move_down": Vector2i.DOWN, "move_left": Vector2i.LEFT, "move_right": Vector2i.RIGHT}
 			for a: String in map2:
@@ -408,6 +437,41 @@ func input(event: InputEvent) -> void:
 			if br_stuck and event.is_action_pressed("confirm"):
 				br_stuck = false
 				br_vel = Vector2(randf_range(-0.6, 0.6), -1.0).normalized() * (170.0 + w.d * 80.0)
+
+
+# --- col dito (vedi TouchControls) ------------------------------------------------------
+
+func touch_scheme() -> String:
+	match game:
+		"snake", "tetris":
+			return "swipe"
+		"simon", "frogger":
+			return "dirs"
+		"steal":
+			return "hold"
+	return "point"
+
+
+func touch_center() -> Vector2:
+	if game == "frogger":
+		return _fr_cell_rect(fr_pos).get_center()
+	return BOX.get_center()
+
+
+## Un, due, tre, stella: il dito giù = cammini (o copi, quando sei arrivato alla scrivania).
+func touch_hold() -> Array:
+	return ["move_right", "confirm"]
+
+
+func touch_point(pos: Vector2, step: int) -> void:
+	match game:
+		"breakout":
+			finger = pos.x if step != 2 else -1.0
+			if step == 2 and br_stuck:
+				br_stuck = false
+				br_vel = Vector2(randf_range(-0.6, 0.6), -1.0).normalized() * (170.0 + w.d * 80.0)
+		"pong":
+			finger = pos.y if step != 2 else -1.0
 
 
 # --- disegno --------------------------------------------------------------------------
@@ -608,9 +672,9 @@ func _draw_steal(font: Font) -> void:
 	if st_caught_t > 0.0:
 		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "\"Ehi! Cosa stai facendo?\"", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color("ff2a3c"))
 	elif st_x < ST_DESK:
-		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "Tieni premuto DESTRA per avvicinarti. Fermati quando si gira!", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
+		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "Dito giù: avvicinati. Si gira? Stacca il dito!" if TouchControls.enabled else "Tieni DESTRA per avvicinarti. Fermati quando si gira!", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
 	else:
-		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), GameState.fmt("Tieni premuto {ok} per copiare. Lascia quando si gira!"), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
+		w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "Dito giù: copia. Si gira? Stacca il dito!" if TouchControls.enabled else GameState.fmt("Tieni {ok} per copiare. Lascia quando si gira!"), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("3a3644"))
 	# il tempo che resta, grande
 	w.draw_string(font, Vector2(BOX.end.x - 70, BOX.position.y + 44), "%d" % int(ceil(maxf(0.0, w.time_left))), HORIZONTAL_ALIGNMENT_RIGHT, 60, 26, Color("c0302a") if w.time_left < 10.0 else Color("3a3644"))
 	# quanto hai copiato

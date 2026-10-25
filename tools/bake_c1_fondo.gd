@@ -300,7 +300,7 @@ func _features() -> void:
 	_sprite(mondo, "CycletteDinamo", "res://art/generator.png", Rect2(), Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
 	_feature("SportelloBadge", "badge", Vector2i(18, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c1/fine_capitolo.tscn", "spawn": "", "need": "-4"})
+	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://scenes/world/sottoufficio.tscn", "spawn": "", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
 

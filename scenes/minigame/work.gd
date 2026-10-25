@@ -52,6 +52,8 @@ var boxes: Array[Dictionary] = []
 var lane := 1
 var road: Array[Dictionary] = []
 var crash_t := 0.0
+## dove tiene il dito chi gioca col telefono (spugna); x < 0: nessun dito
+var finger := Vector2(-1, -1)
 
 var _title: Label
 var _info: Label
@@ -62,7 +64,8 @@ var arcade: Arcade
 func _ready() -> void:
 	cfg = GameState.minigame
 	game = str(cfg.get("game", "pedal"))
-	d = difficulty()
+	# lo straordinario (dopo la rivelazione del Fondo) è più duro del turno normale
+	d = clampf(difficulty() + float(cfg.get("extra_d", 0.0)), 0.0, 1.0)
 	Ui.show_hud(false)
 	Sound.music("lavoro")
 	var bg := ColorRect.new()
@@ -102,6 +105,20 @@ func _rules() -> String:
 		a.st_name = str(cfg.get("victim_name", ""))
 		a.st_item = str(cfg.get("item", ""))
 		return a.rules()
+	if TouchControls.enabled:
+		match game:
+			"pedal":
+				return "* Tocca lo schermo a SINISTRA e a DESTRA, una volta per parte, per pedalare. Tieni la lancetta nel verde. Se tocchi due volte lo stesso lato, inciampi."
+			"clean":
+				return "* Trascina la spugna col dito e tienila sulle macchie finché spariscono. Se una macchia resta troppo, si secca."
+			"calls":
+				return "* Quando un telefono squilla, toccalo prima che riattacchino. Ogni telefono ha il suo squillo."
+			"scale":
+				return "* Il cliente chiede un peso. Tocca lo schermo quando la lancetta è sulla tacca gialla."
+			"sort":
+				return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Tocca la metà giusta dello schermo prima che arrivino in fondo al nastro."
+			"deliver":
+				return "* Tocca la corsia dove vuoi andare. Evita le auto, prendi i pacchi."
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
@@ -163,8 +180,12 @@ func _process(delta: float) -> void:
 			if speed >= band.x and speed <= band.y:
 				score += delta
 		"clean":
-			var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-			sponge = (sponge + v * 150.0 * delta).clamp(BOX.position + Vector2(10, 10), BOX.end - Vector2(10, 10))
+			if finger.x >= 0.0:
+				sponge = sponge.move_toward(finger, 260.0 * delta)
+			else:
+				var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+				sponge += v * 150.0 * delta
+			sponge = sponge.clamp(BOX.position + Vector2(10, 10), BOX.end - Vector2(10, 10))
 			spawn_t -= delta
 			if spawn_t <= 0.0 and stains.size() < 6:
 				spawn_t = maxf(0.5, 1.3 - d * 0.6)
@@ -245,6 +266,47 @@ func _process(delta: float) -> void:
 	if time_left <= 0.0:
 		_finish()
 	queue_redraw()
+
+
+# --- col dito (vedi TouchControls) -------------------------------------------------
+
+func touch_scheme() -> String:
+	if phase != "play":
+		return ""
+	if arcade:
+		return arcade.touch_scheme()
+	match game:
+		"pedal", "sort":
+			return "halves"
+		"calls":
+			return "dirs"
+		"scale":
+			return "tap"
+	return "point"
+
+
+func touch_center() -> Vector2:
+	return arcade.touch_center() if arcade else BOX.get_center()
+
+
+func touch_hold() -> Array:
+	return arcade.touch_hold() if arcade else ["confirm"]
+
+
+func touch_point(pos: Vector2, step: int) -> void:
+	if arcade:
+		arcade.touch_point(pos, step)
+		return
+	match game:
+		"clean":
+			finger = pos if step != 2 else Vector2(-1, -1)
+		"deliver":
+			if step == 0:
+				var lane_h := (BOX.size.y - 20) / 3.0
+				var want := clampi(int((pos.y - BOX.position.y - 10) / lane_h), 0, 2)
+				if want != lane:
+					lane = want
+					Sound.sfx("move")
 
 
 func flash_now(col: Color) -> void:
@@ -341,7 +403,11 @@ func _finish() -> void:
 	var pay := maxi(40, int(round(base * maxf(0.25, ratio))))
 	var failed := ratio < 0.5
 	GameState.finish_hard_job(pay)
-	if failed:
+	if cfg.has("extra"):
+		# straordinario: niente pietà né caporeparto, ma la festa si riaccende per un po'
+		GameState.flags["c1_extra"] = int(cfg["extra"])
+		GameState.flags["c1_relight"] = not failed
+	elif failed:
 		GameState.work_failed()
 	Sound.sfx("coin")
 	var lines: Array = []

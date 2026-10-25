@@ -130,7 +130,7 @@ func _collocamento() -> void:
 			await Ui.say(["...Interessante. Lo segnerò. Lo segno sempre, sai.", "* Per la prima volta dopo tanto tempo, respiri."], who)
 
 
-## La botola per il Fondo, sbarrata: sei salito senza voltarti.
+## Le scale per il Fondo, chiuse alla buona: sei salito senza voltarti.
 func _barred_hole(bottom_left: Vector2i) -> void:
 	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
 	s.flip_v = true
@@ -138,16 +138,50 @@ func _barred_hole(bottom_left: Vector2i) -> void:
 	world.remove_child(s)
 	add_child(s)
 	move_child(s, world.get_index())
-	for k in 4:
-		var bar := ColorRect.new()
-		bar.color = Color("5a5666")
-		bar.position = Vector2(bottom_left.x * T + 2 + k * 8, (bottom_left.y - 2) * T)
-		bar.size = Vector2(3, 3 * T)
-		bar.z_index = 1
-		add_child(bar)
+	# coni e nastro, messi lì di fretta anni fa: uno è caduto e nessuno l'ha rialzato
+	var base_y := (bottom_left.y - 2) * T + 8.0
+	var xs := [bottom_left.x * T + 2.0, bottom_left.x * T + 30.0, bottom_left.x * T + 40.0]
+	var tops: Array[Vector2] = []
+	for k in 3:
+		var cone := Sprite2D.new()
+		cone.texture = preload("res://art/cone.png")
+		cone.offset = Vector2(0, -8)
+		cone.position = Vector2(xs[k], base_y)
+		cone.z_index = 2
+		if k == 2:
+			# quello caduto, di traverso
+			cone.rotation = 1.45
+			cone.position += Vector2(6, 2)
+			cone.modulate = Color(0.85, 0.85, 0.85)
+		add_child(cone)
+		tops.append(Vector2(xs[k], base_y - 14))
+	# il nastro bianco e rosso: tra i primi due coni pende, poi casca a terra dove il cono è caduto
+	var pts: Array[Vector2] = []
+	for i in 9:
+		var f := i / 8.0
+		pts.append(tops[0].lerp(tops[1], f) + Vector2(0, sin(f * PI) * 5.0))
+	for i in range(1, 7):
+		var f := i / 6.0
+		pts.append(tops[1].lerp(Vector2(xs[2] + 6, base_y - 2), f) + Vector2(0, sin(f * PI) * 3.0))
+	for i in pts.size() - 1:
+		var seg := Line2D.new()
+		seg.points = PackedVector2Array([pts[i], pts[i + 1]])
+		seg.width = 2.0
+		seg.default_color = Color("d8302a") if i % 2 == 0 else Color("eeeae0")
+		seg.z_index = 3
+		add_child(seg)
+	# il cartello appeso al nastro, storto
+	var sign := Sprite2D.new()
+	sign.texture = preload("res://art/sign_vietato.png")
+	sign.position = tops[0].lerp(tops[1], 0.5) + Vector2(0, 8)
+	sign.rotation = 0.14
+	sign.z_index = 4
+	add_child(sign)
 	block(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 3))
 	examine(cell_center(bottom_left + Vector2i(0, -1)) + Vector2(8, 0), [
-		"* La botola per il Fondo. Ci hanno saldato sopra delle sbarre.",
+		"* Le scale per il Fondo. Tre coni e un nastro: VIETATO SCENDERE.",
+		"* Il nastro è scolorito, un cono è caduto. Nessuno l'ha rialzato. Nessuno passa di qua a controllare.",
+		"* Attaccato al nastro, un foglio: \"Lavori in corso\". La data è di quindici anni fa.",
 		"* Sei salito senza voltarti. Il Fondo, adesso, resta là sotto. Con quello che non hai voluto sapere.",
 	])
 

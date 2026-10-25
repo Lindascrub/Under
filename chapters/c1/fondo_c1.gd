@@ -5,6 +5,8 @@ extends EditorRoom
 ## dopo il primo turno: vedi docs/capitoli/capitolo_1_il_fondo.md).
 
 const FERMO_CELL := Vector2i(14, 4)
+## Lo straordinario dopo la rivelazione: paga di ognuna delle tre pedalate in più.
+const EXTRA_PAY := [120, 70, 35]
 
 
 func setup() -> void:
@@ -35,6 +37,9 @@ func enter() -> void:
 			"* La musica della festa non si ferma. Nessuno si gira. Anzi, sì: uno.",
 			"* In mezzo a tutti quei colori c'è un uomo grigio, seduto su una cassetta. È l'unico che non sorride.",
 		])
+	if GameState.flags.get("c1_relight", false):
+		GameState.flags.erase("c1_relight")
+		await _relight()
 	await show_pending()
 
 
@@ -45,21 +50,199 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Ui.cutscene = true
 	p.position.y += 4
 	await _revelation()
+	# nessuna domanda: o sali, o ti volti. Lo decidi coi piedi.
+	await Ui.say(["* Le scale ti aspettano. Dietro di te, nel grigio, le persone sembrano più vere."])
+	Ui.cutscene = false
+
+
+# --- lo straordinario: la festa si riaccende, per poco ---------------------------
+
+## Dopo la rivelazione la cyclette resta accesa: puoi pedalare ancora, al massimo tre volte.
+## Ogni volta è più dura e paga meno, ma per cinque secondi la festa torna.
+func _station(j: Dictionary) -> void:
+	if str(j.get("game", "")) != "pedal" or not GameState.flags.get("c1_rivelazione", false):
+		await super(j)
+		return
+	var n := int(GameState.flags.get("c1_extra", 0))
+	if n >= EXTRA_PAY.size():
+		await Ui.say(["* Sali sulla cyclette. Le gambe non rispondono più.",
+			"* La festa resta spenta. Forse è giusto così."])
+		return
+	var c: int = await Ui.choose("La cyclette è ancora accesa. Straordinario: %s, più duro di prima.\nPedalare ancora?" % GameState.euros(EXTRA_PAY[n]), ["Pedalo", "Basta"])
+	if c != 0:
+		return
+	GameState.minigame = {
+		"kind": "work", "game": "pedal", "name": "Straordinario %d/%d" % [n + 1, EXTRA_PAY.size()],
+		"pay": EXTRA_PAY[n], "extra": n + 1, "extra_d": 0.25 * (n + 1),
+		"intro": [["* Pedali di nuovo. La dinamo ti riconosce: ronza più forte, come un cane contento.",
+			"* Le gambe se lo ricordano, il turno di prima. Lo dicono a ogni giro.",
+			"* Ultima volta. Lo dici a te stesso. Lo diceva anche Fermo, undici anni fa."][n]],
+		"tired": ["* Ti tremano le ginocchia.", "* Non senti più i piedi.", "* Non senti più niente. Quasi."][n],
+		"return": scene_file_path, "return_pos": player.global_position,
+	}
+	Router.goto(Router.WORK)
+
+
+## Hai pedalato ancora: per cinque secondi la festa torna, poi si rispegne.
+func _relight() -> void:
+	if _off_mat == null:
+		return
 	Ui.cutscene = true
-	var c: int = await Ui.choose("La festa si è spenta. Le scale ti aspettano.", ["Resto ancora un po'", "Salgo"])
-	if c == 0:
-		GameState.flags["c1_restato"] = true
-		var tw := create_tween()
-		tw.tween_property(p, "position:y", p.position.y + 20, 0.4)
-		await tw.finished
-		await Ui.say(["* Torni giù dal gradino. Nel grigio, le persone sembrano più vere.",
-			"* Forse adesso, se ci parli, ti diranno come stanno davvero le cose."])
-	else:
-		GameState.flags["c1_sbarrato"] = true
+	var n := int(GameState.flags.get("c1_extra", 1))
+	var balloons := find_children("Palloncino*", "Sprite2D", true, false)
+	var garlands := find_children("Festone*", "Sprite2D", true, false)
+	await get_tree().create_timer(0.4).timeout
+	Sound.sfx("spark", 1.4)
+	Sound.music_pitch(1.0, 0.6)
+	var on := create_tween().set_parallel()
+	on.tween_method(func(v: float) -> void: _off_mat.set_shader_parameter("amount", v), 1.0, 0.0, 0.6)
+	on.tween_property(_tint, "color", Color.WHITE, 0.6)
+	for b in balloons:
+		on.tween_property(b, "scale:y", 1.0, 0.5).set_trans(Tween.TRANS_BACK)
+		on.tween_property(b, "position:y", (b as Node2D).position.y - 6, 0.5)
+	for f in garlands:
+		on.tween_property(f, "rotation", 0.0, 0.4)
+		on.tween_property(f, "position:y", (f as Node2D).position.y - 10, 0.4)
+	Sound.sfx("flap", 1.3)
+	await on.finished
+	await get_tree().create_timer(5.0).timeout
+	# e si rispegne
+	Sound.music_pitch(0.75, 1.5)
+	var off := create_tween().set_parallel()
+	off.tween_method(func(v: float) -> void: _off_mat.set_shader_parameter("amount", v), 0.0, 1.0, 1.5)
+	off.tween_property(_tint, "color", _tint_target, 1.5)
+	for b in balloons:
+		off.tween_property(b, "scale:y", 0.45, 0.6).set_delay(randf() * 0.6)
+		off.tween_property(b, "position:y", (b as Node2D).position.y + 6, 0.6)
+	for f in garlands:
+		off.tween_property(f, "rotation", 0.25 if randf() < 0.5 else -0.2, 0.4).set_delay(0.5)
+		off.tween_property(f, "position:y", (f as Node2D).position.y + 10, 0.4).set_delay(0.5)
+	Sound.sfx("flap", 0.6)
+	await off.finished
+	await Ui.say([[
+		"* Per cinque secondi la festa è tornata. Ti è costata un turno di gambe.",
+		"* Stavolta i cinque secondi sembravano meno. Forse sei tu che guardi più forte.",
+		"* Tre volte l'hai riaccesa. Tre volte si è spenta. Laggiù nessuno ha alzato la testa.",
+	][clampi(n - 1, 0, 2)]])
+	Ui.cutscene = false
+
+
+# --- lo sguardo indietro: fine del capitolo 1 ----------------------------------------
+
+## In cima alle scale, la prima volta: ti volti a guardare il Fondo com'è diventato.
+func on_stairs_top(p: Player) -> bool:
+	if GameState.flags.get("c1_fine", false):
+		return false
+	GameState.flags["c1_fine"] = true
+	# se sali senza aver ascoltato nessuno, le scale dietro di te si chiudono
+	var heard := false
+	for id in ["fermo", "mina", "bulbo"]:
+		heard = heard or GameState.flags.get("svelato_" + id, false)
+	GameState.flags["c1_sbarrato"] = not heard
+	_look_back(p)
+	return true
+
+
+func _look_back(p: Player) -> void:
+	Ui.cutscene = true
+	Ui.show_hud(false)
+	if GameState.flags.get("c1_sbarrato", false):
+		Sound.sfx("stamp", 0.6)
 		await Ui.say(["* Non ti volti. Dietro di te, qualcosa si chiude con un colpo secco.",
 			"* Le scale per il Fondo, da adesso, vanno in una sola direzione."])
-		Sound.sfx("stamp", 0.6)
+		Ui.cutscene = true
+	p.set_physics_process(false)
+	p.face("down")
+	# la telecamera si allarga su tutto il Fondo, com'è diventato (Fermo laggiù, in mezzo)
+	# solo il pavimento e i muri: niente bordo scuro, niente fuori-mappa
+	var inner := Rect2(Vector2(2 * T, 0), Vector2(map_size * T) - Vector2(2 * T, 0))
+	var fit := maxf(640.0 / inner.size.x, 360.0 / inner.size.y)
+	var half := Vector2(320, 180) / fit
+	var look := (inner.get_center() + Vector2(0, 10)).clamp(inner.position + half, inner.end - half)
+	var cam := p.camera
+	Sound.music_pitch(0.6, 4.0)
+	# la telecamera si stacca dal giocatore (così i bordi della stanza la tengono dentro)
+	var from := cam.get_screen_center_position()
+	cam.position_smoothing_enabled = false
+	cam.top_level = true
+	cam.global_position = from
+	var tw := create_tween()
+	tw.tween_property(cam, "global_position", look, 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.parallel().tween_property(cam, "zoom", Vector2(fit, fit), 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tw.finished
+	await get_tree().create_timer(0.8).timeout
+	# una frase sola, quella che ti sei guadagnato
+	var layer := CanvasLayer.new()
+	layer.layer = 15
+	add_child(layer)
+	# la frase in basso, su una striscia scura, per non coprire il Fondo
+	var band := ColorRect.new()
+	band.color = Color(0, 0, 0, 0)
+	band.position = Vector2(0, 290)
+	band.size = Vector2(640, 70)
+	layer.add_child(band)
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, 0)
+	shade.size = Vector2(640, 360)
+	layer.add_child(shade)
+	var line := _big_label(layer, _look_back_line(), Vector2(40, 292), Vector2(560, 66), 13, Color.WHITE)
+	line.modulate.a = 0.0
+	var a := create_tween().set_parallel()
+	a.tween_property(band, "color:a", 0.75, 1.2)
+	a.tween_property(line, "modulate:a", 1.0, 1.2)
+	await a.finished
+	await get_tree().create_timer(4.0).timeout
+	# buio, poi il capitolo 2
+	var b := create_tween()
+	b.tween_property(line, "modulate:a", 0.0, 0.8)
+	b.tween_property(shade, "color:a", 1.0, 1.0)
+	await b.finished
+	Sound.music("")
+	var small := _big_label(layer, "CAPITOLO 2", Vector2(0, 138), Vector2(640, 24), 13, Color("8a8494"))
+	var big := _big_label(layer, "IL SOTTOUFFICIO", Vector2(0, 162), Vector2(640, 40), 26, Color("ffe14d"))
+	small.modulate.a = 0.0
+	big.modulate.a = 0.0
+	var c := create_tween()
+	c.tween_property(small, "modulate:a", 1.0, 0.8)
+	c.tween_property(big, "modulate:a", 1.0, 0.8)
+	Sound.sfx("stamp", 0.8)
+	await c.finished
+	await get_tree().create_timer(2.0).timeout
 	Ui.cutscene = false
+	Router.goto(Router.SOTTOUFFICIO, "from_below", ["Piano -4."])
+
+
+## La frase dello sguardo indietro: dipende da cosa hai fatto al Fondo.
+func _look_back_line() -> String:
+	if GameState.is_robot("fermo"):
+		return "Laggiù, Fermo sorride.\nÈ l'unica luce rimasta accesa. L'hai accesa tu, col suo quaderno."
+	if GameState.flags.get("c1_sbarrato", false):
+		return "Laggiù è tutto grigio, e tu non sai perché.\nNon ti sei voltato. Adesso, voltarsi non serve più."
+	if int(GameState.flags.get("c1_extra", 0)) >= EXTRA_PAY.size():
+		return "Laggiù, la cyclette gira ancora un po' da sola.\nHai riacceso la festa tre volte. Nessuno ti ha detto grazie."
+	var truths := 0
+	for id in ["fermo", "mina", "bulbo"]:
+		if GameState.flags.get("svelato_" + id, false):
+			truths += 1
+	if truths >= 3:
+		return "Laggiù è tutto grigio. Ma adesso sai di chi sono i colori.\nFermo alza una mano. Forse ti saluta. Forse si stiracchia."
+	if _helped_here():
+		return "Laggiù è grigio, ma un grigio caldo.\nDove hai dato una mano, qualcuno sta ancora parlando di te."
+	return "Laggiù, Fermo è ancora seduto sulla sua cassetta.\nNon ti guarda salire. Non lo fa mai. Fa troppo male."
+
+
+func _big_label(parent: Node, text: String, pos: Vector2, size: Vector2, font_size: int, col: Color) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.position = pos
+	l.size = size
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.add_theme_font_size_override("font_size", font_size)
+	l.add_theme_color_override("font_color", col)
+	parent.add_child(l)
+	return l
 
 
 # --- Fermo ------------------------------------------------------------------------
@@ -111,18 +294,20 @@ func _first_talk() -> void:
 		"La festa non è per te, se te lo stai chiedendo. È per la CHEAP. La fanno ogni volta che arriva qualcuno.",
 		"Io sono Fermo. Di nome e di fatto, dicono. Ridono sempre, quelli che lo dicono. Io no.",
 		"E tu? ...{name}. Bel nome. Tienilo stretto: quaggiù i nomi si consumano in fretta."], who)
-	var c: int = await Ui.choose("Tu quanto devi?", ["Seimila euro.", "Non sono affari tuoi."], who)
+	var c: int = await Ui.choose("Tu quanto devi?", ["Sette miliardi.", "Non sono affari tuoi."], who)
 	if c == 0:
-		await Ui.say(["Seimila. Ah. Io, quando sono arrivato, ne dovevo quattromila.",
-			"Lavoro qui da undici anni. Adesso ne devo novemila. Non chiedermi come."], who)
+		await Ui.say(["Sette miliardi. Ah. Io, quando sono arrivato, ne dovevo quattro.",
+			"Lavoro qui da undici anni. Adesso ne devo nove. Di miliardi. Non chiedermi come.",
+			"Non fare quella faccia. Quaggiù nessuno deve meno di un miliardo. Fa curriculum."], who)
 	else:
-		await Ui.say(["Giusto. Tanto lo so già: lo scrivono sul display dell'ascensore. Lo scrivono sempre.",
-			"Io, quando sono arrivato, ne dovevo quattromila. Adesso novemila. Undici anni."], who)
+		await Ui.say(["Giusto. Tanto lo so già: ce l'hai scritto in faccia. Miliardi. Ce l'abbiamo tutti.",
+			"Io, quando sono arrivato, ne dovevo quattro. Adesso nove. Undici anni."], who)
 	await Ui.say(["Funziona così. Te lo dico una volta sola, perché a me l'hanno detto una volta sola.",
 		"Lavori. Laggiù, a sinistra, c'è la cyclette: pedali, e la dinamo tiene accese le luci della festa. E quelle di sopra.",
 		"Ti pagano. Coi soldi compri il badge allo sportello. Col badge passi il tornello e sali le scale.",
 		"Il badge del -4 costa 500 euro. Non è un regalo: è una rata del tuo debito, con un nastrino.",
-		"Vedi quella scritta gialla che dondola, TURNO? È il posto dove oggi devi lavorare. Ci vai, premi, lavori.",
+		"E ogni piano, il badge costa il doppio. Più sali, più costa salire. Dicono che è meritocrazia.",
+		"Vedi quella scritta gialla che dondola, TURNO? È il posto dove oggi devi lavorare. Ci vai, tocchi, lavori.",
 		"Finito il turno, la scritta sparisce. Torna il giorno dopo. Il giorno dopo arriva quando fai passare la notte a una stellina."], who)
 	await Ui.say(["Io non salgo più. Ho fatto i conti: se pedalo fino a morire, arrivo al -4 il giorno del mio funerale.",
 		"Non è triste. È solo... piatto. Lavori, dormi, lavori. Un giorno ti fermi. Ma non perché l'hai deciso tu."], who)
@@ -164,6 +349,8 @@ func _switchable() -> Array[CanvasItem]:
 
 
 var _off_mat: ShaderMaterial
+var _tint: CanvasModulate
+var _tint_target := Color.WHITE
 
 
 ## Toglie il colore alla festa (con `slow`, piano piano).
@@ -185,6 +372,7 @@ func _switch_off(slow: bool) -> void:
 			n.position.y += 10
 	# il Fondo prende la sfumatura delle tue scelte
 	var tint := CanvasModulate.new()
+	_tint = tint
 	tint.color = Color.WHITE
 	add_child(tint)
 	var target := Color(0.96, 0.92, 0.86)
@@ -192,6 +380,7 @@ func _switch_off(slow: bool) -> void:
 		target = Color(0.92, 1.0, 0.82)
 	elif _helped_here():
 		target = Color(1.0, 0.9, 0.78)
+	_tint_target = target
 	if slow:
 		create_tween().tween_property(tint, "color", target, 3.0)
 	else:
@@ -230,7 +419,8 @@ func _revelation() -> void:
 	var fade := create_tween()
 	fade.tween_method(func(v: float) -> void: _off_mat.set_shader_parameter("amount", v), 0.0, 1.0, 3.0)
 	await fade.finished
-	await Ui.say(["* La festa si è spenta. Restano accese solo la cyclette e lo sportello dei badge."])
+	await Ui.say(["* La festa si è spenta. Restano accese solo la cyclette e lo sportello dei badge.",
+		"* La cyclette, anzi, ronza ancora. Come se ti aspettasse."])
 	if GameState.is_robot("fermo"):
 		await Ui.say(["* ...Ma Fermo sta sorridendo. È l'unica cosa, qui, che non si è spenta. E non è sua."])
 	elif _helped_here():

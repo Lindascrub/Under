@@ -29,12 +29,27 @@ Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo 
 1. **L'ascensore.** Musichetta allegra, voce registrata: "Benvenuto nella Torre CHEAP! Il futuro costa poco!". Niente più scritta del debito sul display.
 2. **Arrivo al Fondo: la festa.** Le porte si aprono su festoni, palloncini, coriandoli, una torta "AUGURI ALLA CHEAP".
 3. **Lo schianto.** Dietro di te l'ascensore crolla: rumore, scossa, porte piegate, luce spenta. La musica della festa non si ferma.
-4. **Fermo.** Spiega: lavoro, badge (500 €), la scritta TURNO, le stelline per far passare la notte.
+4. **Fermo.** Spiega: lavoro, badge (500 € il primo, poi ogni piano il doppio: 1.000, 2.000, 4.000, 8.000), la scritta TURNO, le stelline per far passare la notte.
 5. **Bulbo e Nonno Mina.** Ti chiedono una mano (i due minigiochi). Dal secondo dialogo: "devo mantenere il mio colore".
-6. **Il primo turno: la cyclette.** Il gioco della lancetta (SINISTRA e DESTRA alternati per restare nel verde).
-7. **La telefonata del capo.** Ti propone di prenderti il merito del **quaderno di Fermo**: un, due, tre, stella. Ti avvicini di soppiatto mentre ti dà le spalle, copi quando sei vicino; se si gira e ti vede muovere, ti rimanda indietro. Tempo limite visibile. Se lo fai, Fermo sorride come i poster.
-8. **La rivelazione** (da fare): dopo il primo turno i colori si spengono; il Fondo diventa malinconico (hai aiutato), grottesco (hai rubato) o resta finto (hai solo lavorato).
-9. **Il badge e la fine del capitolo** (da fare: la schermata finale con le tue scelte).
+6. **Il primo turno: la cyclette.** Il gioco della lancetta: si tocca lo schermo a sinistra e a destra, alternando, per restare nel verde.
+7. **La telefonata del capo.** Ti propone di prenderti il merito del **quaderno di Fermo**: un, due, tre, stella. Tieni il dito sullo schermo per avvicinarti mentre ti dà le spalle, e ancora per copiare; quando si gira, stacchi il dito. Se ti vede muovere, ti rimanda indietro. Tempo limite visibile. Se lo fai, Fermo sorride come i poster.
+8. **La rivelazione, sul primo gradino.** Col badge, appena metti il piede sulle scale la festa si spegne: palloncini sgonfi, festoni caduti, tutto grigio tranne le cose finte (cyclette, sportello). Il grigio è malinconico (hai aiutato), grottesco (hai rubato) o neutro (hai solo lavorato). Nessuna domanda: decidi coi piedi.
+   - Se ti volti e parli con Fermo, Bulbo o Nonno Mina, ti dicono la verità sui colori.
+   - Se sali senza aver ascoltato nessuno, le scale dietro di te si chiudono (coni e nastro VIETATO, al piano -4): non si torna più giù.
+9. **Lo straordinario.** Dopo la rivelazione la cyclette resta accesa: puoi pedalare ancora, al massimo tre volte. Ogni volta è più difficile e paga meno (120, 70, 35 €), ma per cinque secondi la festa si riaccende, poi si rispegne.
+10. **Lo sguardo indietro (fine del capitolo).** In cima alle scale la telecamera scende sul Fondo com'è diventato, con Fermo laggiù, e compare una sola frase che dipende dalle tue scelte (quaderno rubato, scale sbarrate, tre straordinari, tutte le verità, chi hai aiutato). Poi buio e il titolo "Capitolo 2 — Il Sottoufficio".
+
+## Comandi: tutto col dito
+
+Il gioco è per telefono. Nel mondo ci sono joystick e pulsanti; nei minigiochi no, si gioca direttamente sullo schermo:
+- cyclette e magazzino: tocca la metà sinistra o destra;
+- lampadine: scorri a destra (buona), a sinistra (rotta), su e giù (avvita quella che sfarfalla);
+- fili: tocca un filo a sinistra, poi il suo posto a destra;
+- un, due, tre, stella: tieni il dito giù, staccalo quando si gira;
+- gli altri: tocca il telefono che squilla, trascina spugna, barra e racchetta, scorri per Snake e Tetris.
+Le istruzioni dicono "tocca", non "premi". Su PC restano anche i tasti.
+
+Niente barra in alto con debito e soldi: il mondo deve sembrare vero, non un gioco. Le cifre si vedono nel menu.
 
 ## Cosa resta del gioco attuale
 
@@ -44,4 +59,3 @@ Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo 
 ## Da decidere più avanti
 
 - Musica dell'ascensore e del Fondo colorato.
-- Come si vede la schermata di fine capitolo.
