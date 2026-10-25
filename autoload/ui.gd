@@ -216,9 +216,36 @@ func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 	_show_portrait(speaker, portrait)
 	_pitch = 1.0 if speaker == "" else 0.75 + float(absi(speaker.hash()) % 50) / 100.0
 	for line: Variant in lines:
-		await _type(_text, GameState.fmt(str(line)))
+		# una frase troppo lunga per il riquadro diventa più pagine
+		for page in _pages(GameState.fmt(str(line))):
+			await _type(_text, page)
 	_box.visible = false
 	busy = false
+
+
+## Divide il testo in pezzi che stanno dentro il riquadro (a parole intere).
+func _pages(text: String) -> Array[String]:
+	# si misura sul riquadro vero (che scrive in maiuscolo): quante righe ci stanno
+	var line_h := _text.get_line_height() + _text.get_theme_constant("line_spacing")
+	var max_lines := maxi(1, int((_text.size.y + 2.0) / line_h))
+	var fits := func(t: String) -> bool:
+		_text.text = t
+		return _text.get_line_count() <= max_lines
+	var out: Array[String] = []
+	if fits.call(text):
+		out.append(text)
+		return out
+	var cur := ""
+	for w in text.split(" "):
+		var next := w if cur == "" else cur + " " + w
+		if cur != "" and not fits.call(next):
+			out.append(cur)
+			cur = w
+		else:
+			cur = next
+	if cur != "":
+		out.append(cur)
+	return out
 
 
 func choose(prompt: String, options: Array, speaker: String = "") -> int:
@@ -357,6 +384,7 @@ func _touch(event: InputEventScreenTouch) -> bool:
 		if _typing:
 			_typing = false
 			_label.visible_characters = -1
+			Sound.stop_blip()
 		else:
 			_advance.emit()
 		return true
@@ -383,6 +411,7 @@ func _input(event: InputEvent) -> void:
 			if _typing:
 				_typing = false
 				_label.visible_characters = -1
+				Sound.stop_blip()
 			elif event.is_action_pressed("confirm"):
 				_advance.emit()
 	elif _mode == "choose":

@@ -5,6 +5,7 @@ extends Node
 const SFX_PLAYERS := 6
 
 var _sfx: Array[AudioStreamPlayer] = []
+var _blip: AudioStreamPlayer
 var _next := 0
 var _music: AudioStreamPlayer
 var _music_name := ""
@@ -27,6 +28,10 @@ func _ready() -> void:
 		p.bus = "SFX"
 		add_child(p)
 		_sfx.append(p)
+	# la voce dei dialoghi ha un canale tutto suo: si zittisce appena salti avanti
+	_blip = AudioStreamPlayer.new()
+	_blip.bus = "SFX"
+	add_child(_blip)
 	_music = AudioStreamPlayer.new()
 	_music.volume_db = -8.0
 	_music.bus = "Music"
@@ -84,7 +89,17 @@ func sfx(name: String, pitch := 1.0) -> void:
 
 ## Il "bip" delle lettere, con un tono diverso per ogni personaggio.
 func blip(pitch := 1.0) -> void:
-	sfx("blip", pitch)
+	var stream := _load("blip")
+	if stream == null:
+		return
+	_blip.stream = stream
+	_blip.pitch_scale = pitch
+	_blip.play()
+
+
+## Zittisce la voce dei dialoghi (quando il testo viene saltato o finisce).
+func stop_blip() -> void:
+	_blip.stop()
 
 
 ## Rallenta (o riporta normale) la musica: 1.0 = normale.
