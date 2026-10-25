@@ -453,7 +453,7 @@ func barter_level() -> String:
 
 ## Le zone si ricordano cosa hai fatto: {zona: {"sfruttato": n, "libero": n, "ingranaggio": n}}.
 const ZONES := {
-	"sottoufficio": ["gino"],
+	"sottoufficio": ["tilde", "ercole"],
 	"ufficio": ["dario", "giulia"],
 	"strada": ["marta", "sig_bruno", "lea", "ragazzo_sami", "portiere_ivo", "nico"],
 	"mercato": ["vito"],

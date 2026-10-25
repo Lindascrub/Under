@@ -49,7 +49,7 @@ Il gioco è per telefono. Nel mondo ci sono joystick e pulsanti; nei minigiochi 
 - gli altri: tocca il telefono che squilla, trascina spugna, barra e racchetta, scorri per Snake e Tetris.
 Le istruzioni dicono "tocca", non "premi". Su PC restano anche i tasti.
 
-Niente barra in alto con debito e soldi: il mondo deve sembrare vero, non un gioco. Le cifre si vedono nel menu.
+In alto resta la barra con piano, ora, debito ("7,00 mld €") e soldi. Quello che non si deve mai vedere è il fuori-mappa: la telecamera resta sempre dentro i muri della stanza, anche ai bordi.
 
 ## Cosa resta del gioco attuale
 

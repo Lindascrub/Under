@@ -82,5 +82,16 @@
       "Il capo: Quel signore grigio, Fermo. In undici anni ha riempito un quaderno di idee per far rendere la dinamo il doppio. Non le ha mai date a nessuno.",
       "Il capo: Se quel quaderno arriva sulla mia scrivania con il suo nome sopra, lei sale. Fermo non se ne accorgerà: non si accorge più di niente."
     ]
+  },
+  "tilde": {
+    "title": "Il copione di Tilde",
+    "item": "il copione di Tilde",
+    "victim_name": "Tilde",
+    "victim_sheet": "char_06",
+    "desc": [
+      "Il capo: Turno discreto! Senta, una cosetta da niente.",
+      "Il capo: Quella signora grigia del call center, Tilde. Ha scritto a mano un copione suo: con quello i clienti smettono di urlare. Non l'ha mai consegnato.",
+      "Il capo: Se quel copione arriva sulla mia scrivania col suo nome sopra, lei sale. Tilde continuerà a dire grazie. È il suo talento."
+    ]
   }
 }

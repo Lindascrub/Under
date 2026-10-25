@@ -1601,7 +1601,7 @@
     "sheet": "char_02",
     "schedule": [
       {
-        "room": "sottoufficio",
+        "room": "nessuno",
         "cell": [
           20,
           7
@@ -1971,7 +1971,7 @@
         "title": "Le lampadine di Bulbo",
         "intro": [
           "* Una lampadina alla volta.",
-          "* Le buone a DESTRA, le rotte a SINISTRA. Quelle che sfarfallano si avvitano con SU o GIÙ."
+          "* Le buone a destra, le rotte a sinistra. Quelle che sfarfallano si avvitano su e giù."
         ],
         "count": 10,
         "time": 25,
@@ -1996,48 +1996,56 @@
       {
         "room": "sottoufficio",
         "cell": [
-          11,
-          8
+          6,
+          7
         ],
         "anim": "phone"
       }
     ],
     "intro": [
-      "Grazie per la sua pazienza. ...Oh, scusa. Sei una persona vera.",
-      "Io sono Tilde. Dodici anni di call center. Dico \"grazie per la sua pazienza\" anche a mia madre.",
-      "Il trucco è non ascoltare quello che dici. Se ti ascolti, ti metti a piangere."
+      "Grazie per aver chiamato, la sua chiamata è importante per noi. ...Oh. Scusa. Sei una persona vera.",
+      "Io sono Tilde. Dodici anni di call center. Dico \"resti in linea\" anche a mia madre. Lei resta.",
+      "Il trucco è non ascoltare quello che dici. Se ti ascolti, ti metti a piangere. Se piangi, ti trattengono la pausa."
     ],
     "days": [
-      [
-        "Oggi una signora mi ha urlato per un'ora. Alla fine le ho detto grazie. Mi ha ringraziato anche lei. Siamo pazzi tutti e due."
-      ],
       [
         "Il copione cambia ogni lunedì. Le parole sono diverse, il senso è lo stesso: \"non possiamo fare niente\"."
       ],
       [
-        "Ho sognato un telefono che squillava. Mi sono svegliata e ho risposto alla sveglia."
+        "Ho sognato un telefono che squillava. Mi sono svegliata e ho risposto alla sveglia. Le ho chiesto di restare in linea."
+      ],
+      [
+        "Lo sai che hanno registrato la mia voce? Per la segreteria. Adesso risponde lei, e io devo comunque stare qui. Per sicurezza."
       ]
     ],
     "helped": [
-      "Mi hai aiutata col copione. Oggi ho detto una frase mia, al telefono. Una sola. Nessuno se n'è accorto."
+      "Mi hai aiutata col copione. Oggi ho detto una frase mia, al telefono. Una sola. Nessuno se n'è accorto. Io sì."
     ],
     "emote": "dots",
     "help": {
       "kind": "time",
-      "ask": "Tilde ha un copione nuovo da imparare a memoria entro la pausa.",
+      "ask": "Tilde ha un copione nuovo da imparare a memoria entro la pausa. Se sbaglia una frase, la richiamano.",
       "yes": [
-        "Ce l'hai fatta! Tu sì che sei portato. Non dirlo all'Agenda, ti mette qui per sempre."
+        "Ce l'hai fatta! Le frasi sono tutte al loro posto. Io un po' meno, ma pazienza."
       ],
       "minigame": {
         "type": "sequence",
         "title": "Il copione di Tilde",
         "intro": [
           "* Ogni freccia è una frase del copione.",
-          "* Ricordale nell'ordine giusto."
+          "* Guarda l'ordine, poi ripetilo."
         ],
         "reward": 10
       }
-    }
+    },
+    "grey": true,
+    "reveal_flag": "c2_rivelazione",
+    "reveal": [
+      "...L'hai sentito anche tu, il silenzio? Dodici anni, ed è la prima volta che la musica si ferma.",
+      "I moduli finiscono nel tritacarte. Lo so da sempre. Una volta ci ho infilato la mano per riprenderne uno: era il mio.",
+      "Il B-4 non serve a salire. Serve a farti girare. Chi gira non ha tempo di chiedersi perché.",
+      "Adesso che lo sai, la musica ripartirà. E tu farai finta di niente. Come me. Ma almeno, noi due, lo sappiamo."
+    ]
   },
   "ercole": {
     "name": "Ercole",
@@ -2046,35 +2054,35 @@
       {
         "room": "sottoufficio",
         "cell": [
-          6,
-          11
+          18,
+          9
         ],
         "anim": "idle_down"
       }
     ],
     "intro": [
       "Zzz... chi va là? Ah. Un dipendente. Riposo.",
-      "Ercole, guardia del piano -4. Faccio il turno di notte, il turno di giorno e quello in mezzo.",
-      "Se mi vedi dormire, non sto dormendo. Sto sorvegliando con gli occhi chiusi."
+      "Ercole, custode dell'archivio del piano -4. Faccio il turno di notte, il turno di giorno e quello in mezzo.",
+      "Se mi vedi con gli occhi chiusi, non sto dormendo. Sto archiviando la luce."
     ],
     "days": [
       [
         "Ho fatto i conti: dormo quattro ore a settimana. Ma le dormo benissimo."
       ],
       [
-        "Una volta ho fermato un ladro. Rubava tempo. L'ho arrestato e poi l'hanno promosso."
+        "Nell'archivio ci sono quarant'anni di moduli. Li custodisco io. Nessuno li ha mai chiesti indietro."
       ],
       [
-        "L'Agenda dice che il riposo è un furto. Allora sono un ladro bravissimo."
+        "L'Agenda dice che il riposo è un furto. Allora sono il ladro più bravo del piano."
       ]
     ],
     "helped": [
-      "Grazie per avermi tenuto sveglio durante l'ispezione. Mi hanno dato un timbro: \"vigile\". Sono commosso. Credo."
+      "Grazie per avermi tenuto sveglio durante l'ispezione. Mi hanno dato un attestato: \"vigile\". L'ho archiviato. Mi viene da piangere. Credo."
     ],
     "emote": "dots",
     "help": {
       "kind": "time",
-      "ask": "Ercole sta per addormentarsi in piedi e fra poco passa l'ispettore.",
+      "ask": "Ercole sta per addormentarsi in piedi e fra poco passa l'ispettore dell'archivio.",
       "yes": [
         "Sveglio! Sono sveglio! ...Grazie, ragazzo. Non dirlo a nessuno."
       ],
@@ -2088,7 +2096,15 @@
         "hits": 4,
         "reward": 10
       }
-    }
+    },
+    "grey": true,
+    "reveal_flag": "c2_rivelazione",
+    "reveal": [
+      "Hai sentito? Il tritacarte. Lo sento tutte le notti, da quarant'anni.",
+      "L'archivio è vuoto, ragazzo. Gli scaffali sono pieni di cartelline vuote. Le riempio io, la mattina, con fogli bianchi. Così sembra pieno.",
+      "Mi pagano per custodire niente. Ma lo custodisco benissimo.",
+      "Tu però non restare a custodire niente anche tu. Sali. E se lassù ti danno un modulo, guardalo bene prima di riempirlo."
+    ]
   },
   "rosa": {
     "name": "Rosa",

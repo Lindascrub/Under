@@ -527,7 +527,7 @@ kind = "badge"
 position = Vector2(336, 48)
 script = ExtResource("11_kwl31")
 kind = "stairs_up"
-target = "res://scenes/world/sottoufficio.tscn"
+target = "res://chapters/c2/sottoufficio.tscn"
 need = "-4"
 
 [node name="Stellina" type="Node2D" parent="Mondo" unique_id=1003915242]

@@ -38,6 +38,11 @@ func _ready() -> void:
 	_mat = ShaderMaterial.new()
 	_mat.shader = ROBOT_SHADER
 	sprite.material = _mat
+	# le persone vere, in un piano colorato e finto, sono grigie (campo "grey")
+	if data.get("grey", false) and not GameState.is_robot(id):
+		var grey := ShaderMaterial.new()
+		grey.shader = preload("res://shaders/greyscale.gdshader")
+		sprite.material = grey
 	add_child(sprite)
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(12, 8)
@@ -143,6 +148,7 @@ func face(dir: String) -> void:
 
 ## Mostra il robot che c'era sotto (usato nel finale ricco).
 func reveal(time := 2.0) -> void:
+	sprite.material = _mat
 	var tw := create_tween()
 	tw.tween_method(func(v: float) -> void: _mat.set_shader_parameter("amount", v), 0.0, 1.0, time)
 	await tw.finished
@@ -156,8 +162,13 @@ func interact() -> void:
 		return
 	if await Quests.handle_npc(self):
 		return
-	# dopo la rivelazione del capitolo 1, chi ha perso il colore ti dice la verità (campo "reveal")
-	if data.has("reveal") and GameState.flags.get("c1_rivelazione", false) and not GameState.flags.get("svelato_" + id, false):
+	# la stanza può avere qualcosa di speciale da far dire a questa persona (talk_<id>)
+	var room := get_tree().current_scene
+	if room and room.has_method("talk_" + id) and await room.call("talk_" + id, self):
+		return
+	# dopo la rivelazione del capitolo, chi ha perso il colore ti dice la verità (campo "reveal")
+	var reveal_flag := str(data.get("reveal_flag", "c1_rivelazione"))
+	if data.has("reveal") and GameState.flags.get(reveal_flag, false) and not GameState.flags.get("svelato_" + id, false):
 		GameState.flags["svelato_" + id] = true
 		await Ui.say(data["reveal"], who)
 		return

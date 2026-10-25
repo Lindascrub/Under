@@ -151,65 +151,7 @@ func _look_back(p: Player) -> void:
 		await Ui.say(["* Non ti volti. Dietro di te, qualcosa si chiude con un colpo secco.",
 			"* Le scale per il Fondo, da adesso, vanno in una sola direzione."])
 		Ui.cutscene = true
-	p.set_physics_process(false)
-	p.face("down")
-	# la telecamera si allarga su tutto il Fondo, com'è diventato (Fermo laggiù, in mezzo)
-	# solo il pavimento e i muri: niente bordo scuro, niente fuori-mappa
-	var inner := cam_rect
-	var fit := maxf(640.0 / inner.size.x, 360.0 / inner.size.y)
-	var half := Vector2(320, 180) / fit
-	var look := (inner.get_center() + Vector2(0, 10)).clamp(inner.position + half, inner.end - half)
-	var cam := p.camera
-	Sound.music_pitch(0.6, 4.0)
-	# la telecamera si stacca dal giocatore (così i bordi della stanza la tengono dentro)
-	var from := cam.get_screen_center_position()
-	cam.position_smoothing_enabled = false
-	cam.top_level = true
-	cam.global_position = from
-	var tw := create_tween()
-	tw.tween_property(cam, "global_position", look, 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.parallel().tween_property(cam, "zoom", Vector2(fit, fit), 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	await tw.finished
-	await get_tree().create_timer(0.8).timeout
-	# una frase sola, quella che ti sei guadagnato
-	var layer := CanvasLayer.new()
-	layer.layer = 15
-	add_child(layer)
-	# la frase in basso, su una striscia scura, per non coprire il Fondo
-	var band := ColorRect.new()
-	band.color = Color(0, 0, 0, 0)
-	band.position = Vector2(0, 290)
-	band.size = Vector2(640, 70)
-	layer.add_child(band)
-	var shade := ColorRect.new()
-	shade.color = Color(0, 0, 0, 0)
-	shade.size = Vector2(640, 360)
-	layer.add_child(shade)
-	var line := _big_label(layer, _look_back_line(), Vector2(40, 292), Vector2(560, 66), 13, Color.WHITE)
-	line.modulate.a = 0.0
-	var a := create_tween().set_parallel()
-	a.tween_property(band, "color:a", 0.75, 1.2)
-	a.tween_property(line, "modulate:a", 1.0, 1.2)
-	await a.finished
-	await get_tree().create_timer(4.0).timeout
-	# buio, poi il capitolo 2
-	var b := create_tween()
-	b.tween_property(line, "modulate:a", 0.0, 0.8)
-	b.tween_property(shade, "color:a", 1.0, 1.0)
-	await b.finished
-	Sound.music("")
-	var small := _big_label(layer, "CAPITOLO 2", Vector2(0, 138), Vector2(640, 24), 13, Color("8a8494"))
-	var big := _big_label(layer, "IL SOTTOUFFICIO", Vector2(0, 162), Vector2(640, 40), 26, Color("ffe14d"))
-	small.modulate.a = 0.0
-	big.modulate.a = 0.0
-	var c := create_tween()
-	c.tween_property(small, "modulate:a", 1.0, 0.8)
-	c.tween_property(big, "modulate:a", 1.0, 0.8)
-	Sound.sfx("stamp", 0.8)
-	await c.finished
-	await get_tree().create_timer(2.0).timeout
-	Ui.cutscene = false
-	Router.goto(Router.SOTTOUFFICIO, "from_below", ["Piano -4."])
+	await look_back(p, _look_back_line(), "CAPITOLO 2", "IL SOTTOUFFICIO", Router.SOTTOUFFICIO, "from_below", ["Piano -4."])
 
 
 ## La frase dello sguardo indietro: dipende da cosa hai fatto al Fondo.
@@ -229,20 +171,6 @@ func _look_back_line() -> String:
 	if _helped_here():
 		return "Laggiù è grigio, ma un grigio caldo.\nDove hai dato una mano, qualcuno sta ancora parlando di te."
 	return "Laggiù, Fermo è ancora seduto sulla sua cassetta.\nNon ti guarda salire. Non lo fa mai. Fa troppo male."
-
-
-func _big_label(parent: Node, text: String, pos: Vector2, size: Vector2, font_size: int, col: Color) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.position = pos
-	l.size = size
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.add_theme_font_size_override("font_size", font_size)
-	l.add_theme_color_override("font_color", col)
-	parent.add_child(l)
-	return l
 
 
 # --- Fermo ------------------------------------------------------------------------

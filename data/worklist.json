@@ -67,7 +67,7 @@
     "id": "bagni",
     "title": "Pulitore di bagni",
     "from_day": 1,
-    "room": "sottoufficio",
+    "room": "nessuno",
     "where": "i bagni, al piano -4",
     "station": [
       17,
@@ -130,14 +130,14 @@
   {
     "id": "callcenter",
     "title": "Operatore di call center",
-    "from_day": 2,
+    "from_day": 1,
     "room": "sottoufficio",
     "where": "la sala del call center, al piano -4",
     "station": [
       8,
       9
     ],
-    "station_text": "Una cuffia sudata e un copione: \"Grazie per la sua pazienza\".",
+    "station_text": "Una scrivania con un telefono beige e una cuffia. Sul monitor un post-it: \"SORRIDI, SI SENTE\".",
     "battle": {
       "name": "Il Copione",
       "sheet": "char_14",
@@ -189,7 +189,7 @@
       ],
       "tired": "* Senti ancora i telefoni squillare, anche nel silenzio."
     },
-    "game": "simon"
+    "game": "helpdesk"
   },
   {
     "id": "banco",

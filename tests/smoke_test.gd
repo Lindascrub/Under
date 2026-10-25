@@ -263,19 +263,19 @@ func _run() -> void:
 	_check(GameState.is_robot("marta"), "sfruttare Marta dovrebbe renderla un robot")
 	_check(GameState.exploited == 1, "lo sfruttamento non è stato contato")
 
-	# --- il Sottoufficio (-4): un turno ai bagni, poi la telefonata del capo (rifiutata)
+	# --- il Sottoufficio (-4): un turno al call center, poi la telefonata del capo (rifiutata)
 	GameState.minutes = GameState.DAY_START
 	GameState.worked_today = false
 	var sotto: Room = await _go(Router.SOTTOUFFICIO, "from_below")
 	choose_queue = [0, 1]
 	plan = []
 	fallback = [0, 0]
-	sotto.call("_station", GameState.job("bagni"))
+	sotto.call("_station", GameState.job("callcenter"))
 	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.SOTTOUFFICIO)
 	await _idle()
 	await _idle()
-	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno ai bagni non è stato pagato")
+	_check(GameState.hard_work == 1 and GameState.worked_today, "il turno al call center non è stato pagato")
 	_check(GameState.flags.get("boss_call_done_%d" % GameState.day, false), "dopo il turno il capo dovrebbe telefonare")
 	_check(GameState.flags.get("promotions_refused", 0) == 1, "rifiutare la promozione dovrebbe essere ricordato")
 	GameState.flags["boss_call_day"] = GameState.day
@@ -551,7 +551,7 @@ func _run() -> void:
 	_check(GameState.floor_id == "-4", "con il badge le scale dovrebbero portare al piano -4")
 	# senza il badge del -3 il tornello respinge
 	var s4: Room = get_tree().current_scene
-	s4.player.position = s4.cell_feet(Vector2i(2, 3))
+	s4.player.position = s4.cell_feet(Vector2i(21, 3))
 	for i in 10:
 		await get_tree().physics_frame
 	await _idle()
@@ -569,6 +569,47 @@ func _run() -> void:
 	await _idle()
 	_check(not GameState.floor_people("-5").is_empty() and GameState.has_badge("-4"), "aiutando tutti al -5 dovresti ricevere il badge in regalo")
 	_check(GameState.flags.get("clerk_friend", false) and GameState.self_esteem > esteem0, "l'addetta ai badge dovrebbe diventare tua amica e l'autostima salire")
+
+	# --- capitolo 2: il giro del Modulo B-4, e come se ne esce (Ercole firma, Tilde fa la voce)
+	GameState.new_game()
+	GameState.flags["c2_arrivo"] = true
+	GameState.money = 5000
+	var c2: Room = await _go(Router.SOTTOUFFICIO, "from_below")
+	choose_queue = [0]
+	await c2.call("_badge_machine")
+	_check(not GameState.has_badge("-3"), "senza B-4 timbrato lo sportello non dovrebbe vendere il badge")
+	await c2.call("_agenda")
+	_check(GameState.flags.get("c2_b4", false), "l'Agenda dovrebbe dare il B-4")
+	choose_queue = [0]
+	await c2.call("_agenda")
+	_check(not GameState.flags.get("c2_modulo_ok", false), "il B-4 vuoto non dovrebbe essere timbrato")
+	_check(not await c2.call("talk_ercole", null), "Ercole firma solo dopo che l'hai aiutato")
+	GameState.helped_ids.append("ercole")
+	_check(await c2.call("talk_ercole", null) and GameState.flags.get("c2_firma", false), "Ercole aiutato dovrebbe firmare il B-4")
+	_check(await c2.call("talk_tilde", null) and not GameState.flags.get("c2_timbro", false), "Tilde prima chiede aiuto col copione")
+	GameState.helped_ids.append("tilde")
+	_check(await c2.call("talk_tilde", null) and GameState.flags.get("c2_timbro", false), "Tilde aiutata dovrebbe fare la voce del responsabile")
+	choose_queue = [0]
+	await c2.call("_agenda")
+	_check(GameState.flags.get("c2_modulo_ok", false), "col timbro di Tilde l'Agenda dovrebbe timbrare il B-4")
+	choose_queue = [0]
+	await c2.call("_badge_machine")
+	_check(GameState.has_badge("-3"), "col B-4 timbrato il badge del -3 si dovrebbe comprare")
+	await c2.call("on_stairs_step", c2.player, "-3")
+	_check(GameState.flags.get("c2_rivelazione", false), "sul primo gradino la musica si dovrebbe fermare")
+	_check(c2.call("on_stairs_top", c2.player), "in cima alle scale dovrebbe partire lo sguardo indietro")
+	await _wait_scene(Router.MERCATO, 60000)
+	await _idle()
+	_check(GameState.flags.get("c2_fine", false) and GameState.floor_id == "-3", "dopo lo sguardo indietro si dovrebbe arrivare al Mercato")
+	# la procedura d'urgenza: paghi e il B-4 è timbrato subito
+	GameState.new_game()
+	GameState.flags["c2_arrivo"] = true
+	GameState.flags["c2_b4"] = true
+	GameState.money = 1000
+	c2 = await _go(Router.SOTTOUFFICIO, "from_below")
+	choose_queue = [1]
+	await c2.call("_agenda")
+	_check(GameState.flags.get("c2_pagato", false) and GameState.flags.get("c2_modulo_ok", false) and GameState.money == 700, "la procedura d'urgenza dovrebbe costare 300 e timbrare il B-4")
 
 	# --- mercato e banca: i piani -3 e -2, con tre aspetti diversi
 	for look in ["comunismo", "capitalismo", "baratto"]:

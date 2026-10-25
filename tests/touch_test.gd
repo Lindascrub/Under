@@ -174,6 +174,26 @@ func _run() -> void:
 	await _tap_at(Vector2(320, 110))
 	_check(int(w.get("lane")) == 0, "toccare la corsia in alto dovrebbe portarci la bici")
 
+	# --- il call center del -4: tocca il telefono che squilla, poi la risposta
+	w = await _work("helpdesk")
+	w.set("hd_phase", "ring")
+	w.set("hd_phone", 2)
+	w.set("hd_t", 5.0)
+	await _tap_at(w.call("_hd_phone_pos", 0))
+	_check(int(w.get("mistakes")) == 1, "toccare il telefono sbagliato dovrebbe essere un errore")
+	await _tap_at(w.call("_hd_phone_pos", 2))
+	_check(str(w.get("hd_phase")) == "talk", "toccare il telefono che squilla dovrebbe rispondere")
+	var kinds: Array = w.get("hd_order")
+	await _tap_at((w.call("_hd_button", kinds.find(0)) as Rect2).get_center())
+	_check(float(w.get("score")) >= 1.0 and str(w.get("hd_phase")) == "wait", "la risposta del copione dovrebbe contare")
+	w.set("hd_phase", "ring")
+	w.set("hd_phone", 1)
+	w.set("hd_t", 5.0)
+	await _tap_at(w.call("_hd_phone_pos", 1))
+	kinds = w.get("hd_order")
+	await _tap_at((w.call("_hd_button", kinds.find(1)) as Rect2).get_center())
+	_check(int(w.get("hd_honest")) == 1, "la risposta sincera dovrebbe essere contata")
+
 	# --- il call center: tocca il telefono che squilla
 	w = await _work("calls")
 	(w.get("ringing") as Dictionary).clear()

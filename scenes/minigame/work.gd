@@ -6,6 +6,8 @@ extends Node2D
 ##   game "scale":   ferma la lancetta della bilancia sul peso giusto (il banco del mercato)
 ##   game "sort":    scatole rosse a sinistra, blu a destra (il magazzino)
 ##   game "deliver": in bici tra tre corsie, evita le auto e prendi i pacchi (le consegne)
+##   game "helpdesk": il call center del -4: tocca il telefono che squilla, poi scegli la risposta
+##                    (il copione paga, la sincerità no ma ti resta, la sgarbata è un errore)
 ## Più turni hai fatto e più sei in alto nella torre, più il gioco è veloce (difficulty()).
 ## La paga dipende da quanto bene è andata; sotto metà obiettivo il turno è "fallito".
 
@@ -54,6 +56,28 @@ var road: Array[Dictionary] = []
 var crash_t := 0.0
 ## dove tiene il dito chi gioca col telefono (spugna); x < 0: nessun dito
 var finger := Vector2(-1, -1)
+# helpdesk
+## Le chiamate, dalla più gentile alla più cattiva: [cliente, copione, sincera, sgarbata].
+const CALLS := [
+	["Vorrei parlare con un essere umano!", "La sua chiamata è importante per noi.", "Anch'io. Ma qui non ce ne sono.", "Allora richiami quando ne trova uno."],
+	["È la quarta volta che chiamo!", "Grazie per la sua pazienza.", "Lo so. Le vedo tutte. Nessuno le legge.", "E chiami una quinta, allora."],
+	["Lei è un robot, vero?", "Sono qui per aiutarla!", "Non ancora.", "Bip."],
+	["Sono in attesa da due ore!", "Resti in linea, la sua chiamata è importante.", "Anch'io sono in attesa. Da anni.", "Altre due e vince un premio."],
+	["Voglio parlare col suo responsabile!", "Il responsabile la richiamerà entro 48 ore.", "Non l'ho mai visto. Forse non esiste.", "Il responsabile è lei, a quanto pare."],
+	["Mi avete addebitato tremila euro!", "Le propongo l'offerta Serenità Plus.", "Mi dispiace. Qui succede a tutti.", "Li ha spesi bene, almeno?"],
+	["Perché mi chiamate alle sei di mattina?", "Per offrirle un'occasione unica!", "Perché a quell'ora nessuno riattacca.", "Perché lei era sveglio."],
+	["Mia madre è morta. Voglio chiudere il suo contratto.", "Serve il modulo D-12 firmato dal titolare.", "Mi dispiace tanto. Lo chiudo io, adesso.", "Deve chiamare lei, però."],
+]
+const HD_KINDS := ["copione", "sincera", "sgarbata"]
+var hd_phase := "wait"
+var hd_t := 0.0
+var hd_phone := 0
+var hd_call: Array = []
+var hd_order: Array = []
+var hd_sel := 0
+var hd_done := 0
+var hd_honest := 0
+var hd_last := ""
 
 var _title: Label
 var _info: Label
@@ -119,6 +143,8 @@ func _rules() -> String:
 				return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Tocca la metà giusta dello schermo prima che arrivino in fondo al nastro."
 			"deliver":
 				return "* Tocca la corsia dove vuoi andare. Evita le auto, prendi i pacchi."
+			"helpdesk":
+				return "* Quando un telefono squilla, toccalo. Poi tocca la risposta. Il copione paga. La sincerità no, ma ti resta. Se sei sgarbato, ti richiamano."
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
@@ -132,6 +158,8 @@ func _rules() -> String:
 			return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Premi la freccia prima che arrivino in fondo al nastro."
 		"deliver":
 			return "* SU e GIÙ per cambiare corsia. Evita le auto, prendi i pacchi."
+		"helpdesk":
+			return "* Quando un telefono squilla, premi la sua freccia (SINISTRA, SU, DESTRA). Poi scegli la risposta con SU e GIÙ e {ok}. Il copione paga. La sincerità no, ma ti resta."
 	return "* Lavora."
 
 
@@ -159,6 +187,11 @@ func _start() -> void:
 			target = 12.0 + d * 8.0
 		"deliver":
 			target = 6.0 + d * 4.0
+		"helpdesk":
+			duration = 45.0
+			time_left = duration
+			target = 5.0 + d * 3.0
+			hd_t = 1.0
 
 
 func _process(delta: float) -> void:
@@ -262,6 +295,25 @@ func _process(delta: float) -> void:
 					continue
 				if float(o["x"]) < BOX.position.x - 20:
 					road.remove_at(i)
+		"helpdesk":
+			hd_t -= delta
+			if hd_t <= 0.0:
+				match hd_phase:
+					"wait":
+						# squilla un telefono
+						hd_phase = "ring"
+						hd_phone = randi() % 3
+						hd_t = maxf(1.6, 3.0 - d)
+						Sound.sfx("ding", [1.0, 1.5, 1.25][hd_phone])
+					"ring", "talk":
+						# non hai risposto in tempo: riattaccano
+						mistakes += 1
+						hd_last = "Ha riattaccato."
+						_flash(RED)
+						Sound.sfx("deny")
+						_hd_next()
+			elif hd_phase == "ring" and int(hd_t * 6.0) % 3 == 0 and int(t * 60) % 10 == 0:
+				Sound.sfx("ding", [1.0, 1.5, 1.25][hd_phone])
 	_info.text = "Tempo %d   Fatto %d/%d   Errori %d" % [int(ceil(time_left)), int(score), int(ceil(target)), mistakes]
 	if time_left <= 0.0:
 		_finish()
@@ -298,6 +350,19 @@ func touch_point(pos: Vector2, step: int) -> void:
 		arcade.touch_point(pos, step)
 		return
 	match game:
+		"helpdesk":
+			if step != 0:
+				return
+			if hd_phase == "ring":
+				for k in 3:
+					if pos.distance_to(_hd_phone_pos(k)) < 50.0:
+						_hd_pick_up(k)
+						return
+			elif hd_phase == "talk":
+				for k in 3:
+					if _hd_button(k).grow(4).has_point(pos):
+						_hd_answer(k)
+						return
 		"clean":
 			finger = pos if step != 2 else Vector2(-1, -1)
 		"deliver":
@@ -385,6 +450,76 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif event.is_action_pressed("move_down"):
 				lane = mini(2, lane + 1)
 				Sound.sfx("move")
+		"helpdesk":
+			if hd_phase == "ring":
+				for k in 3:
+					if event.is_action_pressed(["move_left", "move_up", "move_right"][k]):
+						_hd_pick_up(k)
+			elif hd_phase == "talk":
+				if event.is_action_pressed("move_up"):
+					hd_sel = posmod(hd_sel - 1, 3)
+					Sound.sfx("move")
+				elif event.is_action_pressed("move_down"):
+					hd_sel = posmod(hd_sel + 1, 3)
+					Sound.sfx("move")
+				elif event.is_action_pressed("confirm"):
+					_hd_answer(hd_sel)
+
+
+# --- il call center (helpdesk) --------------------------------------------------
+
+## Dove stanno i tre telefoni e i tre pulsanti delle risposte.
+func _hd_phone_pos(k: int) -> Vector2:
+	return Vector2(BOX.get_center().x + (k - 1) * 120.0, BOX.end.y - 50.0)
+
+
+func _hd_button(k: int) -> Rect2:
+	return Rect2(BOX.position.x + 16, BOX.position.y + 62 + k * 40, BOX.size.x - 32, 32)
+
+
+func _hd_pick_up(k: int) -> void:
+	if k != hd_phone:
+		mistakes += 1
+		hd_last = "Telefono sbagliato. Quello squillava ancora."
+		_flash(RED)
+		Sound.sfx("deny")
+		return
+	# i clienti diventano più cattivi man mano che il turno va avanti (e più sali)
+	var worst := clampi(3 + hd_done + int(d * 3.0), 3, CALLS.size())
+	hd_call = CALLS[randi() % worst]
+	hd_order = [0, 1, 2]
+	hd_order.shuffle()
+	hd_sel = 0
+	hd_phase = "talk"
+	hd_t = maxf(3.5, 7.0 - d * 3.0)
+	Sound.sfx("select")
+
+
+func _hd_answer(k: int) -> void:
+	var kind: String = HD_KINDS[int(hd_order[k])]
+	match kind:
+		"copione":
+			score += 1.0
+			hd_last = "Copione. Il cliente si calma un po'. Tu no."
+			_flash(GREEN)
+			Sound.sfx("coin")
+		"sincera":
+			hd_honest += 1
+			hd_last = "Sincera. Silenzio, poi: \"...grazie\". Il supervisore lo segna."
+			_flash(YELLOW)
+			Sound.sfx("blip", 0.8)
+		_:
+			mistakes += 1
+			hd_last = "Sgarbata. Ti richiameranno. Per un richiamo."
+			_flash(RED)
+			Sound.sfx("deny")
+	hd_done += 1
+	_hd_next()
+
+
+func _hd_next() -> void:
+	hd_phase = "wait"
+	hd_t = randf_range(0.5, 1.1)
 
 
 func _new_weight() -> void:
@@ -403,6 +538,9 @@ func _finish() -> void:
 	var pay := maxi(40, int(round(base * maxf(0.25, ratio))))
 	var failed := ratio < 0.5
 	GameState.finish_hard_job(pay)
+	if game == "helpdesk" and hd_honest > 0:
+		# la sincerità non si paga, ma resta
+		GameState.self_esteem += mini(hd_honest, 2)
 	if cfg.has("extra"):
 		# straordinario: niente pietà né caporeparto, ma la festa si riaccende per un po'
 		GameState.flags["c1_extra"] = int(cfg["extra"])
@@ -418,6 +556,8 @@ func _finish() -> void:
 	else:
 		lines.append("* Turno finito. Dieci ore della tua vita.")
 	lines.append("* Paga: %s." % GameState.euros(pay))
+	if game == "helpdesk" and hd_honest > 0:
+		lines.append("* Sei stato sincero %d volt%s. Il supervisore l'ha segnato. Anche tu." % [hd_honest, "a" if hd_honest == 1 else "e"])
 	lines.append(str(cfg.get("tired", "* Ti fa male tutto.")))
 	await Ui.say(lines)
 	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
@@ -468,6 +608,8 @@ func _draw() -> void:
 			_draw_sort(font)
 		"deliver":
 			_draw_deliver()
+		"helpdesk":
+			_draw_helpdesk(font)
 	if flash > 0.0:
 		var c := flash_col
 		c.a = flash
@@ -497,6 +639,42 @@ func _draw_pedal(font: Font) -> void:
 	draw_circle(Vector2(c.x, BOX.position.y + 34), 10, Color(1, 0.95, 0.7).lerp(Color("3a3644"), 1.0 - glow))
 	draw_string(font, Vector2(BOX.position.x + 20, BOX.end.y - 10), "SINISTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "left" else Color("5c5666"))
 	draw_string(font, Vector2(BOX.end.x - 90, BOX.end.y - 10), "DESTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "right" else Color("5c5666"))
+
+
+func _draw_helpdesk(font: Font) -> void:
+	# la moquette arancione del -4, sotto la scrivania
+	draw_rect(BOX.grow(-4), Color("4a2a1a"))
+	if hd_phase == "talk":
+		draw_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 24), "Il cliente:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8a8494"))
+		draw_multiline_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 42), "\"%s\"" % str(hd_call[0]), HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 32, 12, 2, Color.WHITE)
+		for k in 3:
+			var r := _hd_button(k)
+			var sel := k == hd_sel and not TouchControls.enabled
+			draw_rect(r, Color("ffe14d") if sel else Color("2a2633"))
+			draw_rect(r, Color("ffe14d"), false, 2.0)
+			draw_multiline_string(font, r.position + Vector2(8, 13), str(hd_call[1 + int(hd_order[k])]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 16, 10, 2, Color.BLACK if sel else Color.WHITE)
+		# il tempo per rispondere
+		var left := hd_t / maxf(3.5, 7.0 - d * 3.0)
+		draw_rect(Rect2(BOX.position.x + 16, BOX.position.y + 50, (BOX.size.x - 32) * clampf(left, 0, 1), 3), GREEN)
+		return
+	for k in 3:
+		var p := _hd_phone_pos(k)
+		var on := hd_phase == "ring" and k == hd_phone
+		var shake := Vector2(sin(t * 50.0) * 2.0, 0) if on else Vector2.ZERO
+		var col := YELLOW if on else Color("d8c8a8")
+		# un telefono beige anni '80: base, cornetta, tastiera
+		draw_rect(Rect2(p + Vector2(-22, -6) + shake, Vector2(44, 22)), col)
+		draw_rect(Rect2(p + Vector2(-26, -16) + shake, Vector2(52, 9)), col.darkened(0.25))
+		for i in 3:
+			for j in 2:
+				draw_rect(Rect2(p + Vector2(-12 + i * 9, 0 + j * 7) + shake, Vector2(6, 4)), col.darkened(0.45))
+		if on:
+			draw_string(font, p + Vector2(-30, -26), "DRIN!", HORIZONTAL_ALIGNMENT_CENTER, 60, 12, YELLOW)
+			var left2 := hd_t / maxf(1.6, 3.0 - d)
+			draw_rect(Rect2(p + Vector2(-22, 20), Vector2(44 * clampf(left2, 0, 1), 3)), GREEN)
+	if hd_last != "":
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 30), hd_last, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("c8c0d0"))
+	draw_string(font, Vector2(BOX.position.x, BOX.position.y + 56), "Sincero: %d" % hd_honest, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Color("8a8494"))
 
 
 func _draw_clean() -> void:

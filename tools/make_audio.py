@@ -285,6 +285,37 @@ def music_festa():
     write("music_festa.wav", track(mel, bas, 0.17, lead_vol=0.09, bass_vol=0.14, duty=0.25, drums="k.s.k.s.k.s.k.s."))
 
 
+
+def music_attesa():
+    # "Attesa" (il Sottoufficio del capitolo 2): la musichetta del centralino. Bossa finta in Fa
+    # maggiore, dolce e infinita, con il nastro che ogni tanto rallenta: "resti in linea".
+    mel = ("A4 - C5 - F5 - E5 D5 C5 - A4 - G4 - - - "
+           "A4 - C5 - F5 - G5 F5 E5 - C5 - D5 - - - "
+           "D5 - F5 - A5 - G5 F5 E5 - C5 - A4 - - - "
+           "G4 - A4 - C5 - A#4 A4 G4 - E4 - F4 - - - ").split()
+    bas = ("F2 - C3 - F2 - C3 - A#2 - F3 - C3 - G2 - "
+           "F2 - C3 - F2 - C3 - G2 - D3 - C3 - G2 - "
+           "D3 - A2 - D3 - A2 - A#2 - F2 - C3 - G2 - "
+           "A#2 - F2 - C3 - G2 - C3 - G2 - F2 - - - ").split()
+    out = track(mel, bas, 0.2, lead_vol=0.08, bass_vol=0.12, duty=0.5, drums="k..sk..s")
+    # il nastro consumato: il volume ondeggia piano
+    out = [v * (0.85 + 0.15 * math.sin(i / RATE * 1.3)) for i, v in enumerate(out)]
+    write("music_attesa.wav", out)
+
+
+def sfx_shredder():
+    # il tritacarte: un ronzio grattato che sale e scende
+    n = int(RATE * 1.4)
+    out = []
+    for i in range(n):
+        t = i / RATE
+        env = min(1.0, t * 8) * min(1.0, (1.4 - t) * 4)
+        buzz = square(110 + 30 * math.sin(t * 18), t, 0.3) * 0.12
+        grit = random.uniform(-1, 1) * 0.18 * (0.6 + 0.4 * math.sin(t * 60))
+        out.append((buzz + grit) * env)
+    write("shredder.wav", out)
+
+
 if __name__ == "__main__":
     random.seed(7)
     sfx()
@@ -292,4 +323,6 @@ if __name__ == "__main__":
     music_fondo()
     music_piani()
     music_festa()
+    music_attesa()
+    sfx_shredder()
     print("Audio generato in", os.path.abspath(OUT))

@@ -832,6 +832,12 @@ func on_stairs_top(_p: Player) -> bool:
 	return false
 
 
+## Da scrivere nelle stanze dove il badge non basta pagarlo (il Sottoufficio: serve il B-4).
+## Se restituisce false, lo sportello non lo vende (e la stanza ha già spiegato perché).
+func badge_allowed(_need: String) -> bool:
+	return true
+
+
 ## Da scrivere nelle stanze che vogliono un momento speciale sul primo gradino (il Fondo).
 func on_stairs_step(_p: Player, _need: String) -> void:
 	pass
@@ -966,6 +972,9 @@ func _badge_machine() -> void:
 	var who := "Addetta ai badge"
 	if GameState.has_badge(need):
 		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
+		return
+	# la stanza può chiedere qualcosa in più prima del badge (al -4: il Modulo B-4)
+	if not await badge_allowed(need):
 		return
 	if GameState.flags.get("clerk_friend", false):
 		await Ui.say(["Ciao, {name}! Sono io, Nives. Cioè: una Nives. Ma quella che ti conosce."], who, BADGE_CLERK)
