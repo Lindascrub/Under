@@ -19,6 +19,11 @@ func build() -> void:
 	if floor_layer:
 		var used := floor_layer.get_used_rect()
 		map_size = used.end
+		# la telecamera resta dentro i muri: il bordo scuro intorno alla stanza non si vede
+		var walls := get_node_or_null("Muri") as TileMapLayer
+		var all := used.merge(walls.get_used_rect()) if walls else used
+		var inner := all.grow(-1) if walls else all
+		cam_rect = Rect2(Vector2(inner.position * T), Vector2(inner.size * T))
 	var arrivals := get_node_or_null("Arrivi")
 	if arrivals:
 		for m in arrivals.get_children():

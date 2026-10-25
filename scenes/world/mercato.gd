@@ -24,6 +24,7 @@ func build() -> void:
 		rows.append("s".repeat(W))
 	var sidewalk := {"tex": CITY, "at": func(c: Vector2i) -> Vector2i: return Vector2i(9 + c.x % 4, c.y % 4)}
 	paint(rows, {"s": sidewalk, "_floor": sidewalk})
+	_back_wall()
 	block(Rect2i(-1, 0, 1, H))
 	block(Rect2i(W, 0, 1, H))
 	block(Rect2i(0, H, W, 1))
@@ -262,3 +263,20 @@ func _art(path: String, pos: Vector2) -> void:
 	s.position = pos
 	s.z_index = 1
 	add_child(s)
+
+
+## Sopra ai negozi, il muro di cemento del piano interrato (sennò si vede il vuoto).
+func _back_wall() -> void:
+	var tex := Assets.tex("tiles/room_builder.png")
+	for y in range(-camera_top / T, 0):
+		for x in W:
+			var at := AtlasTexture.new()
+			at.atlas = tex
+			at.region = Rect2(Vector2((Vector2i(22, 29) + Vector2i(x % 3, posmod(y, 2))) * T), Vector2(T, T))
+			var s := Sprite2D.new()
+			s.texture = at
+			s.centered = false
+			s.position = Vector2(x * T, y * T)
+			s.modulate = Color(0.55, 0.55, 0.6)
+			s.z_index = -5
+			add_child(s)

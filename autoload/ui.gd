@@ -59,12 +59,10 @@ func blocks_input() -> bool:
 	return busy or transitioning or cutscene
 
 
-## La barra in alto non si mostra più: il mondo deve sembrare vero, non un gioco.
-## Debito, soldi e il resto si vedono nel menu (show_status).
-func show_hud(_visible: bool) -> void:
-	_hud.visible = false
+func show_hud(visible_: bool) -> void:
+	_hud.visible = visible_
 	if _time_bar:
-		_time_bar.visible = false
+		_time_bar.visible = visible_
 
 
 ## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).

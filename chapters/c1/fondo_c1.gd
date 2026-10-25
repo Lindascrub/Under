@@ -155,7 +155,7 @@ func _look_back(p: Player) -> void:
 	p.face("down")
 	# la telecamera si allarga su tutto il Fondo, com'è diventato (Fermo laggiù, in mezzo)
 	# solo il pavimento e i muri: niente bordo scuro, niente fuori-mappa
-	var inner := Rect2(Vector2(2 * T, 0), Vector2(map_size * T) - Vector2(2 * T, 0))
+	var inner := cam_rect
 	var fit := maxf(640.0 / inner.size.x, 360.0 / inner.size.y)
 	var half := Vector2(320, 180) / fit
 	var look := (inner.get_center() + Vector2(0, 10)).clamp(inner.position + half, inner.end - half)

@@ -17,6 +17,9 @@ var spawns: Dictionary = {}
 var spawn_facing: Dictionary = {}
 ## Quanto la camera può salire sopra la mappa (per mostrare edifici alti).
 var camera_top := 0
+## Cosa può inquadrare la telecamera (in pixel): mai il nero fuori dalla mappa.
+## Se resta vuoto si usa tutta la mappa (più camera_top sopra).
+var cam_rect := Rect2()
 ## Sposta la visuale verso l'alto (per vedere gli edifici sullo sfondo).
 var camera_lift := 0
 ## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
@@ -371,6 +374,23 @@ func _boss_call() -> void:
 ## La voce "_floor" viene usata sotto i caratteri sconosciuti (che finiscono in markers).
 func paint(rows: Array, legend: Dictionary) -> void:
 	map_size = Vector2i(str(rows[0]).length(), rows.size())
+	# il bordo "#" è scuro e sembra il fuori-mappa: la telecamera resta sulle righe e colonne
+	# piene per almeno metà (così i corridoi stretti verso le porte non allargano l'inquadratura)
+	var full_rows: Array[int] = []
+	var full_cols: Array[int] = []
+	for y in rows.size():
+		if str(rows[y]).replace("#", "").length() * 2 >= map_size.x:
+			full_rows.append(y)
+	for x in map_size.x:
+		var n := 0
+		for r in rows:
+			n += 0 if str(r)[x] == "#" else 1
+		if n * 2 >= rows.size():
+			full_cols.append(x)
+	if not full_rows.is_empty() and not full_cols.is_empty() and (full_rows.size() < rows.size() or full_cols.size() < map_size.x):
+		var top := -float(camera_top) if camera_top > 0 else float(full_rows[0] * T)
+		var bottom := float((full_rows[-1] + 1) * T)
+		cam_rect = Rect2(full_cols[0] * T, top, (full_cols[-1] + 1 - full_cols[0]) * T, bottom - top)
 	for y in rows.size():
 		var row := str(rows[y])
 		for x in row.length():
@@ -1016,12 +1036,13 @@ func _spawn_player() -> void:
 	player.facing = spawn_facing.get(key, "down")
 	world.add_child(player)
 	var cam := player.camera
-	var w := map_size.x * T
-	var h := map_size.y * T
-	var pad_x := maxi(0, int(VIEW.x) - w) / 2
-	var pad_y := maxi(0, int(VIEW.y) - (h - camera_top)) / 2
-	cam.limit_left = -pad_x
-	cam.limit_right = w + pad_x
-	cam.limit_top = -camera_top - pad_y
-	cam.limit_bottom = h + pad_y
+	if cam_rect.size == Vector2.ZERO:
+		cam_rect = Rect2(0, -camera_top, map_size.x * T, map_size.y * T + camera_top)
+	# se la stanza è più piccola dello schermo, si avvicina la telecamera invece di mostrare il nero
+	var z := maxf(2.0, maxf(VIEW.x * 2.0 / cam_rect.size.x, VIEW.y * 2.0 / cam_rect.size.y))
+	cam.zoom = Vector2(z, z)
+	cam.limit_left = int(cam_rect.position.x)
+	cam.limit_right = int(ceil(cam_rect.end.x))
+	cam.limit_top = int(cam_rect.position.y)
+	cam.limit_bottom = int(ceil(cam_rect.end.y))
 
