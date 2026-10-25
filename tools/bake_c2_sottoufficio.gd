@@ -150,6 +150,20 @@ func _examine(parent: Node, nm: String, cell: Vector2i, lines: Array, method := 
 
 
 ## Dietro una scrivania la persona si disegna più in alto (`nudge`), se no la copre il monitor.
+## Un muro invisibile (in caselle): dietro i banconi non ci si infila.
+func _solid(nm: String, cells: Rect2i) -> void:
+	var body := StaticBody2D.new()
+	body.name = nm
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(cells.size * T)
+	shape.shape = rect
+	body.position = Vector2(cells.position * T) + rect.size / 2.0
+	_add(mondo, body)
+	body.add_child(shape)
+	shape.owner = root
+
+
 func _person(nm: String, sheet: String, anim: String, cell: Vector2i, nudge := Vector2.ZERO) -> CharSprite:
 	var c := CharSprite.new()
 	c.name = nm
@@ -190,6 +204,7 @@ func _sportello() -> void:
 	var agenda := _person("Agenda", "char_20", "idle_down", Vector2i(11, 3), Vector2(0, -17))
 	agenda.set_meta("finto", true)
 	_examine(mondo, "ParlaConAgenda", Vector2i(11, 4), [], "_agenda")
+	_solid("DietroLoSportello", Rect2i(10, 3, 4, 1))
 	var tri := _sprite(mondo, "Tritacarte", "res://art/shredder.png", Rect2(), Vector2i(13, 4), 8)
 	tri.set_meta("finto", true)
 	_examine(mondo, "GuardaTritacarte", Vector2i(13, 4), [
@@ -218,6 +233,7 @@ func _callcenter() -> void:
 		_sprite(mondo, "ScrivaniaCollega%d" % i, GENERIC, DESK, c[0] + Vector2i(0, 1), 22)
 		_person("Collega%d" % i, c[1], "phone", c[0], Vector2(0, -14))
 		_examine(mondo, "GuardaCollega%d" % i, c[0] + Vector2i(0, 1), lines[i], "", after[i])
+		_solid("SediaCollega%d" % i, Rect2i(c[0], Vector2i.ONE))
 	var tilde := NpcSpot.new()
 	tilde.name = "Tilde"
 	tilde.npc_id = "tilde"

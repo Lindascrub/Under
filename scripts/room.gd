@@ -162,17 +162,18 @@ func add_station(room_key: String) -> void:
 
 ## Un posto di lavoro in una casella precisa (usato anche dalle stanze fatte nell'editor).
 func add_station_at(j: Dictionary, cell: Vector2i) -> void:
+	# la targhetta "TURNO" sopra al posto di lavoro resta sempre: gialla e dondolante finché
+	# c'è da lavorare, grigia e ferma quando il turno di oggi è finito
+	var mark := Label.new()
+	mark.text = "TURNO"
+	mark.add_theme_font_size_override("font_size", 8)
+	mark.add_theme_color_override("font_color", Color("8a8494") if GameState.worked_today else Color("ffe14d"))
+	mark.add_theme_constant_override("outline_size", 3)
+	mark.add_theme_color_override("font_outline_color", Color.BLACK)
+	mark.position = cell_center(cell) + Vector2(-13, -30)
+	mark.z_index = 30
+	add_child(mark)
 	if not GameState.worked_today:
-		# una targhetta "TURNO" che ondeggia sopra al posto di lavoro di oggi
-		var mark := Label.new()
-		mark.text = "TURNO"
-		mark.add_theme_font_size_override("font_size", 8)
-		mark.add_theme_color_override("font_color", Color("ffe14d"))
-		mark.add_theme_constant_override("outline_size", 3)
-		mark.add_theme_color_override("font_outline_color", Color.BLACK)
-		mark.position = cell_center(cell) + Vector2(-13, -30)
-		mark.z_index = 30
-		add_child(mark)
 		var tw := mark.create_tween().set_loops()
 		tw.tween_property(mark, "position:y", mark.position.y - 3, 0.4)
 		tw.tween_property(mark, "position:y", mark.position.y, 0.4)

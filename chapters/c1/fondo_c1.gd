@@ -236,7 +236,7 @@ func _first_talk() -> void:
 		"Il badge del -4 costa 500 euro. Non è un regalo: è una rata del tuo debito, con un nastrino.",
 		"E ogni piano, il badge costa il doppio. Più sali, più costa salire. Dicono che è meritocrazia.",
 		"Vedi quella scritta gialla che dondola, TURNO? È il posto dove oggi devi lavorare. Ci vai, tocchi, lavori.",
-		"Finito il turno, la scritta sparisce. Torna il giorno dopo. Il giorno dopo arriva quando fai passare la notte a una stellina."], who)
+		"Finito il turno, la scritta diventa grigia. Torna gialla il giorno dopo. Il giorno dopo arriva quando fai passare la notte a una stellina."], who)
 	await Ui.say(["Io non salgo più. Ho fatto i conti: se pedalo fino a morire, arrivo al -4 il giorno del mio funerale.",
 		"Non è triste. È solo... piatto. Lavori, dormi, lavori. Un giorno ti fermi. Ma non perché l'hai deciso tu."], who)
 	c = await Ui.choose("", ["E se smettessi di lavorare?", "Perché sei l'unico che non sorride?"], who)

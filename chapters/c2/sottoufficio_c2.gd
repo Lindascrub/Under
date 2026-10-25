@@ -261,23 +261,29 @@ func _barred_hole(bottom_left: Vector2i) -> void:
 	world.remove_child(s)
 	add_child(s)
 	move_child(s, world.get_index())
-	# coni e nastro, messi lì di fretta anni fa: uno è caduto e nessuno l'ha rialzato
+	# chi sale dal Fondo compare qui, davanti alla sbarra (gli scalini sono chiusi)
+	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 3) * T)
+	# coni e nastro, messi lì di fretta anni fa: uno è caduto e nessuno l'ha rialzato.
+	# Stanno tutti in un nodo dentro il mondo: chi passa davanti li copre, chi passa dietro no.
 	var base_y := (bottom_left.y - 2) * T + 8.0
+	var bar := Node2D.new()
+	bar.name = "Sbarramento"
+	bar.position = Vector2(0, base_y)
+	world.add_child(bar)
 	var xs := [bottom_left.x * T + 2.0, bottom_left.x * T + 30.0, bottom_left.x * T + 40.0]
 	var tops: Array[Vector2] = []
 	for k in 3:
 		var cone := Sprite2D.new()
 		cone.texture = preload("res://art/cone.png")
 		cone.offset = Vector2(0, -8)
-		cone.position = Vector2(xs[k], base_y)
-		cone.z_index = 2
+		cone.position = Vector2(xs[k], 0)
 		if k == 2:
 			# quello caduto, di traverso
 			cone.rotation = 1.45
 			cone.position += Vector2(6, 2)
 			cone.modulate = Color(0.85, 0.85, 0.85)
-		add_child(cone)
-		tops.append(Vector2(xs[k], base_y - 14))
+		bar.add_child(cone)
+		tops.append(Vector2(xs[k], -14))
 	# il nastro bianco e rosso: tra i primi due coni pende, poi casca a terra dove il cono è caduto
 	var pts: Array[Vector2] = []
 	for i in 9:
@@ -285,22 +291,22 @@ func _barred_hole(bottom_left: Vector2i) -> void:
 		pts.append(tops[0].lerp(tops[1], f) + Vector2(0, sin(f * PI) * 5.0))
 	for i in range(1, 7):
 		var f := i / 6.0
-		pts.append(tops[1].lerp(Vector2(xs[2] + 6, base_y - 2), f) + Vector2(0, sin(f * PI) * 3.0))
+		pts.append(tops[1].lerp(Vector2(xs[2] + 6, -2), f) + Vector2(0, sin(f * PI) * 3.0))
 	for i in pts.size() - 1:
 		var seg := Line2D.new()
 		seg.points = PackedVector2Array([pts[i], pts[i + 1]])
 		seg.width = 2.0
 		seg.default_color = Color("d8302a") if i % 2 == 0 else Color("eeeae0")
-		seg.z_index = 3
-		add_child(seg)
+		bar.add_child(seg)
 	# il cartello appeso al nastro, storto
 	var sign := Sprite2D.new()
 	sign.texture = preload("res://art/sign_vietato.png")
 	sign.position = tops[0].lerp(tops[1], 0.5) + Vector2(0, 8)
 	sign.rotation = 0.14
-	sign.z_index = 4
-	add_child(sign)
+	bar.add_child(sign)
 	block(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 3))
+	# il cono caduto è per terra, ma è sempre un cono: non ci si passa sopra
+	block_px(Rect2(xs[2] - 2, base_y - 6, 18, 9))
 	examine(cell_center(bottom_left + Vector2i(0, -1)) + Vector2(8, 0), [
 		"* Le scale per il Fondo. Tre coni e un nastro: VIETATO SCENDERE.",
 		"* Il nastro è scolorito, un cono è caduto. Nessuno l'ha rialzato. Nessuno passa di qua a controllare.",
