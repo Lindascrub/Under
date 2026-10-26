@@ -12,3 +12,6 @@ build/
 
 # Musica (pacchetti scaricati: non ridistribuire). Si estrae da ../music/ con tools/import_music.py
 /assets/music/
+
+# Python
+__pycache__/
