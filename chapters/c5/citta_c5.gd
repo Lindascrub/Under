@@ -12,8 +12,8 @@ const SPEAKER := "Altoparlante"
 const BADGE := "cima"
 const ART := "res://art/c5/"
 const ANTENNA := "res://art/c4/antenna_robot.png"
-## Dove porta la scala esterna: la Cima (per ora il vecchio ufficio del capo, il capitolo 6).
-const NEXT := "res://scenes/world/boss_office.tscn"
+## Dove porta la scala esterna: la Cima (il capitolo 6).
+const NEXT := "res://chapters/c6/cima.tscn"
 const CASA_DOOR := Rect2i(16, 9, 2, 1)
 const TOWER_DOOR := Rect2i(2, 9, 2, 1)
 const BENCH := Vector2i(6, 18)

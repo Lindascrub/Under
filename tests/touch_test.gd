@@ -403,6 +403,35 @@ func _run() -> void:
 		await _frames(1)
 	_check(float(w.get("score")) >= 3.0, "le richieste chiuse contano tutte")
 
+	# --- la Cima, il TURNO di Direzione: più e meno sulle voci, CONFERMA solo a 100
+	GameState.flags["chapter_6"] = {"elevator": {"intro_seen": true}, "director_turn": {"rules_seen": true}}
+	GameState.minigame = {"cycle": 1}
+	Router.goto(Router.DIREZIONE)
+	await _wait_scene(Router.DIREZIONE)
+	var dz := get_tree().current_scene
+	for i in 6000:
+		if str(dz.get("phase")) == "alloc" and not Ui.busy:
+			break
+		await _frames(1)
+	await _tap_at((dz.call("plus_button", 1) as Rect2).get_center())
+	_check(int(dz.get("alloc")["servizi"]) == 20, "a 100 unità il più non aggiunge")
+	await _tap_at((dz.call("minus_button", 3) as Rect2).get_center())
+	await _tap_at((dz.call("plus_button", 1) as Rect2).get_center())
+	_check(int(dz.get("alloc")["servizi"]) == 25 and int(dz.get("alloc")["riserve"]) == 10, "togliere dalle riserve, dare ai servizi")
+	for i in 3:
+		await _tap_at((dz.call("minus_button", 0) as Rect2).get_center())
+	_check(int(dz.get("alloc")["stipendi"]) == 30, "gli stipendi non scendono sotto 30")
+	await _tap_at((dz.call("confirm_button") as Rect2).get_center())
+	_check(str(dz.get("phase")) == "alloc" and "90" in str(dz.get("msg")), "con 90 unità CONFERMA dice perché non si può")
+	for i in 2:
+		await _tap_at((dz.call("plus_button", 2) as Rect2).get_center())
+	await _tap_at((dz.call("confirm_button") as Rect2).get_center())
+	var c6: Dictionary = GameState.flags["chapter_6"]
+	_check(c6["director_turn"].get("cycle_1_completed", false) and int(c6["director_turn"]["state"]["log"][0]["alloc"]["stipendi"]) == 30, "CONFERMA a 100: il ciclo 1 è deciso")
+	c6["director_turn"]["pending"] = null
+	await _wait_scene(Router.CIMA, 60000)
+	await _idle()
+
 	# --- lo straordinario dopo la rivelazione: paga meno, e la festa si riaccende
 	GameState.new_game()
 	for f in ["c1_arrivo", "fermo_talked", "fermo_called", "c1_rivelazione", "c1_restato", "c1_lift_broken", "boss_call_floor_-5"]:

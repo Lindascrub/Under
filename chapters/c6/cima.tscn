@@ -1,0 +1,334 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://chapters/c6/cima_c6.gd" id="1_005i0"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_4r586"]
+[ext_resource type="Texture2D" path="res://art/c6/insegna_ascensore.png" id="3_xncnp"]
+[ext_resource type="Texture2D" path="res://art/c6/specchio_ascensore.png" id="4_vw3bi"]
+[ext_resource type="Texture2D" path="res://art/c6/specchio.png" id="5_blokp"]
+[ext_resource type="Texture2D" path="res://art/c6/finestra_panorama.png" id="6_skexk"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="7_m1irw"]
+[ext_resource type="Script" path="res://world/examine.gd" id="8_uiv8x"]
+[ext_resource type="Script" path="res://world/room_feature.gd" id="9_0rdvt"]
+[ext_resource type="Texture2D" path="res://art/c6/scrivania_presidenza.png" id="10_b7el1"]
+[ext_resource type="Texture2D" path="res://art/c6/cartellina_obbligo.png" id="11_ntyyj"]
+[ext_resource type="Texture2D" path="res://art/c6/terminale_direzione.png" id="12_5m67u"]
+[ext_resource type="Texture2D" path="res://art/c6/archivio_debito.png" id="13_wpuuv"]
+[ext_resource type="Texture2D" path="res://art/c6/tavolo_decisione.png" id="14_h8ct1"]
+[ext_resource type="Texture2D" path="res://art/c6/macchina_caffe.png" id="15_kw2m7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/palm.png" id="16_aqhgw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jseg7"]
+size = Vector2(19, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o0lts"]
+size = Vector2(60, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rfblm"]
+size = Vector2(12, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mbsow"]
+size = Vector2(28, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f3twc"]
+size = Vector2(44, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f35pa"]
+size = Vector2(12, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e2qsx"]
+size = Vector2(19, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1mx4a"]
+size = Vector2(19, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ioeuc"]
+size = Vector2(28, 8)
+
+[node name="Cima" type="Node2D" unique_id=724734901]
+script = ExtResource("1_005i0")
+room_music = "cima"
+room_floor = "cima"
+
+[node name="Pavimento" type="TileMapLayer" parent="." unique_id=1449435252]
+tile_map_data = PackedByteArray("AAAOAAMAAAAsAB4AAAAPAAMAAAAqAB4AAAAQAAMAAAArAB4AAAARAAMAAAAsAB4AAAASAAMAAAAqAB4AAAATAAMAAAArAB4AAAAUAAMAAAAsAB4AAAAVAAMAAAAqAB4AAAAWAAMAAAArAB4AAAAXAAMAAAAsAB4AAAAYAAMAAAAqAB4AAAAZAAMAAAArAB4AAAAaAAMAAAAsAB4AAAAbAAMAAAAqAB4AAAAcAAMAAAArAB4AAAAdAAMAAAAsAB4AAAAeAAMAAAAqAB4AAAAOAAQAAAAsAB0AAAAPAAQAAAAqAB0AAAAQAAQAAAArAB0AAAARAAQAAAAsAB0AAAASAAQAAAAqAB0AAAATAAQAAAArAB0AAAAUAAQAAAAsAB0AAAAVAAQAAAAqAB0AAAAWAAQAAAArAB0AAAAXAAQAAAAsAB0AAAAYAAQAAAAqAB0AAAAZAAQAAAArAB0AAAAaAAQAAAAsAB0AAAAbAAQAAAAqAB0AAAAcAAQAAAArAB0AAAAdAAQAAAAsAB0AAAAeAAQAAAAqAB0AAAABAAUAAAAjABIAAAACAAUAAAAkABIAAAADAAUAAAAiABIAAAAEAAUAAAAjABIAAAAOAAUAAAAsAB4AAAAPAAUAAAAqAB4AAAAQAAUAAAArAB4AAAARAAUAAAAsAB4AAAASAAUAAAAqAB4AAAATAAUAAAArAB4AAAAUAAUAAAAsAB4AAAAVAAUAAAAqAB4AAAAWAAUAAAArAB4AAAAXAAUAAAAsAB4AAAAYAAUAAAAqAB4AAAAZAAUAAAArAB4AAAAaAAUAAAAsAB4AAAAbAAUAAAAqAB4AAAAcAAUAAAArAB4AAAAdAAUAAAAsAB4AAAAeAAUAAAAqAB4AAAABAAYAAAAjABEAAAACAAYAAAAkABEAAAADAAYAAAAiABEAAAAEAAYAAAAjABEAAAAGAAYAAAAqABEAAAAHAAYAAAArABEAAAAIAAYAAAAsABEAAAAJAAYAAAAqABEAAAAKAAYAAAArABEAAAALAAYAAAAsABEAAAAMAAYAAAAqABEAAAAOAAYAAAAsAB0AAAAPAAYAAAAqAB0AAAAQAAYAAAArAB0AAAARAAYAAAAsAB0AAAASAAYAAAAqAB0AAAATAAYAAAArAB0AAAAUAAYAAAAsAB0AAAAVAAYAAAAqAB0AAAAWAAYAAAArAB0AAAAXAAYAAAAsAB0AAAAYAAYAAAAqAB0AAAAZAAYAAAArAB0AAAAaAAYAAAAsAB0AAAAbAAYAAAAqAB0AAAAcAAYAAAArAB0AAAAdAAYAAAAsAB0AAAAeAAYAAAAqAB0AAAABAAcAAAAjABIAAAACAAcAAAAkABIAAAADAAcAAAAiABIAAAAEAAcAAAAjABIAAAAFAAcAAAAsABIAAAAGAAcAAAAqABIAAAAHAAcAAAArABIAAAAIAAcAAAAsABIAAAAJAAcAAAAqABIAAAAKAAcAAAArABIAAAALAAcAAAAsABIAAAAMAAcAAAAqABIAAAANAAcAAAArABIAAAAOAAcAAAAsAB4AAAAPAAcAAAAqAB4AAAAQAAcAAAArAB4AAAARAAcAAAAsAB4AAAASAAcAAAAqAB4AAAATAAcAAAArAB4AAAAUAAcAAAAsAB4AAAAVAAcAAAAqAB4AAAAWAAcAAAArAB4AAAAXAAcAAAAsAB4AAAAYAAcAAAAqAB4AAAAZAAcAAAArAB4AAAAaAAcAAAAsAB4AAAAbAAcAAAAqAB4AAAAcAAcAAAArAB4AAAAdAAcAAAAsAB4AAAAeAAcAAAAqAB4AAAABAAgAAAAjABEAAAACAAgAAAAkABEAAAADAAgAAAAiABEAAAAEAAgAAAAjABEAAAAFAAgAAAAsABEAAAAGAAgAAAAqABEAAAAHAAgAAAArABEAAAAIAAgAAAAsABEAAAAJAAgAAAAqABEAAAAKAAgAAAArABEAAAALAAgAAAAsABEAAAAMAAgAAAAqABEAAAANAAgAAAArABEAAAAOAAgAAAAsAB0AAAAPAAgAAAAqAB0AAAAQAAgAAAArAB0AAAARAAgAAAAsAB0AAAASAAgAAAAqAB0AAAATAAgAAAArAB0AAAAUAAgAAAAsAB0AAAAVAAgAAAAqAB0AAAAWAAgAAAArAB0AAAAXAAgAAAAsAB0AAAAYAAgAAAAqAB0AAAAZAAgAAAArAB0AAAAaAAgAAAAsAB0AAAAbAAgAAAAqAB0AAAAcAAgAAAArAB0AAAAdAAgAAAAsAB0AAAAeAAgAAAAqAB0AAAABAAkAAAAjABIAAAACAAkAAAAkABIAAAADAAkAAAAiABIAAAAEAAkAAAAjABIAAAAGAAkAAAAqABIAAAAHAAkAAAArABIAAAAIAAkAAAAsABIAAAAJAAkAAAAqABIAAAAKAAkAAAArABIAAAALAAkAAAAsABIAAAAMAAkAAAAqABIAAAAOAAkAAAAsAB4AAAAPAAkAAAAqAB4AAAAQAAkAAAArAB4AAAARAAkAAAAsAB4AAAASAAkAAAAqAB4AAAATAAkAAAArAB4AAAAUAAkAAAAsAB4AAAAVAAkAAAAqAB4AAAAWAAkAAAArAB4AAAAXAAkAAAAsAB4AAAAYAAkAAAAqAB4AAAAZAAkAAAArAB4AAAAaAAkAAAAsAB4AAAAbAAkAAAAqAB4AAAAcAAkAAAArAB4AAAAdAAkAAAAsAB4AAAAeAAkAAAAqAB4AAAABAAoAAAAjABEAAAACAAoAAAAkABEAAAADAAoAAAAiABEAAAAEAAoAAAAjABEAAAAOAAoAAAAsAB0AAAAPAAoAAAAqAB0AAAAQAAoAAAArAB0AAAARAAoAAAAsAB0AAAASAAoAAAAqAB0AAAATAAoAAAArAB0AAAAUAAoAAAAsAB0AAAAVAAoAAAAqAB0AAAAWAAoAAAArAB0AAAAXAAoAAAAsAB0AAAAYAAoAAAAqAB0AAAAZAAoAAAArAB0AAAAaAAoAAAAsAB0AAAAbAAoAAAAqAB0AAAAcAAoAAAArAB0AAAAdAAoAAAAsAB0AAAAeAAoAAAAqAB0AAAAOAAsAAAAsAB4AAAAPAAsAAAAqAB4AAAAQAAsAAAArAB4AAAARAAsAAAAsAB4AAAASAAsAAAAqAB4AAAATAAsAAAArAB4AAAAUAAsAAAAsAB4AAAAVAAsAAAAqAB4AAAAWAAsAAAArAB4AAAAXAAsAAAAsAB4AAAAYAAsAAAAqAB4AAAAZAAsAAAArAB4AAAAaAAsAAAAsAB4AAAAbAAsAAAAqAB4AAAAcAAsAAAArAB4AAAAdAAsAAAAsAB4AAAAeAAsAAAAqAB4AAAAOAAwAAAAsAB0AAAAPAAwAAAAqAB0AAAAQAAwAAAArAB0AAAARAAwAAAAsAB0AAAASAAwAAAAqAB0AAAATAAwAAAArAB0AAAAUAAwAAAAsAB0AAAAVAAwAAAAqAB0AAAAWAAwAAAArAB0AAAAXAAwAAAAsAB0AAAAYAAwAAAAqAB0AAAAZAAwAAAArAB0AAAAaAAwAAAAsAB0AAAAbAAwAAAAqAB0AAAAcAAwAAAArAB0AAAAdAAwAAAAsAB0AAAAeAAwAAAAqAB0AAAA=")
+tile_set = ExtResource("2_4r586")
+
+[node name="Muri" type="TileMapLayer" parent="." unique_id=486931172]
+tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAABAAAAAAAMAAAAAAACAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAEAAAAAAAMAAAAAAAFAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAHAAAAAAAMAAAAAAAIAAAAAAAMAAAAAAAJAAAAAAAMAAAAAAAKAAAAAAAMAAAAAAALAAAAAAAMAAAAAAAMAAAAAAAMAAAAAAANAAAAAAAMAAAAAAAOAAAAAAAMAAAAAAAPAAAAAAAMAAAAAAAQAAAAAAAMAAAAAAARAAAAAAAMAAAAAAASAAAAAAAMAAAAAAATAAAAAAAMAAAAAAAUAAAAAAAMAAAAAAAVAAAAAAAMAAAAAAAWAAAAAAAMAAAAAAAXAAAAAAAMAAAAAAAYAAAAAAAMAAAAAAAZAAAAAAAMAAAAAAAaAAAAAAAMAAAAAAAbAAAAAAAMAAAAAAAcAAAAAAAMAAAAAAAdAAAAAAAMAAAAAAAeAAAAAAAMAAAAAAAfAAAAAAAMAAAAAAAAAAEAAAAMAAAAAAABAAEAAAAMAAAAAAACAAEAAAAMAAAAAAADAAEAAAAMAAAAAAAEAAEAAAAMAAAAAAAFAAEAAAAMAAAAAAAGAAEAAAAMAAAAAAAHAAEAAAAMAAAAAAAIAAEAAAAMAAAAAAAJAAEAAAAMAAAAAAAKAAEAAAAMAAAAAAALAAEAAAAMAAAAAAAMAAEAAAAMAAAAAAANAAEAAAAMAAAAAAAOAAEAAAAfAA8AAAAPAAEAAAAdAA8AAAAQAAEAAAAeAA8AAAARAAEAAAAfAA8AAAASAAEAAAAdAA8AAAATAAEAAAAeAA8AAAAUAAEAAAAfAA8AAAAVAAEAAAAdAA8AAAAWAAEAAAAeAA8AAAAXAAEAAAAfAA8AAAAYAAEAAAAdAA8AAAAZAAEAAAAeAA8AAAAaAAEAAAAfAA8AAAAbAAEAAAAdAA8AAAAcAAEAAAAeAA8AAAAdAAEAAAAfAA8AAAAeAAEAAAAdAA8AAAAfAAEAAAAMAAAAAAAAAAIAAAAMAAAAAAABAAIAAAAMAAAAAAACAAIAAAAMAAAAAAADAAIAAAAMAAAAAAAEAAIAAAAMAAAAAAAFAAIAAAAMAAAAAAAGAAIAAAAMAAAAAAAHAAIAAAAMAAAAAAAIAAIAAAAMAAAAAAAJAAIAAAAMAAAAAAAKAAIAAAAMAAAAAAALAAIAAAAMAAAAAAAMAAIAAAAMAAAAAAANAAIAAAAMAAAAAAAOAAIAAAAfABAAAAAPAAIAAAAdABAAAAAQAAIAAAAeABAAAAARAAIAAAAfABAAAAASAAIAAAAdABAAAAATAAIAAAAeABAAAAAUAAIAAAAfABAAAAAVAAIAAAAdABAAAAAWAAIAAAAeABAAAAAXAAIAAAAfABAAAAAYAAIAAAAdABAAAAAZAAIAAAAeABAAAAAaAAIAAAAfABAAAAAbAAIAAAAdABAAAAAcAAIAAAAeABAAAAAdAAIAAAAfABAAAAAeAAIAAAAdABAAAAAfAAIAAAAMAAAAAAAAAAMAAAAMAAAAAAABAAMAAAAeAAsAAAACAAMAAAAfAAsAAAADAAMAAAAdAAsAAAAEAAMAAAAeAAsAAAAFAAMAAAAMAAAAAAAGAAMAAAAMAAAAAAAHAAMAAAAMAAAAAAAIAAMAAAAMAAAAAAAJAAMAAAAMAAAAAAAKAAMAAAAMAAAAAAALAAMAAAAMAAAAAAAMAAMAAAAMAAAAAAANAAMAAAAMAAAAAAAfAAMAAAAMAAAAAAAAAAQAAAAMAAAAAAABAAQAAAAeAAwAAAACAAQAAAAfAAwAAAADAAQAAAAdAAwAAAAEAAQAAAAeAAwAAAAFAAQAAAAMAAAAAAAGAAQAAAAdABMAAAAHAAQAAAAeABMAAAAIAAQAAAAfABMAAAAJAAQAAAAdABMAAAAKAAQAAAAeABMAAAALAAQAAAAfABMAAAAMAAQAAAAdABMAAAANAAQAAAAMAAAAAAAfAAQAAAAMAAAAAAAAAAUAAAAMAAAAAAAFAAUAAAAMAAAAAAAGAAUAAAAdABQAAAAHAAUAAAAeABQAAAAIAAUAAAAfABQAAAAJAAUAAAAdABQAAAAKAAUAAAAeABQAAAALAAUAAAAfABQAAAAMAAUAAAAdABQAAAANAAUAAAAMAAAAAAAfAAUAAAAMAAAAAAAAAAYAAAAMAAAAAAAFAAYAAAAMAAAAAAANAAYAAAAMAAAAAAAfAAYAAAAMAAAAAAAAAAcAAAAMAAAAAAAfAAcAAAAMAAAAAAAAAAgAAAAMAAAAAAAfAAgAAAAMAAAAAAAAAAkAAAAMAAAAAAAFAAkAAAAMAAAAAAANAAkAAAAMAAAAAAAfAAkAAAAMAAAAAAAAAAoAAAAMAAAAAAAFAAoAAAAMAAAAAAAGAAoAAAAMAAAAAAAHAAoAAAAMAAAAAAAIAAoAAAAMAAAAAAAJAAoAAAAMAAAAAAAKAAoAAAAMAAAAAAALAAoAAAAMAAAAAAAMAAoAAAAMAAAAAAANAAoAAAAMAAAAAAAfAAoAAAAMAAAAAAAAAAsAAAAMAAAAAAABAAsAAAAMAAAAAAACAAsAAAAMAAAAAAADAAsAAAAMAAAAAAAEAAsAAAAMAAAAAAAFAAsAAAAMAAAAAAAGAAsAAAAMAAAAAAAHAAsAAAAMAAAAAAAIAAsAAAAMAAAAAAAJAAsAAAAMAAAAAAAKAAsAAAAMAAAAAAALAAsAAAAMAAAAAAAMAAsAAAAMAAAAAAANAAsAAAAMAAAAAAAfAAsAAAAMAAAAAAAAAAwAAAAMAAAAAAABAAwAAAAMAAAAAAACAAwAAAAMAAAAAAADAAwAAAAMAAAAAAAEAAwAAAAMAAAAAAAFAAwAAAAMAAAAAAAGAAwAAAAMAAAAAAAHAAwAAAAMAAAAAAAIAAwAAAAMAAAAAAAJAAwAAAAMAAAAAAAKAAwAAAAMAAAAAAALAAwAAAAMAAAAAAAMAAwAAAAMAAAAAAANAAwAAAAMAAAAAAAfAAwAAAAMAAAAAAAAAA0AAAAMAAAAAAABAA0AAAAMAAAAAAACAA0AAAAMAAAAAAADAA0AAAAMAAAAAAAEAA0AAAAMAAAAAAAFAA0AAAAMAAAAAAAGAA0AAAAMAAAAAAAHAA0AAAAMAAAAAAAIAA0AAAAMAAAAAAAJAA0AAAAMAAAAAAAKAA0AAAAMAAAAAAALAA0AAAAMAAAAAAAMAA0AAAAMAAAAAAANAA0AAAAMAAAAAAAOAA0AAAAMAAAAAAAPAA0AAAAMAAAAAAAQAA0AAAAMAAAAAAARAA0AAAAMAAAAAAASAA0AAAAMAAAAAAATAA0AAAAMAAAAAAAUAA0AAAAMAAAAAAAVAA0AAAAMAAAAAAAWAA0AAAAMAAAAAAAXAA0AAAAMAAAAAAAYAA0AAAAMAAAAAAAZAA0AAAAMAAAAAAAaAA0AAAAMAAAAAAAbAA0AAAAMAAAAAAAcAA0AAAAMAAAAAAAdAA0AAAAMAAAAAAAeAA0AAAAMAAAAAAAfAA0AAAAMAAAAAAA=")
+tile_set = ExtResource("2_4r586")
+
+[node name="Decori" type="Node2D" parent="." unique_id=2108145923]
+
+[node name="InsegnaAscensore" type="Sprite2D" parent="Decori" unique_id=315333743]
+z_index = 1
+position = Vector2(16, 60)
+texture = ExtResource("3_xncnp")
+centered = false
+offset = Vector2(0, -12)
+
+[node name="SpecchioAscensore" type="Sprite2D" parent="Decori" unique_id=1549108690]
+z_index = 1
+position = Vector2(32, 80)
+texture = ExtResource("4_vw3bi")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Specchio0" type="Sprite2D" parent="Decori" unique_id=366012067]
+z_index = 1
+position = Vector2(112, 96)
+texture = ExtResource("5_blokp")
+centered = false
+offset = Vector2(0, -24)
+
+[node name="Specchio1" type="Sprite2D" parent="Decori" unique_id=871284784]
+z_index = 1
+position = Vector2(144, 96)
+texture = ExtResource("5_blokp")
+centered = false
+offset = Vector2(0, -24)
+
+[node name="Specchio2" type="Sprite2D" parent="Decori" unique_id=1365047736]
+z_index = 1
+position = Vector2(176, 96)
+texture = ExtResource("5_blokp")
+centered = false
+offset = Vector2(0, -24)
+
+[node name="Finestra" type="Sprite2D" parent="Decori" unique_id=599942610]
+z_index = 1
+position = Vector2(368, 48)
+texture = ExtResource("6_skexk")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Tappeto" type="Sprite2D" parent="Decori" unique_id=1939293100]
+position = Vector2(312, 132)
+texture = ExtResource("7_m1irw")
+centered = false
+offset = Vector2(0, -28)
+region_enabled = true
+region_rect = Rect2(48, 354, 32, 28)
+
+[node name="Mondo" type="Node2D" parent="." unique_id=1037568396]
+y_sort_enabled = true
+
+[node name="GuardaSpecchioAscensore" type="Node2D" parent="Mondo" unique_id=1255977399]
+position = Vector2(40, 88)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_specchio_ascensore"
+
+[node name="CercaPulsanti" type="Node2D" parent="Mondo" unique_id=30925908]
+position = Vector2(72, 88)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray("* Nessun pulsante. Una targhetta: \"PER SCENDERE, RIVOLGERSI ALLA PRESIDENZA\".")
+lines_after = PackedStringArray()
+
+[node name="GuardaSpecchio0" type="Node2D" parent="Mondo" unique_id=1636896864]
+position = Vector2(120, 104)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_specchio_0"
+
+[node name="GuardaSpecchio1" type="Node2D" parent="Mondo" unique_id=411093876]
+position = Vector2(152, 104)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_specchio_1"
+
+[node name="GuardaSpecchio2" type="Node2D" parent="Mondo" unique_id=770300729]
+position = Vector2(184, 104)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_specchio_2"
+
+[node name="Stellina" type="Node2D" parent="Mondo" unique_id=2040463017]
+position = Vector2(176, 144)
+script = ExtResource("9_0rdvt")
+
+[node name="VasoCorridoio" type="Sprite2D" parent="Mondo" unique_id=1248812407]
+position = Vector2(96, 160)
+texture = ExtResource("7_m1irw")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/VasoCorridoio" unique_id=566240046]
+
+[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/VasoCorridoio/Collisione" unique_id=1161417757]
+position = Vector2(11.5, -3)
+shape = SubResource("RectangleShape2D_jseg7")
+
+[node name="Scrivania" type="Sprite2D" parent="Mondo" unique_id=2145983182]
+position = Vector2(304, 96)
+texture = ExtResource("10_b7el1")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Scrivania" unique_id=259923730]
+
+[node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/Scrivania/Collisione" unique_id=526823824]
+position = Vector2(32, -7)
+shape = SubResource("RectangleShape2D_o0lts")
+
+[node name="Cartellina" type="Sprite2D" parent="Mondo" unique_id=2087796488]
+z_index = 1
+position = Vector2(324, 70)
+texture = ExtResource("11_ntyyj")
+centered = false
+offset = Vector2(0, -8)
+
+[node name="UsaScrivania" type="Node2D" parent="Mondo" unique_id=1564514127]
+position = Vector2(328, 104)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_scrivania"
+
+[node name="TerminaleBilanci" type="Sprite2D" parent="Mondo" unique_id=1009851622]
+position = Vector2(256, 80)
+texture = ExtResource("12_5m67u")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TerminaleBilanci" unique_id=2140620118]
+
+[node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/TerminaleBilanci/Collisione" unique_id=2111790888]
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_rfblm")
+
+[node name="UsaTerminale" type="Node2D" parent="Mondo" unique_id=1101500168]
+position = Vector2(264, 88)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_terminale"
+
+[node name="GuardaFinestra" type="Node2D" parent="Mondo" unique_id=1807823980]
+position = Vector2(408, 56)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_finestra"
+
+[node name="ArchivioDebito" type="Sprite2D" parent="Mondo" unique_id=336621479]
+position = Vector2(464, 80)
+texture = ExtResource("13_wpuuv")
+centered = false
+offset = Vector2(0, -40)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ArchivioDebito" unique_id=1987962049]
+
+[node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/ArchivioDebito/Collisione" unique_id=702109752]
+position = Vector2(16, -6)
+shape = SubResource("RectangleShape2D_mbsow")
+
+[node name="ApriArchivio" type="Node2D" parent="Mondo" unique_id=84212811]
+position = Vector2(472, 88)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_archivio"
+
+[node name="Tavolo" type="Sprite2D" parent="Mondo" unique_id=436149443]
+position = Vector2(336, 176)
+texture = ExtResource("14_h8ct1")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Tavolo" unique_id=439904672]
+
+[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Tavolo/Collisione" unique_id=1944329140]
+position = Vector2(24, -7)
+shape = SubResource("RectangleShape2D_f3twc")
+
+[node name="SiediTavolo" type="Node2D" parent="Mondo" unique_id=1686534009]
+position = Vector2(360, 152)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_tavolo"
+
+[node name="Caffe" type="Sprite2D" parent="Mondo" unique_id=1268474670]
+position = Vector2(240, 192)
+texture = ExtResource("15_kw2m7")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Caffe" unique_id=1692566457]
+
+[node name="@CollisionShape2D@26" type="CollisionShape2D" parent="Mondo/Caffe/Collisione" unique_id=1820986044]
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_f35pa")
+
+[node name="UsaCaffe" type="Node2D" parent="Mondo" unique_id=1065008900]
+position = Vector2(248, 168)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_caffe"
+
+[node name="Pianta0" type="Sprite2D" parent="Mondo" unique_id=1327751512]
+position = Vector2(224, 64)
+texture = ExtResource("7_m1irw")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=1952399199]
+
+[node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=1147167950]
+position = Vector2(11.5, -3)
+shape = SubResource("RectangleShape2D_e2qsx")
+
+[node name="Pianta1" type="Sprite2D" parent="Mondo" unique_id=1130781217]
+position = Vector2(480, 208)
+texture = ExtResource("7_m1irw")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=1262659519]
+
+[node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=521473646]
+position = Vector2(11.5, -3)
+shape = SubResource("RectangleShape2D_1mx4a")
+
+[node name="Pianta2" type="Sprite2D" parent="Mondo" unique_id=686196461]
+position = Vector2(432, 208)
+texture = ExtResource("16_aqhgw")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta2" unique_id=1372010236]
+
+[node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/Pianta2/Collisione" unique_id=1186595688]
+position = Vector2(16, -4)
+shape = SubResource("RectangleShape2D_ioeuc")
+
+[node name="GuardaVuoto" type="Node2D" parent="Mondo" unique_id=1628536248]
+position = Vector2(424, 136)
+script = ExtResource("8_uiv8x")
+lines = PackedStringArray("* Qui non c\'è niente. Lo spazio di un ufficio intero al -4.", "* Il pavimento è lucidato lo stesso. Tutti i giorni.")
+lines_after = PackedStringArray()
+
+[node name="Arrivi" type="Node2D" parent="." unique_id=1091944214]
+
+[node name="default" type="Marker2D" parent="Arrivi" unique_id=1156945033]
+position = Vector2(40, 142)
+metadata/facing = "right"
+
+[node name="from_below" type="Marker2D" parent="Arrivi" unique_id=1991968821]
+position = Vector2(40, 142)
+metadata/facing = "right"
+
+[node name="desk" type="Marker2D" parent="Arrivi" unique_id=2097900212]
+position = Vector2(328, 126)
+metadata/facing = "up"

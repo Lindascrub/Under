@@ -11,6 +11,40 @@ Gli asset acquistati (LimeZu, in `assets/limezu/`) restano dove sono e non vanno
 frontale. Pixel art a 16 px per casella, senza antialiasing, contorno scuro (`#18141e`).
 **"Piedi"** = il punto in basso a sinistra dello sprite, appoggiato sulla casella indicata.
 
+## Capitolo 6 — La Cima (`art/c6/`, generati da `tools/make_placeholders_cima.py`)
+
+| File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
+|---|---|---|---|---|---|
+| `insegna_ascensore.png` | 64x12 | Insegna dell'ascensore dorato "NON DEVI PIÙ SALIRE. SEI ARRIVATO." | frontale, sul muro | consigliata: luccichio dell'oro (2 frame) | `chapters/c6/cima.tscn`, `Decori/InsegnaAscensore` (1,3) |
+| `specchio_ascensore.png` | 32x32 | Lo specchio dell'ascensore ("HAI TROVATO QUELLO CHE CERCAVI?") | frontale, sul muro | nessuna (la scritta la fa il codice) | `cima.tscn`, `Decori/SpecchioAscensore` (1,4); esame `_specchio_ascensore` |
+| `specchio.png` | 16x24 | Gli specchi del corridoio (riflettono chi hai incontrato) | frontale, sul muro | consigliata: riflesso che passa (2-3 frame) | `cima.tscn`, `Decori/Specchio0-2` (7,5), (9,5), (11,5) |
+| `scrivania_presidenza.png` | 64x32 | La scrivania della Presidente e del TURNO di Direzione | 3/4 frontale, piedi solidi 14 px | nessuna | `cima.tscn`, `Mondo/Scrivania` (19,5); esame `_scrivania` (20,6) |
+| `cartellina_obbligo.png` | 12x8 | La cartellina rosa OBBLIGO DI ESISTENZA, sulla scrivania | dall'alto, appoggiata | nessuna | `cima.tscn`, `Mondo/Cartellina` (20,5, spostata di 4,-26) |
+| `terminale_direzione.png` | 16x32 | Il terminale dei bilanci (le consultazioni) | 3/4 frontale, piedi solidi 8 px | consigliata: schermo acceso (2 frame) | `cima.tscn`, `Mondo/TerminaleBilanci` (16,4); esame `_terminale` |
+| `finestra_panorama.png` | 80x32 | La finestra panoramica sulla città | frontale, sul muro | consigliata: nuvole lente (loop) | `cima.tscn`, `Decori/Finestra` (23,2); esame `_finestra` (25,3) |
+| `archivio_debito.png` | 32x40 | L'archivio del debito "7.000.000.000" | 3/4 frontale, piedi solidi 12 px | nessuna | `cima.tscn`, `Mondo/ArchivioDebito` (29,4); esame `_archivio` |
+| `tavolo_decisione.png` | 48x32 | Il tavolo della scelta finale | 3/4 frontale, piedi solidi 14 px | nessuna | `cima.tscn`, `Mondo/Tavolo` (21,10); esame `_tavolo` (22,9) |
+| `macchina_caffe.png` | 16x32 | La macchina del caffè (al secondo colpo, lo zucchero) | 3/4 frontale, piedi solidi 8 px | consigliata: vapore (2 frame) | `cima.tscn`, `Mondo/Caffe` (15,11); esame `_caffe` |
+| `timbro_annullato.png` | 96x24 | Il timbro rosso ANNULLATO (mostrato nell'offerta, usato nel finale A) | frontale, sopra lo schermo | il codice lo fa scendere e "battere"; l'arte può aggiungere l'inchiostro che si allarga | `chapters/c6/cima_c6.gd` (offerta, 6.04); `chapters/c6/finale_c6.gd`, `family_scene` (A) |
+| `tavoli_condivisi.png` | 96x32 | I tavoli uniti del finale C | 3/4 frontale | nessuna | `finale_c6.gd`, `family_scene` (C) |
+| `torre_sezione.png` | 200x600 | La Torre in sezione, sei piani dal Fondo alla Cima | frontale, piatta | il codice la fa scorrere dall'alto in basso | `cima_c6.gd`, `_finestra` (panorama); `finale_c6.gd`, epiloghi |
+| `zucchero.png` | 6x4 | Bustina di zucchero (quella che la Presidente strappa) | dall'alto, piccola | consigliata: strappo (2 frame) | **generato, non ancora usato**: le scene lo descrivono a parole |
+| `telefono.png` | 12x8 | Il telefono della scrivania (la chiamata del Capo, la Casa Comune) | dall'alto, appoggiato | consigliata: vibra quando squilla (2 frame) | **generato, non ancora usato**: lo squillo è solo sonoro (`drring.wav`) |
+
+Sprite dei personaggi: la Presidente usa il foglio LimeZu `char_20` (grigio), il Capo `char_18` (grigio, per la prima volta),
+Nives `char_13`. Uno sprite dedicato per la Presidente è da disegnare.
+Dal foglio LimeZu `generic.png` (acquistato, non segnaposto): tappeto `Rect2(48,354,32,28)`, pianta `Rect2(212,408,23,31)`.
+Dai props LimeZu: `palm.png`.
+
+### Audio (segnaposto, generati da `tools/make_sfx_cima.py`)
+
+| File | Durata | Funzione | Dove si usa |
+|---|---|---|---|
+| `audio/strap.wav` | breve | La bustina di zucchero strappata | `cima_c6.gd`, 6.02 |
+| `audio/drring.wav` | breve | Il telefono della scrivania | `cima_c6.gd`, 6.08 (il Capo); `finale_c6.gd` (finale A) |
+| `audio/music_cima.wav` | 12 s, in loop | Musica della Cima e della Direzione | `cima.tscn`, `direzione.gd`, inizio del finale |
+| `audio/music_epilogo.wav` | 6 s, in loop | Musica degli epiloghi e dei titoli | `finale_c6.gd` |
+
 ## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)
 
 Posizioni in caselle (16 px). C = `chapters/c5/citta.tscn`, CC = `chapters/c5/casa_comune.tscn`, L = `chapters/c5/citta_c5.gd`.

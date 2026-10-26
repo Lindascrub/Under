@@ -31,7 +31,7 @@ All'inizio sei nell'ascensore della Torre e scendi. Al piano -5 l'ascensore si r
 | 3 | -3 | Il Mercato | Caro vita, salari e prezzi | 2.000 € (per il -2) | **Rifatto** (`chapters/c3/`) |
 | 4 | -2 | La Banca | Debito e dipendenza | 4.000 € (per il piano terra) | **Rifatto** (`chapters/c4/`), [documento](CHAPTER_04_BANK.md) |
 | 5 | 0 | La Città | Le conseguenze fuori dalla Torre | 8.000 € (per la Cima) | **Rifatto** (`chapters/c5/`), [documento](CHAPTER_05_CITY.md) |
-| 6 | Cima | Direzione e Presidenza | Potere, responsabilità, libertà | — (finale) | Da rifare |
+| 6 | Cima | La Presidenza | Potere, responsabilità, libertà | — (finale) | **Rifatto** (`chapters/c6/`), [documento](CHAPTER_06_SUMMIT.md), [finali](ENDING_SYSTEM.md) |
 
 I soldi del badge vanno tutti a scalare dal **debito nominale**. Ogni notte gli interessi lo fanno risalire.
 Il debito non si ripaga lavorando, e non deve: l'obiettivo è salire, e capire.
@@ -53,7 +53,8 @@ Il debito non si ripaga lavorando, e non deve: l'obiettivo è salire, e capire.
    che dipende da cosa hai fatto, poi il titolo del capitolo dopo.
 8. **Le stelline** salvano e fanno passare la notte. Ogni notte: interessi.
 
-Alla Cima il ciclo cambia: niente scale, una conclusione (vedi NARRATIVE_DESIGN, capitolo 6).
+Alla Cima il ciclo cambia: niente scale, niente badge, niente paga. Tre cicli del TURNO di Direzione, l'ultima
+telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMIT.md)).
 
 ### La regola dei colori
 
@@ -94,6 +95,8 @@ Il gioco è pensato per telefono in orizzontale.
 | Premio del capo al -2 | 3.000 € (il rapporto 404 di Teo), una volta |
 | Paga del centralino al piano 0 | 1.600 € (fino a 2.000 €); dal 3° turno anche il turno rapido (1.600 €, senza minigioco). 5 turni per il badge della Cima |
 | Premio del capo al piano 0 | 6.000 € (il progetto di Ada), una volta |
+| TURNO di Direzione alla Cima | Non paga. 3 cicli da 100 unità (stipendi, servizi, manutenzione, riserve), regole in `chapters/c6/direzione_regole.gd` |
+| Debito personale | Si annulla solo con il finale A, una volta; B e C lo contestano o lo mettono in revisione se ci sono prove |
 | Promozione (sfruttare) | 900 € × 1,7 per ogni sfruttamento precedente |
 | Aiutare qualcuno | 10 € (almeno 1/8 del badge di sopra) e +1 autostima la prima volta; Leda e Amir non pagano (biscotti, gratitudine) |
 | Straordinario al Fondo | 120, 70, 35 € (tre volte al massimo) |
@@ -137,6 +140,7 @@ Le promozioni per piano sono in `data/promotions.json` (Fermo, Tilde, e i vecchi
 | -3 | La cassa | Tocca l'articolo, poi CONFERMA o CORREGGI il prezzo (dal 2° turno lo schermo a volte chiede più del cartellino) |
 | -2 | Lo sportello | Leggi la pratica, poi APPROVA (subito) o RICHIEDI VERIFICA (più lento). CHEAP paga le pratiche chiuse, non quelle giuste |
 | 0 | Il centralino | Tocca la destinazione della richiesta. A volte il sistema ne propone una sbagliata: CONFERMA (veloce), VERIFICA (lenta, giusta) o SEGNALA |
+| Cima | TURNO di Direzione (il bilancio) | Tocca più e meno sulle quattro voci, poi CONFERMA (solo a 100 unità); REGOLE mostra tutte le regole |
 | altri (versione precedente) | Bilancia, magazzino (Tetris), consegne, bagni, cassa (Pong) | Tocco, scorrimento, trascinamento |
 
 Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre turni è stata tolta.
@@ -177,7 +181,7 @@ flag), più le scelte nuove descritte in NARRATIVE_DESIGN ("Stato narrativo").
 ## La città (versione precedente)
 
 Esiste ancora nei file, ma il capitolo 5 non la usa più (è stato rifatto in `chapters/c5/`, con Ada, Nadir e Rina).
-Di questa versione resta in uso solo l'ufficio del capo (`scenes/world/boss_office.tscn`), dove portano le scale della Cima finché il capitolo 6 non sarà rifatto:
+L'ufficio del capo (`scenes/world/boss_office.tscn`) e i vecchi finali (`scenes/endings/`) restano nei file per i percorsi della versione precedente, ma il capitolo 6 nuovo (`chapters/c6/`) non li usa più. Le scale della città portano alla Cima nuova.
 - **Strada:** il chiosco di Nico, Marta, il Signor Bruno, Lea, Sami, Ivo.
 - **Ufficio:** Dario e Giulia; l'ascensore per la Direzione (Dottor Prezzi, il capo).
 - **Parco:** Tano il musicista, la Signora Elsa dei gatti, Rocco (sostituito da un robot).
@@ -198,9 +202,14 @@ Al loro posto ci sono tre **tendenze**, che non si vedono mai durante il gioco e
 - **Sopravvivenza** (il tempo che scompare): si continua a vivere e lavorare; quello che resta sono le relazioni e i sogni conservati o persi.
 - **Solidarietà** (la libertà collettiva): una comunità che deve trovare cibo, case, servizi e decidere insieme. Può funzionare, restare fragile o fallire.
 
-Ogni famiglia ha più varianti, e c'è un epilogo in cui rivedi le persone conosciute. Dettagli e condizioni:
-NARRATIVE_DESIGN, "Tendenze" e "Finali". Nel codice attuale c'è ancora `GameState.route()` con i vecchi nomi:
-verrà sostituito senza rompere i salvataggi (vedi il piano di implementazione).
+**Come sono fatti davvero (capitolo 6):** la scelta al tavolo della Cima decide la famiglia
+(A IL PADRONE, B UN ALTRO DOMANI, C NESSUNO SALE DA SOLO); la variante (A1/A2, B1/B2, C1/C2/C3) dipende da fatti
+contati: legami, reti, prove, il bilancio dei tre cicli, l'attribuzione del Capo. Una funzione sola,
+`chapters/c6/finali.gd`, `decide()`. Condizioni esatte: [ENDING_SYSTEM](ENDING_SYSTEM.md).
+Poi gli epiloghi "sei mesi dopo" piano per piano (solo le persone conosciute, Nives per ultima), il sogno,
+e CHEAP / Quanto costa una vita? / FINE.
+
+`GameState.route()` e i vecchi finali (`scenes/endings/`) restano solo per i percorsi della versione precedente.
 
 ## Struttura del codice
 
@@ -211,7 +220,7 @@ autoload/      singleton sempre attivi
   router       cambio scena con dissolvenza
   touch_controls  joystick, pulsanti e gesti dei minigiochi
   sound        musica e suoni (la voce dei dialoghi ha un canale suo)
-chapters/      i capitoli rifatti: c1/ (Fondo), c2/ (Sottoufficio), c3/ (Mercato), c4/ (Banca), c5/ (Città). Scena .tscn + script di logica
+chapters/      i capitoli rifatti: c1/ (Fondo), c2/ (Sottoufficio), c3/ (Mercato), c4/ (Banca), c5/ (Città), c6/ (Cima, Direzione, finali). Scena .tscn + script di logica
 world/         EditorRoom (stanze fatte nell'editor), RoomFeature, NpcSpot, Examine, CharSprite, tileset
 scripts/       Room (base di tutte le stanze), Player, Npc, Quests, Assets
 scenes/        main_menu, world/ (stanze della versione precedente), minigame/, battle/, endings/

@@ -69,6 +69,16 @@ func show_hud(visible_: bool) -> void:
 ## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).
 func _draw_time_bar() -> void:
 	var font := Assets.font()
+	# alla Cima non c'è un lavoro pagato: c'è il TURNO di Direzione, tre cicli alla scrivania della Presidente
+	if GameState.floor_id == "cima" and GameState.flags.has("chapter_6"):
+		var dt: Dictionary = (GameState.flags["chapter_6"] as Dictionary).get("director_turn", {})
+		var done := 0
+		for i in range(1, 4):
+			if dt.get("cycle_%d_completed" % i, false):
+				done += 1
+		var t := "TURNO di Direzione: %d cicli su 3 (la scrivania della Presidente)." % done if done < 3 else "TURNO di Direzione: fatto. Resta da decidere."
+		_time_bar.draw_string(font, Vector2(0, 8), t, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("ffe14d"))
+		return
 	if GameState.worked_today:
 		_time_bar.draw_string(font, Vector2(0, 8), "Turno di oggi: fatto. Per il prossimo, fai passare la notte a una stellina.", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3ddc84"))
 	else:

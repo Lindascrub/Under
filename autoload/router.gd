@@ -23,7 +23,11 @@ const WORK := "res://scenes/minigame/work.tscn"
 const BATTLE := "res://scenes/battle/battle.tscn"
 const ENDING := "res://scenes/endings/ending.tscn"
 const ENDING_CITY := "res://scenes/endings/city_below.tscn"
-const WORLD: Array[String] = [HOME, STREET, OFFICE, CITY, PARK, SHELTER, BOSS, PRESIDENCY, SOTTOUFFICIO, MERCATO, BANCA, FONDO, CASA_COMUNE]
+## Il capitolo 6: la Cima, il TURNO di Direzione, il finale (con epiloghi e titoli di coda).
+const CIMA := "res://chapters/c6/cima.tscn"
+const DIREZIONE := "res://chapters/c6/direzione.tscn"
+const FINALE := "res://chapters/c6/finale.tscn"
+const WORLD: Array[String] = [HOME, STREET, OFFICE, CITY, PARK, SHELTER, BOSS, PRESIDENCY, SOTTOUFFICIO, MERCATO, BANCA, FONDO, CASA_COMUNE, CIMA]
 
 ## Nome del punto di arrivo nella prossima stanza (vedi Room.spawns).
 var spawn := ""

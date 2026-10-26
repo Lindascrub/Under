@@ -16,6 +16,9 @@ var fast_dodge := true
 var immortal := false
 ## Come finiscono da soli i minigiochi di aiuto: "win", "fail" o "partial".
 var minigame_result := "win"
+## Il TURNO di Direzione (capitolo 6): per ogni ciclo {"alloc": {...}, "choice": id}. Vuoto: la distribuzione
+## della Presidente, e nessun intervento.
+var director_plan: Array = []
 
 
 func _ready() -> void:
@@ -37,6 +40,15 @@ func _process(_delta: float) -> void:
 		_drive_battle(scene)
 	elif scene and scene.scene_file_path == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play":
 		scene.call("_finish", minigame_result == "win", minigame_result == "partial")
+	elif scene and scene.scene_file_path == Router.DIREZIONE and not Ui.transitioning and not Ui.busy and _frame % 3 == 0:
+		_drive_direction(scene)
+	elif scene and scene.scene_file_path == Router.FINALE:
+		scene.set("fast", true)
+		if Ui.busy and _frame % 3 == 0:
+			if Ui.get("_mode") == "choose":
+				var idx: int = choose_queue.pop_front() if not choose_queue.is_empty() else choose_index
+				Ui.set("_sel", mini(idx, (Ui.get("_options") as Array).size() - 1))
+			_tap("confirm")
 	elif scene and scene.scene_file_path == Router.WORK and not Ui.transitioning and scene.get("phase") == "play":
 		scene.set("score", scene.get("target"))
 		scene.set("time_left", 0.0)
@@ -45,6 +57,25 @@ func _process(_delta: float) -> void:
 			var idx: int = choose_queue.pop_front() if not choose_queue.is_empty() else choose_index
 			Ui.set("_sel", mini(idx, (Ui.get("_options") as Array).size() - 1))
 		_tap("confirm")
+
+
+## Lo schermo del TURNO di Direzione: la distribuzione del piano, poi la scelta (se è chiusa, la più prudente).
+func _drive_direction(d: Node) -> void:
+	var cycle := int(d.get("cycle"))
+	var p: Dictionary = director_plan[cycle - 1] if director_plan.size() >= cycle else {}
+	match str(d.get("phase")):
+		"alloc":
+			if p.has("alloc"):
+				d.set("alloc", (p["alloc"] as Dictionary).duplicate())
+			d.call("_confirm")
+		"casa", "debiti":
+			var opts: Array = d.get("options")
+			var want := str(p.get("choice", ""))
+			var pick := opts.size() - 1 if str(d.get("phase")) == "casa" else 0
+			for i in opts.size():
+				if str(opts[i][0]) == want and str(opts[i][opts[i].size() - 1]) == "":
+					pick = i
+			d.call("_pick", pick)
 
 
 func _drive_battle(b: Node) -> void:
@@ -633,6 +664,310 @@ func _c5_settle() -> Room:
 	return get_tree().current_scene as Room
 
 
+## La Cima da capo: le scelte dei capitoli prima date per fatte, il badge della Cima in tasca.
+func _c6_reset(rich := true) -> void:
+	GameState.new_game()
+	GameState.badges.assign(["-4", "-3", "-2", "0", "cima"])
+	choose_queue = []
+	choose_index = 0
+	director_plan = []
+	if rich:
+		for id: String in ["leda", "amir", "olga", "teo", "ada", "nadir", "rina"]:
+			GameState.flags["met_" + id] = true
+			GameState.helped_ids.append(id)
+		for f: String in ["c3_leda_ordini", "c5_nadir_rete", "c5_assemblea", "c5_vetrina_aiuto", "c5_amir_consegne", "c4_anomalia",
+				"c4_olga_doppia", "c5_documento", "c4_teo_sogno", "c3_amir_sogno", "c5_ada_stanze", "c4_olga_contestazione"]:
+			GameState.flags[f] = true
+		GameState.flags["c5_esito"] = "comunitaria"
+
+
+## Aspetta la Cima (anche dopo il TURNO di Direzione) e la fine di ogni scena.
+func _c6_settle() -> Room:
+	await get_tree().process_frame
+	var n := 0
+	while (_scene_path() != Router.CIMA or Ui.transitioning) and n < 60000:
+		await get_tree().process_frame
+		n += 1
+	if n >= 60000:
+		_fail("timeout aspettando la Cima (scena attuale %s)" % _scene_path())
+	await _idle()
+	while Ui.cutscene or Ui.busy or Ui.transitioning:
+		await get_tree().process_frame
+	await _idle()
+	return get_tree().current_scene as Room
+
+
+func _c6_call(m: Room, method: String, args: Array = []) -> Room:
+	await m.callv(method, args)
+	return await _c6_settle()
+
+
+## Un ciclo già deciso (per i test che partono dalla fine): lo stato come lo lascia lo schermo.
+func _c6_fake_cycles(plan: Array) -> void:
+	var rules: GDScript = load("res://chapters/c6/direzione_regole.gd")
+	var st: Dictionary = rules.new_state()
+	var c6: Dictionary = load("res://chapters/c6/cima_c6.gd").c6()
+	for i in plan.size():
+		var p: Dictionary = plan[i]
+		var a: Dictionary = p["alloc"]
+		rules.apply(st, a)
+		if i == 1:
+			rules.apply_casa(st, str(p.get("choice", "niente")))
+		if i == 2:
+			st["debt_rule"] = str(p.get("choice", "conservare"))
+		c6["director_turn"]["cycle_%d_completed" % (i + 1)] = true
+	c6["director_turn"]["state"] = st
+
+
+func _test_chapter6() -> void:
+	var rules: GDScript = load("res://chapters/c6/direzione_regole.gd")
+	var fin: GDScript = load("res://chapters/c6/finali.gd")
+	var logic: GDScript = load("res://chapters/c6/cima_c6.gd")
+	var ending: GDScript = load("res://chapters/c6/finale_c6.gd")
+
+	# --- le regole del bilancio (deterministiche, annunciate) ---------------------------------------
+	var st: Dictionary = rules.new_state()
+	var a: Dictionary = rules.start_alloc(st)
+	_check(rules.total(a) == 100 and rules.invalid(st, a) == "", "25: la distribuzione della Presidente somma 100 ed è valida")
+	var b: Dictionary = rules.nudge(st, a, "servizi", 1)
+	_check(int(b["servizi"]) == 20, "25: senza unità libere il più non aggiunge niente")
+	b = rules.nudge(st, a, "stipendi", -1)
+	_check(int(b["stipendi"]) == 35 and rules.total(b) == 95 and rules.invalid(st, b) != "", "25: con 95 unità non si conferma")
+	b = rules.nudge(st, b, "servizi", 1)
+	_check(rules.invalid(st, b) == "", "25: rimesse a 100, si conferma")
+	_check(rules.invalid(st, {"stipendi": 25, "servizi": 30, "manutenzione": 30, "riserve": 15}) != "", "25: stipendi sotto 30: non si conferma")
+	# economia: stipendi alti, niente riserve -> la bolletta del ciclo 2 la pagano i servizi; poi il guasto annunciato
+	st = rules.new_state()
+	rules.apply(st, {"stipendi": 60, "servizi": 20, "manutenzione": 20, "riserve": 0})
+	_check(int(st["wage_floor"]) == 60 and int(st["backlog"]) == 5 and int(st["cycle"]) == 2, "26: l'aumento resta, l'arretrato si accumula")
+	_check(rules.minimum(st, "stipendi") == 60 and int(rules.start_alloc(st)["stipendi"]) == 60 and rules.total(rules.start_alloc(st)) == 100, "26: un aumento è per sempre (anche nella distribuzione di partenza)")
+	var c2 := {"stipendi": 60, "servizi": 25, "manutenzione": 15, "riserve": 0}
+	var hints: Array = rules.hints(st, c2)
+	_check(rules.due(st) == 15 and "15 vanno a coprire le spese" in str(hints) and "si annuncia un guasto" in str(hints), "la bolletta e il guasto sono scritti prima di confermare")
+	rules.apply(st, c2)
+	_check(bool(st["breakdown_due"]) and int(st["backlog"]) == 15 and int(st["reserve"]) == 0 and int((st["log"] as Array)[1]["services_eff"]) == 10, "la bolletta presa dai servizi, il guasto annunciato")
+	_check(rules.due(st) == 15, "al ciclo 3 si paga l'arretrato annunciato (non una catastrofe a sorpresa)")
+	rules.apply(st, {"stipendi": 60, "servizi": 10, "manutenzione": 25, "riserve": 5})
+	var sm: Dictionary = rules.summary(st)
+	_check(sm["wages_cover"] and not sm["services_up"] and sm["maintenance_ok"], "il riepilogo dei tre cicli: stipendi alti, servizi sacrificati, guasto pagato")
+	# bilancio orientato alle riserve
+	st = rules.new_state()
+	for i in 3:
+		rules.apply(st, {"stipendi": 40, "servizi": 15, "manutenzione": 25, "riserve": 20})
+	_check(int(st["reserve"]) == 45 and rules.summary(st)["reserve_ok"] and not rules.summary(st)["wages_up"], "bilancio delle riserve: 60 messe da parte, 15 di bolletta")
+	# servizi allargati: consumano manutenzione dopo
+	st = rules.new_state()
+	rules.apply(st, {"stipendi": 40, "servizi": 30, "manutenzione": 25, "riserve": 5})
+	_check(rules.maint_need(st) == 30, "servizi allargati: +5 al fabbisogno di manutenzione")
+
+	# --- 15-21: l'arrivo, l'ascensore, la Presidente, il documento, l'offerta --------------------------
+	_c6_reset()
+	var debt0 := GameState.debt
+	choose_queue = [1]
+	await _go(Router.CIMA, "default")
+	var m: Room = await _c6_settle()
+	var c6: Dictionary = logic.c6()
+	_check(_scene_path() == Router.CIMA and GameState.floor_id == "cima" and c6["entered"], "15: dalla Città si arriva alla Cima")
+	_check(c6["elevator"]["intro_seen"] and c6["elevator"]["answer"] == "non_so", "16: l'ascensore, la domanda, la risposta registrata")
+	_check(m.player.position.distance_to(m.get("spawns")["default"]) < 4.0, "16: si arriva nell'ascensore")
+	await _go(Router.CIMA, "default")
+	m = await _c6_settle()
+	_check(not Ui.cutscene, "16: l'ascensore parla una volta sola")
+	_check(logic.person_line("amir").begins_with("Amir") and logic.person_line("ada").contains("grigio"), "17: lo specchio mostra le persone come sono")
+	GameState.robots.append("teo")
+	_check(logic.person_line("teo").contains("antenna"), "17: un robot nello specchio ha l'antenna")
+	GameState.robots.erase("teo")
+	# la Presidente: STRAP, desiderio "origine", tre sezioni, perché, tre domande, l'offerta, il TURNO
+	director_plan = [
+		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}},
+		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "risorse"},
+		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "revisione"},
+	]
+	choose_queue = [0, 1, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0]
+	m.call("talk_president")
+	await _wait_scene(Router.DIREZIONE)
+	c6 = logic.c6()
+	_check(c6["president"]["met"] and c6["president"]["first_wish"] == "origine", "18: la Presidente, lo zucchero, cosa desideri")
+	_check(c6["president"]["debt_contract_read"] and GameState.flags.get("c6_contratto_letto", false) and c6["president"]["origin_explained"], "19: OBBLIGO DI ESISTENZA letto, sezione per sezione")
+	_check(c6["president"]["offer_received"] and GameState.debt == debt0 and not c6["debt_cancelled"], "21: l'offerta senza cancellare niente")
+	# 22-24: tre cicli, lo stato comune; dopo ogni ciclo ASCOLTA GLI ABITANTI (il primo: Amir)
+	choose_queue = [0, 99]
+	m = await _c6_settle()
+	c6 = logic.c6()
+	_check(c6["director_turn"]["cycle_1_completed"] and not c6["director_turn"]["cycle_2_completed"], "22: il ciclo 1")
+	_check(c6["director_turn"]["consulted_citizens"] and "1:amir" in c6["director_turn"]["consulted"], "27: consultazione dopo il ciclo 1")
+	_check(GameState.money == 0, "il TURNO di Direzione non paga uno stipendio personale")
+	choose_queue = [0, 99]
+	m.call("_scrivania")
+	await _wait_scene(Router.DIREZIONE)
+	choose_queue = [99]
+	m = await _c6_settle()
+	c6 = logic.c6()
+	_check(c6["director_turn"]["casa_call_seen"] and c6["director_turn"]["cycle_2_completed"] and str(c6["director_turn"]["state"]["casa"]) == "comunitaria_sostenuta", "23: il ciclo 2, la Casa Comune (comunitaria, con risorse)")
+	choose_queue = [0]
+	m.call("_scrivania")
+	await _wait_scene(Router.DIREZIONE)
+	# dopo il ciclo 3: nessuna voce obbligatoria (già ascoltato), poi il Capo: "Non grazie a te", chiede, rifiuta
+	choose_queue = [99, 1, 2, 1]
+	m = await _c6_settle()
+	c6 = logic.c6()
+	st = c6["director_turn"]["state"]
+	_check(c6["director_turn"]["cycle_3_completed"] and str(st["debt_rule"]) == "revisione" and (c6["director_turn"]["decisions"] as Array).size() == 3, "24: il ciclo 3, la revisione dei debiti")
+	_check(int(st["reserve"]) == 15 and int(st["backlog"]) == 0 and int(st["wage_floor"]) == 45, "26: le riserve e gli aumenti passano da un ciclo all'altro")
+	_check(c6["boss"]["final_call_seen"] and c6["boss"]["global_credit_offer_resolved"] and not c6["boss"]["global_credit_accepted"], "28-29: il Capo, l'attribuzione globale rifiutata")
+	var robots0 := GameState.robots.size()
+	m = await _c6_call(m, "_boss_scene")
+	_check(GameState.robots.size() == robots0 and logic.final_ready(), "28/30: il Capo una volta sola, nessun robot nuovo")
+	# l'ultimo sguardo indietro: due piani, poi basta. Nessun premio
+	var money0 := GameState.money
+	choose_queue = [0, 4, 9]
+	m = await _c6_call(m, "_finestra")
+	_check(c6["panorama"]["locations_seen"] == ["-5", "0"] and GameState.money == money0, "panorama: si guarda quello che si vuole, senza premi")
+	_check("Le luci di giù" not in str(logic.panorama_lines("-5")) and "Casa Comune ha le finestre aperte" in str(logic.panorama_lines("0")), "panorama: ogni piano com'è davvero")
+	# 31: scegliere C, poi ripensarci; poi C con i ruoli, e confermare
+	choose_queue = [2, 0, 0, 0, 1, 3]
+	m = await _c6_call(m, "final_choice")
+	_check(not c6["final_decision"]["confirmed"] and c6["final_decision"]["selected"] == null, "31: prima della conferma si può tornare indietro")
+	choose_queue = [2, 0, 0, 0, 0]
+	m.call("final_choice")
+	await _wait_scene(Router.FINALE)
+	c6 = logic.c6()
+	_check(c6["final_decision"]["confirmed"] and c6["outcome"]["family"] == "C" and c6["outcome"]["variant"] == "C2", "32-33: gestione condivisa con reti e risorse: la trasformazione della Torre (C2)")
+	_check(c6["final_decision"]["roles"] == {"conti": "teo", "servizi": "ada", "turni": "nadir"}, "C: una distribuzione concreta delle responsabilità")
+	_check(GameState.debt == debt0 and c6["outcome"]["debt_status"] == "in_revisione" and c6["outcome"]["governance_status"] == "condivisa", "34: il debito in revisione, non cancellato")
+	var saved: Variant = JSON.parse_string(FileAccess.get_file_as_string(GameState.save_path))
+	_check(typeof(saved) == TYPE_DICTIONARY and str(saved.get("room", "")) == Router.FINALE, "39: dopo la conferma il salvataggio riparte dal finale")
+	# 35-38: il finale, gli epiloghi, il sogno (Studiare), i titoli di coda
+	choose_queue = [1]
+	await _wait_scene(Router.MENU, 120000)
+	await _idle()
+	c6 = logic.c6()
+	var seen: Array = c6["epilogue"]["seen_character_ids"]
+	_check(c6["completed"] and c6["epilogue"]["completed"] and c6["dream"]["selected"] == "studiare" and c6["dream"]["final_scene_seen"], "37-38: il sogno e i titoli di coda")
+	_check("ada" in seen and "teo" in seen and "leda" in seen and seen.back() == "nives" and "fermo" not in seen, "35-36: epiloghi solo per chi hai conosciuto, Nives per ultima")
+	_check(seen.size() == 8, "36: nessun epilogo doppio")
+
+	# --- percorso A: sfruttamento, Direzione accettata, attribuzione firmata -> l'attico ----------------
+	_c6_reset(false)
+	for id: String in ["amir", "teo", "ada"]:
+		GameState.flags["met_" + id] = true
+		GameState.robots.append(id)
+	GameState.helped_ids.append("ada")
+	GameState.exploited = 3
+	GameState.money = 6000
+	_c6_fake_cycles([{"alloc": {"stipendi": 30, "servizi": 10, "manutenzione": 25, "riserve": 35}},
+		{"alloc": {"stipendi": 30, "servizi": 10, "manutenzione": 25, "riserve": 35}, "choice": "niente"},
+		{"alloc": {"stipendi": 30, "servizi": 10, "manutenzione": 25, "riserve": 35}, "choice": "conservare"}])
+	c6 = logic.c6()
+	for k: String in ["intro_seen"]:
+		c6["elevator"][k] = true
+	for k: String in ["met", "origin_explained", "offer_received"]:
+		c6["president"][k] = true
+	c6["boss"]["final_call_seen"] = true
+	c6["boss"]["global_credit_accepted"] = true
+	_check(not logic.final_ready(), "senza una testimonianza la scelta finale non si apre")
+	c6["director_turn"]["consulted_citizens"] = true
+	var people: Array = logic.consultations(3)
+	var amir_c: Array = people.filter(func(p: Array) -> bool: return p[0] == "amir")
+	_check(amir_c.size() == 1 and "(robot)" in str(amir_c[0][1]) and "CONSULTAZIONE" in str(amir_c[0][2]), "27: un robot non parla da persona")
+	_check(people.back()[0] == "impiegata", "27: c'è sempre almeno una voce da ascoltare")
+	_check(fin.betrayed() == ["ada"], "H: aiutata e poi sfruttata: il gioco se lo ricorda")
+	debt0 = GameState.debt
+	m = await _go(Router.CIMA, "desk")
+	m = await _c6_settle()
+	choose_queue = [0, 0]
+	m.call("final_choice")
+	await _wait_scene(Router.FINALE)
+	c6 = logic.c6()
+	_check(c6["outcome"]["family"] == "A" and c6["outcome"]["variant"] == "A1" and c6["outcome"]["governance_status"] == "concentrata_totale", "A: sfruttamento, poca collaborazione: l'attico (A1)")
+	_check(GameState.debt == 0 and c6["debt_cancelled"] and int(c6["debt_before"]) == debt0 and GameState.money == 6000, "34: il debito personale annullato una volta, i soldi restano")
+	var dummy: Node2D = ending.new()
+	dummy.set("d", c6)
+	dummy.set("out", c6["outcome"])
+	dummy.set("sm", rules.summary(fin.turn_state()))
+	_check((dummy.call("epilogue_for", "amir")["lines"] as Array) == ["CONSEGNA COMPLETATA.", "CLIENTE SODDISFATTO."], "35: Amir robot resta robot")
+	_check("Incompleto" in str(dummy.call("epilogue_for", "teo")["lines"]), "35: il fumetto di Teo robot resta incompleto")
+	_check("ARREDAMENTO" in str(dummy.call("epilogue_for", "ada")["lines"]), "35: Ada robot non dice le battute di Ada umana")
+	dummy.free()
+	choose_queue = [5]
+	await _wait_scene(Router.MENU, 120000)
+	await _idle()
+	c6 = logic.c6()
+	_check(c6["completed"] and c6["dream"]["selected"] == "non_so", "A: fino ai titoli di coda")
+	# 40: niente doppioni. Ritornare alla Cima dopo il finale porta al finale, non riapre la scelta
+	Router.goto(Router.CIMA, "desk")
+	await _wait_scene(Router.FINALE, 60000)
+	_check(GameState.debt == 0 and logic.c6()["final_decision"]["confirmed"], "40: la scelta non si ripete")
+	await _wait_scene(Router.MENU, 120000)
+	await _idle()
+
+	# --- i finali dai fatti: ogni famiglia ha un fallback, mai un finale vuoto -------------------------
+	var base := {"exploited": 0, "robots": 0, "bonds": 0, "betrayed": 0, "networks": 0, "evidence": 0, "power": false, "roles_filled": 0,
+		"policy": {"wages_up": false, "services_up": false, "maintenance_ok": true, "reserve_ok": true, "debt_rule": "conservare", "casa": ""},
+		"casa_open": false, "improved": false, "rule_changed": false}
+	var x: Dictionary = base.duplicate(true)
+	_check(fin.decide("A", x)["variant"] == "A1" and fin.decide("B", x)["variant"] == "B1" and fin.decide("C", x)["variant"] == "C3", "C: con poche relazioni: A1, B1, C3")
+	_check(fin.decide("", x)["family"] == "B" and fin.decide("Z", x)["variant"] == "B1", "32: una scelta non valida non lascia senza finale")
+	x["bonds"] = 3
+	x["improved"] = true
+	x["rule_changed"] = true
+	x["networks"] = 1
+	x["roles_filled"] = 2
+	_check(fin.decide("A", x)["variant"] == "A2" and fin.decide("B", x)["variant"] == "B2" and fin.decide("C", x)["variant"] == "C1", "B-E: miglioramenti e legami: A2, B2, C1 (risorse limitate)")
+	x["power"] = true
+	_check(fin.decide("A", x)["variant"] == "A1", "A: con l'attribuzione globale firmata non si cambia da dentro")
+	x["evidence"] = 2
+	_check(fin.decide("B", x)["debt_status"] == "contestato" and fin.decide("A", x)["debt_status"] == "annullato", "B: con le prove il debito si contesta")
+	var all_ok := true
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 6
+	for i in 400:
+		var y: Dictionary = base.duplicate(true)
+		y["bonds"] = rng.randi_range(0, 8)
+		y["networks"] = rng.randi_range(0, 5)
+		y["roles_filled"] = rng.randi_range(0, 3)
+		y["power"] = rng.randf() < 0.3
+		y["improved"] = rng.randf() < 0.5
+		y["rule_changed"] = rng.randf() < 0.5
+		y["policy"]["maintenance_ok"] = rng.randf() < 0.6
+		y["policy"]["reserve_ok"] = rng.randf() < 0.6
+		for fam: String in ["A", "B", "C"]:
+			var r: Dictionary = fin.decide(fam, y)
+			all_ok = all_ok and str(r["variant"]).begins_with(fam) and r["debt_status"] != "" and r["governance_status"] != ""
+	_check(all_ok, "33: 1200 combinazioni, sempre una variante della famiglia giusta")
+
+	# --- I: un salvataggio con dati mancanti -----------------------------------------------------------
+	GameState.new_game()
+	GameState.flags["chapter_6"] = {"entered": true, "director_turn": {"cycle_1_completed": true}}
+	c6 = logic.c6()
+	_check(c6["director_turn"]["cycle_1_completed"] and not c6["director_turn"]["cycle_2_completed"] and c6["final_decision"]["confirmed"] == false \
+		and c6["epilogue"]["seen_character_ids"] == [] and logic.cycles_done() == 1 and not logic.final_ready(), "I: i campi mancanti prendono un valore di partenza")
+	_check(fin.decide("C")["variant"] == "C3" and str(rules.casa_state()) == "sospesa", "I: senza flag dei capitoli prima, i finali hanno comunque una variante")
+	# la regola dei debiti senza prove: chiusa, con il motivo
+	st = rules.new_state()
+	st["cycle"] = 3
+	var opts: Array = rules.debt_options(st, rules.BASE)
+	_check(str(opts[2][3]) != "" and str(opts[3][3]) != "" and str(opts[0][3]) == "", "senza prove né reti, revisione e fonti alternative sono chiuse (e si dice perché)")
+
+	# --- il finale si riprende dopo un caricamento: dal sogno in poi --------------------------------------
+	_c6_reset()
+	c6 = logic.c6()
+	c6["final_decision"]["confirmed"] = true
+	c6["final_decision"]["selected"] = "B"
+	c6["outcome"] = fin.decide("B")
+	c6["epilogue"]["step"] = 7
+	GameState.save_game(Router.FINALE)
+	GameState.new_game()
+	choose_queue = [2]
+	Router.continue_game()
+	await _wait_scene(Router.FINALE)
+	await _wait_scene(Router.MENU, 120000)
+	await _idle()
+	c6 = logic.c6()
+	_check(c6["dream"]["selected"] == "viaggiare" and c6["completed"] and (c6["epilogue"]["seen_character_ids"] as Array).is_empty(), "39: il finale riprende da dove era (il sogno), senza rifare gli epiloghi")
+	_check(ending.dream_line("viaggiare", "B").contains("Domani mattina") and ending.final_line("C3").begins_with("Avevi scoperto"), "il sogno cambia solo la scena personale")
+
+
 func _test_chapter5() -> void:
 	var city := GameState.city
 	var logic: GDScript = load("res://chapters/c5/citta_c5.gd")
@@ -781,8 +1116,8 @@ func _test_chapter5() -> void:
 	_check(out.get("completed", false) and out["ada"]["room_minigame_completed"] and out["ada"]["helped"] and not out["ada"]["robotized"] and out["nadir"]["commuters_network_proposed"], "il riepilogo chapter_5: Ada e Nadir")
 	_check(out["rina"]["window_help_offered"] and out["protest"]["community_outcome"] == "comunitaria" and out["protest"]["proposal_supported"] == "B" and out["report"]["hidden_document_found"] and out["report"]["prior_chapters_connected"], "il riepilogo: vetrina, assemblea, bilanci")
 	_check(out["exit"]["badge_source"] == "regalo" and out["secret_scene_seen"] and out["turn"]["completed_count"] == 1 and not out["boss"]["offer_accepted"], "il riepilogo: badge, scena segreta, turni, capo")
-	await _wait_scene("res://scenes/world/boss_office.tscn", 60000)
-	await _idle()
+	await _wait_scene(Router.CIMA, 60000)
+	await _c6_settle()
 	_check(GameState.has_save() and GameState.flags.get("c5_fine", false), "lo sguardo indietro dovrebbe salvare e portare alla Cima")
 
 	# 24-27 e percorso D: aiutare Ada e poi rubarle il progetto; leggere non decide; firmare una volta
@@ -1345,6 +1680,8 @@ func _run() -> void:
 	await _test_chapter4()
 	# --- capitolo 5: la Città
 	await _test_chapter5()
+	# --- capitolo 6: la Cima e i finali
+	await _test_chapter6()
 
 	# --- in cima c'è tuo padre
 	GameState.day = 4

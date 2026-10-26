@@ -198,6 +198,11 @@ Si esce, per la prima volta, alla luce. La città della versione precedente torn
 
 ### Capitolo 6 — La Cima · *Potere, responsabilità, libertà*
 
+> **Superato.** Il Capitolo 6 è stato fatto seguendo una specifica successiva (la Presidente, il fascicolo
+> OBBLIGO DI ESISTENZA, tre cicli del TURNO di Direzione, l'attribuzione globale del Capo, le famiglie A/B/C).
+> Quello che c'è davvero nel gioco è in `docs/CHAPTER_06_SUMMIT.md` e `docs/ENDING_SYSTEM.md`.
+> Questa sezione resta come archivio di idee.
+
 Niente scale dopo: è l'ultimo piano.
 - **Direzione:** il Dottor Prezzi, il capo (finalmente in persona: il più colorato di tutti, troppo, in modo quasi doloroso da guardare).
 - **TURNO: il bilancio.** Hai una cifra e cinque voci (Mercato, Banca, Città, Casa Comune, Torre). Trascini le monete. Ogni scelta si vede subito in una finestra sulla città: una luce che si spegne, un negozio che chiude, una festa. Non c'è combinazione giusta: c'è quella che hai scelto.
@@ -382,6 +387,9 @@ Se torni da Leda il giorno dopo:
 ---
 
 ## 8. I finali
+
+> **Superato.** I finali veri sono le famiglie A/B/C con le varianti A1-C3: `docs/ENDING_SYSTEM.md`.
+> Questa sezione resta come archivio di idee.
 
 ### La scelta alla Cima
 
