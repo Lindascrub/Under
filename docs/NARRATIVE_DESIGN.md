@@ -162,6 +162,11 @@ Rivelazione: il tuo aumento l'hai pagato tu, alla cassa.
 
 ### Capitolo 4 — -2 La Banca · *Debito e dipendenza*
 
+> **Superato.** Il Capitolo 4 è stato fatto seguendo una specifica successiva: Olga e Teo al posto di Ines e
+> Sandro, il rapporto 404, e un debito **senza contratto** ("OBBLIGO DI ESISTENZA") al posto della garanzia del
+> padre. L'origine vera del debito resta per il Capitolo 6. Quello che c'è davvero nel gioco è in
+> `docs/CHAPTER_04_BANK.md`; la vecchia Banca (`scenes/world/banca.*`, il conto "del padre") è stata tolta.
+
 - **Atmosfera:** marmo finto, piante finte, silenzio da biblioteca. Un orologio enorme che segna gli interessi al secondo.
 - **TURNO: lo sportello crediti.** Arrivano pratiche: le controlli (firma, data, garanzia) e le timbri APPROVATA o RESPINTA. Toccando le voci si scoprono gli errori. La paga dipende da quante pratiche respingi, e il gioco non lo nasconde: il supervisore te lo dice al primo turno.
 - **Persone vere:**
@@ -174,6 +179,10 @@ Rivelazione: il tuo aumento l'hai pagato tu, alla cassa.
 - **Sguardo indietro:** l'orologio degli interessi, che continua a girare.
 
 ### Capitolo 5 — Piano terra, Ufficio e Città · *Le conseguenze fuori dalla Torre*
+
+> **Superato.** Il Capitolo 5 è stato fatto seguendo una specifica successiva: una piazza nuova (non la vecchia strada),
+> Ada, Nadir e Rina, la Casa Comune che chiude, la manifestazione, l'assemblea con esiti a regole (niente punteggio)
+> e la rivelazione dal primo gradino. Quello che c'è davvero nel gioco è in `docs/CHAPTER_05_CITY.md`.
 
 Si esce, per la prima volta, alla luce. La città della versione precedente torna, cambiata da quello che hai fatto sotto
 (prezzi del Mercato, pratiche della Banca, robot).
@@ -217,6 +226,11 @@ come comparse della città o vengono tolti più avanti; non servono per la stori
 ---
 
 ## 7. Capitolo 3 — Il Mercato (progetto dettagliato)
+
+> **Superato.** Il Capitolo 3 è stato fatto seguendo una specifica successiva (Leda, Amir, la cassa a 120 €,
+> l'aggiornamento dei prezzi, la promozione su Amir). Quello che c'è davvero nel gioco è in
+> `docs/capitoli/capitolo_3_il_mercato.md`. Questa sezione resta come archivio di idee (il quaderno di Leda,
+> il gruppo d'acquisto, lo scontrino notturno) per i capitoli dopo.
 
 ### L'idea in una frase
 

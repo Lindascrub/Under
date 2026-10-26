@@ -49,6 +49,8 @@ const ITEMS := {
 	"Caffè di Nico": {"energy": 8, "text": "* Bevi il caffè di Nico. Sa di bruciato e di amicizia."},
 	"Panino": {"energy": 12, "text": "* Mangi il panino. Un po' schiacciato, ma buono."},
 	"Barretta": {"energy": 5, "text": "* Mangi la barretta. Sa di cartone al cioccolato."},
+	"Acqua economica": {"energy": 3, "text": "* Bevi l'acqua economica. Sa di plastica e di niente. Però era bagnata."},
+	"Biscotti di Leda": {"energy": 6, "text": "* Mangi i biscotti di Leda. Scadevano domani. Oggi sono ancora buoni."},
 }
 
 ## Dal piano più profondo alla cima. "badge" è quanto costa il badge per salire a quel piano.
@@ -105,6 +107,12 @@ var _npcs: Dictionary = {}
 var _jobs: Array = []
 var _worklist: Array = []
 var _promotions: Dictionary = {}
+## Il Mercato (capitolo 3): prezzi prima e dopo l'aggiornamento, premi, fatture.
+var market: Dictionary = {}
+## La Banca (capitolo 4): premio del capo, conti di Olga, pratiche dello sportello e di Teo.
+var bank: Dictionary = {}
+## La Città (capitolo 5): le stanze di Ada, il percorso di Nadir, il TURNO, i bilanci della Casa Comune.
+var city: Dictionary = {}
 
 
 func _ready() -> void:
@@ -112,6 +120,9 @@ func _ready() -> void:
 	_jobs = _load_json("res://data/jobs.json", [])
 	_worklist = _load_json("res://data/worklist.json", [])
 	_promotions = _load_json("res://data/promotions.json", {})
+	market = _load_json("res://data/market.json", {})
+	bank = _load_json("res://data/bank.json", {})
+	city = _load_json("res://data/city.json", {})
 
 
 func _load_json(path: String, fallback: Variant) -> Variant:
@@ -194,7 +205,23 @@ func is_robot(id: String) -> bool:
 
 
 func robot_line(id: String) -> String:
+	# chi ha frasi da robot sue (campo "robot_lines") le ripete a giro; "robot_lines_if" ne
+	# aggiunge altre quando un flag è vero (Amir, se sapevi del suo sogno)
+	var own: Array = npc_data(id).get("robot_lines", [])
+	if not own.is_empty():
+		var extra: Dictionary = npc_data(id).get("robot_lines_if", {})
+		if not extra.is_empty() and flags.get(str(extra.get("flag", "")), false):
+			own = own + extra.get("lines", [])
+		var k := int(flags.get("robot_talks_" + id, 0))
+		flags["robot_talks_" + id] = k + 1
+		return str(own[k % own.size()])
 	return ROBOT_LINES[posmod(id.hash() + day, ROBOT_LINES.size())]
+
+
+## Il prezzo di oggi di una cosa del Mercato: dopo l'aggiornamento (flag c3_prezzi) quello nuovo.
+func market_price(key: String) -> int:
+	var p: Array = market.get("prezzi", {}).get(key, {}).get("prezzo", [0, 0])
+	return int(p[1] if flags.get("c3_prezzi", false) else p[0])
 
 
 # --- tempo ------------------------------------------------------------------
@@ -456,7 +483,9 @@ const ZONES := {
 	"sottoufficio": ["tilde", "ercole"],
 	"ufficio": ["dario", "giulia"],
 	"strada": ["marta", "sig_bruno", "lea", "ragazzo_sami", "portiere_ivo", "nico"],
-	"mercato": ["vito"],
+	"mercato": ["leda", "amir"],
+	"banca": ["olga", "teo"],
+	"citta": ["ada", "nadir", "rina"],
 	"parco": ["tano", "elsa", "rocco"],
 }
 

@@ -189,11 +189,20 @@ func _station(j: Dictionary) -> void:
 	var c: int = await Ui.choose(str(j.get("station_text", "")) + "\nIniziare il turno? (10 ore)", ["Inizia", "Non ancora"])
 	if c != 0:
 		return
+	start_job(j)
+
+
+## Parte il turno (il minigioco, o la battaglia col caporeparto). Senza domande: le fa _station().
+func start_job(j: Dictionary) -> void:
 	var cfg: Dictionary = (j.get("battle", {}) as Dictionary).duplicate(true)
 	if j.has("game"):
+		# la paga cresce un po' a ogni piano, tranne nei lavori a paga fissa ("pay_fixed": la cassa del -3)
+		var pay := int(cfg.get("pay", 300))
+		if not j.get("pay_fixed", false):
+			pay = int(pay * (1.0 + 0.1 * GameState.floor_index(GameState.floor_id)))
 		GameState.minigame = {
 			"kind": "work", "game": j["game"], "name": str(j.get("title", "Il turno")),
-			"pay": int(int(cfg.get("pay", 300)) * (1.0 + 0.1 * GameState.floor_index(GameState.floor_id))),
+			"pay": pay, "job": cfg,
 			"intro": [str(cfg.get("intro", "* Si comincia."))],
 			"tired": str(cfg.get("tired", "* Ti fa male tutto.")),
 			"return": scene_file_path, "return_pos": player.global_position,
@@ -294,7 +303,9 @@ func _pity_offer() -> void:
 
 
 ## La promozione è un furto: copiare il lavoro di `victim` quando non guarda (minigioco "steal").
-func start_steal(victim: String, promo: Dictionary) -> void:
+## `extra` sovrascrive la configurazione (per esempio "intro", o "win_flag": allora vincere non
+## promuove subito, ma accende quel flag e la stanza decide cosa succede dopo).
+func start_steal(victim: String, promo: Dictionary, extra := {}) -> void:
 	var data := GameState.npc_data(victim)
 	var who := str(data.get("name", promo.get("victim_name", "il collega")))
 	GameState.minigame = {
@@ -306,6 +317,7 @@ func start_steal(victim: String, promo: Dictionary) -> void:
 			"* Nessuno ti ha visto entrare. Per ora."],
 		"return": scene_file_path, "return_pos": player.global_position,
 	}
+	GameState.minigame.merge(extra, true)
 	Router.goto(Router.WORK)
 
 

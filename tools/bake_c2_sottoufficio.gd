@@ -294,7 +294,7 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 func _features() -> void:
 	_feature("PostoCallCenter", "station", Vector2i(8, 10), {"job": "callcenter"})
 	_feature("SportelloBadge", "badge", Vector2i(18, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://scenes/world/mercato.tscn", "spawn": "from_below", "need": "-3"})
+	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c3/mercato.tscn", "spawn": "from_below", "need": "-3"})
 	_feature("Stellina", "save", Vector2i(11, 11))
 
 

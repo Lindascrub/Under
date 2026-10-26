@@ -158,6 +158,10 @@ func interact() -> void:
 	_face_player()
 	var who := display_name()
 	if GameState.is_robot(id):
+		# la stanza può far rispondere il robot a qualche domanda (robot_talk_<id>, Ada nella Città)
+		var here := get_tree().current_scene
+		if here and here.has_method("robot_talk_" + id) and await here.call("robot_talk_" + id, self):
+			return
 		await Ui.say([GameState.robot_line(id)], who)
 		return
 	if await Quests.handle_npc(self):
@@ -266,8 +270,12 @@ static func minigame_cfg(npc_id: String, who: String, help: Dictionary, back: St
 	cfg["id"] = npc_id
 	cfg["name"] = who
 	cfg["win"] = help.get("yes", ["Grazie!"])
+	for k in ["partial", "lose"]:
+		if help.has(k):
+			cfg[k] = help[k]
 	var above := GameState.floor_above()
-	if above != "" and GameState.room_floor != "":
+	# chi non ha soldi da dare (Leda, Amir) ringrazia in un altro modo: "fixed_reward"
+	if above != "" and GameState.room_floor != "" and not cfg.get("fixed_reward", false):
 		cfg["reward"] = maxi(int(cfg.get("reward", 10)), GameState.badge_cost(above) / 8)
 	cfg["return"] = back
 	cfg["return_pos"] = back_pos

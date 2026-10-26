@@ -256,6 +256,153 @@ func _run() -> void:
 	await _tap_at(Vector2(box.end.x - 25, y0 + right.find(0) * gap))
 	_check(0 in (m.get("wire_done") as Array), "toccare il posto giusto dovrebbe collegare il filo")
 
+	# --- Leda, SCATOLE E SCAFFALI: tocca lo scaffale giusto
+	m = await _help("inventory")
+	var good: Array = (m.get("inv_queue") as Array)[0]
+	var wrong := (int(good[1]) + 1) % 4
+	await _tap_at((m.call("_inv_shelf", wrong) as Rect2).get_center())
+	_check(int(m.get("misses")) == 1, "lo scaffale sbagliato dovrebbe essere un errore")
+	await _tap_at((m.call("_inv_shelf", int(good[1])) as Rect2).get_center())
+	_check(int(m.get("inv_done")) == 1, "lo scaffale giusto dovrebbe sistemare il prodotto")
+
+	# --- Amir, L'ULTIMA CONSEGNA: tocca gli incroci (la strada sicura arriva in tempo)
+	m = await _help("route")
+	await _tap_at(m.RT_NODES[4])
+	_check((m.get("rt_done") as Array).is_empty(), "un incrocio lontano non si raggiunge")
+	for n in [2, 5]:
+		await _tap_at(m.RT_NODES[n])
+		# il cuore cammina fino all'incrocio, poi si può toccare il prossimo
+		for i in 600:
+			if float(m.get("rt_k")) >= 1.0:
+				break
+			await _frames(1)
+	_check((m.get("rt_done") as Array).size() == 2 and int(m.get("rt_left")) == 40, "la strada sicura: Scala B e Piazza in 80 minuti (ne restano 40 per Via dei Fiori)")
+
+	# --- la cassa del Mercato: tocca l'articolo, poi CORREGGI il prezzo sbagliato
+	w = await _work("cassa", {"job": {"pay_max": 160, "duration": 40}})
+	w.set("cs_item", {"name": "Pane", "tag": 12, "screen": 20})
+	w.set("cs_phase", "scan")
+	w.set("cs_t", 5.0)
+	await _tap_at(Vector2(320, 190))
+	_check(str(w.get("cs_phase")) == "check", "toccare l'articolo dovrebbe passarlo allo scanner")
+	await _tap_at((w.call("_cs_button", 1) as Rect2).get_center())
+	for i in 600:
+		if str(w.get("cs_phase")) != "verify":
+			break
+		await _frames(1)
+	_check(int(w.get("cs_fixed")) == 1 and float(w.get("score")) >= 1.0, "CORREGGI dovrebbe correggere il sovrapprezzo")
+	w.set("cs_item", {"name": "Latte", "tag": 24, "screen": 32})
+	w.set("cs_phase", "check")
+	await _tap_at((w.call("_cs_button", 0) as Rect2).get_center())
+	_check(int(w.get("cs_accepted")) == 1, "CONFERMA dovrebbe confermare il sovrapprezzo")
+
+	# --- Olga, LE RATE MANCANTI: tocca i documenti in ordine, poi la voce doppia
+	m = await _help("rate")
+	var cards: Array = m.get("rate_cards")
+	_check(cards != [0, 1, 2, 3, 4, 5], "i documenti dovrebbero partire in disordine")
+	await _tap_at((m.call("_rate_card", cards.find(1)) as Rect2).get_center())
+	_check(int(m.get("misses")) == 1 and (m.get("rate_placed") as Array).is_empty(), "un documento fuori ordine dovrebbe essere un errore")
+	for doc in 6:
+		await _tap_at((m.call("_rate_card", cards.find(doc)) as Rect2).get_center())
+	_check(str(m.get("rate_phase")) == "find", "sei documenti in ordine: poi l'estratto conto")
+	await _tap_at((m.call("_rate_row", 0) as Rect2).get_center())
+	_check(int(m.get("misses")) == 2 and str(m.get("phase")) == "play", "la rata non è la voce doppia")
+	await _tap_at((m.call("_rate_row", 3) as Rect2).get_center())
+	_check(str(m.get("phase")) != "play", "la seconda commissione è la voce doppia: il minigioco finisce")
+
+	# --- Teo, LA PRATICA IMPOSSIBILE: tocca il tipo di problema giusto
+	m = await _help("pratiche")
+	var list: Array = GameState.bank["teo"]["pratiche"]
+	var wrong_type := (int(list[0]["tipo"]) + 1) % 5
+	await _tap_at((m.call("_pr_button", wrong_type) as Rect2).get_center())
+	_check(int(m.get("misses")) == 1 and int(m.get("pr_i")) == 0, "il tipo sbagliato dovrebbe essere un errore")
+	await _tap_at((m.call("_pr_button", int(list[0]["tipo"])) as Rect2).get_center())
+	_check(int(m.get("pr_i")) == 1, "il tipo giusto dovrebbe chiudere la pratica")
+
+	# --- lo sportello della Banca: APPROVA subito, RICHIEDI VERIFICA ci mette di più
+	w = await _work("sportello", {"job": {"pay_max": 1000, "duration": 45}})
+	w.set("sp_cur", {"id": "027", "righe": ["Busta paga: 1.300 €"], "verifica": true})
+	await _tap_at((w.call("_sp_button", 0) as Rect2).get_center())
+	_check(int(w.get("sp_rushed")) == 1 and str(w.get("sp_phase")) == "stamp", "APPROVA una pratica col problema: frettolosa")
+	for i in 600:
+		if str(w.get("sp_phase")) == "read":
+			break
+		await _frames(1)
+	w.set("sp_cur", {"id": "041", "righe": ["Busta paga: 1.300 €"], "verifica": true})
+	await _tap_at((w.call("_sp_button", 1) as Rect2).get_center())
+	_check(int(w.get("sp_correct")) == 1 and str(w.get("sp_phase")) == "verify", "RICHIEDI VERIFICA sulla pratica col problema: giusta")
+	for i in 600:
+		if str(w.get("sp_phase")) == "read":
+			break
+		await _frames(1)
+	_check(float(w.get("score")) >= 2.0, "le pratiche chiuse contano tutte, giuste o no")
+
+	# --- Ada, UNA STANZA PER TUTTI: tocca un mobile, poi la stanza (in alto: più in basso ci sono i mobili già messi)
+	m = await _help("stanze")
+	await _tap_at((m.call("_st_done_button") as Rect2).get_center())
+	_check(int(m.get("misses")) == 0 and str(m.get("phase")) == "play", "con dei mobili ancora nel vassoio non si chiude (e non è un errore)")
+	for i in 3:
+		await _tap_at((m.call("_st_piece", i) as Rect2).get_center())
+		await _tap_at((m.call("_st_room", 0) as Rect2).position + Vector2(86, 20))
+	await _tap_at((m.call("_st_piece", 3) as Rect2).get_center())
+	await _tap_at((m.call("_st_room", 0) as Rect2).position + Vector2(86, 20))
+	_check(int((m.get("st_where") as Array)[3]) == -1, "una stanza piena non prende un quarto mobile")
+	# lo scaffale torna nel vassoio e va nel laboratorio; le sedie restano senza stanza giusta
+	await _tap_at((m.call("_st_piece", 2) as Rect2).get_center())
+	await _tap_at((m.call("_st_room", 1) as Rect2).position + Vector2(86, 20))
+	await _tap_at((m.call("_st_piece", 3) as Rect2).get_center())
+	await _tap_at((m.call("_st_room", 1) as Rect2).position + Vector2(86, 20))
+	for p: Array in [[4, 1], [5, 0]]:
+		await _tap_at((m.call("_st_piece", p[0]) as Rect2).get_center())
+		await _tap_at((m.call("_st_room", p[1]) as Rect2).position + Vector2(86, 20))
+	_check((m.get("st_where") as Array) == [0, 0, 1, 1, 1, 0], "i mobili dovrebbero stare dove li hai messi (%s)" % str(m.get("st_where")))
+	await _tap_at((m.call("_st_done_button") as Rect2).get_center())
+	_check(int(m.get("misses")) == 1 and str(m.get("phase")) == "play", "senza sedie la stanza degli incontri non funziona: un errore")
+	for p: Array in [[4, 2], [5, 2]]:
+		await _tap_at((m.call("_st_piece", p[0]) as Rect2).get_center())
+		await _tap_at((m.call("_st_room", p[1]) as Rect2).position + Vector2(86, 20))
+	await _tap_at((m.call("_st_done_button") as Rect2).get_center())
+	_check(str(m.get("phase")) != "play" and GameState.flags.has("c5_stanze"), "tre stanze che funzionano: il minigioco finisce")
+
+	# --- Nadir, IL PERCORSO POSSIBILE: tratta dopo tratta; lento, caro, poi il compromesso
+	m = await _help("percorso")
+	await _tap_at((m.call("_pc_label", 4) as Rect2).get_center())
+	_check((m.get("pc_path") as Array).is_empty(), "da casa la navetta non parte")
+	for e in [0, 1]:
+		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
+	_check(int(m.get("misses")) == 1 and (m.get("pc_path") as Array).is_empty(), "il percorso economico arriva tardi: si riparte")
+	for e in [2, 4]:
+		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
+	_check(int(m.get("misses")) == 2 and str(m.get("phase")) == "play", "il percorso veloce costa troppo")
+	for e in [2, 3]:
+		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
+	_check(str(m.get("phase")) != "play" and GameState.flags.get("c5_nadir_tratta", []) == [2, 3], "il compromesso (bus 4 + treno): Nadir arriva")
+
+	# --- il centralino della Città: destinazioni; poi le discrepanze (VERIFICA, CONFERMA)
+	w = await _work("smistamento", {"job": {"pay": 1600, "pay_max": 2000, "duration": 45}})
+	w.set("sm_cur", {"testo": "Libri", "cat": "Consegne", "dest": 0})
+	await _tap_at((w.call("_sm_button", 1) as Rect2).get_center())
+	_check(int(w.get("sm_wrong")) == 1 and int(w.get("mistakes")) == 1, "i libri alla fermata: destinazione sbagliata")
+	for i in 600:
+		if str(w.get("sm_phase")) == "read":
+			break
+		await _frames(1)
+	w.set("sm_cur", {"id": "082", "testo": "Richiesta n. 082", "cat": "Consegne", "proposta": "ARCHIVIO CENTRALE", "dest": 0})
+	await _tap_at((w.call("_sm_button", 1) as Rect2).get_center())
+	_check(int(w.get("sm_found")) == 1 and str(w.get("sm_phase")) == "verify", "VERIFICA una discrepanza: trovata (e ci vuole più tempo)")
+	for i in 600:
+		if str(w.get("sm_phase")) == "read":
+			break
+		await _frames(1)
+	w.set("sm_cur", {"id": "091", "testo": "Richiesta n. 091", "cat": "Servizi", "proposta": "ARCHIVIO CENTRALE", "dest": 0})
+	await _tap_at((w.call("_sm_button", 0) as Rect2).get_center())
+	_check(int(w.get("sm_confirmed")) == 1 and int(w.get("mistakes")) == 1, "CONFERMA non è un errore tuo: il sistema ha proposto")
+	for i in 600:
+		if str(w.get("sm_phase")) == "read":
+			break
+		await _frames(1)
+	_check(float(w.get("score")) >= 3.0, "le richieste chiuse contano tutte")
+
 	# --- lo straordinario dopo la rivelazione: paga meno, e la festa si riaccende
 	GameState.new_game()
 	for f in ["c1_arrivo", "fermo_talked", "fermo_called", "c1_rivelazione", "c1_restato", "c1_lift_broken", "boss_call_floor_-5"]:

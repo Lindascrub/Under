@@ -93,5 +93,32 @@
       "Quella signora grigia del call center, Tilde. Ha scritto a mano un copione suo: con quello i clienti smettono di urlare. Non l'ha mai consegnato.",
       "Se quel copione arriva sulla mia scrivania col suo nome sopra, lei sale. Tilde continuerà a dire grazie. È il suo talento."
     ]
+  },
+  "amir": {
+    "title": "Il rapporto consegne n. 018",
+    "item": "il rapporto consegne di Amir",
+    "victim_name": "Amir",
+    "victim_sheet": "char_04",
+    "desc": [
+      "ECCOLO! Il mio cassiere preferito!"
+    ]
+  },
+  "teo": {
+    "title": "Il rapporto di verifica n. 404",
+    "item": "il rapporto di Teo",
+    "victim_name": "Teo",
+    "victim_sheet": "char_17",
+    "desc": [
+      "ECCO IL MIO INVESTIMENTO PREFERITO!"
+    ]
+  },
+  "ada": {
+    "title": "La proposta di riutilizzo della Casa Comune",
+    "item": "il progetto di Ada",
+    "victim_name": "Ada",
+    "victim_sheet": "char_19",
+    "desc": [
+      "IL MIO COLLABORATORE PREFERITO!"
+    ]
   }
 }

@@ -1,0 +1,97 @@
+# Elenco degli asset personalizzati (segnaposto)
+
+La grafica fatta apposta per CHEAP verrà disegnata a parte. Nel gioco, al suo posto, ci sono **segnaposto**:
+forme piene con un'etichetta, già della misura giusta. Per sostituirne uno basta salvare il PNG nuovo
+**con lo stesso nome e la stessa misura**: il gioco non cambia.
+
+Gli asset acquistati (LimeZu, in `assets/limezu/`) restano dove sono e non vanno ridistribuiti
+(la cartella è esclusa da git).
+
+**Prospettiva di tutto il gioco:** la stessa di LimeZu Modern Interiors. Vista dall'alto, di tre quarti
+frontale. Pixel art a 16 px per casella, senza antialiasing, contorno scuro (`#18141e`).
+**"Piedi"** = il punto in basso a sinistra dello sprite, appoggiato sulla casella indicata.
+
+## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)
+
+Posizioni in caselle (16 px). C = `chapters/c5/citta.tscn`, CC = `chapters/c5/casa_comune.tscn`, L = `chapters/c5/citta_c5.gd`.
+
+| File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
+|---|---|---|---|---|---|
+| `cielo.png` | 640x96 | Il cielo sopra la piazza: lo si vede all'arrivo, quando la camera sale (è già una sfumatura, non solo un segnaposto) | sfondo piatto | consigliata: nuvole che scorrono lente, uccelli | C, `Decori/Cielo` (sopra la riga 0) |
+| `insegna_esterno.png` | 128x20 | "BENVENUTO ALL'ESTERNO. Servizio soggetto a disponibilità." sopra la porta della Torre | frontale, appesa | consigliata: neon che sfarfalla (2 frame) | C, `Decori/InsegnaEsterno` (0,8); esame `_insegna_esterno` |
+| `porta_vetro.png` | 32x32 | La porta a vetri della Torre | frontale, nel muro | consigliata: si apre (3 frame) | C, `Decori/PortaVetro` (2,10) |
+| `insegna_casa_comune.png` | 80x12 | Insegna "CASA COMUNE", dipinta a mano | frontale, sulla facciata | nessuna | C, `Decori/InsegnaCasaComune` (14,6) |
+| `avviso_chiusura.png` | 24x16 | Il foglio "CHIUSURA FRA 3 GG" (il testo vero lo scrive il codice e cambia con la storia) | frontale, attaccato al muro | consigliata: angolo che sventola | C, `Decori/AvvisoChiusura` (18,9); CC, `Decori/AvvisoChiusura` (2,2); esame `_avviso` |
+| `volantini.png` | 16x16 | Volantini della Casa Comune | frontale, sul muro | nessuna | C, `Decori/Volantini` (14,9); esame `_volantini` |
+| `insegna_comunicazioni.png` | 80x12 | "CENTRO COMUNICAZIONI" (dove c'è il TURNO) | frontale, sulla facciata | nessuna | C, `Decori/InsegnaComunicazioni` (21,6) |
+| `cartellone_premium.png` | 72x40 | "ANCHE IL CIELO HA UN LIMITE. SUPERALO CON PREMIUM." | frontale, su pali | lampeggia all'arrivo (fatto dal codice); consigliata: luci a scorrimento | C, `Decori/CartellonePremium` (27,7); esame `_cartellone` |
+| `vetrina_rotta.png` | 32x24 | La vetrina di Rina: crepata da prima (decoro) e rotta dopo la manifestazione | frontale, nel muro della bottega | nessuna (lo schianto è un suono + flash) | C, `Decori/VetrinaGiaRotta` (37,9); L, `_broken_window` (33,7 +2,+6) |
+| `cartone.png` | 32x24 | Il cartone "APERTO LO STESSO" sulla vetrina, se aiuti Rina | frontale, sopra la vetrina | nessuna | L, `_cardboard` (33,7 +2,+6) |
+| `altoparlante.png` | 12x10 | Altoparlante sul lampione (la voce di CHEAP) | 3/4 frontale | consigliata: vibra quando parla (2 frame) | C, `Mondo/Lampione/Altoparlante`; esame `_altoparlante` |
+| `terminale_presentazioni.png` | 16x24 | Terminale della sala presentazioni (un, due, tre, stella) | 3/4 frontale, a terra | consigliata: schermo acceso (2 frame) | C, `Mondo/TerminalePresentazioni` (26,12); esame `_presentazioni` |
+| `tabellone_bus.png` | 32x32 | Tabellone della fermata: 6, 9, 14 minuti (le cifre le scrive il codice) | 3/4 frontale, su palo | consigliata: cifre LED che cambiano | C, `Mondo/Tabellone` (21,16); esame `_tabellone` |
+| `cartello_protesta.png` | 20x14 | Cartello alzato da chi manifesta (lo slogan lo scrive il codice) | frontale, sopra la testa | consigliata: su e giù (2 frame) | L, `_sign_on` (figlio della persona, 0,-34) e `_dress_for_look_back` |
+| `panca_premium.png` | 64x12 | "PANCA PREMIUM — ABBONAMENTO IN ARRIVO", la battuta finale della scena segreta | frontale, cartellino sopra la panchina | appare in dissolvenza (fatto dal codice) | L, `_secret` (sopra la panchina 6,18) |
+| `libreria.png` | 32x48 | Librerie della Casa Comune | 3/4 frontale, piedi solidi | nessuna | CC, `Mondo/Libreria` (5,5) e `Libreria2` (8,5) |
+| `tavolo_lungo.png` | 48x24 | Tavolo da studio | 3/4 frontale | nessuna | CC, `Mondo/Tavolo` (3,9) e `Tavolo2` (8,9) |
+| `sedie_spaiate.png` | 32x16 | Sedie tutte diverse | 3/4 frontale | nessuna | CC, `Mondo/Sedie` (3,10) e `Sedie2` (8,10) |
+| `bacheca.png` | 32x24 | Bacheca di sughero (Fermo, Bulbo, Mina se li hai conosciuti) | frontale, sul muro | nessuna | CC, `Decori/Bacheca` (10,2); esame `_bacheca` |
+| `lettera_cheap.png` | 10x8 | La lettera rosa di CHEAP sul tavolo | dall'alto, appoggiata | nessuna | CC, `Mondo/LetteraCheap` (9,8 +3,+4); esame `_lettera` |
+| `cartella_b4.png` | 12x8 | La cartella B-4 (dal capitolo 2) | dall'alto, su un mobile | nessuna | CC, `Mondo/CartellaB4` (11,3); esame `_cartella_b4` |
+| `porta_archivio.png` | 16x32 | Porta chiusa dell'archivio (sparisce quando comincia la manifestazione) | frontale, nella parete | consigliata: si apre (3 frame) | CC, `Mondo/PortaArchivio` (14,8); esame `_porta_archivio` |
+| `terminale_bilanci.png` | 16x32 | Il terminale dei conti della Casa | 3/4 frontale, a terra | consigliata: schermo acceso (2 frame) | CC, `Mondo/TerminaleBilanci` (17,5); esame `_bilanci` |
+| `armadio_documenti.png` | 32x40 | Armadio dei faldoni (il documento nascosto) | 3/4 frontale, piedi solidi | nessuna | CC, `Mondo/Armadio` (19,5); esame `_armadio` |
+| `contatore.png` | 16x24 | Contatore "RETE TORRE CHEAP — PIANO -5" | frontale, sul muro | consigliata: rotella che gira | CC, `Decori/Contatore` (15,3); esame `_contatore` |
+| `mappa_citta.png` | 320x150 | La mappa della città vista dal primo gradino (rivelazione) | dall'alto, piatta | i simboli appaiono uno a uno (fatto dal codice) | L, `on_stairs_step` (pannello a schermo) |
+| `simbolo_energia.png` | 24x24 | Il -5 (il Fondo, la dinamo) | icona piatta | nessuna | L, `on_stairs_step` |
+| `simbolo_amministrazione.png` | 24x24 | Il -4 (il Sottoufficio) | icona piatta | nessuna | L, `on_stairs_step` |
+| `simbolo_commercio.png` | 24x24 | Il -3 (il Mercato) | icona piatta | nessuna | L, `on_stairs_step` |
+| `simbolo_finanza.png` | 24x24 | Il -2 (la Banca) | icona piatta | nessuna | L, `on_stairs_step` |
+
+Riusati dal capitolo 4: `art/c4/antenna_robot.png` (Ada, Amir, Teo robot: `_antenna`, 0,-27).
+Dai fogli LimeZu (acquistati): facciate `cheap_tower`, `condo_yellow`, `condo_blue`, `shop_big`; alberi, panchina,
+fontana, lampione, la fermata del bus e i terreni del tileset `world/tilesets/citta.tres`.
+
+**Suoni segnaposto** (`audio/`, generati da `tools/make_sfx_citta.py`, sintetici):
+`crash.wav` (la vetrina, ~0,6 s), `thump.wav` (la testa di Ada contro lo scaffale), `crack.wav` (il biscotto della scena segreta),
+`music_citta.wav` (12 s in loop: vento e uccelli; da sostituire con la musica vera della piazza).
+
+## Capitolo 4 — La Banca (`art/c4/`, generati da `tools/make_placeholders_banca.py`)
+
+| File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
+|---|---|---|---|---|---|
+| `insegna_banca.png` | 128x28 | Insegna "BANCA CHEAP / IL TUO FUTURO È IL NOSTRO PRESENTE.", oro su rosso | frontale, appesa al muro | nessuna (eventuale: luccichio dell'oro) | `chapters/c4/banca.tscn`, nodo `Decori/InsegnaBanca` (casella 2,1) |
+| `display_numeri.png` | 64x20 | Display "ORA SERVIAMO IL NUMERO 4" | frontale, appeso al muro | consigliata: 2 frame, cifre che lampeggiano | `banca.tscn`, `Decori/DisplayNumeri` (12,1) |
+| `distributore_numeri.png` | 16x32 | Distributore dei biglietti (e del SALTAFILA) | 3/4 frontale, a terra | consigliata: 2 frame, il biglietto che esce | `banca.tscn`, `Mondo/Distributore` (5,9); esame `_distributore` |
+| `bancone_sportello.png` | 48x24 | Sportello del TURNO (settore fiducia), con vetro | 3/4 frontale, piedi solidi 10 px | nessuna | `banca.tscn`, `Mondo/Bancone` (8,3) |
+| `colonna_oro.png` | 16x40 | Colonna dorata ai lati dello sportello | 3/4 frontale, piedi solidi 6 px | nessuna | `banca.tscn`, `Mondo/ColonnaSinistra` (7,3) e `ColonnaDestra` (12,3) |
+| `terminale_conto.png` | 16x32 | Terminale "CONSULTA IL TUO CONTO" (il debito vero) | 3/4 frontale, a terra | consigliata: schermo acceso/spento (2 frame); allo sguardo indietro una scritta rossa "RICERCA CONTRATTO..." lampeggia sopra (fatta dal codice) | `banca.tscn`, `Mondo/TerminaleConto` (14,4); esame `_conto` |
+| `terminale_rapporto.png` | 16x24 | Terminale del RAPPORTO DI VERIFICA N. 404 | 3/4 frontale, da scrivania | consigliata: cursore che lampeggia (2 frame) | `banca.tscn`, `Mondo/TerminaleRapporto` (20,9); esame `_rapporto` |
+| `archivio.png` | 32x40 | Archivio a cassetti (A-C, D-F...) | 3/4 frontale, piedi solidi 10 px | nessuna | `banca.tscn`, `Mondo/Archivio` (19,7); esame `_archivio` |
+| `quaderno.png` | 10x8 | Il quaderno di fumetti di Teo, sulla scrivania | dall'alto, appoggiato | allo sguardo indietro dondola (fatto dal codice, rotazione) | `banca.tscn`, `Mondo/Quaderno` (17,7, spostato di 3,-14); esame `_quaderno` |
+| `lettera.png` | 8x6 | La risposta alla contestazione, in mano a Olga | dall'alto, piccola | nessuna | `chapters/c4/banca_c4.gd`, `_dress_for_look_back` (figlia di Olga, +6,-14) |
+| `timbro.png` | 8x10 | Il timbro di Teo robot | 3/4 frontale | il codice lo fa battere su e giù (0,25 s giù, 0,08 s su, pausa 0,4 s); l'arte può aggiungere 2 frame | `banca_c4.gd`, `_robot_teo` (figlio di Teo, +12,-16) |
+| `antenna_robot.png` | 8x10 | Antenna sulla testa di Teo robot: il robot si riconosce **anche senza colori** | frontale | consigliata: lucina che lampeggia (2 frame) | `banca_c4.gd`, `_robot_teo` (figlio di Teo, 0,-27) |
+
+Dal foglio LimeZu `generic.png` (acquistato, non segnaposto): tappeto rosso `Rect2(48,354,32,28)`,
+panca `Rect2(1,254,30,18)`, pianta `Rect2(212,408,23,31)`. Dai props LimeZu: `office_desk.png` (scrivania di Teo).
+
+## Capitolo 3 — Il Mercato (`art/`, generati da `tools/make_art_mercato.py`)
+
+Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anche loro.
+
+| File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
+|---|---|---|---|---|---|
+| `sign_saldi.png` | 116x16 | Insegna "OGGI TUTTO AL 50%*" | frontale, sul muro | nessuna | `chapters/c3/mercato.tscn`, `InsegnaSaldi` (3,1) |
+| `price_board.png` | 112x34 | Tabellone dei prezzi, prima (pane, latte, acqua da `data/market.json`) | frontale, sul muro | nessuna | `mercato.tscn`, `Tabellone` (12,2) |
+| `price_board_nuovo.png` | 112x34 | Lo stesso tabellone coi prezzi aumentati | frontale, sul muro | il cambio prezzi lampeggia (fatto dal codice) | `chapters/c3/mercato_c3.gd`, `_price_update` |
+| `sign_leda.png` | 52x14 | Insegna "DA LEDA" | frontale, sul muro | nessuna | `mercato.tscn`, negozio di Leda |
+| `cassa.png` | 32x24 | La cassa del TURNO | 3/4 frontale | nessuna | `mercato.tscn`, zona cassa |
+| `shelf.png` | 32x32 | Scaffale del negozio di Leda | 3/4 frontale | nessuna | `mercato.tscn`, negozio di Leda |
+| `chalkboard.png` | 16x20 | La lavagnetta di Leda | 3/4 frontale | nessuna | `mercato.tscn`, negozio di Leda |
+| `crate.png` | 16x12 | Cassetta (ci si siedono Leda e Amir nella scena segreta) | 3/4 frontale | nessuna | `mercato.tscn`, magazzino |
+| `water_machine.png` | 16x32 | Distributore d'acqua (10 €, poi 15 €) | 3/4 frontale | nessuna | `mercato.tscn`, piazza (9,4) |
+| `terminal_consegne.png` | 16x32 | Terminale delle consegne (l'offerta del capo su Amir) | 3/4 frontale | nessuna | `mercato.tscn`, magazzino |
+
+Gli altri PNG in `art/` (cartelli, poster, stelline, scale, tornelli, emote...) vengono dai capitoli 1-2
+(`tools/make_art_fondo.py` e versioni precedenti) e sono segnaposto allo stesso modo.

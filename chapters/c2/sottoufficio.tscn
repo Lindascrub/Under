@@ -702,7 +702,7 @@ kind = "badge"
 position = Vector2(336, 48)
 script = ExtResource("15_08xbl")
 kind = "stairs_up"
-target = "res://scenes/world/mercato.tscn"
+target = "res://chapters/c3/mercato.tscn"
 spawn = "from_below"
 need = "-3"
 

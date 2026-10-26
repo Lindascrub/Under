@@ -1744,7 +1744,7 @@
     "sheet": "char_03",
     "schedule": [
       {
-        "room": "mercato",
+        "room": "nessuno",
         "cell": [
           14,
           11
@@ -2111,7 +2111,7 @@
     "sheet": "char_12",
     "schedule": [
       {
-        "room": "mercato",
+        "room": "nessuno",
         "cell": [
           22,
           8
@@ -2164,7 +2164,7 @@
     "sheet": "char_11",
     "schedule": [
       {
-        "room": "mercato",
+        "room": "nessuno",
         "cell": [
           7,
           14
@@ -2215,7 +2215,7 @@
     "sheet": "char_09",
     "schedule": [
       {
-        "room": "banca",
+        "room": "nessuno",
         "cell": [
           3,
           8
@@ -2265,7 +2265,7 @@
     "sheet": "char_07",
     "schedule": [
       {
-        "room": "banca",
+        "room": "nessuno",
         "cell": [
           15,
           9
@@ -2310,5 +2310,480 @@
         "reward": 10
       }
     }
+  },
+  "leda": {
+    "name": "Leda",
+    "sheet": "char_01",
+    "schedule": [
+      {
+        "room": "mercato",
+        "cell": [
+          5,
+          8
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Ah! Un cliente! Scusa. Riflesso condizionato."
+    ],
+    "days": [
+      [
+        "Vent'euro al giorno. Li conto due volte, così sembrano quaranta."
+      ],
+      [
+        "Oggi ho venduto una tazza vuota. Il cliente ha detto che era esattamente quello che cercava."
+      ],
+      [
+        "La matita dietro l'orecchio è l'unica cosa del negozio che non devo pagare a rate."
+      ]
+    ],
+    "helped": [
+      "Gli scaffali sono ancora in ordine. È la cosa più stabile del Mercato."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Leda ha un camion di scatole da mettere a posto, e nessuno che sappia dove va il sapone.",
+      "yes": [
+        "Sei più bravo della macchina che ho pagato trecento euro per fare questo lavoro.",
+        "Tieni. Biscotti. Scadono domani. Sono ancora buoni.",
+        "Credo.",
+        "Se diventano verdi, fammelo sapere. Sto cercando un nuovo colore per l'insegna."
+      ],
+      "lose": [
+        "Non preoccuparti. L'ultima volta ho trovato il sapone nello scaffale dei biscotti."
+      ],
+      "minigame": {
+        "type": "inventory",
+        "title": "Scatole e scaffali",
+        "intro": [
+          "* Una montagna di scatole. Ogni cosa ha il suo scaffale.",
+          "* Quasi ogni cosa."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "item": "Biscotti di Leda",
+        "help_on_win_only": true,
+        "win_flags": [
+          "c3_leda_inventario"
+        ]
+      }
+    },
+    "reveal_flag": "c3_rivelazione",
+    "reveal": [
+      "L'hai sentito anche tu, il clank? È la cassa che stampa il riepilogo.",
+      "Me ne arriva uno anche a me, ogni sera. Dice sempre POSITIVO.",
+      "Io lo appendo vicino alla lavagnetta. Così fanno a gara a chi mente meglio."
+    ]
+  },
+  "amir": {
+    "name": "Amir",
+    "sheet": "char_04",
+    "schedule": [
+      {
+        "room": "mercato",
+        "cell": [
+          19,
+          10
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Aspetta. Tu sembri uno che sa contare fino a tre."
+    ],
+    "days": [
+      [
+        "Diciassette. Il numero preferito di nessuno."
+      ],
+      [
+        "Il casco ha più adesivi che giorni liberi. Gli adesivi almeno li ho scelti io."
+      ],
+      [
+        "Mia sorella mi manda le foto del suo cane. Io le mando le foto delle scatole. Lei dice che si somigliano."
+      ]
+    ],
+    "helped": [
+      "Diciotto. Lo ripeto ogni tanto, per sentire com'è."
+    ],
+    "emote": "note",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Amir ha tre pacchi, quattro consegne e due ore. Il bonus è a una consegna di distanza.",
+      "yes": [
+        "Aspetta. Ho finito?",
+        "DICIOTTO!",
+        "Mi sono appena emozionato per un numero su uno schermo.",
+        "Che vita meravigliosa.",
+        "Grazie. Davvero."
+      ],
+      "partial": [
+        "Diciassette. E mezzo, diciamo.",
+        "Il pacco in ritardo è arrivato lo stesso. Il bonus no.",
+        "Grazie lo stesso. Se vuoi, ci riproviamo. Il terminale non dimentica, ma neanche io."
+      ],
+      "lose": [
+        "Zero su tre. Però la bici è intera. Anche tu.",
+        "Riproviamo quando vuoi. Le scatole non scappano. Purtroppo."
+      ],
+      "minigame": {
+        "type": "route",
+        "title": "L'ultima consegna",
+        "intro": [
+          "* Una mappa con sei incroci. Tre pacchi. Due ore.",
+          "* Le strade brevi passano dal cantiere. Le altre sono più lunghe, ma ci si arriva."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "help_on_win_only": true,
+        "help_on_partial": true,
+        "win_flags": [
+          "c3_amir_aiutato",
+          "c3_amir_bonus"
+        ],
+        "partial_flags": [
+          "c3_amir_aiutato"
+        ],
+        "budget": 120
+      }
+    },
+    "robot_lines": [
+      "LA CONSEGNA È FELICITÀ.",
+      "LA PRODUTTIVITÀ È LIBERTÀ.",
+      "VUOI EFFETTUARE UN ORDINE?"
+    ],
+    "robot_lines_if": {
+      "flag": "c3_amir_sogno",
+      "lines": [
+        "PRODOTTO NON DISPONIBILE.",
+        "SONO MOLTO, MOLTO PRODUTTIVO."
+      ]
+    },
+    "reveal_flag": "c3_rivelazione",
+    "reveal": [
+      "Hai sentito il clank? È la cassa che fa i conti della giornata.",
+      "Io i miei li faccio col riso: un pugno per ogni consegna. Stasera mangio tanto.",
+      "Scherzo. Stasera mangio diciassette."
+    ]
+  },
+  "olga": {
+    "name": "Olga",
+    "sheet": "char_14",
+    "schedule": [
+      {
+        "room": "banca",
+        "cell": [
+          5,
+          7
+        ],
+        "anim": "idle_left"
+      }
+    ],
+    "intro": [
+      "Sei in fila anche tu?"
+    ],
+    "days": [
+      [
+        "Ho una ricevuta per ogni cosa. Anche per le ricevute."
+      ],
+      [
+        "Il numero 4 è allo sportello da quando sono arrivata. Forse è lui che ha bisogno di aiuto."
+      ],
+      [
+        "La borsa pesa tre chili. Due sono interessi."
+      ]
+    ],
+    "helped": [
+      "Ho rimesso le ricevute in ordine di data. Per la prima volta, mi guardano loro con rispetto."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Olga ha una borsa piena di ricevute e un estratto conto che non torna.",
+      "yes": [
+        "Quindi non ero impazzita.",
+        "Che peccato. Avevo già trovato un cappello adatto."
+      ],
+      "lose": [
+        "Le date non scappano. Sono l'unica cosa qui dentro che resta ferma.",
+        "Riproviamo quando vuoi. Io sono qui da martedì."
+      ],
+      "minigame": {
+        "type": "rate",
+        "title": "Le rate mancanti",
+        "intro": [
+          "* Sei documenti sparsi sul tavolino della sala d'attesa.",
+          "* Prima mettili in ordine di data. Poi trova, nell'estratto conto, la voce che c'è due volte."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "help_on_win_only": true,
+        "win_flags": [
+          "c4_olga_ordinati",
+          "c4_olga_doppia"
+        ]
+      }
+    },
+    "reveal_flag": "c4_rivelazione",
+    "reveal": [
+      "Hai sentito? La Banca ha cercato un contratto e non l'ha trovato.",
+      "Io ho trovato trentacinque euro in una giornata. Loro sette miliardi in nessuna.",
+      "Dovrebbero assumermi. Ma poi dovrei fare la fila per entrare."
+    ]
+  },
+  "teo": {
+    "name": "Teo",
+    "sheet": "char_17",
+    "schedule": [
+      {
+        "room": "banca",
+        "cell": [
+          16,
+          7
+        ],
+        "anim": "idle_right"
+      }
+    ],
+    "intro": [
+      "Benvenuto!"
+    ],
+    "days": [
+      [
+        "Oggi ho elaborato quarantadue pratiche. Ne ho lette sei."
+      ],
+      [
+        "La cravatta è troppo lunga. L'ha scelta l'azienda. Arriva fino agli obiettivi."
+      ],
+      [
+        "Il distributore dei numeri ha più pazienza di me. Ma lui non viene valutato."
+      ]
+    ],
+    "helped": [
+      "Ho letto una pratica dall'inizio alla fine. Era bellissima. Era un mutuo."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Teo ha sei pratiche da controllare prima della valutazione. Nessuno le ha mai lette tutte.",
+      "yes": [
+        "Aspetta. Abbiamo finito?",
+        "E abbiamo controllato tutto?",
+        "Non sapevo si potessero fare entrambe le cose."
+      ],
+      "lose": [
+        "Due errori. Il sistema dice che è normale.",
+        "Io dico che possiamo riprovare. Il sistema non mi ascolta, ma tu sì."
+      ],
+      "minigame": {
+        "type": "pratiche",
+        "title": "La pratica impossibile",
+        "intro": [
+          "* Sei pratiche di credito, una alla volta.",
+          "* Per ognuna: è tutto in ordine, o c'è un problema? Non decidi chi merita i soldi. Controlli i fogli."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "help_on_win_only": true,
+        "win_flags": [
+          "c4_teo_aiutato"
+        ],
+        "misses": 2
+      }
+    },
+    "robot_lines": [
+      "LA PRECISIONE È PRODUTTIVITÀ.",
+      "PRATICA ELABORATA. PROSSIMA PRATICA.",
+      "LA FIDUCIA È UN INDICATORE DI PERFORMANCE."
+    ],
+    "robot_lines_if": {
+      "flag": "c4_teo_sogno",
+      "lines": [
+        "ATTIVITÀ NON RILEVANTE.",
+        "TORNARE ALLE PRATICHE."
+      ]
+    },
+    "reveal_flag": "c4_rivelazione",
+    "reveal": [
+      "Hai visto il display sulle scale? Nessun contratto.",
+      "Io firmo dieci contratti all'ora. E il tuo, quello grosso, non l'ha firmato nessuno.",
+      "Lo disegnerò. Un supereroe che cerca un foglio che non esiste."
+    ]
+  },
+  "ada": {
+    "name": "Ada",
+    "sheet": "char_19",
+    "schedule": [
+      {
+        "room": "casa_comune",
+        "cell": [
+          6,
+          5
+        ],
+        "anim": "idle_up"
+      }
+    ],
+    "intro": [
+      "Ehi!"
+    ],
+    "days": [
+      [
+        "La libreria pende a sinistra. Io pendo a destra. Insieme stiamo in piedi."
+      ],
+      [
+        "Ho tre esami e una casa da salvare. Gli esami almeno hanno una data."
+      ],
+      [
+        "Qui dentro c'è sempre qualcuno che studia, qualcuno che cerca lavoro e qualcuno che dorme. A volte è la stessa persona."
+      ]
+    ],
+    "helped": [
+      "Domani avremo un posto dove sederci. Che frase tristissima. La stampo su una maglietta."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Ada deve riorganizzare la Casa Comune: tre stanze, sei mobili, ognuno con un'opinione.",
+      "yes": [
+        "Non abbiamo risolto il problema della chiusura.",
+        "Ma almeno domani avremo un posto dove sederci.",
+        "Che frase tristissima.",
+        "Dovrei stamparla su una maglietta."
+      ],
+      "lose": [
+        "Così qualcuno resta in piedi. Di solito sono io.",
+        "Riproviamo? I mobili non hanno fretta. La chiusura sì."
+      ],
+      "minigame": {
+        "type": "stanze",
+        "title": "Una stanza per tutti",
+        "intro": [
+          "* Tre stanze: Studio, Laboratorio, Incontri. Sei mobili da sistemare.",
+          "* Tocca un mobile, poi la stanza dove metterlo. Ogni stanza ha un bisogno: non c'è una risposta giusta sola."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "help_on_win_only": true,
+        "win_flags": [
+          "c5_ada_stanze"
+        ]
+      }
+    },
+    "robot_lines": [
+      "IL FUTURO DELL'ISTRUZIONE È EFFICIENTE.",
+      "L'ISTRUZIONE È UN INVESTIMENTO.",
+      "IL TUO POTENZIALE È IL NOSTRO PROFITTO."
+    ],
+    "reveal_flag": "c5_rivelazione",
+    "reveal": [
+      "Hai visto la mappa sulle scale? Crescita positiva.",
+      "Noi stiamo ancora contando le sedie."
+    ]
+  },
+  "nadir": {
+    "name": "Nadir",
+    "sheet": "char_02",
+    "schedule": [
+      {
+        "room": "citta",
+        "cell": [
+          24,
+          15
+        ],
+        "anim": "idle_up"
+      }
+    ],
+    "intro": [
+      "Sta facendo retromarcia."
+    ],
+    "days": [
+      [
+        "Il termos tiene caldo il caffè per sei ore. L'autobus ce ne mette sette."
+      ],
+      [
+        "Senti? Un merlo. Lui arriva sempre in orario."
+      ],
+      [
+        "Lo zaino pesa poco. Dentro c'è soprattutto pazienza."
+      ]
+    ],
+    "helped": [
+      "Ho preso la coincidenza. Ho visto un picchio. Giornata storica."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "help": {
+      "kind": "time",
+      "ask": "Nadir ha una mappa dei trasporti e un turno alle otto. Le due cose non si parlano.",
+      "yes": [
+        "Quindi posso risparmiare quattro euro.",
+        "Perdendo quaranta minuti.",
+        "Questa città è bravissima con gli scambi."
+      ],
+      "lose": [
+        "Così arrivo tardi, o povero. Di solito tutte e due.",
+        "Riproviamo. La mappa non scappa. Gli autobus sì."
+      ],
+      "minigame": {
+        "type": "percorso",
+        "title": "Il percorso possibile",
+        "intro": [
+          "* La mappa dei trasporti. Nadir parte alle 6:40, il lavoro comincia alle 8:00. In tasca ha 6 €.",
+          "* Tocca le tratte una dopo l'altra, da CASA DI NADIR alla ZONA INDUSTRIALE. Guarda costo, tempo e coincidenze."
+        ],
+        "reward": 0,
+        "fixed_reward": true,
+        "help_on_win_only": true,
+        "win_flags": [
+          "c5_nadir_percorso"
+        ]
+      }
+    },
+    "reveal_flag": "c5_rivelazione",
+    "reveal": [
+      "Tempo medio disponibile: in diminuzione. Lo sapevo già. Me lo dice l'orologio ogni mattina."
+    ]
+  },
+  "rina": {
+    "name": "Rina",
+    "sheet": "char_16",
+    "schedule": [
+      {
+        "room": "citta",
+        "cell": [
+          31,
+          11
+        ],
+        "anim": "idle_down"
+      }
+    ],
+    "intro": [
+      "Non toccare quella."
+    ],
+    "days": [
+      [
+        "Apro alle sette. Chiudo quando chiudo. Il vetro lo pulisco due volte: una per i clienti, una per me."
+      ],
+      [
+        "Mio nipote ha studiato alla Casa Comune. Adesso fa l'ingegnere. Ripara ponti. Il mio vetro no."
+      ],
+      [
+        "La bolletta è arrivata. Ha la faccia di chi non se ne va."
+      ]
+    ],
+    "helped": [
+      "Grazie per il cartone. È il cartone più bello della piazza."
+    ],
+    "emote": "dots",
+    "grey": true,
+    "reveal_flag": "c5_rivelazione",
+    "reveal": [
+      "Costo dei beni essenziali: in aumento. Grazie, mappa. Io vendo i beni essenziali. Lo so."
+    ]
   }
 }

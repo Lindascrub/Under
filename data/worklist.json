@@ -195,7 +195,7 @@
     "id": "banco",
     "title": "Banco del mercato",
     "from_day": 2,
-    "room": "mercato",
+    "room": "nessuno",
     "where": "il banco al mercato, in fondo alla strada a destra",
     "station": [
       18,
@@ -258,7 +258,7 @@
     "id": "magazzino",
     "title": "Magazziniere",
     "from_day": 2,
-    "room": "mercato",
+    "room": "nessuno",
     "where": "il magazzino dietro al mercato",
     "station": [
       33,
@@ -387,7 +387,7 @@
     "id": "cassa",
     "title": "Contatore di monete",
     "from_day": 1,
-    "room": "banca",
+    "room": "nessuno",
     "where": "la cassa della banca, al piano -2",
     "station": [
       6,
@@ -426,6 +426,79 @@
         "bills"
       ],
       "tired": "* Hai le dita nere di monete che non erano tue."
+    }
+  },
+  {
+    "id": "cassa_mercato",
+    "title": "Cassiere del Mercato",
+    "from_day": 1,
+    "room": "mercato",
+    "where": "la cassa del Mercato, al piano -3",
+    "station": [
+      4,
+      5
+    ],
+    "game": "cassa",
+    "pay_fixed": true,
+    "station_text": "La cassa del Mercato: un nastro nero, uno scanner che fa BIP, uno schermo che ha sempre ragione.",
+    "battle": {
+      "name": "La Cassa",
+      "pay": 120,
+      "pay_max": 160,
+      "duration": 40,
+      "short_duration": 24,
+      "short_after": 3,
+      "mismatch_from": 2,
+      "intro": "* Il nastro parte. Gli articoli arrivano. Lo schermo sorride.",
+      "tired": "* Hai le dita che fanno BIP anche da sole."
+    }
+  },
+  {
+    "id": "sportello_banca",
+    "title": "Sportello crediti",
+    "from_day": 1,
+    "room": "banca",
+    "where": "lo sportello crediti della Banca, al piano -2",
+    "station": [
+      9,
+      4
+    ],
+    "game": "sportello",
+    "pay_fixed": true,
+    "station_text": "Lo sportello del settore fiducia: un timbro, una pila di pratiche, un orologio che corre.",
+    "battle": {
+      "name": "Lo sportello",
+      "pay": 800,
+      "pay_max": 1000,
+      "duration": 45,
+      "short_duration": 30,
+      "short_after": 2,
+      "intro": "* La prima pratica scivola sul bancone. Dietro, la fila non finisce.",
+      "tired": "* Hai il timbro stampato sul palmo. Al contrario."
+    }
+  },
+  {
+    "id": "comunicazioni_citta",
+    "title": "Centro Comunicazioni",
+    "from_day": 1,
+    "room": "citta",
+    "where": "l'Ufficio Comunicazioni, in piazza",
+    "station": [
+      23,
+      10
+    ],
+    "game": "smistamento",
+    "pay_fixed": true,
+    "station_text": "Il Centro Comunicazioni CHEAP: un centralino, una pila di richieste, tre destinazioni.",
+    "battle": {
+      "name": "Il centralino",
+      "pay": 1600,
+      "pay_max": 2000,
+      "duration": 45,
+      "short_duration": 30,
+      "short_after": 2,
+      "intro": "* Le richieste arrivano a nastro. Ogni busta ha una destinazione. Quasi sempre quella giusta.",
+      "tired": "* Hai le orecchie calde di centralino. Senti squillare anche il silenzio."
     }
   }
 ]

@@ -44,8 +44,9 @@ func setup() -> void:
 # --- lo sguardo indietro: la fine di ogni capitolo -------------------------------
 
 ## In cima alle scale ti volti: la telecamera si allarga su tutta la stanza, compare `line`,
-## poi buio, il titolo del capitolo dopo e il cambio di piano.
-func look_back(p: Player, line: String, chapter: String, title: String, path: String, spawn_name: String, narration: Array) -> void:
+## poi buio, il titolo del capitolo dopo (e il sottotitolo, se c'è) e il cambio di piano.
+func look_back(p: Player, line: String, chapter: String, title: String, path: String, spawn_name: String, narration: Array,
+		subtitle := "", preface: Array = []) -> void:
 	Ui.cutscene = true
 	Ui.show_hud(false)
 	p.set_physics_process(false)
@@ -95,6 +96,25 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	b.tween_property(shade, "color:a", 1.0, 1.0)
 	await b.finished
 	Sound.music("")
+	# qualche riga sul buio prima del titolo (la Città: "PRESIDENZA CHEAP. SEI ARRIVATO.")
+	if not preface.is_empty():
+		var lines: Array[Label] = []
+		for i in preface.size():
+			var pl := big_label(layer, str(preface[i]), Vector2(40, 120 + i * 34), Vector2(560, 30), 18 if i == 0 else 13,
+				Color.WHITE if i == 0 else Color("8a8494"))
+			pl.modulate.a = 0.0
+			lines.append(pl)
+		for pl in lines:
+			var f := create_tween()
+			f.tween_property(pl, "modulate:a", 1.0, 0.9)
+			Sound.sfx("blip", 0.8)
+			await f.finished
+			await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(1.5).timeout
+		var g := create_tween().set_parallel()
+		for pl in lines:
+			g.tween_property(pl, "modulate:a", 0.0, 0.8)
+		await g.finished
 	var small := big_label(layer, chapter, Vector2(0, 138), Vector2(640, 24), 13, Color("8a8494"))
 	var big := big_label(layer, title, Vector2(0, 162), Vector2(640, 40), 26, Color("ffe14d"))
 	small.modulate.a = 0.0
@@ -103,8 +123,13 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	c.tween_property(small, "modulate:a", 1.0, 0.8)
 	c.tween_property(big, "modulate:a", 1.0, 0.8)
 	Sound.sfx("stamp", 0.8)
+	if subtitle != "":
+		var sub := big_label(layer, subtitle, Vector2(60, 210), Vector2(520, 40), 12, Color.WHITE)
+		sub.modulate.a = 0.0
+		c.tween_interval(0.4)
+		c.tween_property(sub, "modulate:a", 1.0, 1.0)
 	await c.finished
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(2.5 if subtitle != "" else 2.0).timeout
 	Ui.cutscene = false
 	Router.goto(path, spawn_name, narration)
 

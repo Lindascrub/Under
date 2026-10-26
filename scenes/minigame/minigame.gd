@@ -6,9 +6,21 @@ extends Node2D
 ##   type "bulbs":    smista le lampadine: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla
 ##                    si aggiusta con SU o GIÙ (Mina)
 ##   type "wires":    collega i fili dello stesso colore, come in Among Us (Nonno Bulbo)
+##   type "inventory": ogni prodotto sul suo scaffale (Leda: SCATOLE E SCAFFALI)
+##   type "route":    sei incroci, tre pacchi, due ore: scegli le strade (Amir: L'ULTIMA CONSEGNA)
+##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
+##                    (Olga: LE RATE MANCANTI; dati in data/bank.json)
+##   type "pratiche": per ogni pratica, quale problema c'è (Teo: LA PRATICA IMPOSSIBILE)
+##   type "stanze":   sei pezzi d'arredo in tre stanze, ognuna col suo bisogno (Ada: UNA STANZA PER TUTTI)
+##   type "percorso": tratta dopo tratta, da casa al lavoro in tempo e nel budget (Nadir: IL PERCORSO
+##                    POSSIBILE). Dati di tutti e due in data/city.json
+## Opzioni: "win_flags"/"partial_flags" (flag da accendere), "item" (regalo se vinci),
+## "help_on_win_only" (conta come aiuto solo se riesce; "help_on_partial": anche a metà).
 ## Se vinci, la persona ti ringrazia e ti dà qualche euro.
 
 const BOX := Rect2(170, 120, 300, 150)
+## I giochi di carta della Banca hanno bisogno di più spazio (fogli da leggere).
+const BIG := Rect2(40, 104, 560, 240)
 const RED := Color("ff2a3c")
 const YELLOW := Color("ffe14d")
 const GREEN := Color("3ddc84")
@@ -56,6 +68,55 @@ var round_n := 0
 var show_len := 0.75
 ## Ogni direzione ha il suo suono, così si capisce anche a orecchio.
 const ARROW_PITCH := {"up": 1.5, "right": 1.25, "down": 0.75, "left": 1.0}
+
+# inventario (Leda)
+const INV_CATS := ["ALIMENTARI", "IGIENE", "SCUOLA", "CASA"]
+const INV_COLS := [Color("e0a040"), Color("5ac8e8"), Color("e86a8a"), Color("8ad06a")]
+const INV_GOODS := [["Pane", 0], ["Sapone", 1], ["Matita", 2], ["Riso", 0], ["Dentifricio", 1], ["Quaderno", 2],
+	["Scopa", 3], ["Biscotti", 0], ["Shampoo", 1], ["Gomma", 2], ["Lampadina", 3], ["Pasta", 0], ["Spugna", 3], ["Righello", 2]]
+var inv_queue: Array = []
+var inv_sel := 0
+var inv_done := 0
+var inv_msg := ""
+# consegne (Amir): incroci, strade [da, a, minuti, rischiosa], pacchi
+const RT_NODES := [Vector2(196, 195), Vector2(262, 146), Vector2(262, 246), Vector2(330, 195), Vector2(430, 146), Vector2(430, 246)]
+const RT_NAMES := ["MAGAZZINO", "", "Scala B", "", "Via dei Fiori", "Piazza"]
+const RT_EDGES := [[0, 1, 30, false], [0, 2, 30, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 50, false],
+	[2, 5, 50, false], [4, 5, 30, false], [0, 3, 10, true], [3, 4, 10, true], [3, 5, 10, true]]
+const RT_PARCELS := [2, 4, 5]
+## Quanto costa un imprevisto in una strada rischiosa (il cantiere), e quanto spesso capita.
+const RT_DETOUR := 40
+const RT_RISK := 0.5
+var rt_at := 0
+var rt_left := 120
+var rt_done: Array = []
+var rt_sel := 0
+var rt_from := Vector2.ZERO
+var rt_to := Vector2.ZERO
+var rt_k := 1.0
+var rt_msg := ""
+var rt_rng := RandomNumberGenerator.new()
+
+# LE RATE MANCANTI (Olga): rate_cards = in che ordine stanno sul tavolo i documenti
+var rate_cards: Array = []
+var rate_placed: Array = []
+var rate_phase := "order"
+var rate_sel := 0
+var rate_msg := ""
+# LA PRATICA IMPOSSIBILE (Teo)
+var pr_i := 0
+var pr_sel := 0
+var pr_msg := ""
+# UNA STANZA PER TUTTI (Ada): st_where[i] = in che stanza sta il pezzo i (-1 = ancora da sistemare)
+var st_where: Array = []
+var st_sel := -1
+var st_focus := 0
+var st_msg := ""
+# IL PERCORSO POSSIBILE (Nadir): le tratte scelte, una dopo l'altra
+var pc_path: Array = []
+var pc_at := 0
+var pc_focus := 0
+var pc_msg := ""
 
 var _title: Label
 var _info: Label
@@ -117,6 +178,47 @@ func _start() -> void:
 			_info.text = "Tocca un filo a sinistra, poi il suo posto a destra" if TouchControls.enabled else "SU/GIÙ scegli il filo, %s per collegarlo" % GameState.fmt("{ok}")
 			time_left = float(cfg.get("time", 30.0))
 			_new_wires()
+		"inventory":
+			time_left = float(cfg.get("time", 35.0))
+			var goods := INV_GOODS.duplicate()
+			goods.shuffle()
+			inv_queue = goods.slice(0, int(cfg.get("count", 8)))
+		"route":
+			rt_left = int(cfg.get("budget", 120))
+			if cfg.has("seed"):
+				rt_rng.seed = int(cfg["seed"])
+			else:
+				rt_rng.randomize()
+			rt_from = RT_NODES[0]
+			rt_to = RT_NODES[0]
+			_info.text = "Tocca un incrocio vicino per andarci" if TouchControls.enabled else "FRECCE scegli la strada, %s per andare" % GameState.fmt("{ok}")
+		"rate":
+			rate_cards = range(_rate_docs().size())
+			var rng := RandomNumberGenerator.new()
+			if cfg.has("seed"):
+				rng.seed = int(cfg["seed"])
+			else:
+				rng.randomize()
+			# mescolati, ma mai già in ordine
+			while rate_cards == range(rate_cards.size()):
+				for i in range(rate_cards.size() - 1, 0, -1):
+					var j := rng.randi_range(0, i)
+					var tmp: int = rate_cards[i]
+					rate_cards[i] = rate_cards[j]
+					rate_cards[j] = tmp
+			rate_msg = "Dal più vecchio al più recente."
+		"pratiche":
+			pr_i = 0
+			pr_msg = ""
+		"stanze":
+			st_where = []
+			for i in _st_pieces().size():
+				st_where.append(-1)
+			st_msg = "Tocca un pezzo, poi la stanza dove metterlo." if TouchControls.enabled else "FRECCE scegli, %s prendi e metti." % GameState.fmt("{ok}")
+		"percorso":
+			pc_path = []
+			pc_at = 0
+			pc_msg = "Tocca le tratte, una dopo l'altra, da casa di Nadir al lavoro." if TouchControls.enabled else "FRECCE scegli la tratta, %s la prendi." % GameState.fmt("{ok}")
 
 
 func _new_bulb() -> void:
@@ -195,6 +297,52 @@ func touch_center() -> Vector2:
 
 
 func touch_point(pos: Vector2, step: int) -> void:
+	if type == "rate" and step == 0:
+		if rate_phase == "order":
+			for k in rate_cards.size():
+				if _rate_card(k).has_point(pos) and int(rate_cards[k]) not in rate_placed:
+					rate_sel = k
+					_rate_pick(k)
+					return
+		else:
+			for i in _rate_rows().size():
+				if _rate_row(i).has_point(pos):
+					rate_sel = i
+					_rate_row_pick(i)
+					return
+		return
+	if type == "stanze" and step == 0:
+		for t in _st_targets():
+			if (t[1] as Rect2).has_point(pos):
+				_st_act(t[0])
+				return
+		return
+	if type == "percorso" and step == 0:
+		for t in _pc_targets():
+			if (t[1] as Rect2).has_point(pos):
+				_pc_act(t[0])
+				return
+		return
+	if type == "pratiche" and step == 0:
+		for k in _pr_types().size():
+			if _pr_button(k).grow(3).has_point(pos):
+				pr_sel = k
+				_pr_answer(k)
+				return
+		return
+	if type == "inventory" and step == 0:
+		for k in INV_CATS.size():
+			if _inv_shelf(k).grow(4).has_point(pos):
+				inv_sel = k
+				_inv_place(k)
+				return
+		return
+	if type == "route" and step == 0:
+		for n in _rt_neighbors(rt_at):
+			if pos.distance_to(RT_NODES[n]) < 26.0:
+				_rt_go(n)
+				return
+		return
 	if type == "collect":
 		finger = pos if step != 2 else Vector2(-1, -1)
 	elif type == "wires" and step == 0:
@@ -210,6 +358,102 @@ func touch_point(pos: Vector2, step: int) -> void:
 		elif wire_pick >= 0:
 			wire_sel = row
 			_wire_connect()
+
+
+# --- SCATOLE E SCAFFALI ---------------------------------------------------------
+
+func _inv_shelf(k: int) -> Rect2:
+	var w := (BOX.size.x - 50) / 4.0
+	return Rect2(BOX.position.x + 10 + k * (w + 10), BOX.end.y - 62, w, 52)
+
+
+func _inv_place(k: int) -> void:
+	if inv_queue.is_empty() or phase != "play":
+		return
+	var g: Array = inv_queue[0]
+	if int(g[1]) == k:
+		inv_queue.pop_front()
+		inv_done += 1
+		inv_msg = ""
+		Sound.sfx("coin", 1.1 + inv_done * 0.04)
+		if inv_queue.is_empty():
+			_finish(true)
+	else:
+		misses += 1
+		flash = 0.3
+		Sound.sfx("deny")
+		inv_msg = "%s in %s? No. (Però una volta Leda ci ha trovato il sapone.)" % [str(g[0]), INV_CATS[k]]
+		if misses >= int(cfg.get("misses", 3)):
+			_finish(false)
+
+
+# --- L'ULTIMA CONSEGNA ---------------------------------------------------------
+
+func _rt_edge(a: int, b: int) -> Array:
+	for e: Array in RT_EDGES:
+		if (int(e[0]) == a and int(e[1]) == b) or (int(e[0]) == b and int(e[1]) == a):
+			return e
+	return []
+
+
+func _rt_neighbors(a: int) -> Array:
+	var out: Array = []
+	for e: Array in RT_EDGES:
+		if int(e[0]) == a:
+			out.append(int(e[1]))
+		elif int(e[1]) == a:
+			out.append(int(e[0]))
+	# in ordine da sinistra a destra (e dall'alto in basso): così le frecce vanno dove ti aspetti
+	out.sort_custom(func(x: int, y: int) -> bool: return RT_NODES[x].x * 1000 + RT_NODES[x].y < RT_NODES[y].x * 1000 + RT_NODES[y].y)
+	return out
+
+
+## Vai all'incrocio `n` (deve essere vicino). La strada rischiosa a volte ha il cantiere.
+func _rt_go(n: int) -> void:
+	if rt_k < 1.0 or phase != "play":
+		return
+	var e := _rt_edge(rt_at, n)
+	if e.is_empty():
+		return
+	var cost := int(e[2])
+	rt_msg = ""
+	if bool(e[3]) and rt_rng.randf() < RT_RISK:
+		cost += RT_DETOUR
+		rt_msg = "Cantiere! Giri intorno: +%d minuti." % RT_DETOUR
+		flash = 0.3
+		Sound.sfx("hurt")
+	else:
+		Sound.sfx("move")
+	rt_from = RT_NODES[rt_at]
+	rt_to = RT_NODES[n]
+	rt_k = 0.0
+	rt_at = n
+	rt_sel = 0
+	if cost > rt_left:
+		rt_left = 0
+		rt_msg = "Tempo scaduto a metà strada."
+		_rt_end()
+		return
+	rt_left -= cost
+	if n in RT_PARCELS and n not in rt_done:
+		rt_done.append(n)
+		Sound.sfx("coin")
+		if rt_done.size() >= RT_PARCELS.size():
+			_rt_end()
+			return
+	# se non c'è più tempo nemmeno per la strada più corta, è finita
+	var shortest := 999
+	for m in _rt_neighbors(rt_at):
+		shortest = mini(shortest, int(_rt_edge(rt_at, m)[2]))
+	if shortest > rt_left:
+		_rt_end()
+
+
+func _rt_end() -> void:
+	var n := rt_done.size()
+	phase = "end"
+	await get_tree().create_timer(0.7).timeout
+	_finish(n >= RT_PARCELS.size(), n > 0 and n < RT_PARCELS.size())
 
 
 func _new_zone() -> void:
@@ -236,6 +480,7 @@ var t_spin := 0.0
 func _process(delta: float) -> void:
 	flash = maxf(0.0, flash - delta)
 	t_spin += delta * 4.0
+	rt_k = minf(1.0, rt_k + delta * 2.0)
 	match phase:
 		"play":
 			if type == "timing":
@@ -250,6 +495,22 @@ func _process(delta: float) -> void:
 					_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/4" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses]
 				else:
 					_info.text = "Tempo: %d   Pannello %d/2   Errori: %d/4" % [int(ceil(time_left)), wire_round + 1, misses]
+				if time_left <= 0.0:
+					_finish(false)
+			elif type == "rate":
+				if rate_phase == "order":
+					_info.text = "Documenti in ordine: %d/%d   Errori: %d/3" % [rate_placed.size(), rate_cards.size(), misses]
+				else:
+					_info.text = "Trova la voce doppia   Errori: %d/3" % misses
+			elif type == "pratiche":
+				_info.text = "Pratica %d/%d   Errori: %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
+			elif type == "stanze":
+				_info.text = "Pezzi sistemati: %d/%d   Errori: %d/3" % [st_where.size() - st_where.count(-1), st_where.size(), misses]
+			elif type == "percorso":
+				_info.text = "Spesa: %d €   Arrivo: %s   Errori: %d/3" % [_pc_cost(), _clock(_pc_arrival()), misses]
+			elif type == "inventory":
+				time_left -= delta
+				_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done + inv_queue.size(), misses, int(cfg.get("misses", 3))]
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "collect":
@@ -300,6 +561,76 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
+		return
+	# sul PC i giochi "a dito" si fanno anche col mouse
+	if type in ["inventory", "route", "rate", "pratiche", "stanze", "percorso"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
+			and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
+		touch_point((event as InputEventMouseButton).position, 0)
+		return
+	if type == "inventory":
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
+			inv_sel = posmod(inv_sel + (-1 if event.is_action_pressed("move_left") else 1), INV_CATS.size())
+			Sound.sfx("move")
+		elif event.is_action_pressed("confirm"):
+			_inv_place(inv_sel)
+		return
+	if type == "rate":
+		var n := rate_cards.size() if rate_phase == "order" else _rate_rows().size()
+		var step := 0
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up"):
+			step = -1
+		elif event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
+			step = 1
+		if step != 0:
+			for i in n:
+				rate_sel = posmod(rate_sel + step, n)
+				if rate_phase != "order" or int(rate_cards[rate_sel]) not in rate_placed:
+					break
+			Sound.sfx("move")
+		elif event.is_action_pressed("confirm"):
+			if rate_phase == "order":
+				_rate_pick(rate_sel)
+			else:
+				_rate_row_pick(rate_sel)
+		return
+	if type == "stanze" or type == "percorso":
+		var targets := _st_targets() if type == "stanze" else _pc_targets()
+		var d := 0
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up"):
+			d = -1
+		elif event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
+			d = 1
+		if d != 0:
+			if type == "stanze":
+				st_focus = posmod(st_focus + d, targets.size())
+			else:
+				pc_focus = posmod(pc_focus + d, targets.size())
+			Sound.sfx("move")
+		elif event.is_action_pressed("confirm") and not targets.is_empty():
+			var f := st_focus if type == "stanze" else pc_focus
+			var t: Array = targets[clampi(f, 0, targets.size() - 1)]
+			if type == "stanze":
+				_st_act(t[0])
+			else:
+				_pc_act(t[0])
+		return
+	if type == "pratiche":
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
+			pr_sel = posmod(pr_sel + (-1 if event.is_action_pressed("move_left") else 1), _pr_types().size())
+			Sound.sfx("move")
+		elif event.is_action_pressed("confirm"):
+			_pr_answer(pr_sel)
+		return
+	if type == "route":
+		var nb := _rt_neighbors(rt_at)
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up"):
+			rt_sel = posmod(rt_sel - 1, nb.size())
+			Sound.sfx("move")
+		elif event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
+			rt_sel = posmod(rt_sel + 1, nb.size())
+			Sound.sfx("move")
+		elif event.is_action_pressed("confirm"):
+			_rt_go(int(nb[clampi(rt_sel, 0, nb.size() - 1)]))
 		return
 	var tapped := event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed
 	if type == "timing" and (event.is_action_pressed("confirm") or tapped):
@@ -376,12 +707,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 
 
-func _finish(success: bool) -> void:
-	phase = "end"
+func _finish(success: bool, partial := false) -> void:
+	if phase == "done":
+		return
+	phase = "done"
 	won = success
 	var who := str(cfg.get("name", ""))
 	var id := str(cfg.get("id", ""))
-	GameState.help(id, "time", GameState.COST_HELP_TIME)
+	# di solito dare una mano conta anche se va male; per Leda e Amir conta solo se riesce (o a metà)
+	if success or not cfg.get("help_on_win_only", false) or (partial and cfg.get("help_on_partial", false)):
+		GameState.help(id, "time", GameState.COST_HELP_TIME)
+	else:
+		GameState.spend(GameState.COST_HELP_TIME)
+	for f in cfg.get("win_flags" if success else ("partial_flags" if partial else "no_flags"), []):
+		GameState.flags[str(f)] = true
 	if cfg.has("quest"):
 		# Il giorno dopo chi te l'ha chiesto ti dirà com'è andata.
 		GameState.flags["quest_news_" + str(cfg["quest"])] = "done" if success else "fail"
@@ -395,18 +734,36 @@ func _finish(success: bool) -> void:
 		if reward > 0:
 			lines.append("Tieni, non è molto, ma te li sei guadagnati.")
 			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
+		if cfg.has("item"):
+			GameState.give_item(str(cfg["item"]))
+			lines.append("* (Hai ricevuto: %s.)" % str(cfg["item"]))
+	elif partial:
+		Sound.sfx("select")
+		lines.append_array(cfg.get("partial", ["È andata a metà. Meglio di niente."]))
 	else:
 		lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
 		lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
+	# quello che il minigioco ha deciso (com'è diventata la Casa, che strada fa Nadir) viene prima
+	if success and cfg.has("_extra"):
+		lines = (cfg["_extra"] as Array) + lines
 	await Ui.say(lines, who)
 	Router.goto(str(cfg.get("return", Router.STREET)), "_mg")
 
 
 func _draw() -> void:
 	var font := Assets.font()
-	draw_rect(BOX, Color.BLACK)
-	draw_rect(BOX, Color.WHITE, false, 3.0)
+	var frame := BIG if type in ["rate", "pratiche", "stanze", "percorso"] else BOX
+	draw_rect(frame, Color.BLACK)
+	draw_rect(frame, Color.WHITE, false, 3.0)
 	match type:
+		"rate":
+			_draw_rate(font)
+		"pratiche":
+			_draw_pratiche(font)
+		"stanze":
+			_draw_stanze(font)
+		"percorso":
+			_draw_percorso(font)
 		"timing":
 			var bar := Rect2(BOX.position.x + 20, BOX.get_center().y - 10, BOX.size.x - 40, 20)
 			draw_rect(bar, Color("2a2633"))
@@ -433,6 +790,10 @@ func _draw() -> void:
 			_draw_bulbs(font)
 		"wires":
 			_draw_wires(font)
+		"inventory":
+			_draw_inventory(font)
+		"route":
+			_draw_route(font)
 		"sequence":
 			var cx := BOX.get_center()
 			# la freccia resta accesa per due terzi del tempo, poi si spegne: così si vede quando cambia
@@ -480,6 +841,531 @@ func _draw_bulbs(font: Font) -> void:
 		draw_line(c + Vector2(4, 2), c + Vector2(-2, 12), Color("221c28"), 2.0)
 	if bulb == "fioca":
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/2)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/2)") % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, YELLOW)
+
+
+# --- LE RATE MANCANTI (Olga) ------------------------------------------------------
+
+func _rate_docs() -> Array:
+	return GameState.bank.get("olga", {}).get("documenti", [])
+
+
+func _rate_statement() -> Dictionary:
+	return GameState.bank.get("olga", {}).get("estratto", {})
+
+
+func _rate_rows() -> Array:
+	return _rate_statement().get("righe", [])
+
+
+## Le carte sul tavolo: tre per riga, due righe.
+func _rate_card(k: int) -> Rect2:
+	return Rect2(BIG.position.x + 10 + (k % 3) * 184, BIG.position.y + 8 + (k / 3) * 68, 172, 62)
+
+
+## Lo spazio della linea del tempo (sotto le carte), dove finiscono quelle già in ordine.
+func _rate_slot(i: int) -> Rect2:
+	return Rect2(BIG.position.x + 10 + i * 91, BIG.position.y + 146, 85, 44)
+
+
+func _rate_row(i: int) -> Rect2:
+	return Rect2(BIG.position.x + 20, BIG.position.y + 58 + i * 26, BIG.size.x - 40, 22)
+
+
+func _rate_pick(k: int) -> void:
+	if phase != "play" or rate_phase != "order" or k < 0 or k >= rate_cards.size():
+		return
+	var doc := int(rate_cards[k])
+	if doc in rate_placed:
+		return
+	if doc == rate_placed.size():
+		rate_placed.append(doc)
+		rate_msg = ""
+		Sound.sfx("stamp" if rate_placed.size() == rate_cards.size() else "select", 1.0 + rate_placed.size() * 0.05)
+		if rate_placed.size() == rate_cards.size():
+			rate_phase = "find"
+			rate_sel = 0
+			rate_msg = "In ordine. Ora l'estratto conto: tocca la voce che c'è due volte."
+		else:
+			for i in rate_cards.size():
+				if int(rate_cards[i]) not in rate_placed:
+					rate_sel = i
+					break
+	else:
+		_rate_miss("Questo viene dopo. Guarda le date.")
+
+
+func _rate_row_pick(i: int) -> void:
+	if phase != "play" or rate_phase != "find":
+		return
+	if i in _rate_statement().get("doppie", []):
+		Sound.sfx("stamp")
+		_finish(true)
+	else:
+		_rate_miss("Questa voce c'è una volta sola. Una per ogni cosa, dice il contratto.")
+
+
+func _rate_miss(msg: String) -> void:
+	misses += 1
+	flash = 0.3
+	rate_msg = msg
+	Sound.sfx("deny")
+	if misses >= 3:
+		_finish(false)
+
+
+## 1485 -> "1.485,00 €"; -35 -> "−35,00 €".
+static func _eur(v: int) -> String:
+	var s := GameState.euros(absi(v)).trim_suffix(" €")
+	return ("−" if v < 0 else ("+" if v > 0 else "")) + s + ",00 €"
+
+
+func _draw_rate(font: Font) -> void:
+	draw_rect(BIG.grow(-4), Color("2b2430"))
+	var docs := _rate_docs()
+	if rate_phase == "order":
+		for k in rate_cards.size():
+			var doc := int(rate_cards[k])
+			var r := _rate_card(k)
+			if doc in rate_placed:
+				draw_rect(r, Color("3a3340"))
+				continue
+			var d: Dictionary = docs[doc]
+			draw_rect(r, PracticeCard.PAPER)
+			var sel := k == rate_sel and not TouchControls.enabled
+			draw_rect(r, YELLOW if sel else Color.WHITE, false, 3.0 if sel else 2.0)
+			draw_string(font, r.position + Vector2(8, 17), str(d["titolo"]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 16, 10, PracticeCard.INK)
+			draw_string(font, r.position + Vector2(8, 31), str(d["data"]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 16, 10, Color("c0302a"))
+			# il dettaglio va a capo (due righe): "una per ogni ritardo" deve leggersi tutto
+			draw_multiline_string(font, r.position + Vector2(8, 44), str(d["testo"]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 16, 7, 2, PracticeCard.FAINT)
+		for i in rate_cards.size():
+			var s := _rate_slot(i)
+			draw_rect(s, Color("1a161e"))
+			draw_rect(s, Color("5c5666"), false, 1.0)
+			draw_string(font, s.position + Vector2(4, 12), "%d" % (i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("8a8494"))
+			if i < rate_placed.size():
+				var d: Dictionary = docs[int(rate_placed[i])]
+				draw_string(font, s.position + Vector2(4, 27), str(d["titolo"]), HORIZONTAL_ALIGNMENT_LEFT, s.size.x - 8, 8, Color.WHITE)
+				draw_string(font, s.position + Vector2(4, 39), str(d["data"]), HORIZONTAL_ALIGNMENT_LEFT, s.size.x - 8, 8, YELLOW)
+	else:
+		var st := _rate_statement()
+		var paper := Rect2(BIG.position.x + 10, BIG.position.y + 8, BIG.size.x - 20, 200)
+		draw_rect(paper, PracticeCard.PAPER)
+		draw_string(font, paper.position + Vector2(0, 20), str(st.get("titolo", "")), HORIZONTAL_ALIGNMENT_CENTER, paper.size.x, 12, PracticeCard.INK)
+		draw_string(font, paper.position + Vector2(12, 40), "Saldo al 01/06", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, PracticeCard.FAINT)
+		draw_string(font, paper.position + Vector2(0, 40), _eur(int(st.get("saldo_iniziale", 0))).trim_prefix("+"), HORIZONTAL_ALIGNMENT_RIGHT, paper.size.x - 12, 10, PracticeCard.FAINT)
+		var rows := _rate_rows()
+		for i in rows.size():
+			var row: Array = rows[i]
+			var r := _rate_row(i)
+			var sel := i == rate_sel and not TouchControls.enabled
+			draw_rect(r, Color("e8e2d0") if i % 2 == 0 else PracticeCard.PAPER)
+			if sel:
+				draw_rect(r, Color("c08a00"), false, 2.0)
+			draw_string(font, r.position + Vector2(8, 15), str(row[0]), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, PracticeCard.INK)
+			draw_string(font, r.position + Vector2(64, 15), str(row[1]), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, PracticeCard.INK)
+			draw_string(font, r.position + Vector2(0, 15), _eur(int(row[2])), HORIZONTAL_ALIGNMENT_RIGHT, r.size.x - 8, 10, Color("c0302a") if int(row[2]) < 0 else Color("2a8a4a"))
+		var fy := _rate_row(rows.size()).position.y + 16
+		draw_string(font, Vector2(paper.position.x + 12, fy), "Saldo al 30/06", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, PracticeCard.INK)
+		draw_string(font, Vector2(paper.position.x, fy), _eur(int(st.get("saldo_finale", 0))).trim_prefix("+"), HORIZONTAL_ALIGNMENT_RIGHT, paper.size.x - 12, 11, PracticeCard.INK)
+	if rate_msg != "":
+		draw_string(font, Vector2(BIG.position.x, BIG.end.y - 14), rate_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 10, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+
+
+# --- LA PRATICA IMPOSSIBILE (Teo) ------------------------------------------------------
+
+# --- UNA STANZA PER TUTTI (Ada) ----------------------------------------------------------
+
+func _st_rooms() -> Array:
+	return GameState.city.get("stanze", {}).get("stanze", [])
+
+
+func _st_pieces() -> Array:
+	return GameState.city.get("stanze", {}).get("pezzi", [])
+
+
+func _st_room(r: int) -> Rect2:
+	return Rect2(BIG.position.x + 10 + r * 184, BIG.position.y + 8, 172, 118)
+
+
+## Il posto del pezzo i: nel vassoio in basso, o dentro la sua stanza (uno sotto l'altro).
+func _st_piece(i: int) -> Rect2:
+	var r := int(st_where[i])
+	if r < 0:
+		return Rect2(BIG.position.x + 10 + i * 78, BIG.position.y + 140, 72, 40)
+	var k := 0
+	for j in i:
+		if int(st_where[j]) == r:
+			k += 1
+	var room := _st_room(r)
+	return Rect2(room.position.x + 8, room.position.y + 46 + k * 23, room.size.x - 16, 20)
+
+
+func _st_done_button() -> Rect2:
+	return Rect2(BIG.end.x - 130, BIG.end.y - 46, 120, 36)
+
+
+## Cosa si può toccare, in ordine (anche per le frecce): i pezzi, le stanze, FATTO.
+func _st_targets() -> Array:
+	var out: Array = []
+	for i in st_where.size():
+		out.append(["p%d" % i, _st_piece(i)])
+	for r in _st_rooms().size():
+		out.append(["r%d" % r, _st_room(r)])
+	out.append(["done", _st_done_button()])
+	return out
+
+
+func _st_act(what: String) -> void:
+	if phase != "play":
+		return
+	if what == "done":
+		_st_check()
+	elif what.begins_with("p"):
+		var i := int(what.substr(1))
+		if int(st_where[i]) >= 0:
+			# un pezzo già in una stanza torna nel vassoio
+			st_where[i] = -1
+			st_sel = i
+		else:
+			st_sel = -1 if st_sel == i else i
+		Sound.sfx("select")
+	elif what.begins_with("r") and st_sel >= 0:
+		var r := int(what.substr(1))
+		var room: Dictionary = _st_rooms()[r]
+		if st_where.count(r) >= int(room.get("max", 3)):
+			st_msg = "Nella stanza %s non c'è più posto." % str(room["nome"]).to_lower()
+			Sound.sfx("deny")
+			return
+		st_where[st_sel] = r
+		st_sel = -1
+		st_msg = ""
+		Sound.sfx("clunk", 1.2)
+
+
+## Va bene ogni distribuzione in cui tutte le stanze si possono usare. Nessuna è "quella giusta".
+func _st_check() -> void:
+	if st_where.has(-1):
+		st_msg = "Restano dei pezzi da sistemare."
+		Sound.sfx("deny")
+		return
+	var pieces := _st_pieces()
+	for r in _st_rooms().size():
+		var room: Dictionary = _st_rooms()[r]
+		var ok := false
+		for i in pieces.size():
+			ok = ok or (int(st_where[i]) == r and pieces[i]["tipo"] == room["serve"])
+		if not ok:
+			misses += 1
+			flash = 0.3
+			st_msg = str(room["desc"])
+			Sound.sfx("deny")
+			if misses >= 3:
+				_finish(false)
+			return
+	# com'è diventata la Casa: una riga per ogni pezzo in più
+	var fx: Dictionary = GameState.city.get("stanze", {}).get("effetti", {})
+	var extra: Array = []
+	var counts := [0, 0, 0]
+	for r in _st_rooms().size():
+		var room: Dictionary = _st_rooms()[r]
+		var used_need := false
+		for i in pieces.size():
+			if int(st_where[i]) != r:
+				continue
+			counts[r] += 1
+			if pieces[i]["tipo"] == room["serve"] and not used_need:
+				used_need = true
+				continue
+			extra.append("* " + str(fx.get(room["id"], {}).get(pieces[i]["tipo"], "")))
+	GameState.flags["c5_stanze"] = counts
+	cfg["_extra"] = extra
+	Sound.sfx("stamp")
+	_finish(true)
+
+
+func _draw_stanze(font: Font) -> void:
+	draw_rect(BIG.grow(-4), Color("26302a"))
+	var pieces := _st_pieces()
+	# durante l'introduzione i pezzi non sono ancora sul vassoio
+	if st_where.size() != pieces.size():
+		return
+	var targets := _st_targets()
+	var focus := "" if TouchControls.enabled or targets.is_empty() else str(targets[clampi(st_focus, 0, targets.size() - 1)][0])
+	for r in _st_rooms().size():
+		var room: Dictionary = _st_rooms()[r]
+		var rr := _st_room(r)
+		draw_rect(rr, Color("3a4a3e"))
+		draw_rect(rr, YELLOW if focus == "r%d" % r else Color("8fae96"), false, 2.0)
+		draw_string(font, rr.position + Vector2(0, 16), str(room["nome"]), HORIZONTAL_ALIGNMENT_CENTER, rr.size.x, 11, Color.WHITE)
+		draw_string(font, rr.position + Vector2(0, 32), "serve: %s   (%d/%d)" % [str(room["serve"]), st_where.count(r), int(room.get("max", 3))],
+			HORIZONTAL_ALIGNMENT_CENTER, rr.size.x, 8, Color("c6e1d1"))
+	for i in pieces.size():
+		var pr := _st_piece(i)
+		var col := Color("e8dcc0") if i != st_sel else YELLOW
+		draw_rect(pr, col)
+		draw_rect(pr, YELLOW if focus == "p%d" % i else Color("5a4a36"), false, 2.0)
+		var p: Dictionary = pieces[i]
+		if int(st_where[i]) < 0:
+			draw_string(font, pr.position + Vector2(0, 17), str(p["nome"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 9, Color("2a2018"))
+			draw_string(font, pr.position + Vector2(0, 31), str(p["tipo"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 8, Color("7a6a56"))
+		else:
+			draw_string(font, pr.position + Vector2(6, 14), "%s (%s)" % [str(p["nome"]), str(p["tipo"])], HORIZONTAL_ALIGNMENT_LEFT, pr.size.x - 12, 8, Color("2a2018"))
+	var b := _st_done_button()
+	PracticeCard.button(self, b, "FATTO", Color("2a8a4a"), font, focus == "done")
+	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 24), st_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 160, 9,
+		Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+
+
+# --- IL PERCORSO POSSIBILE (Nadir) -------------------------------------------------------
+
+func _pc_data() -> Dictionary:
+	return GameState.city.get("percorso", {})
+
+
+func _pc_stop(i: int) -> Vector2:
+	var p: Array = _pc_data()["fermate"][i]["pos"]
+	return BIG.position + Vector2(float(p[0]), float(p[1]))
+
+
+## Il cartellino di una tratta, a metà strada (la navetta, sulla stessa linea del treno, è spostata).
+func _pc_label(e: int) -> Rect2:
+	var t: Dictionary = _pc_data()["tratte"][e]
+	var a := _pc_stop(int(t["da"]))
+	var b := _pc_stop(int(t["a"]))
+	var mid := (a + b) / 2.0
+	if int(t.get("curva", 0)) != 0:
+		mid += (b - a).orthogonal().normalized() * -36.0
+	var w := 80.0 if absf(a.x - b.x) < 1.0 else 104.0
+	return Rect2(mid - Vector2(w / 2.0, 15), Vector2(w, 30))
+
+
+func _pc_reset_button() -> Rect2:
+	return Rect2(BIG.end.x - 120, BIG.end.y - 40, 110, 30)
+
+
+func _pc_targets() -> Array:
+	var out: Array = []
+	for e in (_pc_data()["tratte"] as Array).size():
+		out.append(["e%d" % e, _pc_label(e)])
+	out.append(["reset", _pc_reset_button()])
+	return out
+
+
+func _pc_cost() -> int:
+	var c := 0
+	for e in pc_path:
+		c += int(_pc_data()["tratte"][e]["euro"])
+	return c
+
+
+func _pc_arrival() -> int:
+	var t := int(_pc_data().get("partenza", 400))
+	for e in pc_path:
+		t += int(_pc_data()["tratte"][e]["min"])
+	return t
+
+
+static func _clock(minutes: int) -> String:
+	return "%d:%02d" % [minutes / 60, minutes % 60]
+
+
+func _pc_visited() -> Array:
+	var v: Array = [0]
+	for e in pc_path:
+		var t: Dictionary = _pc_data()["tratte"][e]
+		v.append(int(t["a"]) if int(t["da"]) in v else int(t["da"]))
+	return v
+
+
+func _pc_act(what: String) -> void:
+	if phase != "play":
+		return
+	if what == "reset":
+		pc_path = []
+		pc_at = 0
+		pc_msg = "Si riparte da casa di Nadir."
+		Sound.sfx("select")
+		return
+	var e := int(what.substr(1))
+	var t: Dictionary = _pc_data()["tratte"][e]
+	var other := -1
+	if int(t["da"]) == pc_at:
+		other = int(t["a"])
+	elif int(t["a"]) == pc_at:
+		other = int(t["da"])
+	if other < 0 or other in _pc_visited():
+		pc_msg = "Da %s questa tratta non parte." % str(_pc_data()["fermate"][pc_at]["nome"]).to_lower()
+		Sound.sfx("deny")
+		return
+	pc_path.append(e)
+	pc_at = other
+	Sound.sfx("blip", 1.2)
+	pc_msg = ""
+	if pc_at == (_pc_data()["fermate"] as Array).size() - 1:
+		_pc_check()
+
+
+func _pc_check() -> void:
+	var d := _pc_data()
+	var late := _pc_arrival() > int(d.get("entrata", 480))
+	var over := _pc_cost() > int(d.get("budget", 6))
+	if late or over:
+		misses += 1
+		flash = 0.3
+		Sound.sfx("deny")
+		if late:
+			pc_msg = "Arriveresti alle %s. Si entra alle %s." % [_clock(_pc_arrival()), _clock(int(d.get("entrata", 480)))]
+		else:
+			pc_msg = "%d € al giorno. Nadir ne ha %d." % [_pc_cost(), int(d.get("budget", 6))]
+		pc_path = []
+		pc_at = 0
+		if misses >= 3:
+			_finish(false)
+		return
+	GameState.flags["c5_nadir_tratta"] = pc_path.duplicate()
+	cfg["_extra"] = ["* Partenza %s, arrivo %s, %d € al giorno." % [_clock(int(d.get("partenza", 400))), _clock(_pc_arrival()), _pc_cost()]]
+	Sound.sfx("stamp")
+	_finish(true)
+
+
+func _draw_percorso(font: Font) -> void:
+	draw_rect(BIG.grow(-4), Color("1e2a33"))
+	var d := _pc_data()
+	draw_string(font, BIG.position + Vector2(14, 20), "Partenza %s · Si entra alle %s · %d € al giorno" % [_clock(int(d.get("partenza", 400))),
+		_clock(int(d.get("entrata", 480))), int(d.get("budget", 6))], HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("c6d8e4"))
+	var tratte: Array = d["tratte"]
+	var targets := _pc_targets()
+	var focus := "" if TouchControls.enabled or targets.is_empty() else str(targets[clampi(pc_focus, 0, targets.size() - 1)][0])
+	for e in tratte.size():
+		var t: Dictionary = tratte[e]
+		var a := _pc_stop(int(t["da"]))
+		var b := _pc_stop(int(t["a"]))
+		var lab := _pc_label(e)
+		var on := e in pc_path
+		var col := YELLOW if on else Color("5f7a8c")
+		if int(t.get("curva", 0)) != 0:
+			draw_polyline(PackedVector2Array([a, lab.get_center(), b]), col, 3.0 if on else 2.0)
+		else:
+			draw_line(a, b, col, 3.0 if on else 2.0)
+	for e in tratte.size():
+		var t: Dictionary = tratte[e]
+		var lab := _pc_label(e)
+		draw_rect(lab, Color("f2ead8") if e not in pc_path else YELLOW)
+		draw_rect(lab, YELLOW if focus == "e%d" % e else Color("2a3a46"), false, 2.0)
+		draw_string(font, lab.position + Vector2(0, 12), str(t["nome"]).split(" (")[0], HORIZONTAL_ALIGNMENT_CENTER, lab.size.x, 8, Color("1e2a33"))
+		draw_string(font, lab.position + Vector2(0, 25), "%d € · %d min" % [int(t["euro"]), int(t["min"])], HORIZONTAL_ALIGNMENT_CENTER, lab.size.x, 8, Color("8a3a2a"))
+	var stops: Array = d["fermate"]
+	for i in stops.size():
+		var p := _pc_stop(i)
+		draw_circle(p, 8.0, YELLOW if i == pc_at else (Color.WHITE if i in _pc_visited() else Color("8aa0b0")))
+		var below := p.y > BIG.get_center().y
+		draw_string(font, p + Vector2(-60, 22 if below else -13), str(stops[i]["nome"]), HORIZONTAL_ALIGNMENT_CENTER, 120, 8, Color.WHITE)
+	PracticeCard.button(self, _pc_reset_button(), "RICOMINCIA", Color("4a5a6a"), font, focus == "reset", 11)
+	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 20), pc_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 150, 9,
+		Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+
+
+func _pr_list() -> Array:
+	return GameState.bank.get("teo", {}).get("pratiche", [])
+
+
+func _pr_types() -> Array:
+	return GameState.bank.get("teo", {}).get("tipi", [])
+
+
+func _pr_button(k: int) -> Rect2:
+	var n := maxi(1, _pr_types().size())
+	var w := (BIG.size.x - 20 - (n - 1) * 8) / float(n)
+	return Rect2(BIG.position.x + 10 + k * (w + 8), BIG.end.y - 52, w, 44)
+
+
+func _pr_answer(k: int) -> void:
+	if phase != "play" or pr_i >= _pr_list().size():
+		return
+	var p: Dictionary = _pr_list()[pr_i]
+	if k == int(p.get("tipo", 0)):
+		pr_i += 1
+		pr_msg = "Pratica %s: controllata." % str(p.get("id", ""))
+		Sound.sfx("stamp", 1.0 + pr_i * 0.05)
+		if pr_i >= _pr_list().size():
+			_finish(true)
+	else:
+		misses += 1
+		flash = 0.3
+		pr_msg = "Teo: \"Mmm. Rileggiamola. Riga per riga.\""
+		Sound.sfx("deny")
+		if misses >= int(cfg.get("misses", 2)):
+			_finish(false)
+
+
+func _draw_pratiche(font: Font) -> void:
+	draw_rect(BIG.grow(-4), Color("1e2430"))
+	if pr_i < _pr_list().size():
+		PracticeCard.draw(self, Rect2(BIG.position.x + 110, BIG.position.y + 10, 340, 116), _pr_list()[pr_i], font)
+	if pr_msg != "":
+		draw_string(font, Vector2(BIG.position.x, BIG.position.y + 150), pr_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 10, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+	var labels := ["TUTTO IN\nORDINE", "MANCA UN\nDOCUMENTO", "DATI\nDIVERSI", "DOPPIONE", "ERRORE DI\nREGISTRAZIONE"]
+	for k in _pr_types().size():
+		var text: String = labels[k] if k < labels.size() else str(_pr_types()[k])
+		PracticeCard.button(self, _pr_button(k), text, Color("2a8a4a") if k == 0 else Color("3a4a6a"), font, k == pr_sel and not TouchControls.enabled, 9)
+
+
+func _draw_inventory(font: Font) -> void:
+	draw_rect(BOX.grow(-4), Color("3a2a1e"))
+	if not inv_queue.is_empty():
+		var g: Array = inv_queue[0]
+		var card := Rect2(BOX.get_center().x - 70, BOX.position.y + 14, 140, 36)
+		draw_rect(card, Color("f4f1e6"))
+		draw_rect(card, Color.WHITE, false, 2.0)
+		draw_string(font, card.position + Vector2(0, 24), str(g[0]).to_upper(), HORIZONTAL_ALIGNMENT_CENTER, card.size.x, 16, Color("2a2633"))
+		if inv_queue.size() > 1:
+			draw_string(font, Vector2(card.end.x + 8, card.position.y + 22), "+%d" % (inv_queue.size() - 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("8a8494"))
+	if inv_msg != "":
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 66), inv_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 9, Color("ffb0b0"))
+	for k in INV_CATS.size():
+		var r := _inv_shelf(k)
+		var col: Color = INV_COLS[k]
+		draw_rect(r, col.darkened(0.55))
+		draw_rect(Rect2(r.position + Vector2(0, r.size.y - 10), Vector2(r.size.x, 10)), col.darkened(0.3))
+		var sel := k == inv_sel and not TouchControls.enabled
+		draw_rect(r, YELLOW if sel else col, false, 3.0 if sel else 2.0)
+		draw_string(font, r.position + Vector2(0, 24), INV_CATS[k], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 9, Color.WHITE)
+
+
+func _draw_route(font: Font) -> void:
+	draw_rect(BOX.grow(-4), Color("1e2430"))
+	var nb := _rt_neighbors(rt_at)
+	for e: Array in RT_EDGES:
+		var a: Vector2 = RT_NODES[int(e[0])]
+		var b: Vector2 = RT_NODES[int(e[1])]
+		var risky := bool(e[3])
+		if risky:
+			# a tratti, rossa: il cantiere
+			var steps := int(a.distance_to(b) / 8.0)
+			for i in steps:
+				if i % 2 == 0:
+					draw_line(a.lerp(b, float(i) / steps), a.lerp(b, float(i + 1) / steps), Color("ff6a5a"), 3.0)
+		else:
+			draw_line(a, b, Color("8a8494"), 4.0)
+		var mid := a.lerp(b, 0.5)
+		draw_string(font, mid + Vector2(-14, -3), ("%d'?" if risky else "%d'") % int(e[2]), HORIZONTAL_ALIGNMENT_CENTER, 28, 9, Color("ff9a8a") if risky else Color("c8c0d0"))
+	for i in RT_NODES.size():
+		var p: Vector2 = RT_NODES[i]
+		var col := Color("4a4a5a")
+		if i in RT_PARCELS:
+			col = GREEN if i in rt_done else YELLOW
+		draw_circle(p, 9, col)
+		if i in nb and rt_k >= 1.0 and phase == "play":
+			var sel := nb.find(i) == rt_sel and not TouchControls.enabled
+			draw_arc(p, 13, 0, TAU, 20, Color.WHITE if sel else Color(1, 1, 1, 0.45), 3.0 if sel else 1.5)
+		if RT_NAMES[i] != "":
+			# il magazzino ha la scritta sopra, se no copre i minuti della strada
+			draw_string(font, p + Vector2(-40, -14 if i == 0 else 22), RT_NAMES[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 8, Color("c8c0d0"))
+	_heart(rt_from.lerp(rt_to, rt_k), RED)
+	draw_string(font, Vector2(BOX.position.x + 10, BOX.position.y + 18), "TEMPO RIMASTO: %02d:%02d" % [rt_left / 60, rt_left % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, YELLOW)
+	draw_string(font, Vector2(BOX.end.x - 110, BOX.position.y + 18), "PACCHI: %d/3" % rt_done.size(), HORIZONTAL_ALIGNMENT_RIGHT, 100, 11, Color.WHITE)
+	if rt_msg != "":
+		draw_string(font, Vector2(BOX.position.x, BOX.end.y - 8), rt_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 9, Color("ff9a8a"))
 
 
 func _draw_wires(font: Font) -> void:

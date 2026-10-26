@@ -28,9 +28,9 @@ All'inizio sei nell'ascensore della Torre e scendi. Al piano -5 l'ascensore si r
 |---|---|---|---|---|---|
 | 1 | -5 | Il Fondo | La festa finta | 500 € (per il -4) | **Rifatto** (`chapters/c1/`) |
 | 2 | -4 | Il Sottoufficio | La burocrazia infinita | 1.000 € (per il -3) | **Rifatto** (`chapters/c2/`) |
-| 3 | -3 | Il Mercato | Caro vita, salari e prezzi | 2.000 € (per il -2) | Da rifare (prossimo) |
-| 4 | -2 | La Banca | Debito e dipendenza | 4.000 € (per il piano terra) | Da rifare |
-| 5 | 0 | Ufficio e Città | Le conseguenze fuori dalla Torre | 8.000 € (per la Cima) | Da rifare |
+| 3 | -3 | Il Mercato | Caro vita, salari e prezzi | 2.000 € (per il -2) | **Rifatto** (`chapters/c3/`) |
+| 4 | -2 | La Banca | Debito e dipendenza | 4.000 € (per il piano terra) | **Rifatto** (`chapters/c4/`), [documento](CHAPTER_04_BANK.md) |
+| 5 | 0 | La Città | Le conseguenze fuori dalla Torre | 8.000 € (per la Cima) | **Rifatto** (`chapters/c5/`), [documento](CHAPTER_05_CITY.md) |
 | 6 | Cima | Direzione e Presidenza | Potere, responsabilità, libertà | — (finale) | Da rifare |
 
 I soldi del badge vanno tutti a scalare dal **debito nominale**. Ogni notte gli interessi lo fanno risalire.
@@ -87,8 +87,15 @@ Il gioco è pensato per telefono in orizzontale.
 | Interessi | 2% a notte (+0,5% per ogni contratto col Signor Rata) |
 | Badge | 500 / 1.000 / 2.000 / 4.000 / 8.000 € (raddoppia a ogni piano) |
 | Paga del turno | paga del lavoro (200-320 €) × (1 + 0,1 × piano) × quanto bene hai lavorato (minimo 40 €) |
+| Paga della cassa al -3 | 120 € fissi (fino a 160 € se vai più veloce dell'obiettivo), in `data/worklist.json` |
+| Prezzi del Mercato | pane 18 → 25, latte 24 → 32, acqua 10 → 15, in `data/market.json` |
+| Premio del capo al -3 | 1.500 € (il merito di Amir), una volta |
+| Paga dello sportello al -2 | 800 € (fino a 1.000 €); dal 3° turno anche le "pratiche raggruppate" (800 €, senza minigioco) |
+| Premio del capo al -2 | 3.000 € (il rapporto 404 di Teo), una volta |
+| Paga del centralino al piano 0 | 1.600 € (fino a 2.000 €); dal 3° turno anche il turno rapido (1.600 €, senza minigioco). 5 turni per il badge della Cima |
+| Premio del capo al piano 0 | 6.000 € (il progetto di Ada), una volta |
 | Promozione (sfruttare) | 900 € × 1,7 per ogni sfruttamento precedente |
-| Aiutare qualcuno | 10 € e +1 autostima (la prima volta) |
+| Aiutare qualcuno | 10 € (almeno 1/8 del badge di sopra) e +1 autostima la prima volta; Leda e Amir non pagano (biscotti, gratitudine) |
 | Straordinario al Fondo | 120, 70, 35 € (tre volte al massimo) |
 | Procedura d'urgenza al -4 | 300 € |
 
@@ -100,10 +107,14 @@ La proposta (in NARRATIVE_DESIGN, "Verifica della salita") è di far crescere la
 e introdurre, dal Mercato, il **costo della vita**: guadagni di più, ma spendi di più. È il tema del capitolo 3,
 e porta la salita onesta a circa **19 turni** (meno se aiuti tutti e Nives ti regala il badge).
 
+**Capitolo 3, com'è adesso:** la specifica ha fissato la cassa a 120 € a turno. Per i 2.000 € del badge servono
+13-17 turni, a meno del badge regalato (Leda e Amir aiutati), del premio del capo o del contratto. Dal 4° turno
+il turno è più breve (24 s), ma resta da decidere se alzare la paga: vedi `docs/capitoli/capitolo_3_il_mercato.md`.
+
 ### Pietà e contratti
 
 Dopo tre giorni di seguito di turni falliti, qualcuno del piano ha pena di te e ti dà i soldi che mancano
-(al -4 la Signora Agenda, al -3 Vito...). Oppure il Signor Rata ti dà il badge subito, se firmi:
+(al -4 la Signora Agenda, al -3 Vito, che ormai si vede solo in questa scena). Oppure il Signor Rata ti dà il badge subito, se firmi:
 il prezzo, più la metà, va sul debito, e gli interessi salgono.
 
 ## La meccanica dei robot
@@ -123,6 +134,9 @@ Le promozioni per piano sono in `data/promotions.json` (Fermo, Tilde, e i vecchi
 |---|---|---|
 | -5 | Cyclette (la dinamo) | Tocca a sinistra e a destra, alternando, per restare nel verde |
 | -4 | Call center | Tocca il telefono che squilla, poi la risposta: copione (paga), sincera (autostima), sgarbata (errore). Finale: squillano tutti |
+| -3 | La cassa | Tocca l'articolo, poi CONFERMA o CORREGGI il prezzo (dal 2° turno lo schermo a volte chiede più del cartellino) |
+| -2 | Lo sportello | Leggi la pratica, poi APPROVA (subito) o RICHIEDI VERIFICA (più lento). CHEAP paga le pratiche chiuse, non quelle giuste |
+| 0 | Il centralino | Tocca la destinazione della richiesta. A volte il sistema ne propone una sbagliata: CONFERMA (veloce), VERIFICA (lenta, giusta) o SEGNALA |
 | altri (versione precedente) | Bilancia, magazzino (Tetris), consegne, bagni, cassa (Pong) | Tocco, scorrimento, trascinamento |
 
 Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre turni è stata tolta.
@@ -136,10 +150,17 @@ Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre
 | Sequenza | Guarda le frecce, poi ripetile | Tilde (il copione) |
 | Tempismo | Tocca quando il segno è nel verde | Ercole (tienilo sveglio) |
 | Raccolta | Trascina il cuore e raccogli tutto | (versione precedente: Ivo, Elsa) |
+| Scatole e scaffali | Tocca lo scaffale giusto (alimentari, igiene, scuola, casa) | Leda |
+| L'ultima consegna | Tocca l'incrocio vicino: strade sicure o il cantiere (corto, ma a volte no) | Amir |
+| Le rate mancanti | Tocca i 6 documenti dal più vecchio, poi la voce doppia dell'estratto conto | Olga |
+| La pratica impossibile | Per ogni pratica tocca il problema: in ordine, manca un documento, dati diversi, doppione, errore di registrazione | Teo |
+| Una stanza per tutti | Tocca un mobile, poi la stanza: ogni stanza deve avere quello che le serve (più soluzioni valide) | Ada |
+| Il percorso possibile | Tocca le tratte da casa al lavoro: in tempo e dentro i 6 € al giorno | Nadir |
 
 ### Un, due, tre, stella (il furto di merito), in `scenes/minigame/arcade.gd`
 
 Tieni il dito giù per avvicinarti mentre il capo ti dà le spalle, e ancora per copiare. Quando si gira, stacca il dito.
+Al -3 la vittima è Amir, al -2 Teo (il rapporto 404), al piano 0 Ada (il progetto della Casa Comune): il furto non promuove subito, arrivato al terminale scegli se firmare (`win_flag` in `start_steal`).
 
 ## Le battaglie (stile Undertale)
 
@@ -155,11 +176,12 @@ flag), più le scelte nuove descritte in NARRATIVE_DESIGN ("Stato narrativo").
 
 ## La città (versione precedente)
 
-Esiste ancora, e verrà riusata nel capitolo 5 (Piano terra: Ufficio e Città):
+Esiste ancora nei file, ma il capitolo 5 non la usa più (è stato rifatto in `chapters/c5/`, con Ada, Nadir e Rina).
+Di questa versione resta in uso solo l'ufficio del capo (`scenes/world/boss_office.tscn`), dove portano le scale della Cima finché il capitolo 6 non sarà rifatto:
 - **Strada:** il chiosco di Nico, Marta, il Signor Bruno, Lea, Sami, Ivo.
 - **Ufficio:** Dario e Giulia; l'ascensore per la Direzione (Dottor Prezzi, il capo).
 - **Parco:** Tano il musicista, la Signora Elsa dei gatti, Rocco (sostituito da un robot).
-- **Il Rifugio** (cantina del palazzo blu): diventerà la **Casa Comune** del capitolo 5.
+- **Il Rifugio** (cantina del palazzo blu): l'idea è diventata la **Casa Comune** del capitolo 5 (nuova, `chapters/c5/casa_comune.tscn`).
 - **Casa:** il letto, il robot giocattolo, il post-it e i vestiti di tuo padre.
 - **Missioni** (`data/quests.json`): il gatto di Elsa, le ripetizioni a Luca, il pacco di Sami, gli occhiali di Ivo.
 
@@ -189,11 +211,12 @@ autoload/      singleton sempre attivi
   router       cambio scena con dissolvenza
   touch_controls  joystick, pulsanti e gesti dei minigiochi
   sound        musica e suoni (la voce dei dialoghi ha un canale suo)
-chapters/      i capitoli rifatti: c1/ (Fondo), c2/ (Sottoufficio). Scena .tscn + script di logica
+chapters/      i capitoli rifatti: c1/ (Fondo), c2/ (Sottoufficio), c3/ (Mercato), c4/ (Banca), c5/ (Città). Scena .tscn + script di logica
 world/         EditorRoom (stanze fatte nell'editor), RoomFeature, NpcSpot, Examine, CharSprite, tileset
 scripts/       Room (base di tutte le stanze), Player, Npc, Quests, Assets
 scenes/        main_menu, world/ (stanze della versione precedente), minigame/, battle/, endings/
-data/          testi e dati (JSON): persone, promozioni, lavori, missioni
+data/          testi e dati (JSON): persone, promozioni, lavori, missioni, market (prezzi del -3), bank (documenti e pratiche del -2)
+art/           grafica fatta apposta: per ora segnaposto, elenco in docs/ASSET_LIST.md
 tools/         gli script "bake" che creano le scene dei capitoli, la generazione di arte e audio
 tests/         smoke_test (gioca tutto il gioco), touch_test (i comandi col dito)
 ```

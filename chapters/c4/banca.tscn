@@ -1,0 +1,472 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://chapters/c4/banca_c4.gd" id="1_hwvmd"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_a6aui"]
+[ext_resource type="Texture2D" path="res://art/c4/insegna_banca.png" id="3_pf2m1"]
+[ext_resource type="Texture2D" path="res://art/c4/display_numeri.png" id="4_i1xse"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="5_7cjwg"]
+[ext_resource type="Script" path="res://world/examine.gd" id="6_feh56"]
+[ext_resource type="Texture2D" path="res://art/c4/bancone_sportello.png" id="7_wkgms"]
+[ext_resource type="Texture2D" path="res://art/c4/colonna_oro.png" id="8_gkrrw"]
+[ext_resource type="Texture2D" path="res://art/c4/distributore_numeri.png" id="9_rej2s"]
+[ext_resource type="Texture2D" path="res://art/c4/terminale_conto.png" id="10_6d6qs"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="11_4m25g"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="12_bhnu7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/office_desk.png" id="13_b8kf0"]
+[ext_resource type="Texture2D" path="res://art/c4/quaderno.png" id="14_n8r3t"]
+[ext_resource type="Texture2D" path="res://art/c4/archivio.png" id="15_o03ey"]
+[ext_resource type="Texture2D" path="res://art/c4/terminale_rapporto.png" id="16_14kcq"]
+[ext_resource type="Script" path="res://world/room_feature.gd" id="17_gyq7i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nu50v"]
+size = Vector2(44, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x3rj1"]
+size = Vector2(12, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vx0p1"]
+size = Vector2(12, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ekptw"]
+size = Vector2(12, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wrlwx"]
+size = Vector2(12, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nki1q"]
+size = Vector2(19, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_au7u7"]
+size = Vector2(19, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gpl2i"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3uvl6"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o106j"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eshio"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vouie"]
+size = Vector2(26, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_06yal"]
+size = Vector2(26, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a28io"]
+size = Vector2(12, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1xobg"]
+size = Vector2(28, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rujpi"]
+size = Vector2(12, 8)
+
+[node name="Banca" type="Node2D" unique_id=454219974]
+script = ExtResource("1_hwvmd")
+room_music = "banca"
+room_floor = "-2"
+
+[node name="Pavimento" type="TileMapLayer" parent="." unique_id=1875740703]
+tile_map_data = PackedByteArray("AAABAAMAAAAnACgAAAACAAMAAAAoACgAAAADAAMAAAAmACgAAAAEAAMAAAAnACgAAAAFAAMAAAAoACgAAAAGAAMAAAAmACgAAAAHAAMAAAAnACgAAAAIAAMAAAAoACgAAAAJAAMAAAAmACgAAAAKAAMAAAAnACgAAAALAAMAAAAoACgAAAAMAAMAAAAmACgAAAANAAMAAAAnACgAAAAOAAMAAAAoACgAAAAPAAMAAAAmACgAAAAQAAMAAAAnACgAAAARAAMAAAAoACgAAAASAAMAAAAmACgAAAATAAMAAAAnACgAAAAUAAMAAAAoACgAAAABAAQAAAAnACcAAAACAAQAAAAoACcAAAADAAQAAAAmACcAAAAEAAQAAAAnACcAAAAFAAQAAAAoACcAAAAGAAQAAAAmACcAAAAHAAQAAAAnACcAAAAIAAQAAAAoACcAAAAJAAQAAAAmACcAAAAKAAQAAAAnACcAAAALAAQAAAAoACcAAAAMAAQAAAAmACcAAAANAAQAAAAnACcAAAAOAAQAAAAoACcAAAAPAAQAAAAmACcAAAAQAAQAAAAnACcAAAARAAQAAAAoACcAAAASAAQAAAAmACcAAAATAAQAAAAnACcAAAAUAAQAAAAoACcAAAABAAUAAAAnACgAAAACAAUAAAAoACgAAAADAAUAAAAmACgAAAAEAAUAAAAnACgAAAAFAAUAAAAoACgAAAAGAAUAAAAmACgAAAAHAAUAAAAnACgAAAAIAAUAAAAoACgAAAAJAAUAAAAmACgAAAAKAAUAAAAnACgAAAALAAUAAAAoACgAAAAMAAUAAAAmACgAAAANAAUAAAAnACgAAAAOAAUAAAAoACgAAAAPAAUAAAAmACgAAAAQAAUAAAAnACgAAAARAAUAAAAoACgAAAASAAUAAAAmACgAAAATAAUAAAAnACgAAAAUAAUAAAAoACgAAAABAAYAAAAnACcAAAACAAYAAAAoACcAAAADAAYAAAAmACcAAAAEAAYAAAAnACcAAAAFAAYAAAAoACcAAAAGAAYAAAAmACcAAAAHAAYAAAAnACcAAAAIAAYAAAAoACcAAAAJAAYAAAAmACcAAAAKAAYAAAAnACcAAAALAAYAAAAoACcAAAAMAAYAAAAmACcAAAANAAYAAAAnACcAAAAOAAYAAAAwACkAAAAPAAYAAAAuACkAAAAQAAYAAAAvACkAAAARAAYAAAAwACkAAAASAAYAAAAuACkAAAATAAYAAAAvACkAAAAUAAYAAAAwACkAAAABAAcAAAAnACgAAAACAAcAAAAoACgAAAADAAcAAAAmACgAAAAEAAcAAAAnACgAAAAFAAcAAAAoACgAAAAGAAcAAAAmACgAAAAHAAcAAAAnACgAAAAIAAcAAAAoACgAAAAJAAcAAAAmACgAAAAKAAcAAAAnACgAAAALAAcAAAAoACgAAAAMAAcAAAAmACgAAAANAAcAAAAnACgAAAAOAAcAAAAwACoAAAAPAAcAAAAuACoAAAAQAAcAAAAvACoAAAARAAcAAAAwACoAAAASAAcAAAAuACoAAAATAAcAAAAvACoAAAAUAAcAAAAwACoAAAABAAgAAAAnACcAAAACAAgAAAAoACcAAAADAAgAAAAmACcAAAAEAAgAAAAnACcAAAAFAAgAAAAoACcAAAAGAAgAAAAmACcAAAAHAAgAAAAnACcAAAAIAAgAAAAoACcAAAAJAAgAAAAmACcAAAAKAAgAAAAnACcAAAALAAgAAAAoACcAAAAMAAgAAAAmACcAAAANAAgAAAAnACcAAAAOAAgAAAAwACkAAAAPAAgAAAAuACkAAAAQAAgAAAAvACkAAAARAAgAAAAwACkAAAASAAgAAAAuACkAAAATAAgAAAAvACkAAAAUAAgAAAAwACkAAAABAAkAAAAnACgAAAACAAkAAAAoACgAAAADAAkAAAAmACgAAAAEAAkAAAAnACgAAAAFAAkAAAAoACgAAAAGAAkAAAAmACgAAAAHAAkAAAAnACgAAAAIAAkAAAAoACgAAAAJAAkAAAAmACgAAAAKAAkAAAAnACgAAAALAAkAAAAoACgAAAAMAAkAAAAmACgAAAANAAkAAAAnACgAAAAOAAkAAAAwACoAAAAPAAkAAAAuACoAAAAQAAkAAAAvACoAAAARAAkAAAAwACoAAAASAAkAAAAuACoAAAATAAkAAAAvACoAAAAUAAkAAAAwACoAAAABAAoAAAAnACcAAAACAAoAAAAoACcAAAADAAoAAAAmACcAAAAEAAoAAAAnACcAAAAFAAoAAAAoACcAAAAGAAoAAAAmACcAAAAHAAoAAAAnACcAAAAIAAoAAAAoACcAAAAJAAoAAAAmACcAAAAKAAoAAAAnACcAAAALAAoAAAAoACcAAAAMAAoAAAAmACcAAAANAAoAAAAnACcAAAAOAAoAAAAwACkAAAAPAAoAAAAuACkAAAAQAAoAAAAvACkAAAARAAoAAAAwACkAAAASAAoAAAAuACkAAAATAAoAAAAvACkAAAAUAAoAAAAwACkAAAABAAsAAAAnACgAAAACAAsAAAAoACgAAAADAAsAAAAmACgAAAAEAAsAAAAnACgAAAAFAAsAAAAoACgAAAAGAAsAAAAmACgAAAAHAAsAAAAnACgAAAAIAAsAAAAoACgAAAAJAAsAAAAmACgAAAAKAAsAAAAnACgAAAALAAsAAAAoACgAAAAMAAsAAAAmACgAAAANAAsAAAAnACgAAAAOAAsAAAAoACgAAAAPAAsAAAAmACgAAAAQAAsAAAAnACgAAAARAAsAAAAoACgAAAASAAsAAAAmACgAAAATAAsAAAAnACgAAAAUAAsAAAAoACgAAAABAAwAAAAnACcAAAACAAwAAAAoACcAAAADAAwAAAAmACcAAAAEAAwAAAAnACcAAAAFAAwAAAAoACcAAAAGAAwAAAAmACcAAAAHAAwAAAAnACcAAAAIAAwAAAAoACcAAAAJAAwAAAAmACcAAAAKAAwAAAAnACcAAAALAAwAAAAoACcAAAAMAAwAAAAmACcAAAANAAwAAAAnACcAAAAOAAwAAAAoACcAAAAPAAwAAAAmACcAAAAQAAwAAAAnACcAAAARAAwAAAAoACcAAAASAAwAAAAmACcAAAATAAwAAAAnACcAAAAUAAwAAAAoACcAAAA=")
+tile_set = ExtResource("2_a6aui")
+
+[node name="Muri" type="TileMapLayer" parent="." unique_id=1820732068]
+tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAABAAAAAAAMAAAAAAACAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAEAAAAAAAMAAAAAAAFAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAHAAAAAAAMAAAAAAAIAAAAAAAMAAAAAAAJAAAAAAAMAAAAAAAKAAAAAAAMAAAAAAALAAAAAAAMAAAAAAAMAAAAAAAMAAAAAAANAAAAAAAMAAAAAAAOAAAAAAAMAAAAAAAPAAAAAAAMAAAAAAAQAAAAAAAMAAAAAAARAAAAAAAMAAAAAAASAAAAAAAMAAAAAAATAAAAAAAMAAAAAAAUAAAAAAAMAAAAAAAVAAAAAAAMAAAAAAAAAAEAAAAMAAAAAAABAAEAAAAeAA0AAAACAAEAAAAfAA0AAAADAAEAAAAdAA0AAAAEAAEAAAAeAA0AAAAFAAEAAAAfAA0AAAAGAAEAAAAdAA0AAAAHAAEAAAAeAA0AAAAIAAEAAAAfAA0AAAAJAAEAAAAdAA0AAAAKAAEAAAAeAA0AAAALAAEAAAAfAA0AAAAMAAEAAAAdAA0AAAANAAEAAAAeAA0AAAAOAAEAAAAfAA0AAAAPAAEAAAAdAA0AAAAQAAEAAAAeAA0AAAARAAEAAAAfAA0AAAASAAEAAAAdAA0AAAATAAEAAAAeAA0AAAAUAAEAAAAfAA0AAAAVAAEAAAAMAAAAAAAAAAIAAAAMAAAAAAABAAIAAAAeAA4AAAACAAIAAAAfAA4AAAADAAIAAAAdAA4AAAAEAAIAAAAeAA4AAAAFAAIAAAAfAA4AAAAGAAIAAAAdAA4AAAAHAAIAAAAeAA4AAAAIAAIAAAAfAA4AAAAJAAIAAAAdAA4AAAAKAAIAAAAeAA4AAAALAAIAAAAfAA4AAAAMAAIAAAAdAA4AAAANAAIAAAAeAA4AAAAOAAIAAAAfAA4AAAAPAAIAAAAdAA4AAAAQAAIAAAAeAA4AAAARAAIAAAAfAA4AAAASAAIAAAAdAA4AAAATAAIAAAAeAA4AAAAUAAIAAAAfAA4AAAAVAAIAAAAMAAAAAAAAAAMAAAAMAAAAAAAVAAMAAAAMAAAAAAAAAAQAAAAMAAAAAAAVAAQAAAAMAAAAAAAAAAUAAAAMAAAAAAAVAAUAAAAMAAAAAAAAAAYAAAAMAAAAAAAVAAYAAAAMAAAAAAAAAAcAAAAMAAAAAAAVAAcAAAAMAAAAAAAAAAgAAAAMAAAAAAAVAAgAAAAMAAAAAAAAAAkAAAAMAAAAAAAVAAkAAAAMAAAAAAAAAAoAAAAMAAAAAAAVAAoAAAAMAAAAAAAAAAsAAAAMAAAAAAAVAAsAAAAMAAAAAAAAAAwAAAAMAAAAAAAVAAwAAAAMAAAAAAAAAA0AAAAMAAAAAAABAA0AAAAMAAAAAAACAA0AAAAMAAAAAAADAA0AAAAMAAAAAAAEAA0AAAAMAAAAAAAFAA0AAAAMAAAAAAAGAA0AAAAMAAAAAAAHAA0AAAAMAAAAAAAIAA0AAAAMAAAAAAAJAA0AAAAMAAAAAAAKAA0AAAAMAAAAAAALAA0AAAAMAAAAAAAMAA0AAAAMAAAAAAANAA0AAAAMAAAAAAAOAA0AAAAMAAAAAAAPAA0AAAAMAAAAAAAQAA0AAAAMAAAAAAARAA0AAAAMAAAAAAASAA0AAAAMAAAAAAATAA0AAAAMAAAAAAAUAA0AAAAMAAAAAAAVAA0AAAAMAAAAAAA=")
+tile_set = ExtResource("2_a6aui")
+
+[node name="Decori" type="Node2D" parent="." unique_id=641112465]
+
+[node name="InsegnaBanca" type="Sprite2D" parent="Decori" unique_id=984319533]
+z_index = 1
+position = Vector2(32, 44)
+texture = ExtResource("3_pf2m1")
+centered = false
+offset = Vector2(0, -28)
+
+[node name="DisplayNumeri" type="Sprite2D" parent="Decori" unique_id=652611164]
+z_index = 1
+position = Vector2(192, 42)
+texture = ExtResource("4_i1xse")
+centered = false
+offset = Vector2(0, -20)
+
+[node name="Tappeto0" type="Sprite2D" parent="Decori" unique_id=1927349921]
+position = Vector2(128, 116)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -28)
+region_enabled = true
+region_rect = Rect2(48, 354, 32, 28)
+
+[node name="Tappeto1" type="Sprite2D" parent="Decori" unique_id=908688806]
+position = Vector2(128, 148)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -28)
+region_enabled = true
+region_rect = Rect2(48, 354, 32, 28)
+
+[node name="Tappeto2" type="Sprite2D" parent="Decori" unique_id=565776415]
+position = Vector2(128, 180)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -28)
+region_enabled = true
+region_rect = Rect2(48, 354, 32, 28)
+
+[node name="Mondo" type="Node2D" parent="." unique_id=1726456680]
+y_sort_enabled = true
+
+[node name="GuardaInsegna" type="Node2D" parent="Mondo" unique_id=121922111]
+position = Vector2(88, 56)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_insegna"
+
+[node name="GuardaDisplay" type="Node2D" parent="Mondo" unique_id=1641054415]
+position = Vector2(216, 56)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_display"
+
+[node name="Bancone" type="Sprite2D" parent="Mondo" unique_id=1368756100]
+position = Vector2(128, 64)
+texture = ExtResource("7_wkgms")
+centered = false
+offset = Vector2(0, -24)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone" unique_id=172394867]
+
+[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/Bancone/Collisione" unique_id=744130320]
+position = Vector2(24, -5)
+shape = SubResource("RectangleShape2D_nu50v")
+
+[node name="ColonnaSinistra" type="Sprite2D" parent="Mondo" unique_id=445990473]
+position = Vector2(112, 64)
+texture = ExtResource("8_gkrrw")
+centered = false
+offset = Vector2(0, -40)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ColonnaSinistra" unique_id=1906658870]
+
+[node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/ColonnaSinistra/Collisione" unique_id=895540699]
+position = Vector2(8, -3)
+shape = SubResource("RectangleShape2D_x3rj1")
+
+[node name="ColonnaDestra" type="Sprite2D" parent="Mondo" unique_id=1172121661]
+position = Vector2(192, 64)
+texture = ExtResource("8_gkrrw")
+centered = false
+offset = Vector2(0, -40)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ColonnaDestra" unique_id=415089723]
+
+[node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/ColonnaDestra/Collisione" unique_id=1442904802]
+position = Vector2(8, -3)
+shape = SubResource("RectangleShape2D_vx0p1")
+
+[node name="GuardaBancone" type="Node2D" parent="Mondo" unique_id=978233533]
+position = Vector2(136, 56)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* Lo sportello del settore fiducia. Sul vetro, un adesivo: \"SORRIDI, STAI PER ESSERE VALUTATO\".")
+lines_after = PackedStringArray("* Lo sportello. Il timbro APPROVATA è consumato da un lato solo.")
+after_flag = "c4_rivelazione"
+
+[node name="Distributore" type="Sprite2D" parent="Mondo" unique_id=1831180830]
+position = Vector2(80, 160)
+texture = ExtResource("9_rej2s")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Distributore" unique_id=1776312414]
+
+[node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/Distributore/Collisione" unique_id=570017340]
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_ekptw")
+
+[node name="UsaDistributore" type="Node2D" parent="Mondo" unique_id=140442568]
+position = Vector2(88, 152)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_distributore"
+
+[node name="TerminaleConto" type="Sprite2D" parent="Mondo" unique_id=339837292]
+position = Vector2(224, 80)
+texture = ExtResource("10_6d6qs")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TerminaleConto" unique_id=1489964354]
+
+[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/TerminaleConto/Collisione" unique_id=1914280207]
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_wrlwx")
+
+[node name="UsaTerminaleConto" type="Node2D" parent="Mondo" unique_id=2049101134]
+position = Vector2(232, 72)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_conto"
+
+[node name="Pianta0" type="Sprite2D" parent="Mondo" unique_id=1757272407]
+position = Vector2(16, 80)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=1297667081]
+
+[node name="@CollisionShape2D@26" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=545935908]
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_nki1q")
+
+[node name="Pianta1" type="Sprite2D" parent="Mondo" unique_id=583664437]
+position = Vector2(208, 192)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=2080906231]
+
+[node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=1955690238]
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_au7u7")
+
+[node name="Fila0" type="AnimatedSprite2D" parent="Mondo" unique_id=594714620]
+position = Vector2(184, 78)
+script = ExtResource("11_4m25g")
+sheet = "char_13"
+anim = "idle_up"
+grey = true
+
+[node name="GuardaFila0" type="Node2D" parent="Mondo" unique_id=632211220]
+position = Vector2(184, 72)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* \"Sono il numero 5. Ero il numero 5 anche l\'anno scorso.\"")
+lines_after = PackedStringArray("* È ancora in fila. La fila non ha sentito niente.")
+after_flag = "c4_rivelazione"
+
+[node name="PiediFila0" type="StaticBody2D" parent="Mondo" unique_id=1647239663]
+position = Vector2(184, 72)
+
+[node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/PiediFila0" unique_id=1444654185]
+shape = SubResource("RectangleShape2D_gpl2i")
+
+[node name="Fila1" type="AnimatedSprite2D" parent="Mondo" unique_id=1604332761]
+position = Vector2(184, 94)
+script = ExtResource("11_4m25g")
+sheet = "char_18"
+anim = "idle_up"
+grey = true
+
+[node name="GuardaFila1" type="Node2D" parent="Mondo" unique_id=1335473355]
+position = Vector2(184, 88)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* \"Mi hanno detto di aspettare. Sono bravissimo ad aspettare. È l\'unica cosa in cui sono migliorato.\"")
+lines_after = PackedStringArray("* È ancora in fila. La fila non ha sentito niente.")
+after_flag = "c4_rivelazione"
+
+[node name="PiediFila1" type="StaticBody2D" parent="Mondo" unique_id=1820058592]
+position = Vector2(184, 88)
+
+[node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/PiediFila1" unique_id=1335497592]
+shape = SubResource("RectangleShape2D_3uvl6")
+
+[node name="Fila2" type="AnimatedSprite2D" parent="Mondo" unique_id=1865739456]
+position = Vector2(184, 110)
+script = ExtResource("11_4m25g")
+sheet = "char_20"
+anim = "idle_up"
+grey = true
+
+[node name="GuardaFila2" type="Node2D" parent="Mondo" unique_id=868378437]
+position = Vector2(184, 104)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* Tiene stretto un biglietto. Il numero è stato stampato così tante volte che si è consumato.")
+lines_after = PackedStringArray("* È ancora in fila. La fila non ha sentito niente.")
+after_flag = "c4_rivelazione"
+
+[node name="PiediFila2" type="StaticBody2D" parent="Mondo" unique_id=392084067]
+position = Vector2(184, 104)
+
+[node name="@CollisionShape2D@30" type="CollisionShape2D" parent="Mondo/PiediFila2" unique_id=382943047]
+shape = SubResource("RectangleShape2D_o106j")
+
+[node name="Fila3" type="AnimatedSprite2D" parent="Mondo" unique_id=1632419653]
+position = Vector2(184, 126)
+script = ExtResource("11_4m25g")
+sheet = "char_05"
+anim = "idle_up"
+grey = true
+
+[node name="GuardaFila3" type="Node2D" parent="Mondo" unique_id=1131770430]
+position = Vector2(184, 120)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* \"Non so cosa devo chiedere. Lo saprò quando tocca a me. Se tocca a me.\"")
+lines_after = PackedStringArray("* È ancora in fila. La fila non ha sentito niente.")
+after_flag = "c4_rivelazione"
+
+[node name="PiediFila3" type="StaticBody2D" parent="Mondo" unique_id=1699790107]
+position = Vector2(184, 120)
+
+[node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/PiediFila3" unique_id=1848615572]
+shape = SubResource("RectangleShape2D_eshio")
+
+[node name="Panca0" type="Sprite2D" parent="Mondo" unique_id=1304664820]
+position = Vector2(16, 112)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -18)
+region_enabled = true
+region_rect = Rect2(1, 254, 30, 18)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Panca0" unique_id=1941276335]
+
+[node name="@CollisionShape2D@32" type="CollisionShape2D" parent="Mondo/Panca0/Collisione" unique_id=2048782900]
+position = Vector2(15, -3)
+shape = SubResource("RectangleShape2D_vouie")
+
+[node name="Panca1" type="Sprite2D" parent="Mondo" unique_id=1746194397]
+position = Vector2(48, 112)
+texture = ExtResource("5_7cjwg")
+centered = false
+offset = Vector2(0, -18)
+region_enabled = true
+region_rect = Rect2(1, 254, 30, 18)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Panca1" unique_id=2009546387]
+
+[node name="@CollisionShape2D@33" type="CollisionShape2D" parent="Mondo/Panca1/Collisione" unique_id=1233993404]
+position = Vector2(15, -3)
+shape = SubResource("RectangleShape2D_06yal")
+
+[node name="GuardaPanche" type="Node2D" parent="Mondo" unique_id=1182637301]
+position = Vector2(40, 104)
+script = ExtResource("6_feh56")
+lines = PackedStringArray("* Panche di velluto rosso. Sul bracciolo, inciso con una chiave: \"MARTEDÌ\".")
+lines_after = PackedStringArray()
+
+[node name="Olga" type="Node2D" parent="Mondo" unique_id=785571232]
+position = Vector2(88, 126)
+script = ExtResource("12_bhnu7")
+npc_id = "olga"
+activity = "idle_left"
+
+[node name="ScrivaniaTeo" type="Sprite2D" parent="Mondo" unique_id=1818994496]
+position = Vector2(272, 128)
+texture = ExtResource("13_b8kf0")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ScrivaniaTeo" unique_id=1552525847]
+
+[node name="@CollisionShape2D@34" type="CollisionShape2D" parent="Mondo/ScrivaniaTeo/Collisione" unique_id=765580515]
+position = Vector2(8, -5)
+shape = SubResource("RectangleShape2D_a28io")
+
+[node name="Quaderno" type="Sprite2D" parent="Mondo" unique_id=2337088]
+z_index = 1
+position = Vector2(275, 114)
+texture = ExtResource("14_n8r3t")
+centered = false
+offset = Vector2(0, -8)
+
+[node name="GuardaQuaderno" type="Node2D" parent="Mondo" unique_id=1445809122]
+position = Vector2(280, 120)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_quaderno"
+
+[node name="Archivio" type="Sprite2D" parent="Mondo" unique_id=798208332]
+position = Vector2(304, 128)
+texture = ExtResource("15_o03ey")
+centered = false
+offset = Vector2(0, -40)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Archivio" unique_id=842198780]
+
+[node name="@CollisionShape2D@35" type="CollisionShape2D" parent="Mondo/Archivio/Collisione" unique_id=729724989]
+position = Vector2(16, -5)
+shape = SubResource("RectangleShape2D_1xobg")
+
+[node name="GuardaArchivio" type="Node2D" parent="Mondo" unique_id=1877198662]
+position = Vector2(312, 120)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_archivio"
+
+[node name="TerminaleRapporto" type="Sprite2D" parent="Mondo" unique_id=104875038]
+position = Vector2(320, 160)
+texture = ExtResource("16_14kcq")
+centered = false
+offset = Vector2(0, -24)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TerminaleRapporto" unique_id=1664590429]
+
+[node name="@CollisionShape2D@36" type="CollisionShape2D" parent="Mondo/TerminaleRapporto/Collisione" unique_id=1326937275]
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_rujpi")
+
+[node name="UsaTerminaleRapporto" type="Node2D" parent="Mondo" unique_id=939280949]
+position = Vector2(328, 152)
+script = ExtResource("6_feh56")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+method = "_rapporto"
+
+[node name="Teo" type="Node2D" parent="Mondo" unique_id=664488633]
+position = Vector2(264, 126)
+script = ExtResource("12_bhnu7")
+npc_id = "teo"
+activity = "idle_right"
+
+[node name="PostoSportello" type="Node2D" parent="Mondo" unique_id=1986362556]
+position = Vector2(144, 64)
+script = ExtResource("17_gyq7i")
+kind = "station"
+job = "sportello_banca"
+
+[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=423253138]
+position = Vector2(256, 48)
+script = ExtResource("17_gyq7i")
+kind = "badge"
+
+[node name="ScaleSu" type="Node2D" parent="Mondo" unique_id=857619234]
+position = Vector2(304, 48)
+script = ExtResource("17_gyq7i")
+kind = "stairs_up"
+target = "res://scenes/world/office.tscn"
+spawn = "from_below"
+need = "0"
+
+[node name="ScaleGiu" type="Node2D" parent="Mondo" unique_id=2116155127]
+position = Vector2(32, 192)
+script = ExtResource("17_gyq7i")
+kind = "stairs_down"
+target = "res://chapters/c3/mercato.tscn"
+spawn = "from_above"
+
+[node name="Stellina" type="Node2D" parent="Mondo" unique_id=1545319604]
+position = Vector2(112, 176)
+script = ExtResource("17_gyq7i")
+
+[node name="Arrivi" type="Node2D" parent="." unique_id=1461995082]
+
+[node name="default" type="Marker2D" parent="Arrivi" unique_id=998855390]
+position = Vector2(104, 174)
+metadata/facing = "up"

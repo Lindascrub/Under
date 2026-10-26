@@ -1,0 +1,137 @@
+{
+  "_nota": "Capitolo 3, il Mercato. I prezzi sono [prima, dopo l'aggiornamento]. La paga del TURNO è in worklist.json (cassa_mercato).",
+  "prezzi": {
+    "pane": {
+      "nome": "Pane quasi fresco",
+      "prezzo": [
+        18,
+        25
+      ]
+    },
+    "latte": {
+      "nome": "Latte del futuro",
+      "prezzo": [
+        24,
+        32
+      ]
+    },
+    "acqua": {
+      "nome": "Acqua economica",
+      "prezzo": [
+        10,
+        15
+      ]
+    },
+    "sogno": {
+      "nome": "Sogno in scatola",
+      "prezzo": [
+        99,
+        99
+      ]
+    },
+    "aria": {
+      "nome": "Aria premium",
+      "prezzo": [
+        35,
+        35
+      ]
+    },
+    "tazza": {
+      "nome": "Tazza vuota",
+      "prezzo": [
+        12,
+        12
+      ]
+    }
+  },
+  "lavagnetta": [
+    [
+      "Entrate",
+      780
+    ],
+    [
+      "Costo merce",
+      -390
+    ],
+    [
+      "Affitto e servizi",
+      -240
+    ],
+    [
+      "Commissioni CHEAP",
+      -130
+    ],
+    [
+      "Residuo",
+      20
+    ]
+  ],
+  "fattura": [
+    [
+      "Commissione per utilizzo del Mercato",
+      40
+    ],
+    [
+      "Contributo promozione automatica",
+      35
+    ],
+    [
+      "Aggiornamento obbligatorio prezzi",
+      25
+    ]
+  ],
+  "premio_capo": 1500,
+  "donazione": 50,
+  "cassa": [
+    [
+      "Pane",
+      18,
+      "pane"
+    ],
+    [
+      "Latte",
+      24,
+      "latte"
+    ],
+    [
+      "Sapone",
+      6,
+      ""
+    ],
+    [
+      "Riso",
+      9,
+      ""
+    ],
+    [
+      "Tazza",
+      12,
+      "tazza"
+    ],
+    [
+      "Matita",
+      2,
+      ""
+    ],
+    [
+      "Biscotti",
+      7,
+      ""
+    ],
+    [
+      "Aria premium",
+      35,
+      "aria"
+    ],
+    [
+      "Detersivo",
+      11,
+      ""
+    ],
+    [
+      "Mele",
+      8,
+      ""
+    ]
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "_nota": "Capitolo 4, la Banca. La paga del TURNO è in worklist.json (sportello_banca). I conti di Olga devono tornare: lo controlla tests/smoke_test.gd.",
+  "premio_capo": 3000,
+  "rapido": {
+    "_nota": "Le pratiche raggruppate: dal terzo turno in poi lo sportello si può fare in fretta, senza minigioco.",
+    "dopo": 2,
+    "paga": 800
+  },
+  "numero": "7.000.000.001",
+  "servito": 4,
+  "olga": {
+    "documenti": [
+      {
+        "titolo": "Contratto iniziale",
+        "data": "10/03/2016",
+        "testo": "Mutuo casa 90.000 €. Rata 450 € al mese. Tasso 2%."
+      },
+      {
+        "titolo": "Prima rata",
+        "data": "10/04/2016",
+        "testo": "Rata n. 1 pagata: 450 €."
+      },
+      {
+        "titolo": "Variazione del tasso",
+        "data": "01/01/2019",
+        "testo": "Tasso dal 2% al 3,5%. Nuova rata: 520 €."
+      },
+      {
+        "titolo": "Pagamento in ritardo",
+        "data": "18/06/2021",
+        "testo": "Rata n. 63 (scadenza 10/06) registrata il 18/06. Mora: 25 €."
+      },
+      {
+        "titolo": "Commissione contestata",
+        "data": "25/06/2021",
+        "testo": "Gestione ritardo: 35 €. Una per ogni ritardo, dice il contratto."
+      },
+      {
+        "titolo": "Estratto conto attuale",
+        "data": "30/06/2021",
+        "testo": "Conto di Olga. Saldo finale: 1.485 €."
+      }
+    ],
+    "estratto": {
+      "titolo": "ESTRATTO CONTO — GIUGNO 2021",
+      "saldo_iniziale": 1200,
+      "saldo_finale": 1485,
+      "righe": [
+        [
+          "18/06",
+          "Rata mutuo n. 63",
+          -520
+        ],
+        [
+          "18/06",
+          "Mora per ritardo",
+          -25
+        ],
+        [
+          "18/06",
+          "Commissione gestione ritardo",
+          -35
+        ],
+        [
+          "19/06",
+          "Commissione gestione ritardo",
+          -35
+        ],
+        [
+          "30/06",
+          "Pensione",
+          900
+        ]
+      ],
+      "doppie": [
+        2,
+        3
+      ]
+    },
+    "rimborso": 35
+  },
+  "teo": {
+    "_nota": "LA PRATICA IMPOSSIBILE: per ogni pratica, quale problema c'è (o nessuno).",
+    "tipi": [
+      "TUTTO IN ORDINE",
+      "MANCA UN DOCUMENTO",
+      "DATI DIVERSI",
+      "DOPPIONE",
+      "ERRORE DI REGISTRAZIONE"
+    ],
+    "pratiche": [
+      {
+        "id": "101",
+        "nome": "Bianchi",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.300 € al mese",
+          "Dichiarazione dei redditi: 1.300 € al mese",
+          "Richiesta: 5.000 €"
+        ],
+        "tipo": 0
+      },
+      {
+        "id": "102",
+        "nome": "Russo",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga di maggio: 1.800 €",
+          "Busta paga di maggio: 1.800 €",
+          "Richiesta: 7.000 €"
+        ],
+        "tipo": 3
+      },
+      {
+        "id": "103",
+        "nome": "Greco",
+        "righe": [
+          "Documento d'identità: —",
+          "Busta paga: 1.500 € al mese",
+          "Dichiarazione dei redditi: 1.500 € al mese",
+          "Richiesta: 4.000 €"
+        ],
+        "tipo": 1
+      },
+      {
+        "id": "104",
+        "nome": "Conti",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.200 € al mese",
+          "Dichiarazione dei redditi: 1.800 € al mese",
+          "Richiesta: 9.000 €"
+        ],
+        "tipo": 2
+      },
+      {
+        "id": "105",
+        "nome": "Marino",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 2.100 € al mese",
+          "Richiesta firmata: 8.000 €",
+          "Registrato a sistema: 80.000 €"
+        ],
+        "tipo": 4
+      },
+      {
+        "id": "106",
+        "nome": "Ferri",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.650 € al mese",
+          "Dichiarazione dei redditi: 1.650 € al mese",
+          "Richiesta: 3.000 €"
+        ],
+        "tipo": 0
+      }
+    ]
+  },
+  "sportello": {
+    "_nota": "Il TURNO: APPROVA (il fascicolo supera il controllo documentale) o RICHIEDI VERIFICA.",
+    "pratiche": [
+      {
+        "id": "018",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.400 € al mese",
+          "Dichiarazione dei redditi: 1.400 € al mese"
+        ],
+        "verifica": false
+      },
+      {
+        "id": "027",
+        "righe": [
+          "Documento d'identità: presente",
+          "Reddito dichiarato: 2.300 € al mese",
+          "Busta paga allegata: 1.600 € al mese"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "041",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga di aprile: 1.900 €",
+          "Busta paga di aprile: 1.900 € (stesso file)"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "052",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.250 € al mese",
+          "Dichiarazione dei redditi: 1.250 € al mese"
+        ],
+        "verifica": false
+      },
+      {
+        "id": "063",
+        "righe": [
+          "Documento d'identità: —",
+          "Busta paga: 1.700 € al mese",
+          "Dichiarazione dei redditi: 1.700 € al mese"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "074",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 2.000 € al mese",
+          "Dichiarazione dei redditi: 2.000 € al mese"
+        ],
+        "verifica": false
+      },
+      {
+        "id": "085",
+        "righe": [
+          "Documento d'identità: presente",
+          "Richiesta firmata: 6.000 €",
+          "Registrato a sistema: 60.000 €"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "096",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.550 € al mese",
+          "Dichiarazione dei redditi: 1.550 € al mese"
+        ],
+        "verifica": false
+      },
+      {
+        "id": "107",
+        "righe": [
+          "Documento d'identità: scaduto nel 2019",
+          "Busta paga: 1.350 € al mese",
+          "Dichiarazione dei redditi: 1.350 € al mese"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "118",
+        "righe": [
+          "Documento d'identità: presente",
+          "Busta paga: 1.800 € al mese",
+          "Dichiarazione dei redditi: 1.800 € al mese"
+        ],
+        "verifica": false
+      },
+      {
+        "id": "129",
+        "righe": [
+          "Documento d'identità: presente",
+          "Nome sul contratto: Rossi Anna",
+          "Nome sulla busta paga: Rossi Ada"
+        ],
+        "verifica": true
+      },
+      {
+        "id": "130",
+        "righe": [
+          "Documento d'identità: presente",
+          "Pensione: 1.100 € al mese",
+          "Estratto pensione: 1.100 € al mese"
+        ],
+        "verifica": false
+      }
+    ]
+  },
+  "conto": {
+    "debito_originario": 7000000000,
+    "_nota": "Il debito mostrato al terminale è sempre GameState.debt: qui c'è solo l'importo assegnato all'origine."
+  }
+}

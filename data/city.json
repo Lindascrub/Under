@@ -1,0 +1,241 @@
+{
+  "premio_capo": 6000,
+  "rapido": {
+    "dopo": 2,
+    "paga": 1600
+  },
+  "chiusura_giorni": 3,
+  "stanze": {
+    "stanze": [
+      {
+        "id": "studio",
+        "nome": "STUDIO",
+        "serve": "tavolo",
+        "max": 3,
+        "desc": "Per studiare serve almeno un tavolo."
+      },
+      {
+        "id": "laboratorio",
+        "nome": "LABORATORIO",
+        "serve": "scaffale",
+        "max": 3,
+        "desc": "Gli attrezzi vanno su uno scaffale, o spariscono."
+      },
+      {
+        "id": "incontri",
+        "nome": "INCONTRI",
+        "serve": "sedie",
+        "max": 3,
+        "desc": "Per incontrarsi bisogna potersi sedere."
+      }
+    ],
+    "pezzi": [
+      {
+        "tipo": "tavolo",
+        "nome": "Tavolo"
+      },
+      {
+        "tipo": "tavolo",
+        "nome": "Tavolo zoppo"
+      },
+      {
+        "tipo": "scaffale",
+        "nome": "Scaffale"
+      },
+      {
+        "tipo": "scaffale",
+        "nome": "Libreria"
+      },
+      {
+        "tipo": "sedie",
+        "nome": "Sedie spaiate"
+      },
+      {
+        "tipo": "sedie",
+        "nome": "Divano"
+      }
+    ],
+    "effetti": {
+      "studio": {
+        "tavolo": "Lo studio ha posto per dodici persone. Il silenzio è compreso.",
+        "scaffale": "Nello studio, i libri a portata di mano. Nessuno deve alzarsi.",
+        "sedie": "Nello studio si può anche ripassare in gruppo. A bassa voce. Più o meno."
+      },
+      "laboratorio": {
+        "tavolo": "Il laboratorio ha un banco da lavoro: si ripara una sedia al giorno.",
+        "scaffale": "Il laboratorio diventa un magazzino ordinato. Gli attrezzi si prestano.",
+        "sedie": "Nel laboratorio si può fare un corso. Il primo: aggiustare le sedie."
+      },
+      "incontri": {
+        "tavolo": "Nella sala incontri si può mangiare insieme. Ognuno porta qualcosa.",
+        "scaffale": "Nella sala incontri c'è la biblioteca degli oggetti: si presta tutto.",
+        "sedie": "La sala incontri tiene un'assemblea intera. Seduta."
+      }
+    }
+  },
+  "percorso": {
+    "partenza": 400,
+    "entrata": 480,
+    "budget": 6,
+    "fermate": [
+      {
+        "nome": "CASA DI NADIR",
+        "pos": [
+          70,
+          120
+        ]
+      },
+      {
+        "nome": "FERMATA PIAZZA",
+        "pos": [
+          250,
+          70
+        ]
+      },
+      {
+        "nome": "STAZIONE",
+        "pos": [
+          250,
+          200
+        ]
+      },
+      {
+        "nome": "ZONA INDUSTRIALE",
+        "pos": [
+          460,
+          130
+        ]
+      }
+    ],
+    "tratte": [
+      {
+        "da": 0,
+        "a": 1,
+        "nome": "Bus 12",
+        "euro": 2,
+        "min": 55
+      },
+      {
+        "da": 1,
+        "a": 3,
+        "nome": "Bus 30 (stesso biglietto)",
+        "euro": 0,
+        "min": 55
+      },
+      {
+        "da": 0,
+        "a": 2,
+        "nome": "Bus 4",
+        "euro": 2,
+        "min": 20
+      },
+      {
+        "da": 2,
+        "a": 3,
+        "nome": "Treno (+10 min di coincidenza)",
+        "euro": 4,
+        "min": 50
+      },
+      {
+        "da": 2,
+        "a": 3,
+        "nome": "Navetta CHEAP Premium",
+        "euro": 8,
+        "min": 20,
+        "curva": 1
+      },
+      {
+        "da": 1,
+        "a": 2,
+        "nome": "A piedi",
+        "euro": 0,
+        "min": 25
+      }
+    ]
+  },
+  "smistamento": {
+    "destinazioni": [
+      "CASA COMUNE",
+      "FERMATA CENTRALE",
+      "BOTTEGA DI RINA"
+    ],
+    "richieste": [
+      {
+        "testo": "Pacco scolastico",
+        "cat": "Consegne",
+        "dest": 0
+      },
+      {
+        "testo": "Aggiornamento autobus",
+        "cat": "Comunicazioni",
+        "dest": 1
+      },
+      {
+        "testo": "Fattura",
+        "cat": "Servizi",
+        "dest": 2
+      },
+      {
+        "testo": "Libri",
+        "cat": "Consegne",
+        "dest": 0
+      },
+      {
+        "testo": "Nuovi orari della linea 30",
+        "cat": "Comunicazioni",
+        "dest": 1
+      },
+      {
+        "testo": "Ordine di farina",
+        "cat": "Consegne",
+        "dest": 2
+      },
+      {
+        "testo": "Volantini dell'assemblea",
+        "cat": "Comunicazioni",
+        "dest": 0
+      },
+      {
+        "testo": "Reclamo per i ritardi",
+        "cat": "Servizi",
+        "dest": 1
+      },
+      {
+        "testo": "Preventivo del vetraio",
+        "cat": "Servizi",
+        "dest": 2
+      }
+    ],
+    "discrepanze": [
+      {
+        "id": "082",
+        "testo": "Richiesta n. 082",
+        "cat": "Consegne",
+        "proposta": "ARCHIVIO CENTRALE",
+        "dest": 0
+      },
+      {
+        "id": "091",
+        "testo": "Richiesta n. 091",
+        "cat": "Comunicazioni",
+        "proposta": "ARCHIVIO CENTRALE",
+        "dest": 0
+      },
+      {
+        "id": "104",
+        "testo": "Richiesta n. 104",
+        "cat": "Servizi",
+        "proposta": "UFFICIO RICONVERSIONI",
+        "dest": 0
+      }
+    ],
+    "discrepanze_da": 4
+  },
+  "bilanci": {
+    "manutenzione": 42000,
+    "canone_cheap": 19000,
+    "canone_vecchio": 7000,
+    "oneri": 11000,
+    "entrate": 28000
+  }
+}
