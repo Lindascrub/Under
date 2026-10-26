@@ -190,7 +190,7 @@ func _station(j: Dictionary) -> void:
 	if c != 0:
 		return
 	var cfg: Dictionary = (j.get("battle", {}) as Dictionary).duplicate(true)
-	if j.has("game") and GameState.hard_work % 3 != 2:
+	if j.has("game"):
 		GameState.minigame = {
 			"kind": "work", "game": j["game"], "name": str(j.get("title", "Il turno")),
 			"pay": int(int(cfg.get("pay", 300)) * (1.0 + 0.1 * GameState.floor_index(GameState.floor_id))),

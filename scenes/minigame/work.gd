@@ -78,6 +78,8 @@ var hd_sel := 0
 var hd_done := 0
 var hd_honest := 0
 var hd_last := ""
+## Negli ultimi secondi del turno squillano tutti i telefoni della sala.
+const HD_FINALE := 12.0
 
 var _title: Label
 var _info: Label
@@ -314,6 +316,9 @@ func _process(delta: float) -> void:
 						_hd_next()
 			elif hd_phase == "ring" and int(hd_t * 6.0) % 3 == 0 and int(t * 60) % 10 == 0:
 				Sound.sfx("ding", [1.0, 1.5, 1.25][hd_phone])
+			# il finale: in un call center si sente solo questo
+			if time_left < HD_FINALE and randf() < delta * 9.0:
+				Sound.sfx("ding", randf_range(0.8, 1.7))
 	_info.text = "Tempo %d   Fatto %d/%d   Errori %d" % [int(ceil(time_left)), int(score), int(ceil(target)), mistakes]
 	if time_left <= 0.0:
 		_finish()
@@ -519,7 +524,8 @@ func _hd_answer(k: int) -> void:
 
 func _hd_next() -> void:
 	hd_phase = "wait"
-	hd_t = randf_range(0.5, 1.1)
+	# nel finale non c'è respiro tra una chiamata e l'altra
+	hd_t = randf_range(0.05, 0.2) if time_left < HD_FINALE else randf_range(0.5, 1.1)
 
 
 func _new_weight() -> void:
@@ -644,6 +650,8 @@ func _draw_pedal(font: Font) -> void:
 func _draw_helpdesk(font: Font) -> void:
 	# la moquette arancione del -4, sotto la scrivania
 	draw_rect(BOX.grow(-4), Color("4a2a1a"))
+	if time_left < HD_FINALE:
+		_draw_drin(font)
 	if hd_phase == "talk":
 		draw_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 24), "Il cliente:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8a8494"))
 		draw_multiline_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 42), "\"%s\"" % str(hd_call[0]), HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 32, 12, 2, Color.WHITE)
@@ -675,6 +683,17 @@ func _draw_helpdesk(font: Font) -> void:
 	if hd_last != "":
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 30), hd_last, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("c8c0d0"))
 	draw_string(font, Vector2(BOX.position.x, BOX.position.y + 56), "Sincero: %d" % hd_honest, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Color("8a8494"))
+
+
+## Il finale: "DRIN!" dappertutto, intorno alla scrivania e dentro, che lampeggiano.
+func _draw_drin(font: Font) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(t * 7.0)
+	for i in 22:
+		var p := Vector2(rng.randf_range(4, 600), rng.randf_range(70, 345))
+		var col := Color(1.0, 0.88, 0.3, rng.randf_range(0.25, 0.9))
+		draw_string(font, p, "DRIN!", HORIZONTAL_ALIGNMENT_LEFT, -1, rng.randi_range(8, 14), col)
+	draw_string(font, Vector2(0, BOX.position.y - 6), "SQUILLANO TUTTI", HORIZONTAL_ALIGNMENT_CENTER, 640, 11, RED)
 
 
 func _draw_clean() -> void:

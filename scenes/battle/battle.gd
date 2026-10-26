@@ -137,6 +137,7 @@ func _show_menu_text(t: String) -> void:
 
 
 func _set_text(t: String) -> void:
+	_text.add_theme_font_size_override("font_size", 16)
 	_text.text = t
 	_text.visible_characters = 0
 	_typed = 0.0
@@ -470,6 +471,10 @@ func _process(delta: float) -> void:
 	box.size = box.size.lerp(box_target.size, 0.25)
 	_text.position = box.position + Vector2(16, 12)
 	_text.size = Vector2(box.size.x - 32, box.size.y - 20)
+	# il testo deve stare dentro il riquadro: se non ci sta, la scritta si fa più piccola
+	var fs := _text.get_theme_font_size("font_size")
+	if fs > 10 and _text.get_line_count() * (_text.get_line_height() + _text.get_theme_constant("line_spacing")) > _text.size.y + 2.0:
+		_text.add_theme_font_size_override("font_size", fs - 1)
 	_shake = maxf(0.0, _shake - delta * 20.0)
 
 	if _typing:

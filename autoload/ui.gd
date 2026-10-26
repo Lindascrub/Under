@@ -29,6 +29,7 @@ var _narr: Label
 var _time_bar: Control
 var _portrait: TextureRect
 var _portrait_tex: AtlasTexture
+var _boss_mat := ShaderMaterial.new()
 var _talk_t := 0.0
 ## Ritratti extra per chi non è in npcs.json.
 const EXTRA_PORTRAITS := {
@@ -143,6 +144,7 @@ func _build() -> void:
 	_portrait.size = Vector2(48, 48)
 	_portrait.stretch_mode = TextureRect.STRETCH_SCALE
 	_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_boss_mat.shader = preload("res://shaders/rainbow.gdshader")
 	_box.add_child(_portrait)
 	_text = _make_label(12)
 	_text.position = Vector2(14, 24)
@@ -200,6 +202,7 @@ func _show_portrait(speaker: String, sheet: String) -> void:
 					break
 	var has := sheet != ""
 	_portrait.visible = has
+	_portrait.material = _boss_mat if speaker == "Il capo" else null
 	if has:
 		_portrait_tex.atlas = Assets.tex("characters/%s.png" % sheet, Vector2i(896, 656))
 		_portrait_tex.region = Rect2(18 * 16, 41, 16, 16)

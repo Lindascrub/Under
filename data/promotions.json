@@ -3,73 +3,73 @@
     "title": "L'idea di Gino",
     "item": "il foglietto con l'idea di Gino",
     "desc": [
-      "Il capo: Ottimo turno! Senta, una cosetta da niente.",
-      "Il capo: Gino, quello dei bagni, ha avuto un'idea per risparmiare acqua. L'ha scritta su un foglietto. Lo tiene nel taschino.",
-      "Il capo: Domani c'è la riunione. Se l'idea la presenta lei, la promozione va a lei. Gino non viene mai alle riunioni, comunque."
+      "Ottimo turno! Senta, una cosetta da niente.",
+      "Gino, quello dei bagni, ha avuto un'idea per risparmiare acqua. L'ha scritta su un foglietto. Lo tiene nel taschino.",
+      "Domani c'è la riunione. Se l'idea la presenta lei, la promozione va a lei. Gino non viene mai alle riunioni, comunque."
     ]
   },
   "vito": {
     "title": "Il trucco di Vito",
     "item": "il quaderno dei trucchi di Vito",
     "desc": [
-      "Il capo: Vito, al mercato, ha un trucco per tenere la frutta fresca il doppio. Trent'anni di esperienza in un quaderno.",
-      "Il capo: Lo brevettiamo. A nome suo, si capisce: il suo, non quello di Vito."
+      "Vito, al mercato, ha un trucco per tenere la frutta fresca il doppio. Trent'anni di esperienza in un quaderno.",
+      "Lo brevettiamo. A nome suo, si capisce: il suo, non quello di Vito."
     ]
   },
   "marta": {
     "title": "Il piano di Marta",
     "item": "il piano del condominio di Marta",
     "desc": [
-      "Il capo: Marta R. ha scritto un piano per far risparmiare il condominio. Geniale. Troppo geniale per una che non ha un titolo.",
-      "Il capo: Lo presenti lei all'assemblea dei proprietari. Marta può sempre scriverne un altro."
+      "Marta R. ha scritto un piano per far risparmiare il condominio. Geniale. Troppo geniale per una che non ha un titolo.",
+      "Lo presenti lei all'assemblea dei proprietari. Marta può sempre scriverne un altro."
     ]
   },
   "sig_bruno": {
     "title": "Le memorie del signor Bruno",
     "item": "il quaderno delle storie del signor Bruno",
     "desc": [
-      "Il capo: Il signor Bruno racconta storie bellissime sulla città di una volta. Le scrive in un quaderno.",
-      "Il capo: Una casa editrice nostra le vuole. Con un autore giovane in copertina. Lei, per esempio."
+      "Il signor Bruno racconta storie bellissime sulla città di una volta. Le scrive in un quaderno.",
+      "Una casa editrice nostra le vuole. Con un autore giovane in copertina. Lei, per esempio."
     ]
   },
   "dario": {
     "title": "Il rapporto di Dario",
     "item": "il rapporto sulla produttività di Dario",
     "desc": [
-      "Il capo: Dario ha passato tre mesi a scrivere un rapporto. Contava tutto, col suo contatore.",
-      "Il capo: Se lo firma lei, il merito è suo. E se il rapporto dice che il reparto è lento... beh, il reparto era di Dario."
+      "Dario ha passato tre mesi a scrivere un rapporto. Contava tutto, col suo contatore.",
+      "Se lo firma lei, il merito è suo. E se il rapporto dice che il reparto è lento... beh, il reparto era di Dario."
     ]
   },
   "lea": {
     "title": "La tesi di Lea",
     "item": "la chiavetta con la tesi di Lea",
     "desc": [
-      "Il capo: Lea, quella dei tre lavori, ha scritto una tesi su come rendere la città più umana. Ironico, vero?",
-      "Il capo: Ne facciamo il nuovo progetto aziendale. Serve qualcuno che la presenti con un sorriso. E con il suo nome sopra."
+      "Lea, quella dei tre lavori, ha scritto una tesi su come rendere la città più umana. Ironico, vero?",
+      "Ne facciamo il nuovo progetto aziendale. Serve qualcuno che la presenti con un sorriso. E con il suo nome sopra."
     ]
   },
   "giulia": {
     "title": "Il progetto di Giulia",
     "item": "il progetto di Giulia",
     "desc": [
-      "Il capo: Giulia lavora da un anno a un progetto per l'ufficio. Ci tiene. Troppo.",
-      "Il capo: Il consiglio vuole vederlo lunedì. Se lo presenta lei, lunedì lei è Direttore. Giulia resterà dov'è: le piace, lì."
+      "Giulia lavora da un anno a un progetto per l'ufficio. Ci tiene. Troppo.",
+      "Il consiglio vuole vederlo lunedì. Se lo presenta lei, lunedì lei è Direttore. Giulia resterà dov'è: le piace, lì."
     ]
   },
   "ragazzo_sami": {
     "title": "Il percorso di Sami",
     "item": "la mappa dei percorsi di Sami",
     "desc": [
-      "Il capo: Sami, il rider, ha trovato il modo di fare il doppio delle consegne nello stesso tempo. Ha disegnato una mappa.",
-      "Il capo: Diventa l'algoritmo della nostra app. L'algoritmo ha bisogno di un inventore. Uno serio. Uno come lei."
+      "Sami, il rider, ha trovato il modo di fare il doppio delle consegne nello stesso tempo. Ha disegnato una mappa.",
+      "Diventa l'algoritmo della nostra app. L'algoritmo ha bisogno di un inventore. Uno serio. Uno come lei."
     ]
   },
   "portiere_ivo": {
     "title": "Le chiavi di Ivo",
     "item": "il registro delle chiavi di Ivo",
     "desc": [
-      "Il capo: Ivo, il portiere, sa tutto di ogni palazzo del quartiere. Chi entra, chi esce, chi non paga.",
-      "Il capo: Quel registro vale oro. Lo porti a me, e lei diventa l'esperto del quartiere."
+      "Ivo, il portiere, sa tutto di ogni palazzo del quartiere. Chi entra, chi esce, chi non paga.",
+      "Quel registro vale oro. Lo porti a me, e lei diventa l'esperto del quartiere."
     ]
   },
   "fermo": {
@@ -78,9 +78,9 @@
     "victim_name": "Fermo",
     "victim_sheet": "char_14",
     "desc": [
-      "Il capo: Ottimo turno! Senta, una cosetta da niente.",
-      "Il capo: Quel signore grigio, Fermo. In undici anni ha riempito un quaderno di idee per far rendere la dinamo il doppio. Non le ha mai date a nessuno.",
-      "Il capo: Se quel quaderno arriva sulla mia scrivania con il suo nome sopra, lei sale. Fermo non se ne accorgerà: non si accorge più di niente."
+      "Ottimo turno! Senta, una cosetta da niente.",
+      "Quel signore grigio, Fermo. In undici anni ha riempito un quaderno di idee per far rendere la dinamo il doppio. Non le ha mai date a nessuno.",
+      "Se quel quaderno arriva sulla mia scrivania con il suo nome sopra, lei sale. Fermo non se ne accorgerà: non si accorge più di niente."
     ]
   },
   "tilde": {
@@ -89,9 +89,9 @@
     "victim_name": "Tilde",
     "victim_sheet": "char_06",
     "desc": [
-      "Il capo: Turno discreto! Senta, una cosetta da niente.",
-      "Il capo: Quella signora grigia del call center, Tilde. Ha scritto a mano un copione suo: con quello i clienti smettono di urlare. Non l'ha mai consegnato.",
-      "Il capo: Se quel copione arriva sulla mia scrivania col suo nome sopra, lei sale. Tilde continuerà a dire grazie. È il suo talento."
+      "Turno discreto! Senta, una cosetta da niente.",
+      "Quella signora grigia del call center, Tilde. Ha scritto a mano un copione suo: con quello i clienti smettono di urlare. Non l'ha mai consegnato.",
+      "Se quel copione arriva sulla mia scrivania col suo nome sopra, lei sale. Tilde continuerà a dire grazie. È il suo talento."
     ]
   }
 }
