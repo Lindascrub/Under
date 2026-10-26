@@ -75,14 +75,14 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	# la frase in basso, su una striscia scura, per non coprire la stanza
 	var band := ColorRect.new()
 	band.color = Color(0, 0, 0, 0)
-	band.position = Vector2(0, 290)
-	band.size = Vector2(640, 70)
+	band.position = Vector2(0, 278)
+	band.size = Vector2(640, 82)
 	layer.add_child(band)
 	var shade := ColorRect.new()
 	shade.color = Color(0, 0, 0, 0)
 	shade.size = Vector2(640, 360)
 	layer.add_child(shade)
-	var label := big_label(layer, line, Vector2(40, 292), Vector2(560, 66), 13, Color.WHITE)
+	var label := big_label(layer, line, Vector2(40, 280), Vector2(560, 78), 13, Color.WHITE)
 	label.modulate.a = 0.0
 	var a := create_tween().set_parallel()
 	a.tween_property(band, "color:a", 0.75, 1.2)
@@ -111,12 +111,13 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 
 func big_label(parent: Node, text: String, pos: Vector2, size: Vector2, font_size: int, col: Color) -> Label:
 	var l := Label.new()
+	# l'a capo prima della larghezza: se no la scritta si allarga quanto tutta la frase ed esce dallo schermo
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.text = text
 	l.position = pos
 	l.size = size
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.add_theme_font_size_override("font_size", font_size)
 	l.add_theme_color_override("font_color", col)
 	parent.add_child(l)
