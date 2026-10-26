@@ -21,9 +21,11 @@ const BOSS := "Il Capo"
 const BOSS_SHEET := "char_18"
 const LIFT := "Ascensore"
 const VOICE := "Voce CHEAP"
-const PRES_DESK := Vector2i(23, 6)
-const PRES_TABLE := Vector2i(24, 10)
-const BOSS_CELL := Vector2i(17, 8)
+const PRES_DESK := Vector2i(35, 8)
+const PRES_TABLE := Vector2i(36, 15)
+const BOSS_CELL := Vector2i(27, 11)
+## la stanza della dinamo: dove si affaccia la Presidente quando pedali
+const DYNAMO_PRES := Vector2i(20, 17)
 const FLOORS := [
 	["-5", "IL FONDO", ["fermo", "bulbo", "mina"]],
 	["-4", "IL SOTTOUFFICIO", ["tilde", "ercole"]],
@@ -42,7 +44,7 @@ static func defaults() -> Dictionary:
 	return {
 		"entered": false, "completed": false,
 		"elevator": {"intro_seen": false, "answer": null},
-		"president": {"met": false, "origin_explained": false, "debt_contract_read": false, "offer_received": false, "first_wish": null},
+		"president": {"met": false, "origin_explained": false, "debt_contract_read": false, "offer_received": false, "first_wish": null, "why_not_asked": false},
 		"director_turn": {"cycle_1_completed": false, "cycle_2_completed": false, "cycle_3_completed": false,
 			"consulted_citizens": false, "decisions": [], "consulted": [], "state": {}, "casa_call_seen": false},
 		"boss": {"final_call_seen": false, "global_credit_offer_resolved": false, "global_credit_accepted": false},
@@ -51,7 +53,7 @@ static func defaults() -> Dictionary:
 		"outcome": {"family": null, "variant": null, "debt_status": null, "governance_status": null},
 		"epilogue": {"started": false, "seen_character_ids": [], "completed": false, "step": 0},
 		"dream": {"selected": null, "final_scene_seen": false},
-		"debt_cancelled": false, "coffee": 0,
+		"debt_cancelled": false, "coffee": 0, "dynamo_seen": false,
 	}
 
 
@@ -135,6 +137,8 @@ func _person(nm: String, sheet: String, cell: Vector2i, anim: String, action: Ca
 	c.sheet = sheet
 	c.anim = anim
 	c.grey = grey
+	if sheet == PRES_SHEET:
+		c.person = "presidente"
 	c.position = cell_feet(cell)
 	world.add_child(c)
 	block(Rect2i(cell, Vector2i.ONE))
@@ -220,6 +224,7 @@ func _mirror_layer(ids: Array) -> CanvasLayer:
 		var id: String = ids[i]
 		var s := CharSprite.new()
 		s.sheet = str(GameState.npc_data(id).get("sheet", "char_02"))
+		s.person = id
 		s.anim = "idle_down"
 		s.grey = not GameState.is_robot(id)
 		s.scale = Vector2(2, 2)
@@ -383,7 +388,9 @@ func _offer() -> void:
 		await Ui.say(["Gli altri resteranno registrati.", "Altrimenti chi farebbe funzionare la Torre?"], PRES)
 	d["president"]["offer_received"] = true
 	await Ui.say(["Non devi rispondere adesso. Il timbro aspetta. È abituato.",
-		"Prima di decidere, vuoi vedere come funziona il mio lavoro?"], PRES)
+		"Prima di decidere, vuoi vedere come funziona il mio lavoro?",
+		"Tre cicli di bilancio. È una prova: le tue decisioni valgono per quei tre cicli, e si vedranno.",
+		"Dopo, se resti, diventano tue. Se te ne vai, torna tutto sulla mia scrivania. Come prima."], PRES)
 	var t: int = await Ui.choose("Vuoi vedere come funziona?", ["Sì, fammi vedere.", "Non adesso."], PRES)
 	if t == 0:
 		await Ui.say(["La scrivania è quella. Si chiama TURNO anche qui. Mi dispiace: il nome l'ha scelto il quarto Consiglio."], PRES)
@@ -409,7 +416,7 @@ func _stamp_preview() -> void:
 
 func _president_menu() -> void:
 	var d := c6()
-	var opts: Array = ["Come funziona il tuo lavoro?", "Il debito, ancora.", "Perché vuoi andare in pensione?", "Niente."]
+	var opts: Array = ["Come funziona il tuo lavoro?", "Il debito, ancora.", "Perché vuoi andare in pensione?", "Perché non lo cambi tu?", "Niente."]
 	var c: int = await Ui.choose("Sì?", opts, PRES)
 	match c:
 		0:
@@ -428,6 +435,58 @@ func _president_menu() -> void:
 		2:
 			await Ui.say(["Ho cominciato ad aprire bustine di zucchero e a sbagliare.", "Quando sbagli le cose piccole, è ora di lasciare quelle grandi.",
 				"Oppure di cambiare zucchero."], PRES)
+			await Ui.say(["E poi non cerco qualcuno che salvi la Torre.", "Cerco qualcuno che la tenga in piedi quando io non ci sono.",
+				"Non è la stessa cosa. Mi ci sono voluti trent'anni a capirlo."], PRES)
+		3:
+			await _why_not_you()
+
+
+## Perché la Presidente non cambia le regole da sola: le ha ereditate, e poi le ha tenute. Anche rafforzate.
+func _why_not_you() -> void:
+	await Ui.say(["Le regole le ho trovate qui. Le ha scritte il primo Consiglio.",
+		"Poi le ho tenute. Qualcuna l'ho anche stretta: gli interessi del terzo Consiglio li ho firmati io.",
+		"Avevo paura che, cambiando tutto in fretta, si fermasse tutto. La dinamo, gli stipendi, i tetti."], PRES)
+	await Ui.say(["Pensi che basti cancellare i numeri?"], PRES)
+	await Ui.choose("Cosa dici?", ["Non lo so."])
+	await Ui.say(["Domani ci saranno ancora i tetti da riparare.", "Le persone da pagare.", "E qualcuno dovrà decidere come."], PRES)
+	await Ui.say(["* Una pausa."])
+	await Ui.say(["Non ti sto dicendo di lasciare tutto com'è.", "Ti sto dicendo che anche cambiare costa qualcosa."], PRES)
+	c6()["president"]["why_not_asked"] = true
+
+
+## La stanza della dinamo: la prima cyclette. Se pedali, sulla scrivania si accende una lampadina.
+func _dinamo() -> void:
+	var d := c6()
+	await Ui.say(["* Una vecchia dinamo.", "* È identica a quella del Fondo. Il sellino è consumato nello stesso punto."])
+	var c: int = await Ui.choose("Sali?", ["Pedala.", "Lascia stare."])
+	if c != 0:
+		return
+	var lamp := find_child("Lampadina", true, false) as CanvasItem
+	Sound.sfx("clunk")
+	if lamp:
+		lamp.modulate = Color(1.6, 1.5, 0.9)
+	await Ui.say(["* Pedali. Dall'ufficio arriva una luce gialla: sulla scrivania della Presidente si è accesa una lampadina.",
+		"* Se rallenti, trema. Se smetti, si spegne."])
+	var p := _person("PresidenteDinamo", PRES_SHEET, DYNAMO_PRES, "idle_left", Callable(), true)
+	await Ui.say(["Oh. Funziona ancora."], PRES)
+	var asked := false
+	while true:
+		var q: int = await Ui.choose("Cosa fai?", ["Perché è qui?", "Scendi."] if not asked else ["Scendi."])
+		if not asked and q == 0:
+			asked = true
+			await Ui.say(["Era il primo modello."], PRES)
+			await Ui.say(["* Una pausa."])
+			await Ui.say(["All'inizio ne bastava una."], PRES)
+			await Ui.say(["* Guarda la lampadina, lontana, sulla scrivania."])
+			await Ui.say(["Poi abbiamo costruito tutto il resto."], PRES)
+			continue
+		break
+	if lamp:
+		lamp.modulate = Color(0.45, 0.45, 0.5)
+	await Ui.say(["* Scendi. La lampadina si spegne."])
+	await Ui.say(["Dovrei farla sostituire."], PRES)
+	_remove(p)
+	d["dynamo_seen"] = true
 
 
 # --- il TURNO di Direzione ---------------------------------------------------------------------------
@@ -453,6 +512,9 @@ func start_cycle() -> void:
 		return
 	if n == 2 and not c6()["director_turn"]["casa_call_seen"]:
 		await _casa_call()
+	if n == 1:
+		await Ui.say(["È tutto molto semplice."], PRES)
+		await Ui.say(["* La frase del Capo. Detta con la stessa voce, quasi."])
 	GameState.minigame = {"cycle": n}
 	Router.goto(DIREZIONE)
 
@@ -479,7 +541,8 @@ func _after_cycle(n: int) -> void:
 	var sm := RULES.summary(FINALI.turn_state())
 	match n:
 		1:
-			await Ui.say(["Hai deciso?", "Bene.", "Ora qualcuno sarà contento.", "Qualcun altro ha già chiamato."], PRES)
+			await Ui.say(["* La Presidente guarda lo schermo: una colonna di conseguenze che non finisce più."])
+			await Ui.say(["Be'.", "Sulla carta.", "Ora qualcuno sarà contento.", "Qualcun altro ha già chiamato."], PRES)
 		2:
 			await Ui.say(["La Casa Comune ha già risposto. Con una lettera. Scritta a mano: fa sempre effetto." if RULES.casa_open(str(sm["casa"])) \
 				else "La Casa Comune non ha risposto. Anche questo è una risposta.", "Avanti."], PRES)
@@ -708,8 +771,9 @@ func final_choice() -> void:
 			"B":
 				await Ui.say(["* Rifiuti l'incarico. Lasci la Torre.", "* Il debito resta registrato, o contestato se hai le prove per farlo."])
 			"C":
-				await Ui.say(["* Proponi che decida chi ci lavora. Non è detto che accettino.",
-					"* Prima, una proposta concreta: chi si occupa di cosa."])
+				await Ui.say(["Interessante.", "Ma se lo annunci tu, da quella sedia, hai deciso da solo per tutti. Di nuovo."], PRES)
+				await Ui.say(["* Proponi, non annunci. Non è detto che accettino: le persone hanno un lavoro, orari, paura.",
+					"* Prima, una proposta concreta: chi potrebbe occuparsi di cosa. Saranno loro a dire sì o no."])
 				await assign_roles()
 		var k: int = await Ui.choose("Confermi? Dopo non si torna indietro.", ["Confermo.", "Ci ripenso."])
 		if k == 0:

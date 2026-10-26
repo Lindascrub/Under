@@ -42,7 +42,7 @@ func _ready() -> void:
 	root.name = "Mercato"
 	root.set_script(load("res://chapters/c3/mercato_c3.gd"))
 	root.set("room_floor", "-3")
-	root.set("room_music", "festa")
+	root.set("room_music", "mercato")
 	var pav := TileMapLayer.new()
 	pav.name = "Pavimento"
 	pav.tile_set = ts

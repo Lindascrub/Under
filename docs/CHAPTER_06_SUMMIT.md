@@ -26,22 +26,31 @@ Modifiche ai sistemi condivisi, piccole e compatibili con i capitoli 1-5:
 
 ## Mappa
 
+La Cima è grande (48x22 caselle): l'ufficio da solo è 24x16, e ogni cosa sta nel suo angolo, lontana dalle altre.
+Lo spazio vuoto è voluto: è il posto più ricco della Torre, e non c'è quasi niente.
+
 ```
-        ┌──────────── UFFICIO DELLA PRESIDENTE (pavimento viola) ────────────┐
-        │ pianta  terminale(16,4)  scrivania(19,5)  finestra(23,2)  archivio(29,4)│
-┌──────┐│                          la Presidente (23,6)                         │
-│ASCEN-├┤ specchi (7,9,11)                                                    │
-│SORE  ││ CORRIDOIO   ★(11,9)       tavolo della decisione (21,10)            │
-│(oro) ├┤                                                                     │
-└──────┘│ caffè (15,11)                                    piante             │
-        └────────────────────────────────────────────────────────────────────┘
+                         ┌──────────────── UFFICIO DELLA PRESIDENTE (24x16) ─────────────────┐
+                         │ pianta terminale(24,5)      finestra(31-35,3)        archivio(42,5) │
+ ┌───────┐               │                                                                    │
+ │ASCEN- │┌─ CORRIDOIO ─┐│            scrivania(31,7) + lampadina      Presidente(35,8)        │
+ │SORE   ││ specchi e   ││                                                                    │
+ │(oro)  ├┤ ritratti ★  ├┤ il Capo (27,11)        "qui non c'è niente" (38,11)                │
+ └───────┘└─────────────┘│                                                                    │
+            ┌─ DINAMO ───┐│             tavolo della decisione (32,16)   Presidente (36,15)    │
+            │ cyclette   ├┤ caffè (24,19)                                 salottino (40,17)    │
+            └────────────┘└────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Ascensore** (1,5)-(4,10): niente pulsanti. Insegna, specchio, targhetta "PER SCENDERE, RIVOLGERSI ALLA PRESIDENZA".
-- **Corridoio degli specchi** (6,6)-(12,9): tre specchi, ognuno riflette qualcuno che hai incontrato (o nessuno). La stellina salva.
-- **Ufficio** (14,3)-(30,12): scrivania con la cartellina OBBLIGO DI ESISTENZA e il TURNO, terminale dei bilanci
-  (consultazioni), finestra panoramica, archivio del debito, tavolo della decisione, macchina del caffè.
-- **Arrivi:** `default` e `from_below` (2,8) nell'ascensore; `desk` (20,7) davanti alla scrivania, dopo ogni ciclo.
+- **Ascensore** (1,8)-(5,13): niente pulsanti. Insegna, specchio, targhetta "PER SCENDERE, RIVOLGERSI ALLA PRESIDENZA".
+- **Corridoio degli specchi** (7,9)-(20,12): tre specchi (x 9, 14, 19), fra uno e l'altro i ritratti dei Presidenti
+  di prima (l'ultima cornice è vuota: "PROSSIMAMENTE"). La stellina (19,12) salva.
+- **Stanza della dinamo** (15,15)-(20,18), pavimento e muro del Fondo, si entra dall'ufficio: la prima cyclette.
+  Pedalando si accende la lampadina sulla scrivania; arriva la Presidente ("Era il primo modello").
+- **Ufficio** (22,4)-(45,19): finestra a nord, scrivania al centro (cartellina OBBLIGO DI ESISTENZA, lampadina,
+  il TURNO), terminale a ovest (consultazioni), archivio del debito a est, tavolo della decisione a sud,
+  caffè a sud-ovest, un salottino a sud-est con i cuscini ancora nella plastica.
+- **Arrivi:** `default` e `from_below` (3,11) nell'ascensore; `desk` (32,9) davanti alla scrivania, dopo ogni ciclo.
 
 ## Scene
 
@@ -61,7 +70,14 @@ Modifiche ai sistemi condivisi, piccole e compatibili con i capitoli 1-5:
 | 6.11 Il sogno | Finale | Il sogno (scelto prima, alla Presidente) secondo la famiglia del finale. CHEAP / Quanto costa una vita? / FINE. I titoli | `dream.*`, `completed` |
 | Finestra | ufficio | Facoltativa: un ultimo sguardo ai piani (una riga per piano, secondo come li hai lasciati). Nessun premio | `panorama.locations_seen` |
 
-Specchi, archivio, caffè (al secondo colpo esce lo zucchero) sono facoltativi e non danno niente.
+Specchi, ritratti, archivio, caffè, la dinamo e il salottino sono facoltativi e non danno niente.
+
+Dalla revisione della storia (vedi `docs/COHERENCE.md`):
+- i tre cicli sono presentati come **una prova**: valgono per la prova, diventano tuoi solo se resti;
+- prima del primo ciclo la Presidente dice "È tutto molto semplice." (la frase del Capo), dopo "Be'. Sulla carta.";
+- "Perché non lo cambi tu?": le regole le ha ereditate, tenute e anche strette; teme che cambiare in fretta fermi tutto;
+  cerca un successore, non un salvatore ("Pensi che basti cancellare i numeri?");
+- scegliendo C la Presidente avverte: annunciarlo da quella sedia è decidere da solo per tutti. Si propone, non si impone.
 
 ## La Presidente e l'origine del debito
 

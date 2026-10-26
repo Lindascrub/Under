@@ -131,9 +131,10 @@ func _label(text: String, pos: Vector2, size: Vector2, font_size: int, col: Colo
 	return l
 
 
-func _actor(sheet: String, x: float, grey := true, robot := false, anim := "idle_down") -> CharSprite:
+func _actor(sheet: String, x: float, grey := true, robot := false, anim := "idle_down", person := "") -> CharSprite:
 	var s := CharSprite.new()
 	s.sheet = sheet
+	s.person = "" if robot else person
 	s.anim = anim
 	s.grey = grey and not robot
 	s.scale = Vector2(3, 3)
@@ -183,7 +184,7 @@ func family_scene() -> void:
 	var var_ := str(out.get("variant", "B1"))
 	Sound.music("cima")
 	_floor_strip(Color("3a2450"))
-	var pres := _actor("char_20", 380, true, false, "idle_left")
+	var pres := _actor("char_20", 380, true, false, "idle_left", "presidente")
 	_actor(PLAYER_SHEET, 260, false, false, "idle_right")
 	match fam:
 		"A":
@@ -237,7 +238,7 @@ func family_scene() -> void:
 					_actor("char_13", 200, true)
 					await Ui.say(["Quindi adesso chi firma?"], NIVES)
 					if FINALI.bonded("teo") and not GameState.is_robot("teo"):
-						_actor(_sheet("teo"), 440, true)
+						_actor(_sheet("teo"), 440, true, false, "idle_down", "teo")
 						await Ui.say(["Dipende da cosa dobbiamo firmare."], "Teo")
 					else:
 						await Ui.say(["* Qualcuno, dal fondo: \"Dipende da cosa dobbiamo firmare.\""])
@@ -252,7 +253,7 @@ func family_scene() -> void:
 					await Ui.say(["* Nasce un progetto: piccolo, indipendente, in un piano che nessuno usava. La Torre continua a funzionare, lì accanto.",
 						"* Chi entra, decide. Chi decide, poi pulisce."])
 					if FINALI.met("leda") and not GameState.is_robot("leda"):
-						_actor(_sheet("leda"), 440, true)
+						_actor(_sheet("leda"), 440, true, false, "idle_down", "leda")
 						await Ui.say(["Non saprei.", "Però oggi qualcuno mi ha aiutato a chiudere il negozio."], "Leda")
 	await _final_line(final_line(var_))
 
@@ -356,7 +357,7 @@ func epilogue_segment(i: int) -> void:
 			ids.append(id)
 	for k in ids.size():
 		var id: String = ids[k]
-		_actor(_sheet(id), 160 + (k + 0.5) * 320.0 / ids.size(), true, GameState.is_robot(id))
+		_actor(_sheet(id), 160 + (k + 0.5) * 320.0 / ids.size(), true, GameState.is_robot(id), "idle_down", id)
 	if ids.is_empty():
 		await Ui.say([_floor_fallback(str(seg[0]))])
 	else:

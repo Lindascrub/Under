@@ -1,6 +1,7 @@
 extends Node
 ## Effetti sonori e musica. I file sono in res://audio/ (generati da tools/make_audio.py).
 ## Uso: Sound.sfx("coin")  /  Sound.music("quartiere")
+## La musica vera sta in res://assets/music/ (vedi PLAYLISTS); gli effetti in res://audio/.
 
 const SFX_PLAYERS := 6
 
@@ -35,6 +36,7 @@ func _ready() -> void:
 	_music = AudioStreamPlayer.new()
 	_music.volume_db = -8.0
 	_music.bus = "Music"
+	_music.finished.connect(_on_music_finished)
 	add_child(_music)
 	var cfg := ConfigFile.new()
 	if cfg.load(SETTINGS) == OK:
@@ -108,15 +110,51 @@ func music_pitch(p: float, time := 2.0) -> void:
 	tw.tween_property(_music, "pitch_scale", p, time)
 
 
+## Le canzoni vere (pacchetti comprati/scaricati, in res://assets/music/, esclusi da git come LimeZu).
+## Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra (mai la stessa due volte di fila).
+## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
+const MUSIC_DIR := "res://assets/music/"
+const PLAYLISTS := {
+	"festa": ["gettinsillywithit", "gettinwackywithit", "porkyminchtypebeat"],
+	"attesa": ["soundfontjazzclub", "slycooperclarinet", "pkmngoldluckycornerioweitalltoyou"],
+	"mercato": ["marketjam", "lively_city", "east_town", "trunk_knox_go_buck"],
+	"banca": ["tracerbulletprivateeye", "sleazyfurball", "malicious_scheme"],
+	"citta": ["metropolitancosmopolitan", "peaceful_village", "hewillneverbetheapeescapesoundtrack"],
+	"quartiere": ["wood_forest_town", "ancient_library", "the_old_magician"],
+	"cima": ["royal_castle", "magic_temple", "traveling_the_sky"],
+	"presidente": ["magic_temple", "royal_castle"],
+	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
+	"lavoro": ["hypnoticsynthloop", "dark_factory", "frostylabratory", "dwarven_mine"],
+	"notte": ["nighttownwaltz", "melancholic_bittersweet_groovycavejourney"],
+	"fondo": ["dripstonecave", "tension1"],
+	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
+	"tensione": ["tension1", "tension2"],
+}
+
+## Atmosfere nuove senza un segnaposto loro: quale vecchio .wav usare se mancano le canzoni.
+const OLD_PLACEHOLDER := {"mercato": "festa", "tensione": "presidente"}
+
+var _playlist: Array = []
+var _track := ""
+
+
 func music(name: String) -> void:
 	if name == _music_name:
 		return
 	_music_name = name
 	_music.pitch_scale = 1.0
+	_playlist = []
+	_track = ""
 	if name == "":
 		_music.stop()
 		return
-	var stream := _load("music_" + name) as AudioStreamWAV
+	for t: String in PLAYLISTS.get(name, []):
+		if ResourceLoader.exists(MUSIC_DIR + t + ".ogg"):
+			_playlist.append(t)
+	if not _playlist.is_empty():
+		_next_track()
+		return
+	var stream := _load("music_" + str(OLD_PLACEHOLDER.get(name, name))) as AudioStreamWAV
 	if stream == null:
 		_music.stop()
 		return
@@ -125,3 +163,28 @@ func music(name: String) -> void:
 	stream.loop_end = int(stream.get_length() * stream.mix_rate)
 	_music.stream = stream
 	_music.play()
+
+
+## La canzone dopo nella scaletta (a caso, ma non quella appena finita).
+func _next_track() -> void:
+	var pool := _playlist.filter(func(t: String) -> bool: return t != _track)
+	if pool.is_empty():
+		pool = _playlist
+	_track = str(pool.pick_random())
+	var stream := load(MUSIC_DIR + _track + ".ogg") as AudioStreamOggVorbis
+	if stream == null:
+		return
+	# una canzone sola: si ripete; se ce ne sono di più, alla fine si cambia
+	stream.loop = _playlist.size() == 1
+	_music.stream = stream
+	_music.play()
+
+
+func _on_music_finished() -> void:
+	if not _playlist.is_empty():
+		_next_track()
+
+
+## La canzone che suona adesso ("" se è un segnaposto o niente). Per i test.
+func current_track() -> String:
+	return _track

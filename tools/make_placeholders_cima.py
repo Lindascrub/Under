@@ -63,6 +63,7 @@ if __name__ == "__main__":
     placeholder("cartellina_obbligo.png", 12, 8, PINK)
     placeholder("timbro_annullato.png", 96, 24, (200, 30, 40, 255), "DEBITO ANNULLATO", WHITE, 10)
     placeholder("zucchero.png", 6, 4, WHITE)
+    placeholder("lampadina.png", 8, 10, (255, 236, 150, 255))
     placeholder("macchina_caffe.png", 16, 32, (80, 70, 60, 255), "CAFFÈ", WHITE, 5, inner=(3, 4, 12, 12))
     placeholder("telefono.png", 12, 8, (214, 40, 60, 255))
     tower("torre_sezione.png", 200, 600)

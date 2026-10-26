@@ -757,6 +757,7 @@ func _add_person(nm: String, sheet: String, cell: Vector2i, anim: String, action
 	var c := CharSprite.new()
 	c.name = nm
 	c.sheet = sheet
+	c.person = nm.to_lower()
 	c.anim = anim
 	c.grey = grey
 	c.position = cell_feet(cell)
@@ -852,13 +853,13 @@ func _organizer_talk() -> void:
 
 func _visitors() -> void:
 	if _f("c3_leda"):
-		_add_person("Leda", "char_01", Vector2i(30, 16), "idle_left", _leda)
+		_add_person("Leda", str(GameState.npc_data("leda").get("sheet")), Vector2i(30, 16), "idle_left", _leda)
 	if _f("c3_amir"):
 		var amir := _add_person("Amir", "char_04", Vector2i(32, 15), "idle_left", _amir, not GameState.is_robot("amir"))
 		if GameState.is_robot("amir"):
 			_antenna(amir)
 	if _f("c4_olga"):
-		_add_person("Olga", "char_14", Vector2i(10, 18), "idle_right", _olga)
+		_add_person("Olga", str(GameState.npc_data("olga").get("sheet")), Vector2i(10, 18), "idle_right", _olga)
 	if _f("c4_teo"):
 		var teo := _add_person("Teo", "char_17", Vector2i(11, 19), "idle_right", _teo, not GameState.is_robot("teo"))
 		if GameState.is_robot("teo"):

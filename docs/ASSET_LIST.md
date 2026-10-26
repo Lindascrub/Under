@@ -28,6 +28,7 @@ frontale. Pixel art a 16 px per casella, senza antialiasing, contorno scuro (`#1
 | `timbro_annullato.png` | 96x24 | Il timbro rosso ANNULLATO (mostrato nell'offerta, usato nel finale A) | frontale, sopra lo schermo | il codice lo fa scendere e "battere"; l'arte può aggiungere l'inchiostro che si allarga | `chapters/c6/cima_c6.gd` (offerta, 6.04); `chapters/c6/finale_c6.gd`, `family_scene` (A) |
 | `tavoli_condivisi.png` | 96x32 | I tavoli uniti del finale C | 3/4 frontale | nessuna | `finale_c6.gd`, `family_scene` (C) |
 | `torre_sezione.png` | 200x600 | La Torre in sezione, sei piani dal Fondo alla Cima | frontale, piatta | il codice la fa scorrere dall'alto in basso | `cima_c6.gd`, `_finestra` (panorama); `finale_c6.gd`, epiloghi |
+| `lampadina.png` | 8x10 | La lampadina sulla scrivania: si accende quando pedali sulla dinamo | frontale, appoggiata | spenta = scurita dal codice, accesa = più luminosa; consigliati 2 frame (spenta/accesa) con alone | `cima.tscn`, `Mondo/Lampadina` (34,7); `cima_c6.gd`, `_dinamo` |
 | `zucchero.png` | 6x4 | Bustina di zucchero (quella che la Presidente strappa) | dall'alto, piccola | consigliata: strappo (2 frame) | **generato, non ancora usato**: le scene lo descrivono a parole |
 | `telefono.png` | 12x8 | Il telefono della scrivania (la chiamata del Capo, la Casa Comune) | dall'alto, appoggiato | consigliata: vibra quando squilla (2 frame) | **generato, non ancora usato**: lo squillo è solo sonoro (`drring.wav`) |
 
@@ -44,6 +45,67 @@ Dai props LimeZu: `palm.png`.
 | `audio/drring.wav` | breve | Il telefono della scrivania | `cima_c6.gd`, 6.08 (il Capo); `finale_c6.gd` (finale A) |
 | `audio/music_cima.wav` | 12 s, in loop | Musica della Cima e della Direzione | `cima.tscn`, `direzione.gd`, inizio del finale |
 | `audio/music_epilogo.wav` | 6 s, in loop | Musica degli epiloghi e dei titoli | `finale_c6.gd` |
+
+## Le persone vere: un dettaglio a colori (`art/people/`, generati da `tools/make_placeholders_persone.py`)
+
+Le persone vere sono grigie, e i fogli LimeZu si somigliano. Ognuna ha un grigio suo (`tint` in `data/looks.json`),
+un gesto suo da ferma, e **un dettaglio a colori** che il sistema non è riuscito a togliere. Chi diventa robot lo perde.
+Ogni file è 16x32, trasparente, allineato alla cornice dei personaggi LimeZu (testa da y 10 a 24, collo a y 24-25)
+e si disegna sopra lo sprite in tutte le direzioni (`scripts/looks.gd`). Nella grafica vera conviene una versione
+per direzione (giù, su, sinistra, destra: 64x32).
+
+| File | Misura (px) | Di chi | Funzione | Prospettiva | Animazione |
+|---|---|---|---|---|---|
+| `berretto.png` | 16x32 | Fermo | Berretto di lana rosso scuro | 3/4 frontale, sulla testa | nessuna |
+| `casco.png` | 16x32 | Nonno Mina (id `bulbo`) | Casco giallo da elettricista | 3/4 frontale, sulla testa | nessuna |
+| `fiocco.png` | 16x32 | Bulbo (id `mina`) | Fiocco arancione | 3/4 frontale, di lato sulla testa | nessuna |
+| `matita.png` | 16x32 | Tilde | Matita gialla nello chignon | 3/4 frontale, sulla testa | nessuna |
+| `cuffia.png` | 16x32 | Ercole | Cuffia blu del call center | 3/4 frontale, sulle orecchie | consigliata: lucina del microfono |
+| `bandana.png` | 16x32 | Leda | Bandana verde col nodo | 3/4 frontale, sulla fronte | consigliata: il nodo che si muove camminando |
+| `cappellino.png` | 16x32 | Amir | Cappellino arancione delle consegne | 3/4 frontale, sulla testa | nessuna |
+| `basco.png` | 16x32 | Olga | Basco viola, storto | 3/4 frontale, sulla testa | nessuna |
+| `cappello_carta.png` | 16x32 | Teo | Cappello piegato da un modulo della Banca | 3/4 frontale, sulla testa | nessuna |
+| `cerchietto.png` | 16x32 | Ada | Cerchietto rosso | 3/4 frontale, sulla testa | nessuna |
+| `sciarpa.png` | 16x32 | Nadir | Sciarpa verde acqua | 3/4 frontale, al collo | consigliata: la coda che si muove |
+| `fiore.png` | 16x32 | Rina | Fiore rosa fra i capelli | 3/4 frontale, di lato sulla testa | nessuna |
+| `spilla.png` | 16x32 | La Presidente | Spilla d'oro sulla giacca | 3/4 frontale, sul petto | nessuna |
+
+I gesti (da ferma, ogni qualche secondo, `tic` in `data/looks.json`) usano animazioni LimeZu che ci sono già:
+Teo, Tilde, Olga e Ada leggono (`read`), Ercole e Amir guardano il telefono (`phone`), Nadir e Nonno Mina guardano
+in alto (gli uccelli, le lampadine), Leda, Rina e Bulbo si guardano intorno.
+
+Dove si usano: `scripts/npc.gd` (tutte le persone di `data/npcs.json`), `world/char_sprite.gd` (campo `person`:
+Fermo nel Fondo, gli ospiti della Città, Leda e Amir sulle cassette, Teo e Olga allo sguardo indietro della Banca,
+la Presidente e le persone del capitolo 6).
+
+Fogli dei personaggi: Leda non usa più `char_01` (era lo stesso del protagonista) ma `char_03`;
+Olga non usa più `char_14` (lo stesso di Fermo) ma `char_09`.
+
+## Musica (`assets/music/`, estratta da `tools/import_music.py`)
+
+Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Quality 16-bit RPG Music** e
+**FREE LOOPABLE MUSIC (Bishop)**. Come LimeZu, la cartella è esclusa da git: non si ridistribuisce.
+**Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
+scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
+
+Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra, mai la stessa due volte di fila
+(`autoload/sound.gd`, `PLAYLISTS`). Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
+
+| Atmosfera | Dove | Canzoni |
+|---|---|---|
+| `festa` | Fondo (-5) | GettinSillyWithIt, GettinWackyWithIt, PorkyMinchTypeBeat |
+| `attesa` | Sottoufficio (-4) | SoundfontJazzClub, SlyCooperClarinet, PkmnGoldLuckyCorner |
+| `mercato` | Mercato (-3) | MarketJam, Lively City, East Town, TRUNK_KNOX_GO_BUCK |
+| `banca` | Banca (-2) | TracerBulletPrivateEye, SleazyFurball, Malicious Scheme |
+| `citta` | Città (0) | MetropolitanCosmopolitan, Peaceful Village, HeWillNeverBeTheApeEscapeSoundtrack |
+| `quartiere` | Casa Comune, stanze di prima | Wood Forest Town, Ancient Library, The Old Magician |
+| `cima` / `presidente` | Cima, Direzione | Royal Castle, Magic Temple, Traveling the Sky |
+| `epilogo` | Epiloghi e titoli | Long Journey, Holy Sanctuary, Melancholic Bittersweet Groovy Cave Journey |
+| `lavoro` | I TURNI (minigiochi) | HypnoticSynthLoop, Dark Factory, FrostyLabratory, Dwarven Mine |
+| `notte` | La notte | NightTownWaltz, Melancholic Bittersweet |
+| `fondo` | Stanze vecchie del Fondo | DripstoneCave, Tension1 |
+| `battaglia` | Battaglie (versione precedente) | Battle Theme I, Battle Theme II, HaveYouEverPlayedGrimDawn |
+| `tensione` | (pronta, non ancora usata) | Tension1, Tension2 |
 
 ## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)
 

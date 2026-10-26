@@ -17,6 +17,11 @@ extends AnimatedSprite2D
 	set(v):
 		nudge = v
 		_refresh()
+## Chi è (id di data/looks.json): il suo grigio, il dettaglio a colori, il gesto. "" = una comparsa.
+@export var person := "":
+	set(v):
+		person = v
+		_refresh()
 ## Grigio: per chi, nel mondo colorato, non sorride (Fermo).
 @export var grey := false:
 	set(v):
@@ -36,9 +41,10 @@ func _refresh() -> void:
 	offset = Vector2(-8, -31) + nudge
 	if sprite_frames and sprite_frames.has_animation(anim):
 		play(anim)
-	if grey:
+	material = null
+	if person != "" and not Engine.is_editor_hint() and not GameState.is_robot(person):
+		Looks.apply(self, person, grey)
+	elif grey:
 		var m := ShaderMaterial.new()
 		m.shader = preload("res://shaders/greyscale.gdshader")
 		material = m
-	else:
-		material = null

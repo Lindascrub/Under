@@ -1,0 +1,16 @@
+{
+	"_note": "L'aspetto delle persone vere. Sono grigie, ma ognuna in un grigio suo (tint), con UN dettaglio a colori che il sistema non è riuscito a togliere (accessory, in art/people/) e un gesto suo quando sta ferma (tic: animazione, ogni quanti secondi). Chi diventa robot li perde tutti. Usato da scripts/looks.gd.",
+	"fermo": {"tint": [0.86, 0.84, 0.92], "accessory": "berretto", "tic": {"anim": "idle_up", "every": 9.0}},
+	"bulbo": {"tint": [1.08, 1.04, 0.94], "accessory": "casco", "tic": {"anim": "idle_up", "every": 7.0}},
+	"mina": {"tint": [1.1, 1.0, 0.96], "accessory": "fiocco", "tic": {"anim": "idle_left", "every": 5.0}},
+	"tilde": {"tint": [0.98, 0.98, 1.08], "accessory": "matita", "tic": {"anim": "read", "every": 6.0}},
+	"ercole": {"tint": [0.92, 0.95, 1.0], "accessory": "cuffia", "tic": {"anim": "phone", "every": 8.0}},
+	"leda": {"tint": [1.06, 1.0, 0.92], "accessory": "bandana", "tic": {"anim": "idle_right", "every": 6.0}},
+	"amir": {"tint": [1.04, 0.98, 0.9], "accessory": "cappellino", "tic": {"anim": "phone", "every": 7.0}},
+	"olga": {"tint": [1.0, 0.95, 1.04], "accessory": "basco", "tic": {"anim": "read", "every": 9.0}},
+	"teo": {"tint": [0.94, 0.98, 1.06], "accessory": "cappello_carta", "tic": {"anim": "read", "every": 5.0}},
+	"ada": {"tint": [1.04, 0.96, 0.96], "accessory": "cerchietto", "tic": {"anim": "read", "every": 8.0}},
+	"nadir": {"tint": [0.94, 1.04, 1.0], "accessory": "sciarpa", "tic": {"anim": "idle_up", "every": 5.0}},
+	"rina": {"tint": [1.06, 0.97, 1.0], "accessory": "fiore", "tic": {"anim": "idle_left", "every": 6.0}},
+	"presidente": {"tint": [1.04, 1.02, 0.95], "accessory": "spilla", "front_only": true, "tic": {"anim": "idle_up", "every": 10.0}}
+}

@@ -86,7 +86,7 @@ size = Vector2(12, 8)
 
 [node name="Mercato" type="Node2D" unique_id=1702459181]
 script = ExtResource("1_ag1ks")
-room_music = "festa"
+room_music = "mercato"
 room_floor = "-3"
 
 [node name="Pavimento" type="TileMapLayer" parent="." unique_id=2003016048]

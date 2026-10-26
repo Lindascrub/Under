@@ -777,6 +777,44 @@ func _test_chapter6() -> void:
 	GameState.robots.append("teo")
 	_check(logic.person_line("teo").contains("antenna"), "17: un robot nello specchio ha l'antenna")
 	GameState.robots.erase("teo")
+	# la stanza della dinamo: pedalare accende la lampadina, la Presidente arriva e se ne va
+	choose_queue = [0, 0, 0]
+	m = await _c6_call(m, "_dinamo")
+	var lamp := m.find_child("Lampadina", true, false) as CanvasItem
+	_check(logic.c6()["dynamo_seen"] and lamp != null and lamp.modulate.r < 1.0, "la dinamo: la lampadina si accende e si rispegne")
+	_check(m.find_child("PresidenteDinamo", true, false) == null or m.find_child("PresidenteDinamo", true, false).is_queued_for_deletion(),
+		"la dinamo: la Presidente se ne va")
+	# ognuno il suo aspetto: grigio suo, dettaglio a colori, gesto. I robot no.
+	var who := CharSprite.new()
+	who.sheet = "char_02"
+	who.person = "nadir"
+	who.grey = true
+	m.add_child(who)
+	await get_tree().process_frame
+	var tint: Variant = (who.material as ShaderMaterial).get_shader_parameter("tint") if who.material is ShaderMaterial else null
+	_check(who.has_node("Dettaglio") and who.has_node("Gesto") and tint is Vector3 and tint != Vector3.ONE, "Nadir ha il suo grigio, la sciarpa e il suo gesto")
+	who.queue_free()
+	GameState.robots.append("teo")
+	var bot := CharSprite.new()
+	bot.sheet = "char_17"
+	bot.person = "teo"
+	m.add_child(bot)
+	await get_tree().process_frame
+	_check(not bot.has_node("Dettaglio") and not bot.has_node("Gesto"), "un robot non ha dettaglio né gesto")
+	bot.queue_free()
+	GameState.robots.erase("teo")
+	var sheets := {}
+	for id: String in ["leda", "amir", "olga", "teo", "ada", "nadir", "rina", "tilde", "ercole", "bulbo", "mina"]:
+		sheets[str(GameState.npc_data(id).get("sheet"))] = true
+	_check(sheets.size() == 11 and not sheets.has("char_01") and not sheets.has("char_14"),
+		"le persone hanno fogli diversi fra loro, da Fermo e dal protagonista")
+	# la musica: una scaletta, e alla fine della canzone ne parte un'altra (se le canzoni ci sono)
+	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):
+		Sound.music("cima")
+		var first: String = Sound.current_track()
+		_check(first in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")
+		Sound.call("_on_music_finished")
+		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["cima"], "finita una canzone ne parte un'altra, diversa")
 	# la Presidente: STRAP, desiderio "origine", tre sezioni, perché, tre domande, l'offerta, il TURNO
 	director_plan = [
 		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}},

@@ -38,11 +38,6 @@ func _ready() -> void:
 	_mat = ShaderMaterial.new()
 	_mat.shader = ROBOT_SHADER
 	sprite.material = _mat
-	# le persone vere, in un piano colorato e finto, sono grigie (campo "grey")
-	if data.get("grey", false) and not GameState.is_robot(id):
-		var grey := ShaderMaterial.new()
-		grey.shader = preload("res://shaders/greyscale.gdshader")
-		sprite.material = grey
 	add_child(sprite)
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(12, 8)
@@ -59,6 +54,10 @@ func _ready() -> void:
 		shadow.visible = false
 		position.y += 3
 		sprite.offset += Vector2(-3, -13) if activity == "sit_left" else Vector2(3, -13)
+	# le persone vere, in un piano colorato e finto, sono grigie (campo "grey"): ognuna nel suo grigio,
+	# con un dettaglio e un gesto suoi (data/looks.json). I robot non hanno niente di tutto questo.
+	if not GameState.is_robot(id):
+		Looks.apply(sprite, id, bool(data.get("grey", false)))
 	sprite.play(_anim_for(activity))
 	sprite.frame = randi() % 6
 	if GameState.is_robot(id):
@@ -94,6 +93,9 @@ func emote(kind: String, time := 1.6) -> void:
 
 
 func _update_emote(delta: float) -> void:
+	if GameState.is_robot(id) and (sprite.has_node("Dettaglio") or sprite.has_node("Gesto")):
+		# è appena diventata un robot: niente più dettaglio, niente più gesto
+		Looks.strip(sprite)
 	if GameState.is_robot(id) or Ui.blocks_input():
 		return
 	var p := get_tree().get_first_node_in_group("player") as Node2D

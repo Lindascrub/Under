@@ -265,6 +265,7 @@ func _people() -> void:
 	var fermo := CharSprite.new()
 	fermo.name = "Fermo"
 	fermo.sheet = "char_14"
+	fermo.person = "fermo"
 	fermo.anim = "sit_left"
 	fermo.grey = true
 	fermo.nudge = Vector2(-3, -6)

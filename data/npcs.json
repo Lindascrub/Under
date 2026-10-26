@@ -2313,7 +2313,7 @@
   },
   "leda": {
     "name": "Leda",
-    "sheet": "char_01",
+    "sheet": "char_03",
     "schedule": [
       {
         "room": "mercato",
@@ -2471,7 +2471,7 @@
   },
   "olga": {
     "name": "Olga",
-    "sheet": "char_14",
+    "sheet": "char_09",
     "schedule": [
       {
         "room": "banca",

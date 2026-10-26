@@ -478,6 +478,7 @@ shape = SubResource("RectangleShape2D_jrs5x")
 position = Vector2(232, 79)
 script = ExtResource("8_ya8wr")
 sheet = "char_14"
+person = "fermo"
 anim = "sit_left"
 nudge = Vector2(-3, -6)
 grey = true

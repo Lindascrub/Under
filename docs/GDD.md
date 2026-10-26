@@ -59,6 +59,9 @@ telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMI
 ### La regola dei colori
 
 - Persone vere: grigie (al Fondo Fermo ha anche un alone scuro).
+  Ognuna nel suo grigio (più caldo, più freddo), con **un dettaglio a colori** che il sistema non è riuscito a togliere
+  (il casco di Nonno Mina, la sciarpa di Nadir, il cappello di carta di Teo...) e un gesto suo quando sta ferma.
+  Chi diventa robot li perde tutti. Dati in `data/looks.json`, codice in `scripts/looks.gd`.
 - Sistema: colorato e finto. Il capo è il più colorato di tutti (il suo ritratto cambia colore).
 - Robot: sorridenti, colorati come i poster.
 
@@ -66,6 +69,12 @@ telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMI
 
 Se al Fondo sali senza esserti voltato verso nessuno, le scale per il Fondo vengono chiuse (coni,
 nastro, cartello VIETATO, al -4). Al Fondo non si torna più. Va resa più chiara: vedi NARRATIVE_DESIGN, "Incoerenze".
+
+## Musica
+
+Canzoni vere (due pacchetti in `../music/`, estratti in `assets/music/` da `tools/import_music.py`, esclusi da git).
+Ogni piano ha una scaletta di 3-4 canzoni: finita una ne parte un'altra, mai la stessa due volte di fila
+(`autoload/sound.gd`, `PLAYLISTS`). Elenco e licenze da controllare: `docs/ASSET_LIST.md`.
 
 ## Comandi
 
@@ -188,6 +197,8 @@ L'ufficio del capo (`scenes/world/boss_office.tscn`) e i vecchi finali (`scenes/
 - **Il Rifugio** (cantina del palazzo blu): l'idea è diventata la **Casa Comune** del capitolo 5 (nuova, `chapters/c5/casa_comune.tscn`).
 - **Casa:** il letto, il robot giocattolo, il post-it e i vestiti di tuo padre.
 - **Missioni** (`data/quests.json`): il gatto di Elsa, le ripetizioni a Luca, il pacco di Sami, gli occhiali di Ivo.
+
+Le regole globali (debito, badge, robot, liberare, notte) sono fissate in [COHERENCE](COHERENCE.md).
 
 I personaggi di città hanno un "perché lavoro" (`motive` in `data/npcs.json`: debito, paura, abitudine, orgoglio)
 e si possono **liberare**: conquisti la fiducia, chiedi perché lavora, e in AIUTA scegli Liberalo.

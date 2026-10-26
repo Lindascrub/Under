@@ -786,7 +786,8 @@ func _secret_setup() -> void:
 		crate.name = "Cassetta%d" % i
 		var s := CharSprite.new()
 		s.name = ["SedutaLeda", "SedutoAmir"][i]
-		s.sheet = ["char_01", "char_04"][i]
+		s.person = ["leda", "amir"][i]
+		s.sheet = str(GameState.npc_data(s.person).get("sheet", "char_02"))
 		s.anim = ["sit_right", "sit_left"][i]
 		s.grey = true
 		s.nudge = Vector2(0, -8)
