@@ -134,3 +134,16 @@ foreach ($zipName in $files.Keys) {
     }
 }
 Write-Host "Copiati $copied file in $dest"
+
+# I personaggi fatti con il Character Generator LimeZu (salvati dall'app): characters/cheap_<id>.png.
+# Sono derivati dagli asset LimeZu: anche loro restano fuori da git.
+$saved = Join-Path $env:USERPROFILE "AppData\LocalLow\Gray Matter Studios\Character Generator 2.0\Saved Characters"
+if (Test-Path $saved) {
+    foreach ($f in Get-ChildItem $saved -Filter *.png) {
+        Copy-Item $f.FullName (Join-Path $dest ("characters\cheap_" + $f.Name)) -Force
+        $copied++
+    }
+    Write-Host "Personaggi del Character Generator copiati da $saved"
+} else {
+    Write-Warning "Non trovo i personaggi salvati in $saved"
+}

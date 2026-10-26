@@ -264,7 +264,7 @@ func _people() -> void:
 	_sprite(mondo, "CassettaFermo", "res://assets/limezu/street/box_trash.png", Rect2(), Vector2i(14, 4), 16)
 	var fermo := CharSprite.new()
 	fermo.name = "Fermo"
-	fermo.sheet = "char_14"
+	fermo.sheet = "cheap_fermo"
 	fermo.person = "fermo"
 	fermo.anim = "sit_left"
 	fermo.grey = true

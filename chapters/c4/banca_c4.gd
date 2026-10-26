@@ -818,7 +818,7 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
-	var seats := [["SedutoTeo", "char_17", "sit_right", Vector2i(16, 7)], ["InPiediOlga", str(GameState.npc_data("olga").get("sheet", "char_09")), "idle_left", Vector2i(18, 7)]]
+	var seats := [["SedutoTeo", str(GameState.npc_data("teo").get("sheet")), "sit_right", Vector2i(16, 7)], ["InPiediOlga", str(GameState.npc_data("olga").get("sheet", "char_09")), "idle_left", Vector2i(18, 7)]]
 	for s: Array in seats:
 		var c := CharSprite.new()
 		c.name = s[0]

@@ -220,7 +220,7 @@ func start_job(j: Dictionary) -> void:
 ## Chi, su ogni piano, ha pena di te: [nome, foglio, frasi, fregatura]. La fregatura è quello che
 ## la pietà ti costa (Vito vuole aiuto gratis, il Signor Tasso la chiama "contributo" ma è un prestito).
 const PITY := {
-	"-5": ["Fermo", "char_14", [
+	"-5": ["Fermo", "cheap_fermo", [
 		"Ti ho visto. Tre giorni. Pedali, cadi, ti rialzi, cadi.",
 		"Tieni. Sono i soldi della mia cassetta. Li tenevo per il funerale.",
 		"Tanto, a quanto pare, non mi serve un funerale. Mi serve che almeno uno di noi salga.",

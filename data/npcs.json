@@ -1935,7 +1935,7 @@
   },
   "mina": {
     "name": "Bulbo",
-    "sheet": "char_08",
+    "sheet": "cheap_mina",
     "schedule": [
       {
         "room": "fondo",
@@ -1991,7 +1991,7 @@
   },
   "tilde": {
     "name": "Tilde",
-    "sheet": "char_06",
+    "sheet": "cheap_tilde",
     "schedule": [
       {
         "room": "sottoufficio",
@@ -2049,7 +2049,7 @@
   },
   "ercole": {
     "name": "Ercole",
-    "sheet": "char_10",
+    "sheet": "cheap_ercole",
     "schedule": [
       {
         "room": "sottoufficio",
@@ -2108,7 +2108,7 @@
   },
   "rosa": {
     "name": "Rosa",
-    "sheet": "char_12",
+    "sheet": "cheap_rosa",
     "schedule": [
       {
         "room": "nessuno",
@@ -2262,7 +2262,7 @@
   },
   "sandro": {
     "name": "Sandro",
-    "sheet": "char_07",
+    "sheet": "cheap_sandro",
     "schedule": [
       {
         "room": "nessuno",
@@ -2313,7 +2313,7 @@
   },
   "leda": {
     "name": "Leda",
-    "sheet": "char_03",
+    "sheet": "cheap_leda",
     "schedule": [
       {
         "room": "mercato",
@@ -2380,7 +2380,7 @@
   },
   "amir": {
     "name": "Amir",
-    "sheet": "char_04",
+    "sheet": "cheap_amir",
     "schedule": [
       {
         "room": "mercato",
@@ -2471,7 +2471,7 @@
   },
   "olga": {
     "name": "Olga",
-    "sheet": "char_09",
+    "sheet": "cheap_olga",
     "schedule": [
       {
         "room": "banca",
@@ -2537,7 +2537,7 @@
   },
   "teo": {
     "name": "Teo",
-    "sheet": "char_17",
+    "sheet": "cheap_teo",
     "schedule": [
       {
         "room": "banca",
@@ -2616,7 +2616,7 @@
   },
   "ada": {
     "name": "Ada",
-    "sheet": "char_19",
+    "sheet": "cheap_ada",
     "schedule": [
       {
         "room": "casa_comune",
@@ -2687,7 +2687,7 @@
   },
   "nadir": {
     "name": "Nadir",
-    "sheet": "char_02",
+    "sheet": "cheap_nadir",
     "schedule": [
       {
         "room": "citta",
@@ -2751,7 +2751,7 @@
   },
   "rina": {
     "name": "Rina",
-    "sheet": "char_16",
+    "sheet": "cheap_rina",
     "schedule": [
       {
         "room": "citta",

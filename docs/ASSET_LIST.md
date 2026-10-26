@@ -1,4 +1,11 @@
-# Elenco degli asset personalizzati (segnaposto)
+# Elenco degli asset personalizzati
+
+> **Grafica aggiornata da Codex:** sono stati sostituiti tutti i **100 PNG personalizzati**,
+> conservando nomi, misure, trasparenze e tagli dei fogli animati. Gli asset acquistati
+> in `assets/limezu/` sono rimasti invariati. Stato e rigenerazione: [ASSET_REFRESH_CODEX.md](ASSET_REFRESH_CODEX.md).
+> Le tabelle sotto conservano il contratto tecnico originario; i riferimenti ai
+> segnaposto descrivono la provenienza dei file, ora sostituiti. I vecchi generatori
+> conservano automaticamente i PNG definitivi tramite `tools/asset_guard.py`.
 
 La grafica fatta apposta per CHEAP verrà disegnata a parte. Nel gioco, al suo posto, ci sono **segnaposto**:
 forme piene con un'etichetta, già della misura giusta. Per sostituirne uno basta salvare il PNG nuovo
@@ -46,9 +53,31 @@ Dai props LimeZu: `palm.png`.
 | `audio/music_cima.wav` | 12 s, in loop | Musica della Cima e della Direzione | `cima.tscn`, `direzione.gd`, inizio del finale |
 | `audio/music_epilogo.wav` | 6 s, in loop | Musica degli epiloghi e dei titoli | `finale_c6.gd` |
 
+## I personaggi (Character Generator LimeZu)
+
+I personaggi delle persone vere sono fatti con il **Character Generator 2.0** di LimeZu e salvati dall'app in
+`%USERPROFILE%/AppData/LocalLow/Gray Matter Studios/Character Generator 2.0/Saved Characters/`.
+`tools/import_assets.ps1` li copia in `assets/limezu/characters/cheap_<id>.png` (fuori da git, come gli altri asset LimeZu).
+Stesso formato dei personaggi già pronti (896x640, stesse righe: fermo, cammina, seduto, telefono, legge).
+
+| File salvato | Chi | Dove si usa |
+|---|---|---|
+| `fermo.png` | Fermo | Fondo (`fondo.tscn`, `bake_c1_fondo.gd`, `room.gd`) |
+| `mina.png` | Bulbo (id `mina`) | Fondo |
+| `tilde.png`, `ercole.png` | Tilde, Ercole | Sottoufficio |
+| `leda.png`, `amir.png` | Leda, Amir | Mercato, ospiti in Città, epiloghi |
+| `olga.png`, `teo.png` | Olga, Teo | Banca, ospiti in Città, epiloghi |
+| `ada.png`, `nadir.png`, `rina.png` | Ada, Nadir, Rina | Città, Casa Comune, epiloghi |
+| `capo.png` | Il Capo | Cima (6.08) |
+| `rosa.png`, `sandro.png` | Rosa, Sandro | solo dati della versione precedente |
+
+Mancano ancora: **Nonno Mina** (id `bulbo`, usa `char_15`), **la Presidente** (`char_20`), **Nives** (`char_13`).
+Nel gioco le persone vere sono grigie ma non piatte: il grigio tiene il contrasto e un filo (30%) del colore
+del personaggio (`shaders/greyscale.gdshader`, `person`), così restano sbiadite e riconoscibili.
+
 ## Le persone vere: un dettaglio a colori (`art/people/`, generati da `tools/make_placeholders_persone.py`)
 
-Le persone vere sono grigie, e i fogli LimeZu si somigliano. Ognuna ha un grigio suo (`tint` in `data/looks.json`),
+Solo per chi non ha ancora un personaggio suo (Nonno Mina, la Presidente). Ognuna ha un grigio suo (`tint` in `data/looks.json`),
 un gesto suo da ferma, e **un dettaglio a colori** che il sistema non è riuscito a togliere. Chi diventa robot lo perde.
 Ogni file è 16x32, trasparente, allineato alla cornice dei personaggi LimeZu (testa da y 10 a 24, collo a y 24-25)
 e si disegna sopra lo sprite in tutte le direzioni (`scripts/looks.gd`). Nella grafica vera conviene una versione

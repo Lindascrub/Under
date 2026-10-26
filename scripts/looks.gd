@@ -33,6 +33,8 @@ static func apply(sprite: AnimatedSprite2D, id: String, grey: bool) -> void:
 		m.shader = GREY
 		var t: Array = d.get("tint", [1.0, 1.0, 1.0])
 		m.set_shader_parameter("tint", Vector3(float(t[0]), float(t[1]), float(t[2])))
+		# sbiadite ma riconoscibili: il contrasto resta, e un filo del colore di prima
+		m.set_shader_parameter("person", 1.0)
 		sprite.material = m
 	if d.is_empty():
 		return

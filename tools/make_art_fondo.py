@@ -3,6 +3,7 @@ Esegui:  python tools/make_art_fondo.py   (scrive in art/)
 """
 from PIL import Image, ImageDraw, ImageFont
 import os
+from asset_guard import save_asset
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 ART = os.path.join(ROOT, "art")
@@ -13,7 +14,8 @@ METAL_L = (196, 202, 214, 255)
 
 
 def save(img, name):
-    img.save(os.path.join(ART, name))
+    if not save_asset(img, os.path.join(ART, name)):
+        return
     print("art/" + name, img.size)
 
 

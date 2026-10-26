@@ -5,6 +5,7 @@ in docs/ASSET_LIST.md. Sostituendo un PNG con uno della stessa misura, il gioco 
 Esegui dalla cartella del progetto:  python tools/make_placeholders_banca.py
 """
 from PIL import Image, ImageDraw, ImageFont
+from asset_guard import save_asset
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +39,8 @@ def placeholder(name, w, h, fill, text="", text_fill=(255, 255, 255, 255), size=
     if text:
         label(d, (1, 1, w - 1, h - 1), text, size, text_fill)
     os.makedirs(OUT, exist_ok=True)
-    im.save(os.path.join(OUT, name))
+    if not save_asset(im, os.path.join(OUT, name)):
+        return
     print("art/c4/" + name, im.size)
 
 

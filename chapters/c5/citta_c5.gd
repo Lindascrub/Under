@@ -574,7 +574,7 @@ func _sign(prize: int) -> void:
 	await Ui.say(["* Scrivi il tuo nome. Il terminale fa BIP.", "* PREMIO ACCREDITATO: %s." % GameState.euros(prize)])
 	# Ada esce dalla Casa Comune, e non è più Ada
 	var ada := CharSprite.new()
-	ada.sheet = "char_19"
+	ada.sheet = str(GameState.npc_data("ada").get("sheet"))
 	ada.anim = "idle_down"
 	ada.position = cell_feet(Vector2i(16, 10))
 	ada.modulate.a = 0.0
@@ -794,10 +794,10 @@ func _sign_on(c: Node2D, text: String) -> void:
 func _dress_protest() -> void:
 	var org := organizer()
 	if org == "Ada":
-		_add_person("Ada", "char_19", Vector2i(16, 15), "idle_down", _organizer_talk)
+		_add_person("Ada", str(GameState.npc_data("ada").get("sheet")), Vector2i(16, 15), "idle_down", _organizer_talk)
 	else:
 		_add_person("Studente", "char_09", Vector2i(16, 15), "idle_down", _organizer_talk)
-		var ada := _add_person("AdaRobot", "char_19", Vector2i(15, 11), "idle_down", _robot_ada_square, false)
+		var ada := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), Vector2i(15, 11), "idle_down", _robot_ada_square, false)
 		_antenna(ada)
 	var crowd := [
 		["StudenteFolla", "char_20", Vector2i(14, 17), "Sono qui perché chiudono il posto dove studio.", "Studente"],
@@ -855,13 +855,13 @@ func _visitors() -> void:
 	if _f("c3_leda"):
 		_add_person("Leda", str(GameState.npc_data("leda").get("sheet")), Vector2i(30, 16), "idle_left", _leda)
 	if _f("c3_amir"):
-		var amir := _add_person("Amir", "char_04", Vector2i(32, 15), "idle_left", _amir, not GameState.is_robot("amir"))
+		var amir := _add_person("Amir", str(GameState.npc_data("amir").get("sheet")), Vector2i(32, 15), "idle_left", _amir, not GameState.is_robot("amir"))
 		if GameState.is_robot("amir"):
 			_antenna(amir)
 	if _f("c4_olga"):
 		_add_person("Olga", str(GameState.npc_data("olga").get("sheet")), Vector2i(10, 18), "idle_right", _olga)
 	if _f("c4_teo"):
-		var teo := _add_person("Teo", "char_17", Vector2i(11, 19), "idle_right", _teo, not GameState.is_robot("teo"))
+		var teo := _add_person("Teo", str(GameState.npc_data("teo").get("sheet")), Vector2i(11, 19), "idle_right", _teo, not GameState.is_robot("teo"))
 		if GameState.is_robot("teo"):
 			_antenna(teo)
 
@@ -1305,10 +1305,10 @@ func _dress_for_look_back() -> void:
 	_dress_after()
 	# Ada: seduta sulla soglia con un libro, o con i volantini CHEAP
 	if GameState.is_robot("ada"):
-		var r := _add_person("AdaRobot", "char_19", Vector2i(15, 11), "idle_down", func() -> void: pass, false)
+		var r := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), Vector2i(15, 11), "idle_down", func() -> void: pass, false)
 		_antenna(r)
 	elif _f("c5_ada"):
-		_add_person("AdaSoglia", "char_19", Vector2i(18, 11), "idle_down", func() -> void: pass)
+		_add_person("AdaSoglia", str(GameState.npc_data("ada").get("sheet")), Vector2i(18, 11), "idle_down", func() -> void: pass)
 	# Nadir alla fermata: da solo, o con altri pendolari se la rete è partita
 	if _f("c5_nadir_rete"):
 		_add_person("Pendolare0", "char_15", Vector2i(26, 15), "idle_left", func() -> void: pass)
@@ -1387,7 +1387,7 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
-	var seats := [["PancaAda", "char_19", Vector2i(6, 17)], ["PancaRina", "char_16", Vector2i(7, 17)], ["PancaNadir", "char_02", Vector2i(8, 18)]]
+	var seats := [["PancaAda", str(GameState.npc_data("ada").get("sheet")), Vector2i(6, 17)], ["PancaRina", str(GameState.npc_data("rina").get("sheet")), Vector2i(7, 17)], ["PancaNadir", str(GameState.npc_data("nadir").get("sheet")), Vector2i(8, 18)]]
 	for s: Array in seats:
 		var c := CharSprite.new()
 		c.name = s[0]

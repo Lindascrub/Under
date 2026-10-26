@@ -25,7 +25,8 @@ def placeholder(name, w, h, fill, text="", text_fill=(255, 255, 255, 255), size=
     if text:
         base.label(d, (1, 1, w - 1, h - 1), text, size, text_fill)
     os.makedirs(base.OUT, exist_ok=True)
-    im.save(os.path.join(base.OUT, name))
+    if not base.save_asset(im, os.path.join(base.OUT, name)):
+        return
     print("art/c5/" + name, im.size)
 
 
@@ -39,7 +40,8 @@ def sky(name, w, h):
         for x in range(w):
             im.putpixel((x, y), c)
     os.makedirs(base.OUT, exist_ok=True)
-    im.save(os.path.join(base.OUT, name))
+    if not base.save_asset(im, os.path.join(base.OUT, name)):
+        return
     print("art/c5/" + name, im.size)
 
 

@@ -4,6 +4,7 @@ e lo scontrino della rivelazione.
 Esegui:  python tools/make_art_mercato.py   (scrive in art/)
 """
 from PIL import Image, ImageDraw, ImageFont
+from asset_guard import save_asset
 import json
 import os
 
@@ -19,7 +20,8 @@ WOOD_L = (210, 160, 104, 255)
 
 
 def save(img, name):
-    img.save(os.path.join(ART, name))
+    if not save_asset(img, os.path.join(ART, name)):
+        return
     print("art/" + name, img.size)
 
 

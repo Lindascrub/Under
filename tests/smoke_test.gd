@@ -791,9 +791,19 @@ func _test_chapter6() -> void:
 	who.grey = true
 	m.add_child(who)
 	await get_tree().process_frame
-	var tint: Variant = (who.material as ShaderMaterial).get_shader_parameter("tint") if who.material is ShaderMaterial else null
-	_check(who.has_node("Dettaglio") and who.has_node("Gesto") and tint is Vector3 and tint != Vector3.ONE, "Nadir ha il suo grigio, la sciarpa e il suo gesto")
+	var wm := who.material as ShaderMaterial
+	var tint: Variant = wm.get_shader_parameter("tint") if wm else null
+	_check(who.has_node("Gesto") and tint is Vector3 and tint != Vector3.ONE and float(wm.get_shader_parameter("person")) == 1.0,
+		"Nadir ha il suo grigio (sbiadito, non piatto) e il suo gesto")
 	who.queue_free()
+	var old := CharSprite.new()
+	old.sheet = "char_15"
+	old.person = "bulbo"
+	old.grey = true
+	m.add_child(old)
+	await get_tree().process_frame
+	_check(old.has_node("Dettaglio"), "chi non ha ancora un personaggio suo (Nonno Mina) ha il dettaglio a colori")
+	old.queue_free()
 	GameState.robots.append("teo")
 	var bot := CharSprite.new()
 	bot.sheet = "char_17"
@@ -806,7 +816,7 @@ func _test_chapter6() -> void:
 	var sheets := {}
 	for id: String in ["leda", "amir", "olga", "teo", "ada", "nadir", "rina", "tilde", "ercole", "bulbo", "mina"]:
 		sheets[str(GameState.npc_data(id).get("sheet"))] = true
-	_check(sheets.size() == 11 and not sheets.has("char_01") and not sheets.has("char_14"),
+	_check(sheets.size() == 11 and not sheets.has("char_01") and str(GameState.npc_data("leda").get("sheet")) == "cheap_leda",
 		"le persone hanno fogli diversi fra loro, da Fermo e dal protagonista")
 	# la musica: una scaletta, e alla fine della canzone ne parte un'altra (se le canzoni ci sono)
 	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):

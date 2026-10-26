@@ -477,7 +477,7 @@ shape = SubResource("RectangleShape2D_jrs5x")
 [node name="Fermo" type="AnimatedSprite2D" parent="Mondo" unique_id=1965709372]
 position = Vector2(232, 79)
 script = ExtResource("8_ya8wr")
-sheet = "char_14"
+sheet = "cheap_fermo"
 person = "fermo"
 anim = "sit_left"
 nudge = Vector2(-3, -6)

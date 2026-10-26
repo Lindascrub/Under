@@ -47,7 +47,7 @@ func build() -> void:
 	# Fermo, seduto su una cassetta accanto all'ascensore
 	add_prop("street/box_trash.png", FERMO_CELL, 1, Vector2i(16, 16))
 	_fermo = AnimatedSprite2D.new()
-	_fermo.sprite_frames = Assets.character("char_14")
+	_fermo.sprite_frames = Assets.character("cheap_fermo")
 	_fermo.centered = false
 	_fermo.offset = Vector2(-11, -37)
 	_fermo.position = cell_feet(FERMO_CELL) + Vector2(0, 1)

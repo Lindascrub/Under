@@ -24,7 +24,8 @@ def placeholder(name, w, h, fill, text="", text_fill=(255, 255, 255, 255), size=
     if text:
         base.label(d, (1, 1, w - 1, h - 1), text, size, text_fill)
     os.makedirs(OUT, exist_ok=True)
-    im.save(os.path.join(OUT, name))
+    if not base.save_asset(im, os.path.join(OUT, name)):
+        return
     print("art/c6/" + name, im.size)
 
 
@@ -40,7 +41,8 @@ def tower(name, w, h):
         d.rectangle((8, y + 4, w - 9, y + fh - 4), fill=col + (255,), outline=base.EDGE)
         base.label(d, (8, y + 4, w - 9, y + fh - 4), label, 9, (16, 14, 22, 255))
     os.makedirs(OUT, exist_ok=True)
-    im.save(os.path.join(OUT, name))
+    if not base.save_asset(im, os.path.join(OUT, name)):
+        return
     print("art/c6/" + name, im.size)
 
 

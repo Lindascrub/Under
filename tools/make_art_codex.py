@@ -6,7 +6,7 @@ ImageGen objects are mechanically exported to their original sprite canvases.
 Texts, icons, diagrams and tiny animation frames remain editable native drawings.
 """
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageColor
+from PIL import Image, ImageDraw, ImageColor, ImageFont
 import argparse, hashlib, json, math, random, unicodedata
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +83,25 @@ def centered(d, box, lines, color=CREAM, scale=1, leading=2, gap=1):
         text(d,(x0+(x1-x0-width)//2,y),s,color,scale,gap)
         y+=5*scale+leading
 
+def tiny_type(d,box,lines,color=CREAM,max_size=6,leading=1):
+    """Use the game's original pixel typeface for very dense small sign copy."""
+    if isinstance(lines,str):lines=[lines]
+    x0,y0,x1,y1=box
+    oldmode=d.fontmode;d.fontmode='1'
+    chosen=None
+    for point in range(max_size,3,-1):
+        f=ImageFont.truetype(str(ROOT/'fonts/PixelifySans.ttf'),point)
+        boxes=[d.textbbox((0,0),s,font=f) for s in lines]
+        total=sum(b[3]-b[1] for b in boxes)+leading*(len(lines)-1)
+        if max(b[2]-b[0] for b in boxes)<=x1-x0 and total<=y1-y0:
+            chosen=(f,boxes,total);break
+    if chosen is None:raise ValueError('Small text cannot fit: '+str(lines))
+    f,boxes,total=chosen;y=y0+(y1-y0-total)//2
+    for s,b in zip(lines,boxes):
+        d.text((x0+(x1-x0-(b[2]-b[0]))//2-b[0],y-b[1]),s,font=f,fill=color)
+        y+=b[3]-b[1]+leading
+    d.fontmode=oldmode
+
 def canvas(size):
     im=Image.new('RGBA',size,(0,0,0,0)); return im,ImageDraw.Draw(im)
 
@@ -141,7 +160,7 @@ def signs(name,size):
         'plate_piano5.png':('#353340','#e77d70',['PIANO -5']),
         'poster_attesa.png':('#c64f7c',CREAM,['RESTI','IN LINEA!']),
         'poster_modulo.png':('#85b9c6',INK,['UN MODULO','AL GIORNO','TOGLIE','IL PENSIERO']),
-        'poster_rest.png':('#b43650',CREAM,['LAVORO','QUINDI SONO']),
+        'poster_rest.png':('#b43650',CREAM,['IL RIPOSO',"E' UN FURTO"]),
         'poster_smile.png':('#ebc55b',INK,['SORRIDI!','TI OSSERVIAMO']),
         'poster_sorridi.png':('#e8c552',RED,['SORRIDI',"E' GRATIS"]),
         'sign_asta.png':('#92374d',GOLD_L,['ASTA']),
@@ -184,16 +203,17 @@ def signs(name,size):
         d.point((8,11),fill=INK);d.point((13,11),fill=INK)
         d.line((8,15,10,16,13,15),fill=RED)
         box=(22,3,w-3,h-3)
-    if name=='c4/insegna_banca.png':
+    if h<=12:
+        tiny_type(d,(2,1,w-2,h-1),lines,fg,max_size=6)
+    elif name=='c4/insegna_banca.png':
         centered(d,(4,3,w-4,13),lines[0],fg,scale=2)
         centered(d,(4,15,w-4,h-2),lines[1:],fg,leading=1)
     elif name=='c6/timbro_annullato.png':
         d.rectangle((3,3,w-4,h-4),outline=CREAM)
-        centered(d,(5,4,w-5,h-4),lines,fg,scale=2)
+        tiny_type(d,(5,4,w-5,h-4),lines,fg,max_size=12)
         for x,y in [(6,5),(w-9,6),(10,h-5),(w-16,h-6)]: d.point((x,y),fill=bg)
     else:
-        maxscale=2 if h>=24 and max(measure(l,2) for l in lines)<=box[2]-box[0] else 1
-        centered(d,box,lines,fg,scale=maxscale,leading=leading)
+        tiny_type(d,box,lines,fg,max_size=12,leading=leading)
     return im
 
 def price_board(size,which):
@@ -236,8 +256,9 @@ def closure(size):
     d.polygon([(1,0),(w-4,0),(w-1,3),(w-1,h-1),(0,h-1),(0,1)],fill=EDGE)
     d.polygon([(2,1),(w-5,1),(w-2,4),(w-2,h-2),(1,h-2),(1,2)],fill=CREAM)
     d.rectangle((w-5,1,w-3,3),fill='#c4b99e')
-    centered(d,(1,3,w-1,8),'CHIUSURA',RED,gap=0)
-    centered(d,(1,10,w-1,h-1),'FRA 3 GG',INK,gap=0)
+    tiny_type(d,(1,2,w-1,7),'CHIUSURA',RED,max_size=4)
+    d.line((3,8,w-4,8),fill='#d9c9b1')
+    tiny_type(d,(1,9,w-1,h-2),'FRA 3 GG',INK,max_size=6)
     return im
 
 def leaflets(size):
@@ -423,6 +444,45 @@ def notebook(size):
     d.point((3,3),fill=TEAL);d.point((6,3),fill=RED)
     return im
 
+def turnstile(size):
+    im,d=canvas(size)
+    d.polygon([(2,28),(12,28),(14,30),(12,31),(2,31),(1,30)],fill=EDGE)
+    d.line((3,29,11,29),fill='#647085')
+    d.rectangle((4,9,11,28),fill=EDGE)
+    d.rectangle((5,10,10,27),fill='#8c9bac')
+    d.line((5,10,5,27),fill='#d1dfde')
+    d.line((10,10,10,27),fill='#546176')
+    d.polygon([(3,6),(11,6),(13,8),(11,10),(3,10)],fill=EDGE)
+    d.line((4,7,10,7),fill=LIGHT)
+    d.rectangle((4,8,11,9),fill=METAL)
+    d.rectangle((6,12,10,16),fill=EDGE)
+    d.line((7,13,9,13),fill='#ed6d6d')
+    d.point((9,15),fill='#bbd4cb')
+    d.line((0,19,15,19),fill=EDGE,width=3)
+    d.line((0,18,15,18),fill=LIGHT)
+    d.line((7,20,12,24),fill=EDGE,width=3)
+    d.line((7,20,12,24),fill=METAL)
+    d.point((8,19),fill=CREAM)
+    return im
+
+def bulb_crate(size):
+    im,d=canvas(size)
+    d.polygon([(0,11),(5,7),(26,7),(31,11),(31,22),(28,23),(2,23),(0,21)],fill=EDGE)
+    d.polygon([(2,11),(6,8),(25,8),(29,11),(26,14),(4,14)],fill='#876044')
+    for x,y,broken in [(7,4,False),(17,0,False),(25,5,False),(13,8,True)]:
+        d.ellipse((x-3,y,x+3,y+6),fill=EDGE)
+        d.ellipse((x-2,y+1,x+2,y+5),fill='#657080' if broken else GOLD_L)
+        if not broken:d.point((x-1,y+2),fill=CREAM)
+        else:d.line((x-1,y+2,x+1,y+4),fill=EDGE)
+        d.rectangle((x-1,y+6,x+1,y+8),fill=METAL)
+    d.polygon([(1,12),(4,15),(28,15),(30,12),(30,21),(28,22),(2,22),(1,20)],fill='#b48053')
+    d.line((2,14,29,14),fill='#edbd7c')
+    d.line((28,15,28,21),fill='#7a4f42')
+    d.rectangle((16,15,19,22),fill='#dfc18d')
+    d.line((3,20,11,20),fill='#875a43')
+    d.point((4,17),fill=WOOD_L)
+    return im
+
 def park_sign(size):
     im,d=canvas(size);w,h=size
     d.rectangle((w//2-2,h//2,w//2+1,h-1),fill=EDGE)
@@ -541,23 +601,24 @@ def native(name,size):
         'pigeon.png':lambda:pigeon_sheet(size),
         'park_sign.png':lambda:park_sign(size),
         'icon.png':lambda:app_icon(size),
+        'turnstile.png':lambda:turnstile(size),
+        'bulb_box.png':lambda:bulb_crate(size),
     }
     if name.startswith('c5/simbolo_'):
         names=['energia','amministrazione','commercio','finanza']
         return sector_icon(size,names.index(Path(name).stem.replace('simbolo_','')))
     return funcs[name]() if name in funcs else None
 
-def export_generated(source,size):
-    """Mechanical export only: alpha crop, proportional fit, native palette, no dithering."""
+def export_generated(source,size,keep_translucent=False):
+    """Mechanical export: crop alpha and fit the specified native artboard; no dithering."""
     im=Image.open(source).convert('RGBA')
     bbox=im.getchannel('A').point(lambda a:255 if a>=24 else 0).getbbox()
     if bbox:im=im.crop(bbox)
     w,h=size
     margin=0 if min(size)<20 else 1
-    ratio=min((w-2*margin)/im.width,(h-2*margin)/im.height)
-    dims=(max(1,round(im.width*ratio)),max(1,round(im.height*ratio)))
+    dims=(w-2*margin,h-2*margin)
     im=im.resize(dims,Image.Resampling.BOX)
-    alpha=im.getchannel('A').point(lambda a:255 if a>=128 else 0)
+    alpha=im.getchannel('A') if keep_translucent else im.getchannel('A').point(lambda a:255 if a>=128 else 0)
     rgb=im.convert('RGB').quantize(colors=32,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.NONE).convert('RGBA')
     rgb.putalpha(alpha)
     out=Image.new('RGBA',size,(0,0,0,0))
@@ -578,8 +639,14 @@ def main():
         im=native(name,size)
         mode='native UI / micro-sprite'
         if im is None and name in sources:
-            im=export_generated(sources[name]['source'],size)
+            im=export_generated(sources[name]['source'],size,keep_translucent='vetrina' in name)
             mode='ImageGen + native export'
+            if name=='c5/tabellone_bus.png':
+                d=ImageDraw.Draw(im)
+                d.rectangle((12,4,28,9),fill='#172030')
+                tiny_type(d,(12,4,29,9),'6 MIN',GOLD_L,max_size=6)
+            elif name=='c4/terminale_rapporto.png':
+                tiny_type(ImageDraw.Draw(im),(3,3,14,10),'404',INK,max_size=5)
         if im is None:
             missing.append(name);continue
         assert im.size==size and im.mode=='RGBA',name
