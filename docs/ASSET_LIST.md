@@ -63,7 +63,7 @@ Stesso formato dei personaggi già pronti (896x640, stesse righe: fermo, cammina
 | File salvato | Chi | Dove si usa |
 |---|---|---|
 | `fermo.png` | Fermo | Fondo (`fondo.tscn`, `bake_c1_fondo.gd`, `room.gd`) |
-| `mina.png` | Bulbo (id `mina`) | Fondo |
+| `mina.png` | Mina, l'elettricista (id `bulbo`) | Fondo |
 | `tilde.png`, `ercole.png` | Tilde, Ercole | Sottoufficio |
 | `leda.png`, `amir.png` | Leda, Amir | Mercato, ospiti in Città, epiloghi |
 | `olga.png`, `teo.png` | Olga, Teo | Banca, ospiti in Città, epiloghi |
@@ -71,36 +71,16 @@ Stesso formato dei personaggi già pronti (896x640, stesse righe: fermo, cammina
 | `capo.png` | Il Capo | Cima (6.08) |
 | `rosa.png`, `sandro.png` | Rosa, Sandro | solo dati della versione precedente |
 
-Mancano ancora: **Nonno Mina** (id `bulbo`, usa `char_15`), **la Presidente** (`char_20`), **Nives** (`char_13`).
+Mancano ancora: **Bulbo** (id `mina`, usa `char_08`), **la Presidente** (`char_20`), **Nives** (`char_13`).
 Nel gioco le persone vere sono grigie ma non piatte: il grigio tiene il contrasto e un filo (30%) del colore
 del personaggio (`shaders/greyscale.gdshader`, `person`), così restano sbiadite e riconoscibili.
 
-## Le persone vere: un dettaglio a colori (`art/people/`, generati da `tools/make_placeholders_persone.py`)
+## Le persone vere: il grigio e il gesto (`data/looks.json`, `scripts/looks.gd`)
 
-Solo per chi non ha ancora un personaggio suo (Nonno Mina, la Presidente). Ognuna ha un grigio suo (`tint` in `data/looks.json`),
-un gesto suo da ferma, e **un dettaglio a colori** che il sistema non è riuscito a togliere. Chi diventa robot lo perde.
-Ogni file è 16x32, trasparente, allineato alla cornice dei personaggi LimeZu (testa da y 10 a 24, collo a y 24-25)
-e si disegna sopra lo sprite in tutte le direzioni (`scripts/looks.gd`). Nella grafica vera conviene una versione
-per direzione (giù, su, sinistra, destra: 64x32).
-
-| File | Misura (px) | Di chi | Funzione | Prospettiva | Animazione |
-|---|---|---|---|---|---|
-| `berretto.png` | 16x32 | Fermo | Berretto di lana rosso scuro | 3/4 frontale, sulla testa | nessuna |
-| `casco.png` | 16x32 | Nonno Mina (id `bulbo`) | Casco giallo da elettricista | 3/4 frontale, sulla testa | nessuna |
-| `fiocco.png` | 16x32 | Bulbo (id `mina`) | Fiocco arancione | 3/4 frontale, di lato sulla testa | nessuna |
-| `matita.png` | 16x32 | Tilde | Matita gialla nello chignon | 3/4 frontale, sulla testa | nessuna |
-| `cuffia.png` | 16x32 | Ercole | Cuffia blu del call center | 3/4 frontale, sulle orecchie | consigliata: lucina del microfono |
-| `bandana.png` | 16x32 | Leda | Bandana verde col nodo | 3/4 frontale, sulla fronte | consigliata: il nodo che si muove camminando |
-| `cappellino.png` | 16x32 | Amir | Cappellino arancione delle consegne | 3/4 frontale, sulla testa | nessuna |
-| `basco.png` | 16x32 | Olga | Basco viola, storto | 3/4 frontale, sulla testa | nessuna |
-| `cappello_carta.png` | 16x32 | Teo | Cappello piegato da un modulo della Banca | 3/4 frontale, sulla testa | nessuna |
-| `cerchietto.png` | 16x32 | Ada | Cerchietto rosso | 3/4 frontale, sulla testa | nessuna |
-| `sciarpa.png` | 16x32 | Nadir | Sciarpa verde acqua | 3/4 frontale, al collo | consigliata: la coda che si muove |
-| `fiore.png` | 16x32 | Rina | Fiore rosa fra i capelli | 3/4 frontale, di lato sulla testa | nessuna |
-| `spilla.png` | 16x32 | La Presidente | Spilla d'oro sulla giacca | 3/4 frontale, sul petto | nessuna |
+Niente accessori (tolti: erano brutti). Ognuna ha un grigio suo (`tint`) e un gesto suo da ferma; chi diventa robot perde il gesto.
 
 I gesti (da ferma, ogni qualche secondo, `tic` in `data/looks.json`) usano animazioni LimeZu che ci sono già:
-Teo, Tilde, Olga e Ada leggono (`read`), Ercole e Amir guardano il telefono (`phone`), Nadir e Nonno Mina guardano
+Teo, Tilde, Olga e Ada leggono (`read`), Ercole e Amir guardano il telefono (`phone`), Nadir e Mina guardano
 in alto (gli uccelli, le lampadine), Leda, Rina e Bulbo si guardano intorno.
 
 Dove si usano: `scripts/npc.gd` (tutte le persone di `data/npcs.json`), `world/char_sprite.gd` (campo `person`:
@@ -117,12 +97,12 @@ Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Qu
 **Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
 scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
 
-Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra, mai la stessa due volte di fila
+Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra, mai la stessa due volte di fila; con una canzone sola si ripete
 (`autoload/sound.gd`, `PLAYLISTS`). Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
 
 | Atmosfera | Dove | Canzoni |
 |---|---|---|
-| `festa` | Fondo (-5) | GettinSillyWithIt, GettinWackyWithIt, PorkyMinchTypeBeat |
+| `festa` | Fondo (-5) | GettinSillyWithIt (una sola, in loop) |
 | `attesa` | Sottoufficio (-4) | SoundfontJazzClub, SlyCooperClarinet, PkmnGoldLuckyCorner |
 | `mercato` | Mercato (-3) | MarketJam, Lively City, East Town, TRUNK_KNOX_GO_BUCK |
 | `banca` | Banca (-2) | TracerBulletPrivateEye, SleazyFurball, Malicious Scheme |
@@ -135,6 +115,9 @@ Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra, mai la ste
 | `fondo` | Stanze vecchie del Fondo | DripstoneCave, Tension1 |
 | `battaglia` | Battaglie (versione precedente) | Battle Theme I, Battle Theme II, HaveYouEverPlayedGrimDawn |
 | `tensione` | (pronta, non ancora usata) | Tension1, Tension2 |
+| `ascensore` | L'ascensore dell'inizio (rallenta e si spegne quando si rompe) e quello dorato della Cima | SoundfontJazzClub, SlyCooperClarinet |
+| `aiuto_mina` | Il minigioco dei fili di Mina (campo `music` del minigioco in `data/npcs.json`) | Unknown Island |
+| `aiuto_bulbo` | Il minigioco delle lampadine di Bulbo | Goofy Monster |
 
 ## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)
 

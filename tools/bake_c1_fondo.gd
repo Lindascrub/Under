@@ -244,7 +244,7 @@ func _people() -> void:
 	_examine(mondo, "GuardaScatole", Vector2i(19, 10), [
 		"* Scatole piene di lampadine. Alcune accese, alcune rotte, alcune che non hanno ancora deciso.",
 	])
-	# accanto a Nonno Mina, i cavi aggrovigliati (sono linee: si possono spostare nell'editor)
+	# accanto a Mina, i cavi aggrovigliati (sono linee: si possono spostare nell'editor)
 	var cols := [Color("d23b3b"), Color("39b6ff"), Color("ffe14d"), Color("3ddc84")]
 	for i in cols.size():
 		var line := Line2D.new()

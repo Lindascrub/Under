@@ -19,7 +19,8 @@ var _t := 0.0
 func _ready() -> void:
 	Ui.show_hud(false)
 	Ui.cutscene = true
-	Sound.music("")
+	# musica da ascensore: rilassante, aziendale, finché l'ascensore non si rompe
+	Sound.music("ascensore")
 	_player = AnimatedSprite2D.new()
 	_player.sprite_frames = Assets.character("char_01")
 	_player.centered = false
@@ -51,9 +52,12 @@ func _sequence() -> void:
 		_light = 0.35 if i % 2 == 0 else 0.9
 		await _wait(0.08 + randf() * 0.12)
 	_light = 0.85
+	# la musica rallenta, come un disco che si scarica
+	Sound.music_pitch(0.55, 0.9)
 	await _wait(1.0)
 	# -5: lo schianto
 	_floor_text = "-5"
+	Sound.music("")
 	Sound.sfx("clunk")
 	_shake = 1.0
 	_light = 0.0

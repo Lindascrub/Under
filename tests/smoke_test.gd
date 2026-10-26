@@ -784,7 +784,7 @@ func _test_chapter6() -> void:
 	_check(logic.c6()["dynamo_seen"] and lamp != null and lamp.modulate.r < 1.0, "la dinamo: la lampadina si accende e si rispegne")
 	_check(m.find_child("PresidenteDinamo", true, false) == null or m.find_child("PresidenteDinamo", true, false).is_queued_for_deletion(),
 		"la dinamo: la Presidente se ne va")
-	# ognuno il suo aspetto: grigio suo, dettaglio a colori, gesto. I robot no.
+	# ognuno il suo aspetto: grigio suo, gesto. I robot no.
 	var who := CharSprite.new()
 	who.sheet = "char_02"
 	who.person = "nadir"
@@ -796,30 +796,28 @@ func _test_chapter6() -> void:
 	_check(who.has_node("Gesto") and tint is Vector3 and tint != Vector3.ONE and float(wm.get_shader_parameter("person")) == 1.0,
 		"Nadir ha il suo grigio (sbiadito, non piatto) e il suo gesto")
 	who.queue_free()
-	var old := CharSprite.new()
-	old.sheet = "char_15"
-	old.person = "bulbo"
-	old.grey = true
-	m.add_child(old)
-	await get_tree().process_frame
-	_check(old.has_node("Dettaglio"), "chi non ha ancora un personaggio suo (Nonno Mina) ha il dettaglio a colori")
-	old.queue_free()
 	GameState.robots.append("teo")
 	var bot := CharSprite.new()
 	bot.sheet = "char_17"
 	bot.person = "teo"
 	m.add_child(bot)
 	await get_tree().process_frame
-	_check(not bot.has_node("Dettaglio") and not bot.has_node("Gesto"), "un robot non ha dettaglio né gesto")
+	_check(not bot.has_node("Gesto"), "un robot non ha il suo gesto")
 	bot.queue_free()
 	GameState.robots.erase("teo")
 	var sheets := {}
 	for id: String in ["leda", "amir", "olga", "teo", "ada", "nadir", "rina", "tilde", "ercole", "bulbo", "mina"]:
 		sheets[str(GameState.npc_data(id).get("sheet"))] = true
-	_check(sheets.size() == 11 and not sheets.has("char_01") and str(GameState.npc_data("leda").get("sheet")) == "cheap_leda",
+	_check(sheets.size() == 11 and not sheets.has("char_01") and str(GameState.npc_data("leda").get("sheet")) == "cheap_leda" \
+		and str(GameState.npc_data("bulbo").get("name")) == "Mina" and str(GameState.npc_data("bulbo").get("sheet")) == "cheap_mina",
 		"le persone hanno fogli diversi fra loro, da Fermo e dal protagonista")
 	# la musica: una scaletta, e alla fine della canzone ne parte un'altra (se le canzoni ci sono)
 	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):
+		Sound.music("festa")
+		_check(Sound.PLAYLISTS["festa"].size() == 1, "al Fondo una canzone sola")
+		for helper: String in ["bulbo", "mina"]:
+			var mus := str(GameState.npc_data(helper)["help"]["minigame"].get("music", ""))
+			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
 		Sound.music("cima")
 		var first: String = Sound.current_track()
 		_check(first in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")

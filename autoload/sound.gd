@@ -115,7 +115,7 @@ func music_pitch(p: float, time := 2.0) -> void:
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
 const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
-	"festa": ["gettinsillywithit", "gettinwackywithit", "porkyminchtypebeat"],
+	"festa": ["gettinsillywithit"],
 	"attesa": ["soundfontjazzclub", "slycooperclarinet", "pkmngoldluckycornerioweitalltoyou"],
 	"mercato": ["marketjam", "lively_city", "east_town", "trunk_knox_go_buck"],
 	"banca": ["tracerbulletprivateeye", "sleazyfurball", "malicious_scheme"],
@@ -129,6 +129,10 @@ const PLAYLISTS := {
 	"fondo": ["dripstonecave", "tension1"],
 	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
 	"tensione": ["tension1", "tension2"],
+	"ascensore": ["soundfontjazzclub", "slycooperclarinet"],
+	# i minigiochi d'aiuto delle persone (campo "music" del minigioco in data/npcs.json)
+	"aiuto_mina": ["unknown_island"],
+	"aiuto_bulbo": ["goofy_monster"],
 }
 
 ## Atmosfere nuove senza un segnaposto loro: quale vecchio .wav usare se mancano le canzoni.

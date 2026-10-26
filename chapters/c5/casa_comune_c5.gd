@@ -173,12 +173,13 @@ func _avviso() -> void:
 	await Ui.say(["* " + CITY_LOGIC.closure_text()])
 
 
-# --- dai capitoli prima: la bacheca (Fermo, Bulbo, Nonno Mina), il B-4, il contatore ----------------
+# --- dai capitoli prima: la bacheca (Fermo, Bulbo, Mina), il B-4, il contatore ----------------
 
 ## I messaggi del Fondo dipendono da com'è andata davvero laggiù. Chi non hai conosciuto non scrive.
 func _bacheca() -> void:
 	var lines: Array = ["* La bacheca: annunci di ripetizioni, un gatto smarrito, \"CERCO SEDIA. ANCHE ZOPPA\"."]
-	var people := [["fermo", "Fermo", "fermo_talked"], ["bulbo", "Bulbo", "met_bulbo"], ["mina", "Nonno Mina", "met_mina"]]
+	var people := [["fermo", "Fermo", "fermo_talked"], ["bulbo", str(GameState.npc_data("bulbo").get("name")), "met_bulbo"],
+		["mina", str(GameState.npc_data("mina").get("name")), "met_mina"]]
 	var found := false
 	for p: Array in people:
 		if not _f(str(p[2])):
@@ -270,7 +271,7 @@ func _contatore() -> void:
 	var lines: Array = ["* CONTATORE — RETE TORRE CHEAP. Sotto: \"ALIMENTAZIONE INTEGRATIVA: PIANO -5\"."]
 	if _f("c1_arrivo"):
 		GameState.flags["c5_contatore"] = true
-		lines.append("* La dinamo del Fondo. La cyclette. Le luci della festa di Fermo, Bulbo e Nonno Mina tenevano accese anche queste.")
+		lines.append("* La dinamo del Fondo. La cyclette. Le luci della festa di Fermo, Bulbo e Mina tenevano accese anche queste.")
 		if _f("c1_rivelazione"):
 			lines.append("* Laggiù le luci si erano spente perché quelle di sopra restassero accese. Il contatore gira. Non dice per chi.")
 	await Ui.say(lines)

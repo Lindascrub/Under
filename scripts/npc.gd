@@ -55,7 +55,7 @@ func _ready() -> void:
 		position.y += 3
 		sprite.offset += Vector2(-3, -13) if activity == "sit_left" else Vector2(3, -13)
 	# le persone vere, in un piano colorato e finto, sono grigie (campo "grey"): ognuna nel suo grigio,
-	# con un dettaglio e un gesto suoi (data/looks.json). I robot non hanno niente di tutto questo.
+	# con un gesto suo (data/looks.json). I robot no.
 	if not GameState.is_robot(id):
 		Looks.apply(sprite, id, bool(data.get("grey", false)))
 	sprite.play(_anim_for(activity))
@@ -93,8 +93,8 @@ func emote(kind: String, time := 1.6) -> void:
 
 
 func _update_emote(delta: float) -> void:
-	if GameState.is_robot(id) and (sprite.has_node("Dettaglio") or sprite.has_node("Gesto")):
-		# è appena diventata un robot: niente più dettaglio, niente più gesto
+	if GameState.is_robot(id) and sprite.has_node("Gesto"):
+		# è appena diventata un robot: niente più gesto
 		Looks.strip(sprite)
 	if GameState.is_robot(id) or Ui.blocks_input():
 		return

@@ -17,7 +17,7 @@ extends AnimatedSprite2D
 	set(v):
 		nudge = v
 		_refresh()
-## Chi è (id di data/looks.json): il suo grigio, il dettaglio a colori, il gesto. "" = una comparsa.
+## Chi è (id di data/looks.json): il suo grigio e il suo gesto. "" = una comparsa.
 @export var person := "":
 	set(v):
 		person = v

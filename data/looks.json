@@ -1,7 +1,7 @@
 {
-	"_note": "L'aspetto delle persone vere. Sono grigie, ma ognuna in un grigio suo (tint), chi non ha ancora un personaggio suo (Character Generator) ha anche un dettaglio a colori (accessory, in art/people/), e un gesto suo quando sta ferma (tic: animazione, ogni quanti secondi). Chi diventa robot li perde tutti. Usato da scripts/looks.gd.",
+	"_note": "L'aspetto delle persone vere: il loro grigio (tint, sbiadito ma riconoscibile) e un gesto loro quando stanno ferme (tic: animazione, ogni quanti secondi). Chi diventa robot perde il gesto. Usato da scripts/looks.gd.",
 	"fermo": {"tint": [0.86, 0.84, 0.92], "tic": {"anim": "idle_up", "every": 9.0}},
-	"bulbo": {"tint": [1.08, 1.04, 0.94], "accessory": "casco", "tic": {"anim": "idle_up", "every": 7.0}},
+	"bulbo": {"tint": [1.08, 1.04, 0.94], "tic": {"anim": "idle_up", "every": 7.0}},
 	"mina": {"tint": [1.1, 1.0, 0.96], "tic": {"anim": "idle_left", "every": 5.0}},
 	"tilde": {"tint": [0.98, 0.98, 1.08], "tic": {"anim": "read", "every": 6.0}},
 	"ercole": {"tint": [0.92, 0.95, 1.0], "tic": {"anim": "phone", "every": 8.0}},
@@ -12,5 +12,5 @@
 	"ada": {"tint": [1.04, 0.96, 0.96], "tic": {"anim": "read", "every": 8.0}},
 	"nadir": {"tint": [0.94, 1.04, 1.0], "tic": {"anim": "idle_up", "every": 5.0}},
 	"rina": {"tint": [1.06, 0.97, 1.0], "tic": {"anim": "idle_left", "every": 6.0}},
-	"presidente": {"tint": [1.04, 1.02, 0.95], "accessory": "spilla", "front_only": true, "tic": {"anim": "idle_up", "every": 10.0}}
+	"presidente": {"tint": [1.04, 1.02, 0.95], "tic": {"anim": "idle_up", "every": 10.0}}
 }

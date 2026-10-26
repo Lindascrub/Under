@@ -17,7 +17,7 @@ Stato: **già così** (il codice la rispetta), **fatto ora** (aggiunto in questa
 | **Notte e salvataggio** | Salvare non applica interessi. Solo riposare fa passare la notte | **Già così**: la stellina offre "Salva" e "Salva e lascia passare la notte" (`scripts/room.gd`) |
 | **LV** | Misura aziendale del riconoscimento ottenuto (quanto merito il sistema ti attribuisce). Non è un livello morale | **Da fare (P1)**: va detto in un testo (barra in alto o Nives), nessun cambio di regole |
 | **Robotizzazione** | Procedura aziendale: quando CHEAP registra il lavoro di qualcuno come proprietà di un superiore, può assegnarlo al PROGRAMMA DI OTTIMIZZAZIONE DEL PERSONALE. Il robot sorride perché il sistema misura la soddisfazione dai comportamenti standard | **Da fare (P3)**: un documento nell'archivio della Banca (cap. 4): "La standardizzazione riduce gli errori e migliora la soddisfazione dichiarata." |
-| **Robot e identità** | Chi diventa robot perde quello che lo rendeva riconoscibile: il suo grigio, il dettaglio a colori, il gesto | **Fatto ora** (`scripts/looks.gd`, `data/looks.json`) |
+| **Robot e identità** | Chi diventa robot perde quello che lo rendeva riconoscibile: il gesto suo (gli accessori sono stati tolti) | **Fatto ora** (`scripts/looks.gd`, `data/looks.json`) |
 | **Aiutare** | Migliora una situazione concreta. Non è liberare | **Già così** (`helped_ids`) |
 | **Non sfruttare** | Rinunciare alla scorciatoia del Capo. È una scelta a sé, sempre possibile | **Già così** |
 | **Liberare** | Interrompe un rapporto di lavoro, ma non risolve da solo i bisogni materiali (mangiare, una casa) | Meccanica esistente (`GameState.free_npc`) usata solo dalla vecchia città. **Da fare (P3)**: poche occasioni con gli NPC che ci sono già; peso nel finale |

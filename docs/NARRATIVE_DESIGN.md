@@ -90,7 +90,7 @@ fatte nell'editor o con un `talk_<id>` in più, senza cambiare scene o dialoghi 
 | Cima | La domanda finale | Capitolo 6 |
 
 I frammenti non dicono mai quale sia il sogno: lo indicano. Alla fine il giocatore lo nomina, scegliendo tra
-le possibilità che ha raccolto: **costruire** (il robot giocattolo, i fili di Nonno Mina), **raccontare**
+le possibilità che ha raccolto: **costruire** (il robot giocattolo, i fili di Mina), **raccontare**
 (la voce di Tilde, le lettere), **stare con qualcuno** (la cena di Marta, l'ora seduto con tuo padre),
 **andare via** (il pacco di Amir, il mare sul poster della banca).
 Se non ne hai raccolto nessuno, la risposta possibile è una sola: "...Non me lo ricordo."
@@ -141,7 +141,7 @@ avrà un finale di Solidarietà, ma con dentro i suoi robot: Tilde che sorride a
 
 ### Capitolo 1 — -5 Il Fondo · *La festa finta* (fatto)
 
-TURNO: la cyclette-dinamo. Persone: Fermo, Bulbo, Nonno Mina. Il capo: il quaderno di Fermo.
+TURNO: la cyclette-dinamo. Persone: Fermo, Bulbo, Mina. Il capo: il quaderno di Fermo.
 Rivelazione: i colori della festa li accendi tu pedalando, e senza di te si spengono.
 Conseguenze già nel codice: lo straordinario (fino a tre volte), le scale sbarrate se non ti volti,
 la tinta del Fondo (calda se hai aiutato, acida se hai rubato).
@@ -218,7 +218,7 @@ Niente scale dopo: è l'ultimo piano.
 
 | Capitolo | Persone vere (grigie) | Sistema (colorato) | Promozione del capo |
 |---|---|---|---|
-| 1 | Fermo, Bulbo, Nonno Mina | La festa, la cyclette, Nives | Il quaderno di Fermo |
+| 1 | Fermo, Bulbo, Mina | La festa, la cyclette, Nives | Il quaderno di Fermo |
 | 2 | Tilde, Ercole | Signora Agenda, i colleghi, il tritacarte | Il copione di Tilde |
 | 3 | Leda, Amir | Vito (affittuario del suo banco), Rosa, Ottavio, il tabellone | Il quaderno dei prezzi di Leda |
 | 4 | Ines, Sandro | Il direttore, l'orologio degli interessi | Il metodo di Ines |

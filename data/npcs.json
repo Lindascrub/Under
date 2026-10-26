@@ -1879,8 +1879,8 @@
     }
   },
   "bulbo": {
-    "name": "Nonno Mina",
-    "sheet": "char_15",
+    "name": "Mina",
+    "sheet": "cheap_mina",
     "schedule": [
       {
         "room": "fondo",
@@ -1893,7 +1893,7 @@
     ],
     "intro": [
       "Ehi, ehi. Piano coi piedi: qui per terra ci sono i fili.",
-      "Mi chiamano Nonno Mina. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
+      "Mi chiamo Mina. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
       "Adesso le cambio qui sotto. Quelle fulminate tornano sempre giù. Come noi."
     ],
     "days": [
@@ -1907,11 +1907,12 @@
     "emote": "note",
     "help": {
       "kind": "time",
-      "ask": "Nonno Mina ha un pannello con i fili tutti staccati, e gli tremano le mani.",
+      "ask": "Mina ha un pannello con i fili tutti staccati, e gli tremano le mani.",
       "yes": [
         "Bravo! Rosso, blu, giallo... tu hai le dita giuste. Io avevo le dita giuste, una volta."
       ],
       "minigame": {
+        "music": "aiuto_mina",
         "type": "wires",
         "title": "I fili di Mina",
         "intro": [
@@ -1924,7 +1925,7 @@
     },
     "busy_line": [
       "Ora lasciami stare, ragazzo. Devo lavorare, sennò perdo il mio colore.",
-      "* Nonno Mina torna ai suoi fili. Fischietta, e stona."
+      "* Mina torna ai suoi fili. Fischietta, e stona."
     ],
     "reveal": [
       "Ah. Si è spenta. Succede sempre, prima o poi, a chi guarda bene.",
@@ -1935,7 +1936,7 @@
   },
   "mina": {
     "name": "Bulbo",
-    "sheet": "cheap_mina",
+    "sheet": "char_08",
     "schedule": [
       {
         "room": "fondo",
@@ -1967,6 +1968,7 @@
         "Grazie! Le buone restano accese, le rotte vanno via. Come le persone, quaggiù."
       ],
       "minigame": {
+        "music": "aiuto_bulbo",
         "type": "bulbs",
         "title": "Le lampadine di Bulbo",
         "intro": [

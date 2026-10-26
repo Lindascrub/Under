@@ -1,14 +1,12 @@
 class_name Looks
 extends RefCounted
-## L'aspetto delle persone vere (data/looks.json). Sono tutte grigie, e i fogli LimeZu si somigliano:
-## così ognuna ha un grigio suo (più caldo, più freddo, più chiaro), UN dettaglio a colori (un casco,
-## una sciarpa, un fiore: art/people/<nome>.png, 16x32, sopra la cornice del personaggio) e un gesto
-## suo quando sta ferma. Chi diventa robot li perde tutti: è proprio quello che il sistema gli toglie.
+## L'aspetto delle persone vere (data/looks.json). Sono grigie, ma di un grigio sbiadito che tiene il contrasto
+## e un filo del colore del loro personaggio, un po' più caldo o più freddo per ognuna; e hanno un gesto
+## loro quando stanno ferme. Chi diventa robot perde il gesto: è proprio quello che il sistema gli toglie.
 ##
 ## Uso: Looks.apply(sprite, "nadir", true)   (sprite = AnimatedSprite2D con offset (-8, -31))
 
 const DATA := "res://data/looks.json"
-const ART := "res://art/people/"
 const GREY := preload("res://shaders/greyscale.gdshader")
 
 static var _data := {}
@@ -25,7 +23,7 @@ static func data(id: String) -> Dictionary:
 	return d if d is Dictionary else {}
 
 
-## Applica grigio personale, dettaglio e gesto. `grey` = è una persona vera in un mondo colorato.
+## Applica il grigio personale e il gesto. `grey` = è una persona vera in un mondo colorato.
 static func apply(sprite: AnimatedSprite2D, id: String, grey: bool) -> void:
 	var d := data(id)
 	if grey:
@@ -38,22 +36,6 @@ static func apply(sprite: AnimatedSprite2D, id: String, grey: bool) -> void:
 		sprite.material = m
 	if d.is_empty():
 		return
-	var acc := str(d.get("accessory", ""))
-	if acc != "" and ResourceLoader.exists(ART + acc + ".png") and not sprite.has_node("Dettaglio"):
-		var s := Sprite2D.new()
-		s.name = "Dettaglio"
-		s.texture = load(ART + acc + ".png")
-		s.centered = false
-		s.offset = sprite.offset
-		# il dettaglio resta a colori: non eredita il grigio
-		s.use_parent_material = false
-		s.material = null
-		sprite.add_child(s)
-		if bool(d.get("front_only", false)):
-			# un dettaglio sul davanti (una spilla) non si vede da dietro
-			var sync := func() -> void: s.visible = not str(sprite.animation).ends_with("_up")
-			sprite.animation_changed.connect(sync)
-			sync.call()
 	var tic: Dictionary = d.get("tic", {})
 	if not tic.is_empty() and not sprite.has_node("Gesto"):
 		var timer := Timer.new()
@@ -64,11 +46,10 @@ static func apply(sprite: AnimatedSprite2D, id: String, grey: bool) -> void:
 		timer.timeout.connect(_tic.bind(sprite, str(tic.get("anim", "idle_up")), timer))
 
 
-## Toglie dettaglio e gesto (quando una persona diventa robot davanti a te).
+## Toglie il gesto (quando una persona diventa robot davanti a te).
 static func strip(sprite: AnimatedSprite2D) -> void:
-	for n: String in ["Dettaglio", "Gesto"]:
-		if sprite.has_node(n):
-			sprite.get_node(n).queue_free()
+	if sprite.has_node("Gesto"):
+		sprite.get_node("Gesto").queue_free()
 
 
 ## Il gesto: per un momento la persona fa la sua cosa, poi torna com'era. Solo se sta ferma.

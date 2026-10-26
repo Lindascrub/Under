@@ -480,10 +480,10 @@ func epilogue_for(id: String) -> Dictionary:
 				return {"lines": ["LA FESTA È OBBLIGATORIA. DIVERTITEVI."]}
 			return {"lines": ["* Fermo organizza ancora la festa. Adesso, ogni tanto, la festa è vera." if sm["wages_up"] or fam == "C" \
 				else "* Fermo organizza ancora la festa. Sorride per tutti. Qualcuno, adesso, sorride anche per lui."]}
-	# Nonno Mina e Bulbo (al Fondo): la frase del calendario solo a chi lavora ancora
+	# Mina e Bulbo (al Fondo): la frase del calendario solo a chi lavora ancora
 	if robot:
 		return {"lines": ["DINAMO IN FUNZIONE. ENERGIA GARANTITA."]}
-	if nm == "Nonno Mina":
+	if id == "bulbo":
 		return {"lines": ["Quando ero giovane pensavo che a quest'età avrei avuto un sacco di tempo libero.", "Devo aver sbagliato calendario."], "speaker": nm}
 	return {"lines": ["* %s cambia una lampadina. Poi un'altra. Al Fondo le lampadine durano poco, e lui di più." % nm]}
 

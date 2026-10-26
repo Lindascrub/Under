@@ -52,7 +52,7 @@ func _ready() -> void:
 ## Prima di cominciare: come ti chiami? (Sul telefono si apre la tastiera.)
 func _ask_name() -> String:
 	var shade := ColorRect.new()
-	shade.color = Color(0, 0, 0, 0.85)
+	shade.color = Color(0, 0, 0, 0.96)
 	shade.size = Vector2(640, 360)
 	add_child(shade)
 	var q := _label("Come ti chiami?", 22, Color.WHITE)
@@ -72,22 +72,99 @@ func _ask_name() -> String:
 	ok.size = Vector2(120, 34)
 	add_child(ok)
 	edit.grab_focus()
+	# sotto, la torre risponde (come in Undertale: il nome non è mai solo un nome)
+	var reply := _label("", 14, Color("c8c0d0"))
+	reply.position = Vector2(20, 246)
+	reply.size = Vector2(600, 60)
+	reply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var done := [false]
 	edit.text_submitted.connect(func(_t: String) -> void: done[0] = true)
 	ok.pressed.connect(func() -> void: done[0] = true)
-	while not done[0]:
-		await get_tree().process_frame
+	edit.text_changed.connect(func(_t: String) -> void: ok.text = "Comincia")
+	var empty := 0
+	var pending := ""
+	var who := ""
+	while true:
+		done[0] = false
+		while not done[0]:
+			await get_tree().process_frame
+			if name_override != "":
+				edit.text = name_override
+				done[0] = true
+		who = edit.text.strip_edges()
 		if name_override != "":
-			edit.text = name_override
-			done[0] = true
-	var who := edit.text.strip_edges()
-	for n in [shade, q, edit, ok]:
+			break
+		if who == "":
+			if empty >= EMPTY_REPLIES.size():
+				reply.text = "Va bene. Ti chiameremo \"Tu\". Come tutti quelli che non hanno tempo per un nome."
+				Sound.sfx("deny", 0.7)
+				await get_tree().create_timer(2.2).timeout
+				who = "Tu"
+				break
+			reply.text = EMPTY_REPLIES[empty]
+			empty += 1
+			Sound.sfx("deny")
+			edit.grab_focus()
+			continue
+		var key := who.to_lower()
+		if BLOCKED_NAMES.has(key):
+			reply.text = BLOCKED_NAMES[key]
+			Sound.sfx("deny")
+			edit.text = ""
+			edit.grab_focus()
+			pending = ""
+			ok.text = "Comincia"
+			continue
+		if SPECIAL_NAMES.has(key) and pending != key:
+			# un commento, e la seconda volta vale come un sì
+			reply.text = SPECIAL_NAMES[key] + "\n(Tocca di nuovo per tenerlo.)"
+			Sound.sfx("select")
+			pending = key
+			ok.text = "Sì, è questo"
+			edit.grab_focus()
+			continue
+		break
+	for n in [shade, q, edit, ok, reply]:
 		n.queue_free()
-	return who if who != "" else "Tu"
+	return who
 
 
 ## Solo per i test: un nome già scritto.
 var name_override := ""
+
+## Se non scrivi niente: la torre te lo fa notare, ogni volta un po' più stanca.
+const EMPTY_REPLIES: Array[String] = [
+	"Niente? Anche il silenzio è un nome. Ma non si può stampare su un badge.",
+	"La CHEAP ha bisogno di un nome. Per il contratto. E per la lapide.",
+	"Ah, sei uno di quelli che non leggono le istruzioni. Ottimo. Diventerai un ottimo dipendente.",
+	"Il modulo è vuoto. Il debito, invece, è già compilato.",
+]
+## Nomi che la torre non ti lascia prendere.
+const BLOCKED_NAMES := {
+	"fermo": "Quel nome è già preso. Da undici anni. Seduto su una cassetta.",
+	"presidente": "Ti piacerebbe.",
+	"il presidente": "Ti piacerebbe.",
+	"capo": "No. Il capo c'è già. Il capo c'è sempre.",
+	"cheap": "La CHEAP è un marchio registrato. Tu no.",
+	"debito": "Questo nome è già occupato. Da te.",
+	"sans": "No.",
+}
+## Nomi che fanno dire qualcosa alla torre (poi puoi tenerli).
+const SPECIAL_NAMES := {
+	"tu": "Tu. Comodo: così non dobbiamo ricordarci di te.",
+	"io": "Io. Anche il Presidente comincia così ogni frase.",
+	"nessuno": "Nessuno. Come Ulisse. Peccato che qui il Ciclope sia una banca.",
+	"mina": "Come l'elettricista del Fondo? Lui le lampadine di sopra le ha avvitate tutte. Tu, per ora, nessuna.",
+	"bulbo": "Come la bambina delle lampadine? Lei almeno sa dove va ognuna. Tu dove vai?",
+	"soldi": "Soldi. Finalmente qualcuno onesto.",
+	"ricco": "Ottimismo. Ci piace. Il debito ti piacerà meno.",
+	"robot": "Ci stai già pensando, eh? Ci arriverai.",
+	"gratis": "Niente è gratis. Nemmeno il tuo nome. Ma per ora te lo lasciamo.",
+	"frisk": "Questo nome ti porterà sfortuna. Ma qui non c'è bisogno di aiuto, ci pensa il mutuo.",
+	"chara": "Il vero nome. Ma qui il vero nome è quello sul contratto.",
+	"marx": "Hm. Il sistema prende nota.",
+	"linda": "Bel nome. Lo stamperemo piccolo piccolo, in fondo al contratto.",
+}
 
 
 func _label(text: String, size: int, color: Color) -> Label:

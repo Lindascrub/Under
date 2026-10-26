@@ -175,6 +175,7 @@ static func person_line(id: String) -> String:
 func _elevator() -> void:
 	var d := c6()
 	Ui.cutscene = true
+	Sound.music("ascensore")
 	Sound.sfx("ding")
 	await Ui.say(["* Un ascensore dorato. Nessun pulsante.", "* Un'insegna: NON DEVI PIÙ SALIRE. SEI ARRIVATO."])
 	await Ui.say(["* Compare uno specchio. Dentro ci sei tu.",
@@ -200,6 +201,7 @@ func _elevator() -> void:
 	if is_instance_valid(layer):
 		layer.queue_free()
 	Sound.sfx("door")
+	Sound.music("cima")
 	d["elevator"]["intro_seen"] = true
 	Ui.cutscene = false
 

@@ -105,7 +105,10 @@ func _relight() -> void:
 		on.tween_property(f, "position:y", (f as Node2D).position.y - 10, 0.4)
 	Sound.sfx("flap", 1.3)
 	await on.finished
+	# mentre la festa è accesa ti puoi muovere: è il tuo momento
+	Ui.cutscene = false
 	await get_tree().create_timer(5.0).timeout
+	Ui.cutscene = true
 	# e si rispegne
 	Sound.music_pitch(0.75, 1.5)
 	var off := create_tween().set_parallel()

@@ -39,6 +39,10 @@ var target := 10.0
 var mistakes := 0
 var flash := 0.0
 var flash_col := RED
+## L'errore si deve VEDERE: una scritta rossa grande al centro e il riquadro che trema.
+var err_t := 0.0
+var err_msg := ""
+const ERR_TIME := 0.8
 var t := 0.0
 
 # pedal
@@ -283,6 +287,7 @@ func _start() -> void:
 
 func _process(delta: float) -> void:
 	flash = maxf(0.0, flash - delta)
+	err_t = maxf(0.0, err_t - delta)
 	t += delta
 	if phase != "play":
 		queue_redraw()
@@ -502,6 +507,13 @@ func flash_now(col: Color) -> void:
 func _flash(col: Color) -> void:
 	flash = 0.3
 	flash_col = col
+	if col == RED:
+		_error("SBAGLIATO!")
+
+
+func _error(msg: String) -> void:
+	err_t = ERR_TIME
+	err_msg = msg
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -546,7 +558,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				if event.is_action_pressed("move_" + side):
 					if side == last_side:
 						speed = maxf(0.0, speed - 0.12)
+						mistakes += 1
 						_flash(RED)
+						_error("INCIAMPI! Alterna i lati")
 						Sound.sfx("deny")
 					else:
 						speed = minf(1.0, speed + 0.075 - d * 0.015)
@@ -1123,8 +1137,17 @@ func _draw() -> void:
 			_draw_cassa(font)
 	if flash > 0.0:
 		var c := flash_col
-		c.a = flash
+		c.a = flash * 1.8
 		draw_rect(BOX, c)
+	if err_t > 0.0:
+		var k := err_t / ERR_TIME
+		var shake := Vector2(sin(t * 70.0) * 5.0 * k, 0)
+		draw_rect(Rect2(BOX.position + shake, BOX.size), RED, false, 6.0)
+		var col := RED
+		col.a = minf(1.0, k * 2.0)
+		var y := BOX.position.y + 90 - (1.0 - k) * 12.0
+		draw_string_outline(font, Vector2(BOX.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 26, 6, Color(0, 0, 0, col.a))
+		draw_string(font, Vector2(BOX.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 26, col)
 
 
 func _draw_pedal(font: Font) -> void:
@@ -1142,8 +1165,15 @@ func _draw_pedal(font: Font) -> void:
 			col = Color("8a3030")
 		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, col, 10.0)
 	var a := PI + PI * speed
-	draw_line(c, c + Vector2(cos(a), sin(a)) * (r - 14), Color.WHITE, 3.0)
-	draw_circle(c, 6, Color.WHITE)
+	var in_band := speed >= band.x and speed <= band.y
+	var needle := GREEN if in_band else RED
+	draw_line(c, c + Vector2(cos(a), sin(a)) * (r - 14), needle, 4.0)
+	draw_circle(c, 7, needle)
+	if not in_band and phase == "play":
+		var hint := "PIÙ VELOCE!" if speed < band.x else "PIANO!"
+		var hc := RED
+		hc.a = 0.6 + 0.4 * sin(t * 10.0)
+		draw_string(font, Vector2(BOX.position.x, c.y + 24), hint, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 16, hc)
 	# la lampadina di sopra: si accende con la tua fatica
 	var glow := clampf(speed * 1.2, 0.0, 1.0)
 	draw_circle(Vector2(c.x, BOX.position.y + 34), 18 + 10 * glow, Color(1, 0.9, 0.5, 0.15 + 0.35 * glow))

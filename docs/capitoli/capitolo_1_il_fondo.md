@@ -20,7 +20,7 @@ Poi fai il tuo primo turno e scopri che quei colori li accendi tu, con la tua fa
 |---|---|---|
 | **Fermo** | L'unico grigio, con l'alone scuro. Undici anni al Fondo. Spiega le regole e la scritta TURNO. | — (è lui la "vittima" della prima promozione: il suo quaderno di idee) |
 | **Bulbo** | Ragazza di 19 anni, sorride troppo, smista lampadine. Accanto ha le scatole di lampadine. | **Lampadine**: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla si avvita con SU o GIÙ |
-| **Nonno Mina** | Vecchio elettricista, scherza su tutto. Accanto ha i cavi aggrovigliati. | **Fili**: collega i fili dello stesso colore, come in Among Us |
+| **Mina** | Vecchio elettricista, scherza su tutto. Accanto ha i cavi aggrovigliati. | **Fili**: collega i fili dello stesso colore, come in Among Us |
 
 Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo se aiuti tutti.
 
@@ -30,11 +30,11 @@ Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo 
 2. **Arrivo al Fondo: la festa.** Le porte si aprono su festoni, palloncini, coriandoli, una torta "AUGURI ALLA CHEAP".
 3. **Lo schianto.** Dietro di te l'ascensore crolla: rumore, scossa, porte piegate, luce spenta. La musica della festa non si ferma.
 4. **Fermo.** Spiega: lavoro, badge (500 € il primo, poi ogni piano il doppio: 1.000, 2.000, 4.000, 8.000), la scritta TURNO, le stelline per far passare la notte.
-5. **Bulbo e Nonno Mina.** Ti chiedono una mano (i due minigiochi). Dal secondo dialogo: "devo mantenere il mio colore".
+5. **Bulbo e Mina.** Ti chiedono una mano (i due minigiochi). Dal secondo dialogo: "devo mantenere il mio colore".
 6. **Il primo turno: la cyclette.** Il gioco della lancetta: si tocca lo schermo a sinistra e a destra, alternando, per restare nel verde.
 7. **La telefonata del capo.** Ti propone di prenderti il merito del **quaderno di Fermo**: un, due, tre, stella. Tieni il dito sullo schermo per avvicinarti mentre ti dà le spalle, e ancora per copiare; quando si gira, stacchi il dito. Se ti vede muovere, ti rimanda indietro. Tempo limite visibile. Se lo fai, Fermo sorride come i poster.
 8. **La rivelazione, sul primo gradino.** Col badge, appena metti il piede sulle scale la festa si spegne: palloncini sgonfi, festoni caduti, tutto grigio tranne le cose finte (cyclette, sportello). Il grigio è malinconico (hai aiutato), grottesco (hai rubato) o neutro (hai solo lavorato). Nessuna domanda: decidi coi piedi.
-   - Se ti volti e parli con Fermo, Bulbo o Nonno Mina, ti dicono la verità sui colori.
+   - Se ti volti e parli con Fermo, Bulbo o Mina, ti dicono la verità sui colori.
    - Se sali senza aver ascoltato nessuno, le scale dietro di te si chiudono (coni e nastro VIETATO, al piano -4): non si torna più giù.
 9. **Lo straordinario.** Dopo la rivelazione la cyclette resta accesa: puoi pedalare ancora, al massimo tre volte. Ogni volta è più difficile e paga meno (120, 70, 35 €), ma per cinque secondi la festa si riaccende, poi si rispegne.
 10. **Lo sguardo indietro (fine del capitolo).** In cima alle scale la telecamera scende sul Fondo com'è diventato, con Fermo laggiù, e compare una sola frase che dipende dalle tue scelte (quaderno rubato, scale sbarrate, tre straordinari, tutte le verità, chi hai aiutato). Poi buio e il titolo "Capitolo 2 — Il Sottoufficio".

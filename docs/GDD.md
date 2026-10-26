@@ -59,9 +59,8 @@ telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMI
 ### La regola dei colori
 
 - Persone vere: grigie (al Fondo Fermo ha anche un alone scuro).
-  Ognuna nel suo grigio (più caldo, più freddo), con **un dettaglio a colori** che il sistema non è riuscito a togliere
-  (il casco di Nonno Mina, la sciarpa di Nadir, il cappello di carta di Teo...) e un gesto suo quando sta ferma.
-  Chi diventa robot li perde tutti. Dati in `data/looks.json`, codice in `scripts/looks.gd`.
+  Ognuna col suo personaggio (Character Generator), in un grigio sbiadito ma riconoscibile, un po' più caldo
+  o più freddo, e con un gesto suo quando sta ferma. Chi diventa robot li perde. Dati in `data/looks.json`, codice in `scripts/looks.gd`.
 - Sistema: colorato e finto. Il capo è il più colorato di tutti (il suo ritratto cambia colore).
 - Robot: sorridenti, colorati come i poster.
 
@@ -159,7 +158,7 @@ Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre
 | Tipo | Come si gioca col dito | Chi |
 |---|---|---|
 | Lampadine | Scorri a destra (buona), a sinistra (rotta), su e giù (avvita) | Bulbo |
-| Fili | Tocca un filo a sinistra, poi il suo posto a destra | Nonno Mina |
+| Fili | Tocca un filo a sinistra, poi il suo posto a destra | Mina |
 | Sequenza | Guarda le frecce, poi ripetile | Tilde (il copione) |
 | Tempismo | Tocca quando il segno è nel verde | Ercole (tienilo sveglio) |
 | Raccolta | Trascina il cuore e raccogli tutto | (versione precedente: Ivo, Elsa) |
