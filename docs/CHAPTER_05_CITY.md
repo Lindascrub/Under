@@ -198,6 +198,6 @@ prima di partire, anche dopo un caricamento. I vecchi salvataggi non hanno flag 
 ## Limitazioni
 
 - **Grafica e suoni sono segnaposto** (`art/c5/`, `audio/crash|thump|crack|music_citta.wav`). Elenco in `docs/ASSET_LIST.md`.
-- **Il capitolo 6 non esiste ancora:** le scale portano al vecchio ufficio del capo (`scenes/world/boss_office.tscn`).
+- Le scale portano alla Cima del capitolo 6 (`chapters/c6/cima.tscn`, vedi `docs/CHAPTER_06_SUMMIT.md`).
 - Il riepilogo `chapter_5` viene scritto solo alla fine del capitolo; durante il gioco valgono i flag `c5_*`.
 - Non è stato provato a mano su telefono: solo test automatici e screenshot su PC.
