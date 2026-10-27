@@ -1756,8 +1756,8 @@
       {
         "room": "mercato",
         "cell": [
-          14,
-          11
+          17,
+          12
         ],
         "anim": "idle_down"
       }
@@ -1872,8 +1872,8 @@
     "freed_place": {
       "room": "mercato",
       "cell": [
-        14,
-        11
+        17,
+        12
       ],
       "anim": "idle_down"
     }
@@ -2323,7 +2323,7 @@
         "room": "mercato",
         "cell": [
           5,
-          8
+          7
         ],
         "anim": "idle_down"
       }
@@ -2390,8 +2390,8 @@
       {
         "room": "mercato",
         "cell": [
-          19,
-          10
+          30,
+          12
         ],
         "anim": "idle_down"
       }
@@ -2524,7 +2524,7 @@
         "title": "Le rate mancanti",
         "intro": [
           "* Sei documenti sparsi sul tavolino della sala d'attesa.",
-          "* Prima mettili in ordine di data. Poi trova, nell'estratto conto, la voce che c'è due volte."
+          "* Prima mettili in ordine di data, dal più vecchio.", "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Tocca la riga di troppo."
         ],
         "reward": 0,
         "fixed_reward": true,

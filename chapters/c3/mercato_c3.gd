@@ -770,12 +770,12 @@ func _secret_ready() -> bool:
 		and f.get("c3_amir_sogno", false) and f.get("c3_leda_mamma", false)
 
 
-# in piazza, sul pavimento libero accanto al distributore: non coprono i clienti né i teli
-## La terza cassetta è per te, se ti siedi con loro.
-const CRATES := [Vector2i(11, 6), Vector2i(12, 6), Vector2i(13, 6)]
+## L'angolo pausa del magazzino: due panchine una di fronte all'altra (sono nella scena).
+## Leda su quella di sinistra (guarda a destra), Amir su quella di destra; il posto libero è accanto ad Amir.
+const SEATS := {"leda": Vector2i(31, 15), "amir": Vector2i(33, 15), "tu": Vector2i(33, 14)}
 
 
-## Leda e Amir lasciano i loro posti e si siedono su due cassette, in piazza.
+## Leda e Amir lasciano i loro posti e si siedono sulle panchine dell'angolo pausa.
 func _secret_setup() -> void:
 	for id in ["leda", "amir"]:
 		var n := _npc(id)
@@ -783,26 +783,21 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
-	for i in 3:
-		var crate := add_art("res://art/crate.png", CRATES[i], 0)
-		crate.name = "Cassetta%d" % i
-		if i == 2:
-			continue
+	for i in 2:
+		var id: String = ["leda", "amir"][i]
 		var s := CharSprite.new()
 		s.name = ["SedutaLeda", "SedutoAmir"][i]
-		s.person = ["leda", "amir"][i]
-		s.sheet = str(GameState.npc_data(s.person).get("sheet", "char_02"))
+		s.person = id
+		s.sheet = str(GameState.npc_data(id).get("sheet", "char_02"))
 		s.anim = ["sit_right", "sit_left"][i]
 		s.grey = true
-		# seduti SULLA cassetta: alzati di mezza cassetta, così sotto si vede il legno (prima la coprivano tutta)
-		s.nudge = Vector2(0, -6)
-		s.position = cell_feet(CRATES[i])
+		# sulla seduta della panchina: un po' su e verso il sedile (lo schienale è dall'altra parte)
+		s.nudge = Vector2([3, -3][i], -3)
+		s.position = cell_feet(SEATS[id])
 		s.z_index = 1
 		world.add_child(s)
-	block(Rect2i(CRATES[0], Vector2i(3, 1)))
-	# si parla con loro da qualunque lato: un punto su ogni cassetta
-	for c: Vector2i in CRATES.slice(0, 2):
-		add_spot(cell_center(c), _secret)
+		# si parla con loro toccandoli, dal corridoio tra le due panchine
+		add_spot(cell_center(SEATS[id]), _secret)
 
 
 func _secret() -> void:
@@ -810,7 +805,7 @@ func _secret() -> void:
 		await Ui.say(["* Leda e Amir finiscono il panino. Non hanno fretta."])
 		return
 	GameState.flags["c3_segreta"] = true
-	await Ui.say(["* Leda e Amir sono seduti su due cassette. Si dividono un panino. A metà precisa: Leda ha usato il righello."])
+	await Ui.say(["* Leda e Amir sono seduti nell'angolo pausa, uno di fronte all'altra. Si dividono un panino. A metà precisa: Leda ha usato il righello."])
 	await Ui.say(["Sai, un giorno vorrei aprire un ristorante."], "Amir")
 	await Ui.say(["Un ristorante?"], "Leda")
 	await Ui.say(["Sì."], "Amir")
@@ -825,7 +820,9 @@ func _secret() -> void:
 	if c != 0:
 		await Ui.say(["* Li lasci lì. Per una volta, al Mercato, qualcosa non è in vendita."])
 		return
-	player.sit(Vector2(cell_feet(CRATES[2]).x, (CRATES[2].y + 1) * T), "left")
-	await Ui.say(["* Ti siedi sulla terza cassetta, accanto a loro. È un po' storta. Il panino no."])
+	# il sedile accanto ad Amir: alla stessa altezza di chi è già seduto
+	var seat: Vector2i = SEATS["tu"]
+	player.sit(Vector2(seat.x * T + 5, (seat.y + 1) * T + 3), "left")
+	await Ui.say(["* Ti siedi accanto ad Amir. La panchina scricchiola. Il panino no."])
 	await get_tree().create_timer(3.0).timeout
 	await Ui.say(["È bello non avere fretta, ogni tanto."], "Amir")

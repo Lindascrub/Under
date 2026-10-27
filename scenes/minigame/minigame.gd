@@ -937,7 +937,7 @@ func _rate_pick(k: int) -> void:
 		if rate_placed.size() == rate_cards.size():
 			rate_phase = "find"
 			rate_sel = 0
-			rate_msg = "In ordine. Ora l'estratto conto: tocca la voce che c'è due volte."
+			rate_msg = "In ordine. Ora l'estratto conto: una commissione per lo stesso ritardo è addebitata due volte. Tocca la riga di troppo."
 		else:
 			for i in rate_cards.size():
 				if int(rate_cards[i]) not in rate_placed:

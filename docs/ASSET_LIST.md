@@ -205,10 +205,10 @@ Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anc
 | `price_board.png` | 112x34 | Tabellone dei prezzi, prima (pane, latte, acqua da `data/market.json`) | frontale, sul muro | nessuna | `mercato.tscn`, `Tabellone` (12,2) |
 | `price_board_nuovo.png` | 112x34 | Lo stesso tabellone coi prezzi aumentati | frontale, sul muro | il cambio prezzi lampeggia (fatto dal codice) | `chapters/c3/mercato_c3.gd`, `_price_update` |
 | `sign_leda.png` | 52x14 | Insegna "DA LEDA" | frontale, sul muro | nessuna | non più usata (tolta dal Mercato) |
-| `cassa.png` | 32x24 | La cassa del TURNO | 3/4 frontale | nessuna | `mercato.tscn`, zona cassa |
-| `shelf.png` | 32x32 | Scaffale del negozio di Leda | 3/4 frontale | nessuna | `mercato.tscn`, negozio di Leda |
+| `cassa.png` | 32x24 | La cassa del TURNO | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |
+| `shelf.png` | 32x32 | Scaffale del negozio di Leda | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |
 | `chalkboard.png` | 16x20 | La lavagnetta di Leda | 3/4 frontale | nessuna | `mercato.tscn`, negozio di Leda |
-| `crate.png` | 16x12 | Cassetta (ci si siedono Leda, Amir e chi gioca nella scena segreta) | 3/4 frontale | nessuna | `mercato_c3.gd`, piazza (11-13,6) |
+| `crate.png` | 16x12 | Cassetta | 3/4 frontale | nessuna | non più usata (la scena segreta del Mercato ora è sulle panchine LimeZu) |
 | `water_machine.png` | 16x32 | Distributore d'acqua (10 €, poi 15 €) | 3/4 frontale | nessuna | `mercato.tscn`, piazza (9,4) |
 | `terminal_consegne.png` | 16x32 | Terminale delle consegne (l'offerta del capo su Amir) | 3/4 frontale | nessuna | `mercato.tscn`, magazzino |
 
