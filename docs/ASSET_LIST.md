@@ -179,15 +179,15 @@ fontana, lampione, la fermata del bus e i terreni del tileset `world/tilesets/ci
 
 | File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
 |---|---|---|---|---|---|
-| `insegna_banca.png` | 128x28 | Insegna "BANCA CHEAP / IL TUO FUTURO È IL NOSTRO PRESENTE.", oro su rosso | frontale, appesa al muro | nessuna (eventuale: luccichio dell'oro) | `chapters/c4/banca.tscn`, nodo `Decori/InsegnaBanca` (casella 2,1) |
-| `display_numeri.png` | 64x20 | Display "ORA SERVIAMO IL NUMERO 4" | frontale, appeso al muro | consigliata: 2 frame, cifre che lampeggiano | `banca.tscn`, `Decori/DisplayNumeri` (12,1) |
-| `distributore_numeri.png` | 16x32 | Distributore dei biglietti (e del SALTAFILA) | 3/4 frontale, a terra | consigliata: 2 frame, il biglietto che esce | `banca.tscn`, `Mondo/Distributore` (5,9); esame `_distributore` |
-| `bancone_sportello.png` | 48x24 | Sportello del TURNO (settore fiducia), con vetro | 3/4 frontale, piedi solidi 10 px | nessuna | `banca.tscn`, `Mondo/Bancone` (8,3) |
-| `colonna_oro.png` | 16x40 | Colonna dorata ai lati dello sportello | 3/4 frontale, piedi solidi 6 px | nessuna | `banca.tscn`, `Mondo/ColonnaSinistra` (7,3) e `ColonnaDestra` (12,3) |
-| `terminale_conto.png` | 16x32 | Terminale "CONSULTA IL TUO CONTO" (il debito vero) | 3/4 frontale, a terra | consigliata: schermo acceso/spento (2 frame); allo sguardo indietro una scritta rossa "RICERCA CONTRATTO..." lampeggia sopra (fatta dal codice) | `banca.tscn`, `Mondo/TerminaleConto` (14,4); esame `_conto` |
-| `terminale_rapporto.png` | 16x24 | Terminale del RAPPORTO DI VERIFICA N. 404 | 3/4 frontale, da scrivania | consigliata: cursore che lampeggia (2 frame) | `banca.tscn`, `Mondo/TerminaleRapporto` (20,9); esame `_rapporto` |
-| `archivio.png` | 32x40 | Archivio a cassetti (A-C, D-F...) | 3/4 frontale, piedi solidi 10 px | nessuna | `banca.tscn`, `Mondo/Archivio` (19,7); esame `_archivio` |
-| `quaderno.png` | 10x8 | Il quaderno di fumetti di Teo, sulla scrivania | dall'alto, appoggiato | allo sguardo indietro dondola (fatto dal codice, rotazione) | `banca.tscn`, `Mondo/Quaderno` (17,7, spostato di 3,-14); esame `_quaderno` |
+| `insegna_banca.png` | 128x28 | Insegna "BANCA CHEAP / IL TUO FUTURO È IL NOSTRO PRESENTE.", oro su rosso | frontale, appesa al muro | nessuna (eventuale: luccichio dell'oro) | `chapters/c4/banca.tscn`, nodo `Decori/InsegnaBanca` (casella 13,1) |
+| `display_numeri.png` | 64x20 | Display "ORA SERVIAMO IL NUMERO 4" | frontale, appeso al muro | consigliata: 2 frame, cifre che lampeggiano | `banca.tscn`, `Decori/DisplayNumeri` (22,1) |
+| `distributore_numeri.png` | 16x32 | Distributore dei biglietti (e del SALTAFILA) | 3/4 frontale, a terra | consigliata: 2 frame, il biglietto che esce | `banca.tscn`, `Mondo/Distributore` (16,13); esame `_distributore` |
+| `bancone_sportello.png` | 48x24 | Sportello del TURNO (settore fiducia), con vetro | 3/4 frontale, piedi solidi 10 px | nessuna | non più usata (lo sportello è un bancone LimeZu) |
+| `colonna_oro.png` | 16x40 | Colonna dorata ai lati dello sportello | 3/4 frontale, piedi solidi 6 px | nessuna | non più usata |
+| `terminale_conto.png` | 16x32 | Terminale "CONSULTA IL TUO CONTO" (il debito vero) | 3/4 frontale, a terra | consigliata: schermo acceso/spento (2 frame); allo sguardo indietro una scritta rossa "RICERCA CONTRATTO..." lampeggia sopra (fatta dal codice) | `banca.tscn`, `Mondo/TerminaleConto` (26,4); esame `_conto` |
+| `terminale_rapporto.png` | 16x24 | Terminale del RAPPORTO DI VERIFICA N. 404 | 3/4 frontale, da scrivania | consigliata: cursore che lampeggia (2 frame) | `banca.tscn`, `Mondo/TerminaleRapporto` (38,11); esame `_rapporto` |
+| `archivio.png` | 32x40 | Archivio a cassetti (A-C, D-F...) | 3/4 frontale, piedi solidi 10 px | nessuna | non più usata (l'archivio sono due librerie LimeZu; esame `_archivio` a 33,10) |
+| `quaderno.png` | 10x8 | Il quaderno di fumetti di Teo, sulla scrivania | dall'alto, appoggiato | allo sguardo indietro dondola (fatto dal codice, rotazione) | `banca.tscn`, `Mondo/Quaderno` (31,13, spostato di 3,-14); esame `_quaderno` |
 | `lettera.png` | 8x6 | La risposta alla contestazione, in mano a Olga | dall'alto, piccola | nessuna | `chapters/c4/banca_c4.gd`, `_dress_for_look_back` (figlia di Olga, +6,-14) |
 | `timbro.png` | 8x10 | Il timbro di Teo robot | 3/4 frontale | il codice lo fa battere su e giù (0,25 s giù, 0,08 s su, pausa 0,4 s); l'arte può aggiungere 2 frame | `banca_c4.gd`, `_robot_teo` (figlio di Teo, +12,-16) |
 | `antenna_robot.png` | 8x10 | Antenna sulla testa di Teo robot: il robot si riconosce **anche senza colori** | frontale | consigliata: lucina che lampeggia (2 frame) | `banca_c4.gd`, `_robot_teo` (figlio di Teo, 0,-27) |

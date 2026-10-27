@@ -760,7 +760,8 @@ func _dress_for_look_back() -> void:
 		olga.add_child(letter)
 		olga.set_physics_process(false)
 		var tw := olga.create_tween()
-		tw.tween_property(olga, "position", cell_feet(Vector2i(3, 10)), 5.0)
+		# verso la porta della sala d'attesa
+		tw.tween_property(olga, "position", cell_feet(Vector2i(11, 11)), 5.0)
 	if _f("c4_anomalia"):
 		# un terminale continua a cercare il contratto
 		var term := find_child("TerminaleConto", true, false) as Node2D
@@ -818,7 +819,7 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
-	var seats := [["SedutoTeo", str(GameState.npc_data("teo").get("sheet")), "sit_right", Vector2i(16, 7)], ["InPiediOlga", str(GameState.npc_data("olga").get("sheet", "char_09")), "idle_left", Vector2i(18, 7)]]
+	var seats := [["SedutoTeo", str(GameState.npc_data("teo").get("sheet")), "sit_right", Vector2i(30, 13)], ["InPiediOlga", str(GameState.npc_data("olga").get("sheet", "char_09")), "idle_left", Vector2i(32, 13)]]
 	for s: Array in seats:
 		var c := CharSprite.new()
 		c.name = s[0]
@@ -831,7 +832,7 @@ func _secret_setup() -> void:
 			c.nudge = Vector2(0, -8)
 		world.add_child(c)
 		block(Rect2i(s[3], Vector2i.ONE))
-	add_spot(cell_center(Vector2i(17, 8)), _secret)
+	add_spot(cell_center(Vector2i(31, 14)), _secret)
 
 
 func _secret() -> void:

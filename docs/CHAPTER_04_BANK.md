@@ -27,29 +27,31 @@ marmo, oro, tappeti rossi, il distributore, i terminali, Nives.
 **Teo robot si riconosce anche senza colori:** ha un'antenna sulla testa e un timbro che batte sempre allo
 stesso ritmo, è fermo (animazione congelata) e non fa emote.
 
-## La mappa (22x14 caselle)
+## La mappa (40x17 caselle): quattro stanze sullo stesso piano
+
+Come nelle mappe di esempio di LimeZu: pareti e pavimenti diversi per stanza, il bordo bianco intorno
+(`world/room_outline.gd`). La scena si genera con `tools/bake_c4_banca.gd` (la mappa è scritta in `ROWS`).
 
 ```
- +--------------------------------------------+
- | [BANCA CHEAP]  [ORA SERVIAMO IL NUMERO 4]  |  muro rosso scuro
- | pianta  oro SPORTELLO oro  € conto   Nives scale↑ (19,3) → Piano Terra
- | panche       tappeto  fila            .......... |
- | Olga         tappeto  fila  Teo scrivania archivio|  ufficio di Teo: piastrelle azzurre
- |   distributore   tappeto        ....... 404     |
- | scale↓ (2,12)  stellina      pianta             |
- +--------------------------------------------+
+ +--------------+ +------------------------------+ +---------------+
+ | TV           | | [BANCA CHEAP]  [NUMERO 4]    | | bacheca Nives scale↑ |  ufficio badge
+ | divano divano merendine | pianta SPORTELLO  sportello chiuso  conto |      (porta 28,4-5)
+ |  tavolino  Olga         |   fila   cordone            +---------------+
+ |  sedie sedie            |   fila   cordone            | librerie  404 |  ufficio di Teo
+ |  (porta 11,11-12) ----- |  distributore  tappeto   stellina  Teo scrivania leggio | (porta 28,12-13)
+ |  sedie sedie  pianta    | scale↓ (13,15)          pianta | |               |
+ +--------------+ +------------------------------+ +---------------+
 ```
 
-| Zona | Dove | Cosa c'è |
+| Stanza | Dove | Cosa c'è |
 |---|---|---|
-| Ingresso | in basso a sinistra, scale (2,12) | dal Mercato si arriva qui (`from_below`); arrivo `default` (6,10) |
-| Atrio | al centro | tre tappeti rossi, la fila grigia (4 persone, 11,4-7), il distributore dei numeri (5,9), la stellina (7,11) |
-| Sportello del TURNO | in alto (8-10,3), tra due colonne d'oro | posto di lavoro (9,4) |
-| Sala d'attesa | a sinistra | due panche, Olga (5,7) |
-| Terminale del conto | (14,4) | il debito vero, si accende dopo l'offerta del capo |
-| Teo | a destra (14-20, 6-10) | scrivania (17,7) col quaderno, archivio (19,7), terminale del rapporto 404 (20,9), Teo (16,7) |
-| Nives | in alto a destra (16,3) | lo sportello dei badge |
-| Scale per il Piano Terra | (19,3) | `on_stairs_step` (rivelazione), `on_stairs_top` (sguardo indietro) |
+| Sala d'attesa | a sinistra (1-10, 3-15), parete verde chiaro | due divani grigi, il distributore di merendine (9,4), la TV, il tavolino con le riviste (2,7), due file di sedie di plastica (righe 10 e 13), Olga (8,7) |
+| Atrio | al centro (12-27, 3-15), marmo, parete crema e verde | insegna e display dei numeri sulla parete; due banconi da reception: il primo (13-16) è il TURNO, posto di lavoro (13,6); nel secondo (20-23) un'impiegata colorata ("chiuso"); la fila grigia (15, 6-9); due cordoni rossi; il terminale del conto (26,4); il distributore dei numeri (16,13); il tappeto; la stellina (24,13); le scale dal Mercato (13,15), arrivo `default` (19,12) |
+| Ufficio badge | in alto a destra (29-38, 3-6) | lo sportello di Nives (32,3), la bacheca, le scale per il Piano Terra (36,3): `on_stairs_step` (rivelazione), `on_stairs_top` (sguardo indietro) |
+| Ufficio di Teo | in basso a destra (29-38, 10-15), parquet | due librerie = l'archivio (32-37, 10), la scrivania (31,13) col quaderno, Teo (30,13), il leggio col libro aperto (37,13), il terminale del rapporto 404 (38,11) |
+
+Grafica LimeZu: `assets/limezu/themes/` (ospedale: banconi, sedie, cordoni, merendine, TV, bacheca;
+soggiorno: divani; biblioteca: librerie e leggio), `tiles/generic.png` (tavolino, tappeti).
 
 ## Lo svolgimento
 

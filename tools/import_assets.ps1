@@ -52,6 +52,11 @@ $interiors = [ordered]@{
 # il supermercato del Mercato (capitolo 3): tutti i pezzi singoli, col loro numero (grocery/<n>.png)
 $grocery = "1_Interiors/16x16/Theme_Sorter_Singles/16_Grocery_Store_Singles/Grocery_Store_Singles_{0}.png"
 foreach ($n in 1..489) { $interiors[($grocery -f $n)] = "grocery/$n.png" }
+# la Banca (capitolo 4): fogli interi dei temi, usati a pezzi (regioni)
+$theme = "1_Interiors/16x16/Theme_Sorter/{0}"
+$interiors[($theme -f "19_Hospital_16x16.png")] = "themes/hospital.png"
+$interiors[($theme -f "2_LivingRoom_16x16.png")] = "themes/living_room.png"
+$interiors[($theme -f "5_Classroom_and_library_16x16.png")] = "themes/classroom.png"
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i
     $interiors["2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_$n.png"] = "characters/char_$n.png"

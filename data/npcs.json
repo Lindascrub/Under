@@ -2482,7 +2482,7 @@
       {
         "room": "banca",
         "cell": [
-          5,
+          8,
           7
         ],
         "anim": "idle_left"
@@ -2549,8 +2549,8 @@
       {
         "room": "banca",
         "cell": [
-          16,
-          7
+          30,
+          13
         ],
         "anim": "idle_right"
       }
