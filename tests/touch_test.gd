@@ -267,16 +267,27 @@ func _run() -> void:
 
 	# --- Amir, L'ULTIMA CONSEGNA: tocca gli incroci (la strada sicura arriva in tempo)
 	m = await _help("route")
-	await _tap_at(m.RT_NODES[4])
+	await _tap_at(m.rt_nodes[4])
 	_check((m.get("rt_done") as Array).is_empty(), "un incrocio lontano non si raggiunge")
-	for n in [2, 5]:
-		await _tap_at(m.RT_NODES[n])
+	# la mattina, per la strada sicura: Scala B, Piazza, Via dei Fiori (110 minuti su 120)
+	for n in [2, 5, 4]:
+		await _tap_at(m.rt_nodes[n])
 		# il cuore cammina fino all'incrocio, poi si può toccare il prossimo
 		for i in 600:
 			if float(m.get("rt_k")) >= 1.0:
 				break
 			await _frames(1)
-	_check((m.get("rt_done") as Array).size() == 2 and int(m.get("rt_left")) == 40, "la strada sicura: Scala B e Piazza in 80 minuti (ne restano 40 per Via dei Fiori)")
+		if n == 5:
+			_check((m.get("rt_done") as Array).size() == 2 and int(m.get("rt_left")) == 40, "la strada sicura: Scala B e Piazza in 80 minuti (ne restano 40 per Via dei Fiori)")
+	_check(int(m.get("rt_map")) == 1 and int(m.get("rt_total")) == 3 and (m.get("rt_done") as Array).is_empty(), "finita la mattina parte il pomeriggio, con altri tre pacchi")
+	# il pomeriggio: Scuola, Via Roma, Ospedale (140 minuti su 150)
+	for n in [2, 5, 6]:
+		await _tap_at(m.rt_nodes[n])
+		for i in 600:
+			if float(m.get("rt_k")) >= 1.0 or str(m.get("phase")) != "play":
+				break
+			await _frames(1)
+	_check(int(m.get("rt_total")) == 6, "sei pacchi su sei: la consegna è finita (fatti %d)" % int(m.get("rt_total")))
 
 	# --- la cassa del Mercato: tocca l'articolo, poi CORREGGI il prezzo sbagliato
 	w = await _work("cassa", {"job": {"pay_max": 160, "duration": 40}})

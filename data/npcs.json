@@ -2417,7 +2417,7 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Amir ha tre pacchi, quattro consegne e due ore. Il bonus è a una consegna di distanza.",
+      "ask": "Amir ha sei pacchi, due giri (la mattina e il pomeriggio) e poco tempo. Il bonus è a una consegna di distanza.",
       "yes": [
         "Aspetta. Ho finito?",
         "DICIOTTO!",
@@ -2431,7 +2431,7 @@
         "Grazie lo stesso. Se vuoi, ci riproviamo. Il terminale non dimentica, ma neanche io."
       ],
       "lose": [
-        "Zero su tre. Però la bici è intera. Anche tu.",
+        "Zero su sei. Però la bici è intera. Anche tu.",
         "Riproviamo quando vuoi. Le scatole non scappano. Purtroppo."
       ],
       "minigame": {
@@ -2439,7 +2439,7 @@
         "type": "route",
         "title": "L'ultima consegna",
         "intro": [
-          "* Una mappa con sei incroci. Tre pacchi. Due ore.",
+          "* Due giri: la mattina e il pomeriggio. Tre pacchi per giro, e il tempo contato.",
           "* Le strade brevi passano dal cantiere. Le altre sono più lunghe, ma ci si arriva."
         ],
         "reward": 0,

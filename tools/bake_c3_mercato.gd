@@ -60,9 +60,8 @@ func _ready() -> void:
 				muri.set_cell(c, 0, WALL + Vector2i(x % 3, y - 1))
 			else:
 				var base := PIAZZA
-				if SHOP.has_point(c):
-					base = WOOD
-				elif STORE.has_point(c):
+				# le piastrelle del supermercato dappertutto, anche da Leda; solo il magazzino è di cemento
+				if STORE.has_point(c):
 					base = CONCRETE
 				pav.set_cell(c, 0, base + Vector2i(x % 3, y % 2))
 	decori = Node2D.new()
@@ -215,7 +214,6 @@ func _insegne() -> void:
 ## La cassa: il nastro, lo scanner, il posto del TURNO.
 func _cassa() -> void:
 	_sprite(mondo, "Cassa", "res://art/cassa.png", Rect2(), Vector2i(2, 4), 12)
-	_sprite(mondo, "CestiniCassa", PROPS + "boxes_small.png", Rect2(), Vector2i(1, 4), 8)
 	# niente "guarda" sulla cassa: toccarla è il TURNO (PostoCassa)
 
 
@@ -241,14 +239,11 @@ func _negozio() -> void:
 func _piazza() -> void:
 	_sprite(mondo, "Distributore", "res://art/water_machine.png", Rect2(), Vector2i(9, 4), 10)
 	_examine(mondo, "UsaDistributore", Vector2i(9, 4), [], "_acqua")
-	_sprite(mondo, "Carretto", MARKET + "cart.png", Rect2(), Vector2i(14, 6), 14)
-	_sprite(mondo, "TelaRossa", MARKET + "cloth_1.png", Rect2(), Vector2i(8, 11), 0)
-	_sprite(mondo, "TelaBlu", MARKET + "cloth_3.png", Rect2(), Vector2i(12, 12), 0)
-	_sprite(mondo, "Cestino", PROPS + "trash.png", Rect2(), Vector2i(16, 4), 8)
+	# niente carretto dei gelati, teli e cassonetto: la piazza è libera
 	var customers := [
 		["Cliente0", "char_15", Vector2i(10, 8), "idle_right", ["* \"Ho comprato tre cose che non mi servono. Ma erano al 50%!\"", "* Ti mostra lo scontrino. È più lungo di lui."]],
 		["Cliente1", "char_16", Vector2i(13, 9), "idle_left", ["* \"Mi scusi, sa dov'è il reparto Felicità? Sulla mappa c'è, ma è in esaurimento.\""]],
-		["Cliente2", "char_19", Vector2i(15, 5), "idle_down", ["* Guarda il carretto dei gelati. Il gelato costa quanto un'ora di cassa.", "* \"Lo guardo e basta. Guardare è ancora gratis. Credo.\""]],
+		["Cliente2", "char_19", Vector2i(15, 5), "idle_down", ["* Guarda il tabellone dei prezzi. Il latte costa quanto un'ora di cassa.", "* \"Lo guardo e basta. Guardare è ancora gratis. Credo.\""]],
 	]
 	for c: Array in customers:
 		_person(c[0], c[1], c[3], c[2])
@@ -284,7 +279,8 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 func _features() -> void:
 	_feature("PostoCassa", "station", Vector2i(2, 4), {"job": "cassa_mercato"})
-	_feature("SportelloBadge", "badge", Vector2i(18, 3))
+	# fuori dal tabellone: sotto, l'addetta non si vedeva
+	_feature("SportelloBadge", "badge", Vector2i(19, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c4/banca.tscn", "spawn": "from_below", "need": "-2"})
 	_feature("ScaleGiu", "stairs_down", Vector2i(4, 12), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_above"})
 	_feature("Stellina", "save", Vector2i(11, 11))

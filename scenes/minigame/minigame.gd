@@ -7,7 +7,7 @@ extends Node2D
 ##                    si aggiusta con SU o GIÙ (Mina)
 ##   type "wires":    collega i fili dello stesso colore, come in Among Us (Nonno Bulbo)
 ##   type "inventory": ogni prodotto sul suo scaffale (Leda: SCATOLE E SCAFFALI)
-##   type "route":    sei incroci, tre pacchi, due ore: scegli le strade (Amir: L'ULTIMA CONSEGNA)
+##   type "route":    due giri (mattina e pomeriggio), tre pacchi ciascuno: scegli le strade (Amir: L'ULTIMA CONSEGNA)
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
 ##                    (Olga: LE RATE MANCANTI; dati in data/bank.json)
 ##   type "pratiche": per ogni pratica, quale problema c'è (Teo: LA PRATICA IMPOSSIBILE)
@@ -79,11 +79,28 @@ var inv_sel := 0
 var inv_done := 0
 var inv_msg := ""
 # consegne (Amir): incroci, strade [da, a, minuti, rischiosa], pacchi
-const RT_NODES := [Vector2(196, 195), Vector2(262, 146), Vector2(262, 246), Vector2(330, 195), Vector2(430, 146), Vector2(430, 246)]
-const RT_NAMES := ["MAGAZZINO", "", "Scala B", "", "Via dei Fiori", "Piazza"]
-const RT_EDGES := [[0, 1, 30, false], [0, 2, 30, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 50, false],
-	[2, 5, 50, false], [4, 5, 30, false], [0, 3, 10, true], [3, 4, 10, true], [3, 5, 10, true]]
-const RT_PARCELS := [2, 4, 5]
+## Due giri: la mattina e il pomeriggio. Ogni giro ha la sua mappa, i suoi tre pacchi e il suo tempo.
+## In ogni mappa c'è una strada sicura che arriva in tempo; le scorciatoie rosse passano dal cantiere.
+const RT_MAPS := [
+	{"title": "MATTINA", "budget": 120, "parcels": [2, 4, 5],
+		"nodes": [Vector2(196, 195), Vector2(262, 146), Vector2(262, 246), Vector2(330, 195), Vector2(430, 146), Vector2(430, 246)],
+		"names": ["MAGAZZINO", "", "Scala B", "", "Via dei Fiori", "Piazza"],
+		"edges": [[0, 1, 30, false], [0, 2, 30, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 50, false],
+			[2, 5, 50, false], [4, 5, 30, false], [0, 3, 10, true], [3, 4, 10, true], [3, 5, 10, true]]},
+	# i nomi stanno sotto gli incroci in basso e sotto quello in alto a destra: non coprono i minuti
+	{"title": "POMERIGGIO", "budget": 150, "parcels": [2, 5, 6],
+		"nodes": [Vector2(194, 195), Vector2(250, 146), Vector2(250, 246), Vector2(318, 195), Vector2(386, 146), Vector2(386, 246), Vector2(446, 146)],
+		"names": ["MAGAZZINO", "", "Scuola", "", "", "Via Roma", "Ospedale"],
+		"edges": [[0, 1, 30, false], [0, 2, 40, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 60, false],
+			[2, 5, 50, false], [4, 6, 30, false], [5, 6, 50, false],
+			[0, 3, 15, true], [3, 4, 20, true], [3, 5, 20, true]]},
+]
+var rt_map := 0
+var rt_total := 0
+var rt_nodes: Array = []
+var rt_names: Array = []
+var rt_edges: Array = []
+var rt_parcels: Array = []
 ## Quanto costa un imprevisto in una strada rischiosa (il cantiere), e quanto spesso capita.
 const RT_DETOUR := 40
 const RT_RISK := 0.5
@@ -186,13 +203,11 @@ func _start() -> void:
 			goods.shuffle()
 			inv_queue = goods.slice(0, int(cfg.get("count", 8)))
 		"route":
-			rt_left = int(cfg.get("budget", 120))
+			_rt_load(0)
 			if cfg.has("seed"):
 				rt_rng.seed = int(cfg["seed"])
 			else:
 				rt_rng.randomize()
-			rt_from = RT_NODES[0]
-			rt_to = RT_NODES[0]
 			_info.text = "Tocca un incrocio vicino per andarci" if TouchControls.enabled else "FRECCE scegli la strada, %s per andare" % GameState.fmt("{ok}")
 		"rate":
 			rate_cards = range(_rate_docs().size())
@@ -341,7 +356,7 @@ func touch_point(pos: Vector2, step: int) -> void:
 		return
 	if type == "route" and step == 0:
 		for n in _rt_neighbors(rt_at):
-			if pos.distance_to(RT_NODES[n]) < 26.0:
+			if pos.distance_to(rt_nodes[n]) < 26.0:
 				_rt_go(n)
 				return
 		return
@@ -392,7 +407,7 @@ func _inv_place(k: int) -> void:
 # --- L'ULTIMA CONSEGNA ---------------------------------------------------------
 
 func _rt_edge(a: int, b: int) -> Array:
-	for e: Array in RT_EDGES:
+	for e: Array in rt_edges:
 		if (int(e[0]) == a and int(e[1]) == b) or (int(e[0]) == b and int(e[1]) == a):
 			return e
 	return []
@@ -400,13 +415,13 @@ func _rt_edge(a: int, b: int) -> Array:
 
 func _rt_neighbors(a: int) -> Array:
 	var out: Array = []
-	for e: Array in RT_EDGES:
+	for e: Array in rt_edges:
 		if int(e[0]) == a:
 			out.append(int(e[1]))
 		elif int(e[1]) == a:
 			out.append(int(e[0]))
 	# in ordine da sinistra a destra (e dall'alto in basso): così le frecce vanno dove ti aspetti
-	out.sort_custom(func(x: int, y: int) -> bool: return RT_NODES[x].x * 1000 + RT_NODES[x].y < RT_NODES[y].x * 1000 + RT_NODES[y].y)
+	out.sort_custom(func(x: int, y: int) -> bool: return rt_nodes[x].x * 1000 + rt_nodes[x].y < rt_nodes[y].x * 1000 + rt_nodes[y].y)
 	return out
 
 
@@ -426,36 +441,72 @@ func _rt_go(n: int) -> void:
 		Sound.sfx("hurt")
 	else:
 		Sound.sfx("move")
-	rt_from = RT_NODES[rt_at]
-	rt_to = RT_NODES[n]
+	rt_from = rt_nodes[rt_at]
+	rt_to = rt_nodes[n]
 	rt_k = 0.0
 	rt_at = n
 	rt_sel = 0
 	if cost > rt_left:
 		rt_left = 0
 		rt_msg = "Tempo scaduto a metà strada."
-		_rt_end()
+		_rt_map_over()
 		return
 	rt_left -= cost
-	if n in RT_PARCELS and n not in rt_done:
+	if n in rt_parcels and n not in rt_done:
 		rt_done.append(n)
 		Sound.sfx("coin")
-		if rt_done.size() >= RT_PARCELS.size():
-			_rt_end()
+		if rt_done.size() >= rt_parcels.size():
+			_rt_map_over()
 			return
 	# se non c'è più tempo nemmeno per la strada più corta, è finita
 	var shortest := 999
 	for m in _rt_neighbors(rt_at):
 		shortest = mini(shortest, int(_rt_edge(rt_at, m)[2]))
 	if shortest > rt_left:
-		_rt_end()
+		_rt_map_over()
+
+
+## Prepara il giro `i`: la sua mappa, il suo tempo, il cuore al magazzino.
+func _rt_load(i: int) -> void:
+	var m: Dictionary = RT_MAPS[i]
+	rt_map = i
+	rt_nodes = m["nodes"]
+	rt_names = m["names"]
+	rt_edges = m["edges"]
+	rt_parcels = m["parcels"]
+	rt_left = int(cfg.get("budget", m["budget"])) if i == 0 else int(m["budget"])
+	rt_done = []
+	rt_at = 0
+	rt_sel = 0
+	rt_k = 1.0
+	rt_from = rt_nodes[0]
+	rt_to = rt_nodes[0]
+
+
+func _rt_all() -> int:
+	var n := 0
+	for m: Dictionary in RT_MAPS:
+		n += (m["parcels"] as Array).size()
+	return n
+
+
+## Il giro è finito: i pacchi consegnati si sommano, e se c'è ancora il pomeriggio si riparte.
+func _rt_map_over() -> void:
+	rt_total += rt_done.size()
+	if rt_map + 1 < RT_MAPS.size():
+		var got := rt_done.size()
+		_rt_load(rt_map + 1)
+		rt_msg = "Mattina finita (%d pacchi su 3). Ora il pomeriggio: altri tre." % got
+		Sound.sfx("ding")
+		return
+	_rt_end()
 
 
 func _rt_end() -> void:
-	var n := rt_done.size()
+	var n := rt_total
 	phase = "end"
 	await get_tree().create_timer(0.7).timeout
-	_finish(n >= RT_PARCELS.size(), n > 0 and n < RT_PARCELS.size())
+	_finish(n >= _rt_all(), n > 0 and n < _rt_all())
 
 
 func _new_zone() -> void:
@@ -1337,9 +1388,9 @@ func _draw_inventory(font: Font) -> void:
 func _draw_route(font: Font) -> void:
 	draw_rect(BOX.grow(-4), Color("1e2430"))
 	var nb := _rt_neighbors(rt_at)
-	for e: Array in RT_EDGES:
-		var a: Vector2 = RT_NODES[int(e[0])]
-		var b: Vector2 = RT_NODES[int(e[1])]
+	for e: Array in rt_edges:
+		var a: Vector2 = rt_nodes[int(e[0])]
+		var b: Vector2 = rt_nodes[int(e[1])]
 		var risky := bool(e[3])
 		if risky:
 			# a tratti, rossa: il cantiere
@@ -1351,21 +1402,21 @@ func _draw_route(font: Font) -> void:
 			draw_line(a, b, Color("8a8494"), 4.0)
 		var mid := a.lerp(b, 0.5)
 		draw_string(font, mid + Vector2(-14, -3), ("%d'?" if risky else "%d'") % int(e[2]), HORIZONTAL_ALIGNMENT_CENTER, 28, 9, Color("ff9a8a") if risky else Color("c8c0d0"))
-	for i in RT_NODES.size():
-		var p: Vector2 = RT_NODES[i]
+	for i in rt_nodes.size():
+		var p: Vector2 = rt_nodes[i]
 		var col := Color("4a4a5a")
-		if i in RT_PARCELS:
+		if i in rt_parcels:
 			col = GREEN if i in rt_done else YELLOW
 		draw_circle(p, 9, col)
 		if i in nb and rt_k >= 1.0 and phase == "play":
 			var sel := nb.find(i) == rt_sel and not TouchControls.enabled
 			draw_arc(p, 13, 0, TAU, 20, Color.WHITE if sel else Color(1, 1, 1, 0.45), 3.0 if sel else 1.5)
-		if RT_NAMES[i] != "":
+		if rt_names[i] != "":
 			# il magazzino ha la scritta sopra, se no copre i minuti della strada
-			draw_string(font, p + Vector2(-40, -14 if i == 0 else 22), RT_NAMES[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 8, Color("c8c0d0"))
+			draw_string(font, p + Vector2(-40, -14 if i == 0 else 22), rt_names[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 8, Color("c8c0d0"))
 	_heart(rt_from.lerp(rt_to, rt_k), RED)
 	draw_string(font, Vector2(BOX.position.x + 10, BOX.position.y + 18), "TEMPO RIMASTO: %02d:%02d" % [rt_left / 60, rt_left % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, YELLOW)
-	draw_string(font, Vector2(BOX.end.x - 110, BOX.position.y + 18), "PACCHI: %d/3" % rt_done.size(), HORIZONTAL_ALIGNMENT_RIGHT, 100, 11, Color.WHITE)
+	draw_string(font, Vector2(BOX.end.x - 160, BOX.position.y + 18), "%s %d/%d" % [str(RT_MAPS[rt_map]["title"]), rt_done.size(), rt_parcels.size()], HORIZONTAL_ALIGNMENT_RIGHT, 150, 11, Color.WHITE)
 	if rt_msg != "":
 		draw_string(font, Vector2(BOX.position.x, BOX.end.y - 8), rt_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 9, Color("ff9a8a"))
 

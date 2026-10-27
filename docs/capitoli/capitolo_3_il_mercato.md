@@ -25,7 +25,7 @@ superficie commerciale. Se Amir viene robotizzato, ha lo shader del robot ed è 
  +------------------------------------------------+
  | [OGGI TUTTO AL 50%*]   [TABELLONE PREZZI]      |  muro bianco da supermercato
  | CASSA  TURNO   acqua             Nives  scale↑ |  (21,3) → Banca
- | DA LEDA                  carretto              |
+ | DA LEDA                                        |
  | scaffali  lavagnetta   clienti                 |
  | bancone   Leda                  pallet  Amir   |
  | scale↓      stellina            scatole  term. |
@@ -36,8 +36,8 @@ superficie commerciale. Se Amir viene robotizzato, ha lo shader del robot ed è 
 |---|---|---|
 | Ingresso | in basso a sinistra (4,12) | le scale dal Sottoufficio; si arriva qui |
 | TURNO — Cassa | in alto a sinistra (2-4, 4) | la cassa, il posto del TURNO (4,4) |
-| Negozio di Leda | a sinistra, parquet (1-6, 6-9) | due scaffali (5 prodotti), il bancone, la lavagnetta, Leda (5,8) |
-| Piazza | al centro, piastrelle azzurre | distributore d'acqua (9,4), tabellone (sopra, 12-18: due immagini, prima e dopo, disegnate da `tools/make_art_mercato.py` coi prezzi di `data/market.json`), carretto, tre clienti, stellina (11,11) |
+| Negozio di Leda | a sinistra, stesse piastrelle della piazza (1-6, 6-9) | due scaffali (5 prodotti), il bancone, la lavagnetta, Leda (5,8) |
+| Piazza | al centro, piastrelle azzurre | distributore d'acqua (9,4), tabellone (sopra, 12-18: due immagini, prima e dopo, disegnate da `tools/make_art_mercato.py` coi prezzi di `data/market.json`), tre clienti, stellina (11,11), sportello badge (19,3: fuori dal tabellone, se no l'addetta non si vede). Niente carretto, teli o cassonetto: la piazza è libera |
 | Magazzino di Amir | in basso a destra, cemento (15-22, 8-12) | pallet, scatole, il terminale delle consegne (22,11), Amir (19,10) |
 | Nives e l'uscita | in alto a destra | sportello badge (18,3), scale per la Banca (21,3) |
 
@@ -84,10 +84,14 @@ ALIMENTARI, IGIENE, SCUOLA, CASA. Si **tocca** lo scaffale (o si clicca col mous
 8 prodotti, 35 secondi, 3 errori al massimo. Conta come aiuto **solo se riesce** (`help_on_win_only`).
 
 ### L'ULTIMA CONSEGNA (Amir) — `minigame.gd`, type `route`
-Sei incroci, tre pacchi (Scala B, Via dei Fiori, Piazza), 2 ore. Si tocca un incrocio vicino per andarci.
-Le strade grigie sono sicure (30 o 50 minuti); quelle rosse a tratti passano dal cantiere: 10 minuti, ma una
-volta su due c'è da girare intorno (+40). La strada sicura giusta (Scala B → Piazza → Via dei Fiori) fa 110 minuti.
-Tutti e tre: bonus. Uno o due: "diciassette e mezzo", conta come aiuto ma senza bonus. Zero: si riprova.
+Due giri, due mappe (`RT_MAPS`). Si tocca un incrocio vicino per andarci. Le strade grigie sono sicure; quelle
+rosse a tratti passano dal cantiere: brevi, ma una volta su due c'è da girare intorno (+40).
+- **Mattina**: sei incroci, tre pacchi (Scala B, Via dei Fiori, Piazza), 120 minuti. Strada sicura giusta:
+  Scala B → Piazza → Via dei Fiori, 110 minuti.
+- **Pomeriggio**: sette incroci, tre pacchi (Scuola, Via Roma, Ospedale), 150 minuti. Strada sicura giusta:
+  Scuola → Via Roma → Ospedale, 140 minuti.
+Finita la mattina (tutti i pacchi o niente più tempo) parte il pomeriggio. Sei su sei: bonus. Da uno a cinque:
+"diciassette e mezzo", conta come aiuto ma senza bonus. Zero: si riprova.
 
 ### TURNO — La cassa — `work.gd`, game `cassa`
 L'articolo arriva sul nastro col cartellino giallo dello scaffale. Lo **tocchi** (lo scanner fa BIP), lo schermo dice
