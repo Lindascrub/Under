@@ -40,7 +40,7 @@ size = Vector2(28, 12)
 size = Vector2(28, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vsi8c"]
-size = Vector2(44, 12)
+size = Vector2(44, 22)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifahs"]
 size = Vector2(12, 6)
@@ -161,13 +161,6 @@ offset = Vector2(0, -32)
 position = Vector2(8, -4)
 shape = SubResource("RectangleShape2D_ijwyr")
 
-[node name="GuardaCassa" type="Node2D" parent="Mondo" unique_id=1793195984]
-position = Vector2(40, 72)
-script = ExtResource("6_vv106")
-lines = PackedStringArray("* La cassa del Mercato. Sullo schermo, una faccina gialla: \"PRONTA A SERVIRTI!\".", "* Sotto, più piccolo: \"Il personale è pregato di sorridere come la cassa\".")
-lines_after = PackedStringArray("* La cassa. Lo schermo dice ancora \"PRONTA A SERVIRTI!\". Adesso sai cosa stampa, la sera.")
-after_flag = "c3_rivelazione"
-
 [node name="Scaffale0" type="Sprite2D" parent="Mondo" unique_id=1723640594]
 position = Vector2(16, 128)
 texture = ExtResource("9_a5885")
@@ -201,7 +194,7 @@ offset = Vector2(0, -32)
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone" unique_id=1528122968]
 
 [node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Bancone/Collisione" unique_id=682273496]
-position = Vector2(24, -6)
+position = Vector2(24, -11)
 shape = SubResource("RectangleShape2D_vsi8c")
 
 [node name="Lavagnetta" type="Sprite2D" parent="Mondo" unique_id=1258366819]
@@ -477,7 +470,7 @@ script = ExtResource("12_ykxmp")
 npc_id = "amir"
 
 [node name="PostoCassa" type="Node2D" parent="Mondo" unique_id=1502794738]
-position = Vector2(64, 64)
+position = Vector2(32, 64)
 script = ExtResource("26_37sdo")
 kind = "station"
 job = "cassa_mercato"

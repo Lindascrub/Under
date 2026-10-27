@@ -295,6 +295,16 @@ func _run() -> void:
 	w.set("cs_phase", "check")
 	await _tap_at((w.call("_cs_button", 0) as Rect2).get_center())
 	_check(int(w.get("cs_accepted")) == 1, "CONFERMA dovrebbe confermare il sovrapprezzo")
+	_check(float(w.get("err_t")) > 0.0, "un sovrapprezzo passato si deve vedere")
+	var errs := int(w.get("mistakes"))
+	w.set("cs_item", {"name": "Pane", "tag": 12, "screen": 12})
+	w.set("cs_phase", "check")
+	await _tap_at((w.call("_cs_button", 1) as Rect2).get_center())
+	for i in 600:
+		if str(w.get("cs_phase")) != "verify":
+			break
+		await _frames(1)
+	_check(int(w.get("mistakes")) == errs + 1, "correggere un prezzo giusto è un errore (e conta)")
 
 	# --- Olga, LE RATE MANCANTI: tocca i documenti in ordine, poi la voce doppia
 	m = await _help("rate")

@@ -216,10 +216,7 @@ func _insegne() -> void:
 func _cassa() -> void:
 	_sprite(mondo, "Cassa", "res://art/cassa.png", Rect2(), Vector2i(2, 4), 12)
 	_sprite(mondo, "CestiniCassa", PROPS + "boxes_small.png", Rect2(), Vector2i(1, 4), 8)
-	_examine(mondo, "GuardaCassa", Vector2i(2, 4), [
-		"* La cassa del Mercato. Sullo schermo, una faccina gialla: \"PRONTA A SERVIRTI!\".",
-		"* Sotto, più piccolo: \"Il personale è pregato di sorridere come la cassa\".",
-	], "", ["* La cassa. Lo schermo dice ancora \"PRONTA A SERVIRTI!\". Adesso sai cosa stampa, la sera."])
+	# niente "guarda" sulla cassa: toccarla è il TURNO (PostoCassa)
 
 
 ## Il negozio di Leda: scaffali di legno, un bancone, la lavagnetta dei conti.
@@ -228,7 +225,8 @@ func _negozio() -> void:
 	sign.z_index = 1
 	for i in 2:
 		_sprite(mondo, "Scaffale%d" % i, "res://art/shelf.png", Rect2(), Vector2i(1 + i * 2, 7), 12)
-	_sprite(mondo, "Bancone", MARKET + "table_2.png", Rect2(), Vector2i(1, 9), 12)
+	# solido tutto il piano del tavolo, non solo il bordo davanti (prima ci si finiva sotto)
+	_sprite(mondo, "Bancone", MARKET + "table_2.png", Rect2(), Vector2i(1, 9), 22)
 	_sprite(mondo, "Lavagnetta", "res://art/chalkboard.png", Rect2(), Vector2i(6, 7), 6)
 	_examine(mondo, "ProdottoPane", Vector2i(1, 7), [], "_pane")
 	_examine(mondo, "ProdottoLatte", Vector2i(2, 7), [], "_latte")
@@ -285,7 +283,7 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 
 func _features() -> void:
-	_feature("PostoCassa", "station", Vector2i(4, 4), {"job": "cassa_mercato"})
+	_feature("PostoCassa", "station", Vector2i(2, 4), {"job": "cassa_mercato"})
 	_feature("SportelloBadge", "badge", Vector2i(18, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c4/banca.tscn", "spawn": "from_below", "need": "-2"})
 	_feature("ScaleGiu", "stairs_down", Vector2i(4, 12), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_above"})

@@ -72,7 +72,7 @@ si modifica nell'editor. La logica è in `chapters/c3/mercato_c3.gd`.
 | 3.12 Nives e il badge | allo sportello | Se hai aiutato Leda e Amir e Amir non è un robot: il badge "cade dal cassetto", gratis (soldi e debito restano uguali). Se no lo compri (2.000 €, a scalare dal debito). "I badge aprono le porte. Non garantiscono che dietro ci sia qualcosa di meglio." | `c3_badge` = `regalo` / `comprato` / `contratto` |
 | 3.13 Lo scontrino | primo gradino, col badge | La musica sfuma, CLANK, lo scontrino lunghissimo (RIEPILOGO ECONOMICO, paga 120 €, pane 18 → 25, aumento retribuzione 0 €, RISULTATO: POSITIVO). "Il Mercato sta meglio." I rumori da giù (Leda e Amir). "Perché non sorridi?" | `c3_rivelazione`, `c3_riepilogo` |
 | 3.14 Sguardo indietro | in cima alle scale | La stanza com'è diventata, la frase, poi CAPITOLO 4 / LA BANCA / "I tuoi soldi sono al sicuro. Il tuo futuro è ancora in verifica." Salvataggio automatico, poi la Banca. | `c3_fine`, `c3_esito` |
-| Segreta | Amir umano, tutti e due aiutati, le loro storie sentite (il sogno, la madre) | Leda e Amir seduti su due cassette in piazza col panino ("Riso buonissimo." / "Io porterò il pane."). Ti puoi sedere con loro. Nessun premio. | `c3_segreta` |
+| Segreta | Amir umano, tutti e due aiutati, le loro storie sentite (il sogno, la madre) | Leda e Amir seduti su due cassette in piazza (11-12, 6, accanto al distributore; si parla toccando le cassette) col panino ("Riso buonissimo." / "Io porterò il pane."). Ti puoi sedere con loro. Nessun premio. | `c3_segreta` |
 
 Dopo lo scontrino, Leda e Amir dicono le frasi "reveal" di `data/npcs.json` (una volta).
 
@@ -91,9 +91,11 @@ Tutti e tre: bonus. Uno o due: "diciassette e mezzo", conta come aiuto ma senza 
 
 ### TURNO — La cassa — `work.gd`, game `cassa`
 L'articolo arriva sul nastro col cartellino giallo dello scaffale. Lo **tocchi** (lo scanner fa BIP), lo schermo dice
-il prezzo, poi **CONFERMA** o **CORREGGI**. Dal secondo turno, circa un articolo su tre costa sullo schermo più del
-cartellino, e il cliente lo fa notare (quindi non è mai un errore "invisibile"). Correggere costa 1,4 secondi;
-confermare è istantaneo e la cassa ti fa i complimenti. Un articolo lasciato sul nastro è un errore.
+il prezzo, poi **CONFERMA** o **CORREGGI**. Lo schermo costa più del cartellino (+3, +5 o +8 €) un articolo su quattro
+al primo turno e più di uno su due dopo; il cliente lo fa notare. Correggere costa 1,4 secondi; confermare è istantaneo
+e la cassa ti fa i complimenti, ma sullo schermo appare in rosso "+N € AL CLIENTE" e in alto si contano i
+"Sovrapprezzi passati". **Errori** (rossi, contano e abbassano la paga): un articolo lasciato sul nastro, o
+"correggere" un prezzo che era giusto. Il TURNO parte toccando la cassa (`PostoCassa` sulla cassa stessa).
 
 ## Economia e ricompense
 

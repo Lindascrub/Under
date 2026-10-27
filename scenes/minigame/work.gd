@@ -423,6 +423,8 @@ func _process(delta: float) -> void:
 		"smistamento":
 			_sm_process(delta)
 	_info.text = "Tempo %d   Fatto %d/%d   Errori %d" % [int(ceil(time_left)), int(score), int(ceil(target)), mistakes]
+	if game == "cassa":
+		_info.text += "   Sovrapprezzi passati %d" % cs_accepted
 	if time_left <= 0.0:
 		_finish()
 	queue_redraw()
@@ -937,8 +939,9 @@ func _cs_next() -> void:
 	var g: Array = goods.pick_random()
 	var tag := GameState.market_price(str(g[2])) if str(g[2]) != "" else int(g[1])
 	var screen := tag
-	if cs_mismatch and randf() < 0.35:
-		screen = tag + [5, 8].pick_random()
+	# lo schermo mente spesso: un articolo su quattro al primo turno, più della metà dopo
+	if randf() < (0.55 if cs_mismatch else 0.25):
+		screen = tag + [3, 5, 8].pick_random()
 	cs_item = {"name": str(g[0]), "tag": tag, "screen": screen}
 	cs_phase = "arrive"
 	cs_x = BOX.position.x + 10
@@ -976,6 +979,11 @@ func _cs_process(delta: float) -> void:
 					_cs_say("CLIENTE", "Grazie. Pensavo di essermi confuso.")
 					_cs_say("CASSA", "Operazione non ottimizzata.")
 				else:
+					# hai "corretto" un prezzo giusto: è un errore, e si vede
+					mistakes += 1
+					_flash(RED)
+					_error("IL PREZZO ERA GIUSTO!")
+					Sound.sfx("deny")
 					_cs_say("CASSA", "Il prezzo era giusto. Il tempo perso, invece, era tuo.")
 				Sound.sfx("coin")
 				cs_phase = "leave"
@@ -997,7 +1005,10 @@ func _cs_scan() -> void:
 func _cs_confirm() -> void:
 	score += 1.0
 	if int(cs_item["screen"]) != int(cs_item["tag"]):
+		# il sovrapprezzo è passato: la CHEAP è contenta, il cliente no. Si deve vedere.
 		cs_accepted += 1
+		_error("+%d € AL CLIENTE" % (int(cs_item["screen"]) - int(cs_item["tag"])))
+		_cs_say("CLIENTE", "...Va bene. Pago.")
 		_cs_say("CASSA", "Eccellente! Hai risparmiato otto secondi!")
 		Sound.sfx("coin", 1.3)
 	else:

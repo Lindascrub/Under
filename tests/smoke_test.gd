@@ -829,10 +829,13 @@ func _test_chapter6() -> void:
 			var mus := str(GameState.npc_data(helper)["help"]["minigame"].get("music", ""))
 			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
 		Sound.music("cima")
+		_check(Sound.current_track() == "royal_castle", "alla Cima suona la sua canzone")
+		# dove le canzoni sono più d'una (gli epiloghi), finita una ne parte un'altra
+		Sound.music("epilogo")
 		var first: String = Sound.current_track()
-		_check(first in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")
 		Sound.call("_on_music_finished")
-		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["cima"], "finita una canzone ne parte un'altra, diversa")
+		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["epilogo"], "finita una canzone ne parte un'altra, diversa")
+		Sound.music("cima")
 	# la Presidente: STRAP, desiderio "origine", tre sezioni, perché, tre domande, l'offerta, il TURNO
 	director_plan = [
 		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}},

@@ -770,7 +770,9 @@ func _secret_ready() -> bool:
 		and f.get("c3_amir_sogno", false) and f.get("c3_leda_mamma", false)
 
 
-const CRATES := [Vector2i(9, 9), Vector2i(10, 9)]
+# in piazza, sul pavimento libero accanto al distributore: non coprono i clienti né i teli
+const SIT_NUDGE := -2.0
+const CRATES := [Vector2i(11, 6), Vector2i(12, 6)]
 
 
 ## Leda e Amir lasciano i loro posti e si siedono su due cassette, in piazza.
@@ -790,11 +792,14 @@ func _secret_setup() -> void:
 		s.sheet = str(GameState.npc_data(s.person).get("sheet", "char_02"))
 		s.anim = ["sit_right", "sit_left"][i]
 		s.grey = true
-		s.nudge = Vector2(0, -8)
-		s.position = cell_feet(CRATES[i]) + Vector2(0, -3)
+		# seduti SULLA cassetta: il sedere a metà cassetta, la cassetta copre le gambe
+		s.nudge = Vector2(0, SIT_NUDGE)
+		s.position = cell_feet(CRATES[i])
 		world.add_child(s)
 	block(Rect2i(CRATES[0], Vector2i(2, 1)))
-	add_spot(cell_center(CRATES[0] + Vector2i(0, 1)) + Vector2(8, 0), _secret)
+	# si parla con loro da qualunque lato: un punto su ogni cassetta
+	for c: Vector2i in CRATES:
+		add_spot(cell_center(c), _secret)
 
 
 func _secret() -> void:
