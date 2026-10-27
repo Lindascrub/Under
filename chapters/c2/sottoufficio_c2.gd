@@ -7,6 +7,10 @@ extends EditorRoom
 
 ## La "procedura d'urgenza": il B-4 timbrato subito, a pagamento.
 const URGENZA := 300
+## Dopo la rivelazione nessuno prende più le chiamate: i telefoni squillano senza sosta.
+## Un turno al call center li fa tacere per un po' (come la festa del Fondo che si riaccende).
+const QUIET_TIME := 25.0
+var _ring: Timer
 
 
 func setup() -> void:
@@ -17,6 +21,8 @@ func setup() -> void:
 	if GameState.flags.get("c2_rivelazione", false):
 		# la musichetta è ripartita, ma più lenta
 		Sound.call_deferred("music_pitch", 0.85, 0.1)
+		if not GameState.flags.get("c2_quiet", false):
+			_start_ringing()
 
 
 func enter() -> void:
@@ -29,7 +35,48 @@ func enter() -> void:
 			"* Tutti sorridono, tutti al telefono. Tranne due persone, grigie come il Fondo.",
 			"* Allo sportello, una signora ti fa ciao con la mano. Sorride più di tutti.",
 		])
+	if GameState.flags.get("c2_quiet", false):
+		GameState.flags.erase("c2_quiet")
+		await _quiet()
 	await show_pending()
+
+
+## Le chiamate che nessuno prende: un DRRRING dopo l'altro, da telefoni diversi.
+func _start_ringing() -> void:
+	if _ring != null:
+		return
+	_ring = Timer.new()
+	_ring.wait_time = 1.6
+	add_child(_ring)
+	_ring.timeout.connect(func() -> void:
+		Sound.sfx("drring", randf_range(0.85, 1.2))
+		_ring.wait_time = randf_range(0.9, 2.2))
+	_ring.start()
+
+
+func _stop_ringing() -> void:
+	if _ring != null:
+		_ring.queue_free()
+		_ring = null
+
+
+## Hai fatto il turno: le chiamate le hai prese tu. Per un po', silenzio. Poi ricominciano.
+func _quiet() -> void:
+	_stop_ringing()
+	await Ui.say(["* I telefoni tacciono. Le chiamate che nessuno prendeva le hai prese tu, una per una.",
+		"* Nella sala, i colleghi continuano a sorridere al nulla. Non se ne sono accorti."])
+	# un timer della stanza: se te ne vai prima, se ne va con lei
+	var t := Timer.new()
+	t.one_shot = true
+	t.wait_time = QUIET_TIME
+	add_child(t)
+	t.timeout.connect(func() -> void:
+		t.queue_free()
+		_start_ringing()
+		Sound.sfx("drring", 1.0)
+		if not Ui.busy and not Ui.cutscene:
+			Ui.say(["* DRRRING. Ricominciano. Il silenzio è durato meno del turno."]))
+	t.start()
 
 
 ## Il regalo dell'addetta ai badge (se hai aiutato tutti) arriva solo col B-4 a posto:
@@ -198,6 +245,11 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Sound.music_pitch(0.85, 2.0)
 	await Ui.say(["* Poi, piano piano, la musichetta riparte. Più lenta. Nessuno dice niente.",
 		"* Le scale ti aspettano. Dietro di te, due persone grigie sanno quello che sai tu."])
+	# e i telefoni: squillano, e nessuno risponde più
+	_start_ringing()
+	await Ui.say(["* DRRRING. Un telefono. Poi un altro. Poi tutti.",
+		"* Nessuno alza la cornetta. Sorridono, e lasciano squillare.",
+		"* Qualcuno le chiamate dovrà pur prenderle. Il TURNO è sempre lì."])
 	Ui.cutscene = false
 
 

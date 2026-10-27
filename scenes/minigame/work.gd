@@ -131,6 +131,12 @@ var sp_short := false
 
 var _title: Label
 var _info: Label
+## La canzone di ogni turno: una per piano, mai la stessa di un altro posto (autoload/sound.gd).
+const JOB_MUSIC := {
+	"pedal": "turno_dinamo", "helpdesk": "turno_callcenter", "cassa": "turno_cassa",
+	"sportello": "turno_sportello", "smistamento": "turno_smistamento", "steal": "capo",
+}
+
 ## I giochi classici (Snake, Simon, Tetris, Frogger, Breakout, Pong): vedi arcade.gd.
 var arcade: Arcade
 
@@ -141,7 +147,8 @@ func _ready() -> void:
 	# lo straordinario (dopo la rivelazione del Fondo) è più duro del turno normale
 	d = clampf(difficulty() + float(cfg.get("extra_d", 0.0)), 0.0, 1.0)
 	Ui.show_hud(false)
-	Sound.music("lavoro")
+	# ogni turno ha la sua canzone (il furto del capo, quella del capo)
+	Sound.music(str(JOB_MUSIC.get(game, "lavoro")))
 	var bg := ColorRect.new()
 	bg.color = Color("0b0a10")
 	bg.size = Vector2(640, 360)
@@ -1054,6 +1061,9 @@ func _finish() -> void:
 		GameState.flags["c1_relight"] = not failed
 	elif failed:
 		GameState.work_failed()
+	if game == "helpdesk" and GameState.flags.get("c2_rivelazione", false):
+		# al -4, dopo la rivelazione: le chiamate che nessuno prende le hai prese tu. Per un po', silenzio.
+		GameState.flags["c2_quiet"] = not failed
 	Sound.sfx("coin")
 	var lines: Array = []
 	if failed:

@@ -134,9 +134,8 @@ func _ready() -> void:
 	_title = _label(Vector2(0, 40), 22, YELLOW)
 	_title.text = str(cfg.get("title", "Dai una mano"))
 	_info = _label(Vector2(0, 80), 16, Color.WHITE)
-	# chi aiuti può avere una musica sua (come il TURNO ha la sua)
-	if str(cfg.get("music", "")) != "":
-		Sound.music(str(cfg["music"]))
+	# ogni persona che aiuti ha la sua canzone (campo "music"); le altre, una per tutte
+	Sound.music(str(cfg.get("music", "aiuto")))
 	if Ui.transitioning:
 		await Ui.faded_in
 	await Ui.say(cfg.get("intro", ["* Dai una mano."]))

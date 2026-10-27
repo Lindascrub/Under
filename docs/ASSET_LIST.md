@@ -97,27 +97,38 @@ Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Qu
 **Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
 scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
 
-Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra, mai la stessa due volte di fila; con una canzone sola si ripete
+Ogni piano, ogni turno, ogni persona che aiuti e il capo hanno una canzone loro, che non suona da nessun'altra parte (lo controlla lo smoke test). Una canzone sola si ripete; dove ce ne sono di più, finita una ne parte un'altra
 (`autoload/sound.gd`, `PLAYLISTS`). Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
 
 | Atmosfera | Dove | Canzoni |
 |---|---|---|
-| `festa` | Fondo (-5) | GettinSillyWithIt (una sola, in loop) |
-| `attesa` | Sottoufficio (-4) | SoundfontJazzClub, SlyCooperClarinet, PkmnGoldLuckyCorner |
-| `mercato` | Mercato (-3) | MarketJam, Lively City, East Town, TRUNK_KNOX_GO_BUCK |
-| `banca` | Banca (-2) | TracerBulletPrivateEye, SleazyFurball, Malicious Scheme |
-| `citta` | Città (0) | MetropolitanCosmopolitan, Peaceful Village, HeWillNeverBeTheApeEscapeSoundtrack |
-| `quartiere` | Casa Comune, stanze di prima | Wood Forest Town, Ancient Library, The Old Magician |
-| `cima` / `presidente` | Cima, Direzione | Royal Castle, Magic Temple, Traveling the Sky |
+| `festa` | Fondo (-5) | GettinSillyWithIt |
+| `attesa` | Sottoufficio (-4) | PkmnGoldLuckyCorner |
+| `mercato` | Mercato (-3) | MarketJam |
+| `banca` | Banca (-2) | TracerBulletPrivateEye |
+| `citta` | Città (0) | MetropolitanCosmopolitan |
+| `quartiere` | Casa Comune, stanze di prima | Wood Forest Town |
+| `cima` | Cima | Royal Castle |
+| `presidente` | Direzione | Magic Temple |
+| `ascensore` | Gli ascensori (quello dell'inizio rallenta e si spegne quando si rompe) | SoundfontJazzClub, SlyCooperClarinet |
+| `turno_dinamo` | TURNO del -5 (cyclette) | HypnoticSynthLoop |
+| `turno_callcenter` | TURNO del -4 (call center) | FrostyLabratory |
+| `turno_cassa` | TURNO del -3 (cassa) | Dark Factory |
+| `turno_sportello` | TURNO del -2 (sportello) | Dwarven Mine |
+| `turno_smistamento` | TURNO dello 0 (smistamento) | Military Base |
+| `lavoro` | Gli altri turni (versione precedente) | Volcanic Crater |
+| `capo` | Quando il capo telefona, e il furto che ti chiede | Malicious Scheme |
+| `aiuto_mina` / `aiuto_bulbo` | Minigiochi di Mina e Bulbo | Unknown Island / Goofy Monster |
+| `aiuto_tilde` / `aiuto_ercole` | Minigiochi di Tilde ed Ercole | SleazyFurball / GettinWackyWithIt |
+| `aiuto_leda` / `aiuto_amir` | Minigiochi di Leda e Amir | East Town / TRUNK_KNOX_GO_BUCK |
+| `aiuto_olga` / `aiuto_teo` | Minigiochi di Olga e Teo | Spirits Forest / Ancient Library |
+| `aiuto_ada` / `aiuto_nadir` | Minigiochi di Ada e Nadir | Peaceful Village / Traveling the Sky |
+| `aiuto` | Minigiochi d'aiuto della versione precedente | The Old Magician |
 | `epilogo` | Epiloghi e titoli | Long Journey, Holy Sanctuary, Melancholic Bittersweet Groovy Cave Journey |
-| `lavoro` | I TURNI (minigiochi) | HypnoticSynthLoop, Dark Factory, FrostyLabratory, Dwarven Mine |
-| `notte` | La notte | NightTownWaltz, Melancholic Bittersweet |
-| `fondo` | Stanze vecchie del Fondo | DripstoneCave, Tension1 |
+| `notte` | La notte | NightTownWaltz |
+| `fondo` | Stanze vecchie del Fondo | DripstoneCave |
 | `battaglia` | Battaglie (versione precedente) | Battle Theme I, Battle Theme II, HaveYouEverPlayedGrimDawn |
 | `tensione` | (pronta, non ancora usata) | Tension1, Tension2 |
-| `ascensore` | L'ascensore dell'inizio (rallenta e si spegne quando si rompe) e quello dorato della Cima | SoundfontJazzClub, SlyCooperClarinet |
-| `aiuto_mina` | Il minigioco dei fili di Mina (campo `music` del minigioco in `data/npcs.json`) | Unknown Island |
-| `aiuto_bulbo` | Il minigioco delle lampadine di Bulbo | Goofy Monster |
 
 ## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)
 

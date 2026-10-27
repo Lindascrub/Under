@@ -115,24 +115,43 @@ func music_pitch(p: float, time := 2.0) -> void:
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
 const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
+	# i piani: una canzone ciascuno
 	"festa": ["gettinsillywithit"],
-	"attesa": ["soundfontjazzclub", "slycooperclarinet", "pkmngoldluckycornerioweitalltoyou"],
-	"mercato": ["marketjam", "lively_city", "east_town", "trunk_knox_go_buck"],
-	"banca": ["tracerbulletprivateeye", "sleazyfurball", "malicious_scheme"],
-	"citta": ["metropolitancosmopolitan", "peaceful_village", "hewillneverbetheapeescapesoundtrack"],
-	"quartiere": ["wood_forest_town", "ancient_library", "the_old_magician"],
-	"cima": ["royal_castle", "magic_temple", "traveling_the_sky"],
-	"presidente": ["magic_temple", "royal_castle"],
-	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
-	"lavoro": ["hypnoticsynthloop", "dark_factory", "frostylabratory", "dwarven_mine"],
-	"notte": ["nighttownwaltz", "melancholic_bittersweet_groovycavejourney"],
-	"fondo": ["dripstonecave", "tension1"],
-	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
-	"tensione": ["tension1", "tension2"],
+	"attesa": ["pkmngoldluckycornerioweitalltoyou"],
+	"mercato": ["marketjam"],
+	"banca": ["tracerbulletprivateeye"],
+	"citta": ["metropolitancosmopolitan"],
+	"quartiere": ["wood_forest_town"],
+	"cima": ["royal_castle"],
+	"presidente": ["magic_temple"],
 	"ascensore": ["soundfontjazzclub", "slycooperclarinet"],
-	# i minigiochi d'aiuto delle persone (campo "music" del minigioco in data/npcs.json)
+	# i turni: uno per piano (scenes/minigame/work.gd, JOB_MUSIC)
+	"turno_dinamo": ["hypnoticsynthloop"],
+	"turno_callcenter": ["frostylabratory"],
+	"turno_cassa": ["dark_factory"],
+	"turno_sportello": ["dwarven_mine"],
+	"turno_smistamento": ["military_base"],
+	"lavoro": ["volcanic_crater"],
+	# il capo: quando telefona, e nel furto che ti chiede
+	"capo": ["malicious_scheme"],
+	# i minigiochi d'aiuto: una canzone per persona (campo "music" del minigioco in data/npcs.json)
 	"aiuto_mina": ["unknown_island"],
 	"aiuto_bulbo": ["goofy_monster"],
+	"aiuto_tilde": ["sleazyfurball"],
+	"aiuto_ercole": ["gettinwackywithit"],
+	"aiuto_leda": ["east_town"],
+	"aiuto_amir": ["trunk_knox_go_buck"],
+	"aiuto_olga": ["spirits_forest"],
+	"aiuto_teo": ["ancient_library"],
+	"aiuto_ada": ["peaceful_village"],
+	"aiuto_nadir": ["traveling_the_sky"],
+	"aiuto": ["the_old_magician"],
+	# il resto
+	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
+	"notte": ["nighttownwaltz"],
+	"fondo": ["dripstonecave"],
+	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
+	"tensione": ["tension1", "tension2"],
 }
 
 ## Atmosfere nuove senza un segnaposto loro: quale vecchio .wav usare se mancano le canzoni.

@@ -2031,6 +2031,7 @@
         "Ce l'hai fatta! Le frasi sono tutte al loro posto. Io un po' meno, ma pazienza."
       ],
       "minigame": {
+        "music": "aiuto_tilde",
         "type": "sequence",
         "title": "Il copione di Tilde",
         "intro": [
@@ -2089,6 +2090,7 @@
         "Sveglio! Sono sveglio! ...Grazie, ragazzo. Non dirlo a nessuno."
       ],
       "minigame": {
+        "music": "aiuto_ercole",
         "type": "timing",
         "title": "Tieni sveglio Ercole",
         "intro": [
@@ -2358,6 +2360,7 @@
         "Non preoccuparti. L'ultima volta ho trovato il sapone nello scaffale dei biscotti."
       ],
       "minigame": {
+        "music": "aiuto_leda",
         "type": "inventory",
         "title": "Scatole e scaffali",
         "intro": [
@@ -2432,6 +2435,7 @@
         "Riproviamo quando vuoi. Le scatole non scappano. Purtroppo."
       ],
       "minigame": {
+        "music": "aiuto_amir",
         "type": "route",
         "title": "L'ultima consegna",
         "intro": [
@@ -2515,6 +2519,7 @@
         "Riproviamo quando vuoi. Io sono qui da martedì."
       ],
       "minigame": {
+        "music": "aiuto_olga",
         "type": "rate",
         "title": "Le rate mancanti",
         "intro": [
@@ -2582,6 +2587,7 @@
         "Io dico che possiamo riprovare. Il sistema non mi ascolta, ma tu sì."
       ],
       "minigame": {
+        "music": "aiuto_teo",
         "type": "pratiche",
         "title": "La pratica impossibile",
         "intro": [
@@ -2662,6 +2668,7 @@
         "Riproviamo? I mobili non hanno fretta. La chiusura sì."
       ],
       "minigame": {
+        "music": "aiuto_ada",
         "type": "stanze",
         "title": "Una stanza per tutti",
         "intro": [
@@ -2732,6 +2739,7 @@
         "Riproviamo. La mappa non scappa. Gli autobus sì."
       ],
       "minigame": {
+        "music": "aiuto_nadir",
         "type": "percorso",
         "title": "Il percorso possibile",
         "intro": [

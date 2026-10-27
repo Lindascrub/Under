@@ -146,7 +146,9 @@ func show_pending() -> void:
 		GameState.pending_lines.clear()
 		await Ui.say(lines)
 	if GameState.boss_call_pending():
+		Sound.music("capo")
 		await _boss_call()
+		Sound.music(music)
 	if floor_id != "" and GameState.pity_pending():
 		await _pity_offer()
 	await _floor_gift()

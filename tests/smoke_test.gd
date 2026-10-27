@@ -815,6 +815,16 @@ func _test_chapter6() -> void:
 	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):
 		Sound.music("festa")
 		_check(Sound.PLAYLISTS["festa"].size() == 1, "al Fondo una canzone sola")
+		# ogni piano, turno, persona e il capo: una canzone che non si sente da nessun'altra parte
+		var seen := {}
+		for mood: String in Sound.PLAYLISTS:
+			if mood in ["epilogo", "battaglia", "tensione", "fondo", "notte"]:
+				continue
+			for track: String in Sound.PLAYLISTS[mood]:
+				_check(not seen.has(track), "%s suona sia in %s che in %s" % [track, seen.get(track, ""), mood])
+				seen[track] = mood
+		for helper: String in ["tilde", "ercole", "leda", "amir", "olga", "teo", "ada", "nadir"]:
+			_check(str(GameState.npc_data(helper)["help"]["minigame"].get("music", "")) == "aiuto_" + helper, "%s ha la sua canzone" % helper)
 		for helper: String in ["bulbo", "mina"]:
 			var mus := str(GameState.npc_data(helper)["help"]["minigame"].get("music", ""))
 			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
@@ -1705,6 +1715,7 @@ func _run() -> void:
 	_check(GameState.has_badge("-3"), "col B-4 timbrato il badge del -3 si dovrebbe comprare")
 	await c2.call("on_stairs_step", c2.player, "-3")
 	_check(GameState.flags.get("c2_rivelazione", false), "sul primo gradino la musica si dovrebbe fermare")
+	_check(c2.get("_ring") != null, "dopo la rivelazione i telefoni del -4 squillano senza sosta")
 	_check(c2.call("on_stairs_top", c2.player), "in cima alle scale dovrebbe partire lo sguardo indietro")
 	await _wait_scene(Router.MERCATO, 60000)
 	await _idle()
@@ -1718,6 +1729,13 @@ func _run() -> void:
 	choose_queue = [1]
 	await c2.call("_agenda")
 	_check(GameState.flags.get("c2_pagato", false) and GameState.flags.get("c2_modulo_ok", false) and GameState.money == 700, "la procedura d'urgenza dovrebbe costare 300 e timbrare il B-4")
+	# dopo un turno ben fatto i telefoni tacciono (per un po')
+	GameState.flags["c2_rivelazione"] = true
+	GameState.flags["c2_quiet"] = true
+	c2 = await _go(Router.SOTTOUFFICIO, "from_below")
+	await _idle()
+	_check(c2.get("_ring") == null and not GameState.flags.has("c2_quiet"), "dopo il turno al call center i telefoni dovrebbero tacere")
+	GameState.flags.erase("c2_rivelazione")
 
 	# --- capitolo 3: il Mercato (test 9-35 di docs/capitoli/capitolo_3_il_mercato.md)
 	await _test_chapter3()

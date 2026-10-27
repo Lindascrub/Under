@@ -44,6 +44,8 @@ Tilde è anche la "vittima" della promozione del capo: il suo copione scritto a 
    - Se hai aiutato tutti, Nives ti regala il badge, ma solo col B-4 a posto: anche l'amicizia ha bisogno di un modulo.
 7. **La rivelazione, sul primo gradino.** La musichetta si interrompe a metà di una nota. Silenzio, neon, e il tritacarte:
    l'Agenda ci infila il tuo B-4, sorridendo. I colleghi restano con la cornetta in mano. Poi la musica riparte, più lenta.
+   Da lì i telefoni squillano senza sosta: nessuno prende più le chiamate. Un TURNO al call center li fa tacere
+   per 25 secondi, poi ricominciano (come la festa del Fondo che si riaccende pedalando).
    Tilde ed Ercole, se ci parli, ti dicono la verità (i moduli finiscono tutti nel tritacarte; l'archivio è vuoto).
 8. **Lo sguardo indietro.** In cima alle scale, una frase sola: copione rubato, urgenza pagata, uscita con Tilde ed Ercole,
    le due verità, oppure l'Agenda che sorride. Poi "Capitolo 3 — Il Mercato".
