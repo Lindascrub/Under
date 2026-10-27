@@ -1675,6 +1675,7 @@ func _run() -> void:
 	_check(GameState.floor_id == "-4", "con il badge le scale dovrebbero portare al piano -4")
 	# senza il badge del -3 il tornello respinge
 	var s4: Room = get_tree().current_scene
+	_check(s4.player.position.distance_to(s4.get("_stairs_down_exit")) < 24, "salendo dal Fondo si arriva in cima alle scale, non in mezzo alla stanza (%s)" % s4.player.position)
 	s4.player.position = s4.cell_feet(Vector2i(21, 3))
 	for i in 10:
 		await get_tree().physics_frame

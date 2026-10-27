@@ -351,7 +351,7 @@ func _features() -> void:
 	_sprite(mondo, "CycletteDinamo", GYM, BIKE, Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
 	_feature("SportelloBadge", "badge", Vector2i(26, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "", "need": "-4"})
+	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_below", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
 
