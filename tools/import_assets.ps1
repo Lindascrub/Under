@@ -57,6 +57,7 @@ $interiors["4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png"] =
 # la Banca (capitolo 4): fogli interi dei temi, usati a pezzi (regioni)
 $theme = "1_Interiors/16x16/Theme_Sorter/{0}"
 $interiors[($theme -f "19_Hospital_16x16.png")] = "themes/hospital.png"
+$interiors[($theme -f "8_Gym_16x16.png")] = "themes/gym.png"
 $interiors[($theme -f "2_LivingRoom_16x16.png")] = "themes/living_room.png"
 $interiors[($theme -f "5_Classroom_and_library_16x16.png")] = "themes/classroom.png"
 for ($i = 1; $i -le 20; $i++) {

@@ -219,3 +219,7 @@ Le nuvolette sopra la testa degli NPC ora sono quelle animate di LimeZu (`assets
 da `4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png`): la nuvoletta si gonfia e poi l'icona
 alterna i suoi due fotogrammi (`scripts/npc.gd`, `EMOTE_CELLS`: dots, bang, alarm, note, heart, question, zzz,
 coin, sweat, angry, idea). `art/emotes.png` resta solo come ripiego se gli asset LimeZu non ci sono.
+
+La cyclette del Fondo ora è quella della palestra di LimeZu (`assets/limezu/themes/gym.png`, da
+`Theme_Sorter/8_Gym_16x16.png`, regione 96,480 32x32). `art/generator.png` resta per la cyclette vecchia
+della Cima (capitolo 6) e per i minigiochi.

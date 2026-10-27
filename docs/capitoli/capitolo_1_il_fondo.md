@@ -39,6 +39,16 @@ Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo 
 9. **Lo straordinario.** Dopo la rivelazione la cyclette resta accesa: puoi pedalare ancora, al massimo tre volte. Ogni volta è più difficile e paga meno (120, 70, 35 €), ma per cinque secondi la festa si riaccende, poi si rispegne.
 10. **Lo sguardo indietro (fine del capitolo).** In cima alle scale la telecamera scende sul Fondo com'è diventato, con Fermo laggiù, e compare una sola frase che dipende dalle tue scelte (quaderno rubato, scale sbarrate, tre straordinari, tutte le verità, chi hai aiutato). Poi buio e il titolo "Capitolo 2 — Il Sottoufficio".
 
+## La mappa (35x14 caselle): due stanze sullo stesso piano
+
+Come nelle mappe di esempio di LimeZu, col bordo bianco e i separatori pieni tra le stanze (`world/room_outline.gd`).
+La scena si genera con `tools/bake_c1_fondo.gd` (la mappa è scritta in `ROWS`).
+
+| Stanza | Dove | Cosa c'è |
+|---|---|---|
+| La festa | a sinistra (1-22, 3-12), pavimento a piastrelle colorate | l'ascensore (11,1), Fermo sulla cassetta (14,4), la cyclette della palestra LimeZu col TURNO (3-4,6), Bulbo coi cavi, Mina con le scatole di lampadine, il tavolo con la torta e i regali, i palloncini, la stellina (5,11) |
+| L'ufficio badge | a destra (24-33, 3-12), porta a (23, 9-10) | lo sportello dei badge (26,3), la bacheca coi prezzi (28,2), le sedie d'attesa (25-28, 8), il divano, le scale per il -4 (31,3); chi scende dal -4 arriva a (31,5) |
+
 ## Comandi: tutto col dito
 
 Il gioco è per telefono. Nel mondo ci sono joystick e pulsanti; nei minigiochi no, si gioca direttamente sullo schermo:

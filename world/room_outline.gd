@@ -5,6 +5,8 @@ extends Node2D
 ## ai lati) sul vuoto che tocca una stanza. Si disegna da solo leggendo Pavimento e Muri,
 ## quindi segue le modifiche fatte nell'editor (stanze nuove, porte aperte nei muri).
 ## Sopra le pareti non si disegna: la parete ha già il suo bordo bianco in cima.
+## Tra due stanze vicine (una sola casella di vuoto in mezzo) il separatore è pieno, come i pezzi
+## "room border" di LimeZu: un muretto bianco visto dall'alto, non due righe con il buio in mezzo.
 
 const T := 16
 const LINE := 6
@@ -69,17 +71,32 @@ func build_image() -> Image:
 	# prima la maschera della riga (pixel per pixel), poi il bianco è la riga senza il suo bordo
 	var mask := PackedByteArray()
 	mask.resize(w * h)
+	# i separatori: caselle di vuoto con una stanza da tutte e due le parti
+	var dividers := {}
+	for y in range(used.position.y, used.end.y):
+		for x in range(used.position.x, used.end.x):
+			var c := Vector2i(x, y)
+			if _kind(floor_l, walls, c) == 0 and (
+					(_kind(floor_l, walls, c + Vector2i.LEFT) != 0 and _kind(floor_l, walls, c + Vector2i.RIGHT) != 0)
+					or (_kind(floor_l, walls, c + Vector2i.UP) != 0 and _kind(floor_l, walls, c + Vector2i.DOWN) != 0)):
+				dividers[c] = true
 	for y in range(used.position.y, used.end.y):
 		for x in range(used.position.x, used.end.x):
 			var c := Vector2i(x, y)
 			if _kind(floor_l, walls, c) != 0:
 				continue
 			var o := (c - used.position) * T
-			var l := _kind(floor_l, walls, c + Vector2i.LEFT) != 0
-			var r := _kind(floor_l, walls, c + Vector2i.RIGHT) != 0
-			var u := _kind(floor_l, walls, c + Vector2i.UP) != 0
-			var d := _kind(floor_l, walls, c + Vector2i.DOWN) == 1
 			var strips: Array[Rect2i] = []
+			if dividers.has(c):
+				strips.append(Rect2i(o, Vector2i(T, T)))
+			var l := _kind(floor_l, walls, c + Vector2i.LEFT) != 0 or dividers.has(c + Vector2i.LEFT)
+			var r := _kind(floor_l, walls, c + Vector2i.RIGHT) != 0 or dividers.has(c + Vector2i.RIGHT)
+			var u := _kind(floor_l, walls, c + Vector2i.UP) != 0 or dividers.has(c + Vector2i.UP)
+			# (verso il basso solo il pavimento: sopra il separatore tra due pareti non si sporge)
+			var d := _kind(floor_l, walls, c + Vector2i.DOWN) == 1
+			# dove si incrociano i separatori, la casella è piena anche lei
+			if [l, r, u, d].count(true) >= 3:
+				strips.append(Rect2i(o, Vector2i(T, T)))
 			if l:
 				strips.append(Rect2i(o, Vector2i(LINE, T)))
 			if r:

@@ -23,6 +23,13 @@ var _emote_tail: Sprite2D
 var _emote_id := 0
 var _emote_t := 0.0
 var _greeted := false
+# la vita da ferma (attività idle_<dir>): si guarda intorno, fa un passo e torna, guarda il telefono
+const FIDGET_SPEED := 20.0
+const FIDGET_STEP := 12.0
+var _fidget_t := 0.0
+var _fidget_back := 0.0
+var _fidget_to := Vector2.ZERO
+var _fidget_walking := false
 
 
 func _ready() -> void:
@@ -85,6 +92,7 @@ func _ready() -> void:
 	_emote.z_index = 5
 	add_child(_emote)
 	_emote_t = randf_range(3.0, 10.0)
+	_fidget_t = randf_range(2.0, 6.0)
 
 
 func _anim_for(act: String) -> String:
@@ -165,8 +173,68 @@ func _update_emote(delta: float) -> void:
 		emote(str(data.get("emote", "dots")))
 
 
+## Chi sta in piedi non è una statua: ogni tanto si guarda intorno, fa un passo e torna al suo posto,
+## guarda il telefono. Se le sei vicino (o si parla) sta ferma, così le puoi parlare.
+func _fidget(delta: float) -> void:
+	if not activity.begins_with("idle_") or GameState.is_robot(id) or data.get("still", false):
+		return
+	var base := activity.trim_prefix("idle_")
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	var near := p != null and p.global_position.distance_to(global_position) < 44
+	if Ui.blocks_input() or near:
+		if _fidget_walking:
+			_fidget_walking = false
+			sprite.play("idle_" + base)
+		return
+	if _fidget_walking:
+		var to := _fidget_to - position
+		if to.length() < 0.6 or test_move(global_transform, to.normalized() * 2.0):
+			_fidget_walking = false
+			sprite.play("idle_" + base)
+			return
+		position += to.normalized() * minf(FIDGET_SPEED * delta, to.length())
+		return
+	if _fidget_back > 0.0:
+		_fidget_back -= delta
+		if _fidget_back <= 0.0:
+			sprite.play("idle_" + base)
+		return
+	_fidget_t -= delta
+	if _fidget_t > 0.0:
+		return
+	_fidget_t = randf_range(3.0, 8.0)
+	# se una scena l'ha portata altrove (Olga che va alla porta), il suo posto adesso è lì
+	if position.distance_to(_home) > FIDGET_STEP + 2.0:
+		_home = position
+	var roll := randf()
+	if position.distance_to(_home) > 1.0 or roll < 0.35:
+		# un passo (o il ritorno al suo posto)
+		var dirs := {"left": Vector2.LEFT, "right": Vector2.RIGHT, "up": Vector2.UP, "down": Vector2.DOWN}
+		var d: String = dirs.keys()[randi() % 4]
+		_fidget_to = _home + dirs[d] * FIDGET_STEP
+		if position.distance_to(_home) > 1.0:
+			_fidget_to = _home
+			var back := _home - position
+			d = ("right" if back.x > 0 else "left") if absf(back.x) > absf(back.y) else ("down" if back.y > 0 else "up")
+		if not test_move(global_transform, (_fidget_to - position).normalized() * 3.0):
+			_fidget_walking = true
+			sprite.play("walk_" + d)
+	elif roll < 0.75:
+		# si guarda intorno
+		var look: String = ["left", "right", "up", "down"][randi() % 4]
+		sprite.play("idle_" + look)
+		_fidget_back = randf_range(1.0, 2.2)
+	else:
+		# il telefono, o un foglio da leggere
+		var act: String = ["phone", "read"][randi() % 2]
+		if sprite.sprite_frames.has_animation(act):
+			sprite.play(act)
+			_fidget_back = randf_range(2.0, 3.5)
+
+
 func _process(delta: float) -> void:
 	_update_emote(delta)
+	_fidget(delta)
 	if activity != "wander" or Ui.blocks_input():
 		if activity == "wander" and sprite.animation.begins_with("walk"):
 			sprite.play("idle_" + sprite.animation.trim_prefix("walk_"))

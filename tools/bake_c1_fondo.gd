@@ -1,12 +1,18 @@
 extends Node
-## Costruisce UNA VOLTA la scena del Fondo-festa (capitolo 1) e la salva come scena vera
-## in res://chapters/c1/fondo.tscn. Da lì in poi la scena si modifica nell'editor di Godot:
-## questo script serve solo a creare la prima versione (non rilanciarlo, o sovrascrive le modifiche).
+## Costruisce la scena del Fondo-festa (capitolo 1) e la salva come scena vera in res://chapters/c1/fondo.tscn.
+## Da lì in poi la scena si può modificare nell'editor di Godot (rilanciare lo script la sovrascrive).
 ## Esegui:  Godot --headless --path . res://tools/bake_c1_fondo.tscn
+##
+## Due stanze sullo stesso piano, col bordo bianco come nelle mappe di LimeZu (RoomOutline):
+##   la festa         (a sinistra, grande): l'ascensore, Fermo, Bulbo e Mina, la cyclette col TURNO
+##   l'ufficio badge  (a destra): lo sportello dei badge e le scale per il -4 (porta a 23, 9-10)
+## La mappa si legge in ROWS: # vuoto, F/B parete, f/b pavimento (una lettera per stanza).
 
 const T := 16
-const W := 24
-const H := 14
+const GYM := "res://assets/limezu/themes/gym.png"
+const HOSPITAL := "res://assets/limezu/themes/hospital.png"
+const LIVING := "res://assets/limezu/themes/living_room.png"
+const GROCERY := "res://assets/limezu/grocery/"
 const RB := "res://assets/limezu/tiles/room_builder.png"
 const BDAY := "res://assets/limezu/tiles/birthday.png"
 const TILESET_PATH := "res://world/tilesets/interni.tres"
@@ -16,6 +22,33 @@ const OUT := "res://chapters/c1/fondo.tscn"
 const FLOORS := [Vector2i(42, 17), Vector2i(42, 33), Vector2i(34, 17)]
 const WALL := Vector2i(22, 29)
 const BORDER := Vector2i(12, 0)
+## L'ufficio badge: la stessa parete e lo stesso pavimento grigio dell'ufficio badge del Mercato.
+const BADGE_WALL := Vector2i(11, 41)
+const BADGE_FLOOR := Vector2i(34, 11)
+## La cyclette: quella della palestra di LimeZu (vista di fronte).
+const BIKE := Rect2(96, 480, 32, 32)
+const CHAIR := Rect2(160, 304, 16, 16)
+const BOARD := Rect2(32, 0, 32, 32)
+const SOFA := Rect2(16, 448, 48, 32)
+
+const ROWS := [
+	"###################################",
+	"#FFFFFFFFFFFFFFFFFFFFFF#BBBBBBBBBB#",
+	"#FFFFFFFFFFFFFFFFFFFFFF#BBBBBBBBBB#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffffbbbbbbbbbbb#",
+	"#ffffffffffffffffffffffbbbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"#ffffffffffffffffffffff#bbbbbbbbbb#",
+	"###################################",
+]
+
+const WIRES := "res://world/electrical_wires.gd"
 
 var root: Node2D
 var mondo: Node2D
@@ -37,18 +70,26 @@ func _ready() -> void:
 	muri.name = "Muri"
 	muri.tile_set = ts
 	_add(root, muri)
-	for y in H:
-		for x in W:
+	for y in ROWS.size():
+		var row: String = ROWS[y]
+		for x in row.length():
 			var c := Vector2i(x, y)
-			var border := x == 0 or x == W - 1 or y == 0 or y == H - 1
-			if border:
-				muri.set_cell(c, 0, BORDER)
-			elif y <= 2:
-				muri.set_cell(c, 0, WALL + Vector2i(x % 3, y - 1))
-			else:
-				var block := (x / 2 + y / 2) % 3
-				var base: Vector2i = FLOORS[block]
-				pav.set_cell(c, 0, base + Vector2i(x % 3, y % 2))
+			match row[x]:
+				"#":
+					muri.set_cell(c, 0, BORDER)
+				"F":
+					muri.set_cell(c, 0, WALL + Vector2i(x % 3, y - 1))
+				"B":
+					muri.set_cell(c, 0, BADGE_WALL + Vector2i(x % 3, y - 1))
+				"b":
+					pav.set_cell(c, 0, BADGE_FLOOR + Vector2i(x % 3, y % 2))
+				_:
+					var block := (x / 2 + y / 2) % 3
+					var base: Vector2i = FLOORS[block]
+					pav.set_cell(c, 0, base + Vector2i(x % 3, y % 2))
+	var bordo := RoomOutline.new()
+	bordo.name = "Bordo"
+	_add(root, bordo)
 	# i decori per terra (coriandoli): sotto a tutto
 	decori = Node2D.new()
 	decori.name = "Decori"
@@ -59,13 +100,14 @@ func _ready() -> void:
 	_add(root, mondo)
 	_party()
 	_people()
+	_ufficio_badge()
 	_features()
 	var arrivi := Node2D.new()
 	arrivi.name = "Arrivi"
 	_add(root, arrivi)
 	_arrival(arrivi, "default", Vector2i(11, 3), "down")
 	_arrival(arrivi, "elevator", Vector2i(11, 3), "down")
-	_arrival(arrivi, "from_above", Vector2i(21, 5), "down")
+	_arrival(arrivi, "from_above", Vector2i(31, 5), "down")
 	# niente risorse "pesanti" dentro la scena: i personaggi si ridisegnano da soli
 	for n in root.find_children("*", "CharSprite", true, false):
 		(n as CharSprite).sprite_frames = null
@@ -102,8 +144,9 @@ func _tileset() -> TileSet:
 	for dy in 2:
 		for dx in 3:
 			solid.append(WALL + Vector2i(dx, dy))
+			solid.append(BADGE_WALL + Vector2i(dx, dy))
 	var floors := []
-	for f: Vector2i in FLOORS:
+	for f: Vector2i in FLOORS + [BADGE_FLOOR]:
 		for dy in 2:
 			for dx in 3:
 				floors.append(f + Vector2i(dx, dy))
@@ -239,14 +282,21 @@ func _people() -> void:
 	halo.position = Vector2(14 * T + 8, 5 * T - 6)
 	_add(decori, halo)
 	# accanto a Bulbo (la ragazza), le scatole di lampadine da smistare
-	_sprite(mondo, "ScatolaLampadine1", "res://art/bulb_box.png", Rect2(), Vector2i(18, 10), 8)
-	_sprite(mondo, "ScatolaLampadine2", "res://art/bulb_box.png", Rect2(), Vector2i(18, 11), 8, Vector2(6, 2))
+	_sprite(mondo, "ScatolaLampadine1", "res://art/bulb_box.png", Rect2(), Vector2i(18, 10), 8, Vector2(6, 0)).scale = Vector2(0.625, 0.625)
+	_sprite(mondo, "ScatolaLampadine2", "res://art/bulb_box.png", Rect2(), Vector2i(18, 11), 8, Vector2(12, 2)).scale = Vector2(0.625, 0.625)
 	_examine(mondo, "GuardaScatole", Vector2i(19, 10), [
 		"* Scatole piene di lampadine. Alcune accese, alcune rotte, alcune che non hanno ancora deciso.",
 	])
-	# accanto a Mina, i cavi aggrovigliati (sono linee: si possono spostare nell'editor)
+	# accanto a Mina, i cavi aggrovigliati: col disegnatore dei cavi, se c'è; se no quattro linee
+	if ResourceLoader.exists(WIRES):
+		var cavi := Node2D.new()
+		cavi.name = "CaviElettrici"
+		cavi.position = Vector2(72, 126)
+		cavi.scale = Vector2(0.75, 0.75)
+		cavi.set_script(load(WIRES))
+		_add(decori, cavi)
 	var cols := [Color("d23b3b"), Color("39b6ff"), Color("ffe14d"), Color("3ddc84")]
-	for i in cols.size():
+	for i in (0 if ResourceLoader.exists(WIRES) else cols.size()):
 		var line := Line2D.new()
 		line.name = "Cavo%d" % i
 		line.width = 1.5
@@ -297,12 +347,30 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 
 func _features() -> void:
-	# la cyclette con la dinamo (la grafica), e il posto di lavoro (la logica) davanti
-	_sprite(mondo, "CycletteDinamo", "res://art/generator.png", Rect2(), Vector2i(3, 6), 10)
+	# la cyclette (la grafica, dalla palestra di LimeZu), e il posto di lavoro (la logica) davanti
+	_sprite(mondo, "CycletteDinamo", GYM, BIKE, Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
-	_feature("SportelloBadge", "badge", Vector2i(18, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "", "need": "-4"})
+	_feature("SportelloBadge", "badge", Vector2i(26, 3))
+	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
+
+
+## L'ufficio badge, di là dalla festa: lo sportello, le sedie d'attesa, la bacheca coi prezzi, le scale.
+func _ufficio_badge() -> void:
+	_sprite(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(28, 2))
+	_examine(mondo, "GuardaBacheca", Vector2i(28, 3), [
+		"* La bacheca dell'ufficio badge. \"BADGE -4: 500 €. Ogni piano costa il doppio.\"",
+		"* Sotto, a pennarello: \"La festa è di là. Qui si paga.\"",
+	])
+	for i in 4:
+		_sprite(mondo, "SediaAttesa%d" % i, HOSPITAL, CHAIR, Vector2i(25 + i, 8), 6)
+	_examine(mondo, "GuardaSedie", Vector2i(25, 7), [
+		"* Quattro sedie per chi aspetta il badge. Nessuno aspetta: o hai i soldi o torni a pedalare.",
+	])
+	_sprite(mondo, "Divano", LIVING, SOFA, Vector2i(29, 12), 10)
+	_sprite(mondo, "PiantaBadge0", GROCERY + "449.png", Rect2(), Vector2i(24, 3), 8)
+	_sprite(mondo, "PiantaBadge1", GROCERY + "451.png", Rect2(), Vector2i(33, 11), 8)
+	_sprite(mondo, "PiantaBadge2", GROCERY + "449.png", Rect2(), Vector2i(24, 12), 8)
 
 
 func _arrival(parent: Node, nm: String, cell: Vector2i, facing: String) -> void:
