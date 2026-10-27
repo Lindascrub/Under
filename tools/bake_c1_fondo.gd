@@ -211,8 +211,7 @@ func _party() -> void:
 	# festoni lungo tutto il muro
 	for i in 7:
 		var r := Rect2(0, 64, 32, 16) if i % 2 == 0 else Rect2(32, 64, 48, 16)
-		var g := _sprite(decori, "Festone%d" % i, BDAY, r, Vector2i(1 + i * 3, 1), 0, Vector2(4, 4))
-		g.z_index = 1
+		_sprite(decori, "Festone%d" % i, BDAY, r, Vector2i(1 + i * 3, 1), 0, Vector2(4, 4))
 	# palloncini legati qua e là
 	var balloons := [[Vector2i(2, 3), 0], [Vector2i(3, 3), 16], [Vector2i(9, 3), 32], [Vector2i(16, 3), 48], [Vector2i(20, 12), 0], [Vector2i(1, 12), 32]]
 	# ogni palloncino ha la sua frase (e un'altra dopo che la festa si spegne)
@@ -350,15 +349,15 @@ func _features() -> void:
 	# la cyclette (la grafica, dalla palestra di LimeZu), e il posto di lavoro (la logica) davanti
 	_sprite(mondo, "CycletteDinamo", GYM, BIKE, Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
-	_feature("SportelloBadge", "badge", Vector2i(26, 3))
+	_feature("SportelloBadge", "badge", Vector2i(25, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_below", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
 
 ## L'ufficio badge, di là dalla festa: lo sportello, le sedie d'attesa, la bacheca coi prezzi, le scale.
 func _ufficio_badge() -> void:
-	_sprite(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(28, 2))
-	_examine(mondo, "GuardaBacheca", Vector2i(28, 3), [
+	_sprite(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(29, 2))
+	_examine(mondo, "GuardaBacheca", Vector2i(29, 3), [
 		"* La bacheca dell'ufficio badge. \"BADGE -4: 500 €. Ogni piano costa il doppio.\"",
 		"* Sotto, a pennarello: \"La festa è di là. Qui si paga.\"",
 	])
@@ -367,7 +366,8 @@ func _ufficio_badge() -> void:
 	_examine(mondo, "GuardaSedie", Vector2i(25, 7), [
 		"* Quattro sedie per chi aspetta il badge. Nessuno aspetta: o hai i soldi o torni a pedalare.",
 	])
-	_sprite(mondo, "Divano", LIVING, SOFA, Vector2i(29, 12), 10)
+	# il divano contro la parete in alto, rivolto verso la stanza (ci si siede: data/props.json)
+	_sprite(mondo, "Divano", LIVING, SOFA, Vector2i(26, 4), 10)
 	_sprite(mondo, "PiantaBadge0", GROCERY + "449.png", Rect2(), Vector2i(24, 3), 8)
 	_sprite(mondo, "PiantaBadge1", GROCERY + "451.png", Rect2(), Vector2i(33, 11), 8)
 	_sprite(mondo, "PiantaBadge2", GROCERY + "449.png", Rect2(), Vector2i(24, 12), 8)

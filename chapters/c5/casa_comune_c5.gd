@@ -24,6 +24,7 @@ func setup() -> void:
 			ada.visible = false
 			ada.process_mode = Node.PROCESS_MODE_DISABLED
 			ada.remove_from_group("interactable")
+			ada.collision_layer = 0
 
 
 func enter() -> void:

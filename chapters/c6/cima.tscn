@@ -224,7 +224,8 @@ position = Vector2(11.5, -3)
 shape = SubResource("RectangleShape2D_hojh2")
 
 [node name="CycletteVecchia" type="Sprite2D" parent="Mondo" unique_id=568919834]
-position = Vector2(256, 272)
+position = Vector2(260, 272)
+scale = Vector2(0.75, 0.75)
 texture = ExtResource("11_o0lts")
 centered = false
 offset = Vector2(0, -32)

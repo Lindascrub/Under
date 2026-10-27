@@ -71,6 +71,8 @@ func _ready() -> void:
 		GameState.enter_floor(floor_id)
 	_spawn_player()
 	after_spawn()
+	# ogni oggetto si può guardare, ogni sedia usare (data/props.json)
+	PropTalk.apply(self)
 	var arrive_to := _prepare_arrival()
 	Ui.show_hud(true)
 	Sound.music(music)
@@ -961,13 +963,20 @@ func _do_arrival(_to: Vector2) -> void:
 ## Lo sportello dei badge: l'addetta sta nella casella `cell`, la scrivania sotto di lei.
 func add_badge_machine(cell: Vector2i) -> void:
 	var desk := cell + Vector2i(0, 1)
-	# lo sportello fa parte del sistema: resta colorato anche quando il resto si spegne
-	add_computer_desk(desk).set_meta("finto", true)
+	# lo sportello fa parte del sistema: resta colorato anche quando il resto si spegne.
+	# Una scrivania vera col monitor (quella bianca di "Generic" sembrava una sedia).
+	var desk_art := Assets.ROOT + "props/office_desk.png"
+	var real_desk := ResourceLoader.exists(desk_art)
+	if real_desk:
+		add_art(desk_art, desk, 1).set_meta("finto", true)
+	else:
+		add_computer_desk(desk).set_meta("finto", true)
 	var clerk := AnimatedSprite2D.new()
 	clerk.set_meta("finto", true)
 	clerk.sprite_frames = Assets.character(BADGE_CLERK)
 	clerk.centered = false
-	clerk.offset = Vector2(-8, -48)
+	# dietro la scrivania: si vedono la testa e le spalle sopra il monitor
+	clerk.offset = Vector2(-8, -40 if real_desk else -48)
 	clerk.position = cell_feet(cell)
 	clerk.play("idle_down")
 	world.add_child(clerk)

@@ -17,6 +17,9 @@ const PROPS := "res://assets/limezu/props/"
 const GROCERY := "res://assets/limezu/grocery/"
 const STREET := "res://assets/limezu/street/"
 const AFTER := "c3_rivelazione"
+const THEME_GROCERY := "res://assets/limezu/themes/grocery.png"
+## La cassa intera del supermercato (registratore, vetro, banco): un pezzo solo, non tre metà.
+const CHECKOUT := Rect2(0, 368, 32, 48)
 
 ## Le tessere (in room_builder): le pareti sono motivi 3x2, i pavimenti 3x2.
 const VOID := Vector2i(12, 0)
@@ -236,15 +239,12 @@ func _on_top(base: Sprite2D, nm: String, tex: String, lift: float) -> void:
 func _insegne() -> void:
 	# "OGGI TUTTO AL 50%*" sopra il banco di Leda, il tabellone dei prezzi in mezzo alla parete
 	var saldi := _sprite(decori, "InsegnaSaldi", "res://art/sign_saldi.png", Rect2(), Vector2i(3, 1), 0, Vector2(4, 4))
-	saldi.z_index = 1
 	var board := _sprite(decori, "Tabellone", "res://art/price_board.png", Rect2(), Vector2i(12, 2), 0, Vector2(0, 2))
-	board.z_index = 1
 	_examine(mondo, "GuardaSaldi", Vector2i(9, 3), [], "_saldi")
 	_examine(mondo, "GuardaTabellone", Vector2i(15, 3), [], "_tabellone")
 	# i cartellini dello sconto, appesi qua e là sulla parete
 	for i in 3:
-		var tag := _sprite(decori, "Cartellino%d" % i, GROCERY + "97.png", Rect2(), Vector2i([1, 10, 20][i], 1), 0, Vector2(0, 6))
-		tag.z_index = 1
+		_sprite(decori, "Cartellino%d" % i, GROCERY + "97.png", Rect2(), Vector2i([1, 10, 20][i], 1), 0, Vector2(0, 6))
 
 
 ## Il banco di Leda, in alto a sinistra: pane, latte, sogni, aria. E la lavagnetta dei conti.
@@ -262,7 +262,6 @@ func _negozio() -> void:
 	_examine(mondo, "ProdottoAria", Vector2i(7, 4), [], "_aria")
 	_examine(mondo, "ProdottoTazza", Vector2i(2, 7), [], "_tazza")
 	_examine(mondo, "GuardaLavagnetta", Vector2i(6, 7), [], "_lavagnetta")
-	_npc("Leda", "leda", "idle_down", Vector2i(5, 7))
 
 
 ## Le corsie, i frigo, i banchi frigo, la frutta: il supermercato vero.
@@ -298,24 +297,41 @@ func _supermercato() -> void:
 	])
 	_g("Pianta0", 451, Vector2i(22, 7), 8)
 	_g("Pianta1", 449, Vector2i(1, 12), 8)
+	# chi fa la spesa: gira per le corsie, si ferma agli scaffali, e se ti trova davanti aspetta
 	var customers := [
-		["Cliente0", "char_15", Vector2i(11, 9), "idle_right", ["* \"Ho comprato tre cose che non mi servono. Ma erano al 50%!\"", "* Ti mostra lo scontrino. È più lungo di lui."]],
-		["Cliente1", "char_16", Vector2i(15, 10), "idle_left", ["* \"Mi scusi, sa dov'è il reparto Felicità? Sulla mappa c'è, ma è in esaurimento.\""]],
-		["Cliente2", "char_19", Vector2i(15, 5), "idle_up", ["* Guarda il tabellone dei prezzi. Il latte costa quanto un'ora di cassa.", "* \"Lo guardo e basta. Guardare è ancora gratis. Credo.\""]],
+		["Cliente0", "char_15", [Vector2i(11, 7), Vector2i(11, 12), Vector2i(15, 12), Vector2i(15, 7)], "left",
+			["Ho comprato tre cose che non mi servono. Ma erano al 50%!", "Lo scontrino è più lungo di me. Lo tengo come ricordo.", "Il carrello cigola. Lo prendo come un complimento."]],
+		["Cliente1", "char_16", [Vector2i(12, 5), Vector2i(18, 5), Vector2i(16, 5)], "up",
+			["Mi scusi, sa dov'è il reparto Felicità? Sulla mappa c'è, ma è in esaurimento.", "Il latte costa quanto un'ora di cassa. Lo guardo e basta. Guardare è ancora gratis. Credo."]],
+		["Cliente2", "char_19", [Vector2i(16, 13), Vector2i(21, 13), Vector2i(19, 13)], "down",
+			["Le mele hanno il codice a barre sulla buccia. Così si sa subito quanto costa morderle.", "Prendo una banana. Una. Il resto lo guardo."]],
+		["Cliente3", "char_07", [Vector2i(19, 9), Vector2i(19, 6), Vector2i(13, 4)], "right",
+			["Cerco il surgelato in offerta. Ogni volta che lo trovo, l'offerta è finita.", "Faccio la spesa per tre. Vivo da solo. Ma la confezione singola costa di più."]],
 	]
 	for c: Array in customers:
-		_person(c[0], c[1], c[3], c[2])
-		_examine(mondo, "Guarda" + c[0], c[2], c[4], "", ["* Sorride ancora. Sorride a tutto. Anche al tabellone."])
-		_solid("Piedi" + c[0], Rect2i(c[2], Vector2i.ONE))
+		var sh := Shopper.new()
+		sh.name = c[0]
+		sh.sheet = c[1]
+		var route := PackedVector2Array()
+		for cell: Vector2i in c[2]:
+			route.append(Vector2(cell.x * T + 8, (cell.y + 1) * T - 2))
+		sh.route = route
+		sh.position = route[0]
+		sh.look = c[3]
+		sh.lines = PackedStringArray(c[4])
+		_add(mondo, sh)
 
 
 ## Le casse in basso, vicino alle scale: la prima è quella del TURNO.
 func _casse() -> void:
-	for i in 3:
-		_g("Cassa%d" % i, 170 + i, Vector2i(7 + i * 3, 14), 12)
-	# le barriere antitaccheggio all'uscita delle casse
-	_g("Antifurto0", 151, Vector2i(6, 15), 6)
-	_g("Antifurto1", 151, Vector2i(15, 15), 6)
+	# la cassa di Leda (a sinistra) e quella libera per il TURNO (a destra): il registratore, il vetro, il banco
+	_sprite(mondo, "CassaLeda", THEME_GROCERY, CHECKOUT, Vector2i(6, 15), 14)
+	_sprite(mondo, "CassaTurno", THEME_GROCERY, CHECKOUT, Vector2i(10, 15), 14)
+	_npc("Leda", "leda", "idle_left", Vector2i(8, 14))
+	_examine(mondo, "GuardaCassaLeda", Vector2i(7, 13), [
+		"* La cassa di Leda. Sul registratore, un adesivo: PICCOLO COMMERCIANTE INDIPENDENTE — CHEAP.",
+		"* Il nastro è fermo. Leda lo spinge a mano, quando passa qualcuno.",
+	])
 
 
 ## L'ufficio badge: Nives, una pianta, le scale per la Banca.
@@ -361,7 +377,7 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 
 func _features() -> void:
-	_feature("PostoCassa", "station", Vector2i(7, 14), {"job": "cassa_mercato"})
+	_feature("PostoCassa", "station", Vector2i(12, 14), {"job": "cassa_mercato"})
 	_feature("SportelloBadge", "badge", Vector2i(28, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(32, 3), {"target": "res://chapters/c4/banca.tscn", "spawn": "from_below", "need": "-2"})
 	_feature("ScaleGiu", "stairs_down", Vector2i(2, 15), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_above"})

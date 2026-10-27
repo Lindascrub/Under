@@ -52,7 +52,11 @@ func _physics_process(_delta: float) -> void:
 			return
 		# ti alzi: un passo giù, davanti a quello su cui eri seduto
 		stand_up()
-		position.y += 14
+		if _stand_pos != Vector2.INF:
+			position = _stand_pos
+		else:
+			position.y += 14
+		_stand_pos = Vector2.INF
 	if v != Vector2.ZERO:
 		if absf(v.x) > absf(v.y):
 			facing = "right" if v.x > 0 else "left"
@@ -155,18 +159,39 @@ func _find_target() -> Node:
 var _sleep_nodes: Array[Node] = []
 
 
-## Si siede su qualcosa: `feet` è il bordo in basso del sedile, `dir` dove guardi (left/right).
-## Si disegna davanti al sedile (z_index), così il sedile resta sotto e non davanti.
-func sit(feet: Vector2, dir: String) -> void:
+## Si siede su qualcosa: `feet` è il bordo in basso del sedile, `dir` dove guardi.
+## left/right: di profilo (panchine, divani laterali), davanti al sedile (z_index).
+## down: su una sedia vista di fronte, alzata sul sedile. up: di spalle, dietro lo schienale.
+## `lift` = quanto è alto il sedile (una cassetta 6, una sedia 6, un divano 8).
+func sit(feet: Vector2, dir: String, lift := 6.0) -> void:
+	if not seated:
+		_stand_pos = position
 	seated = true
 	velocity = Vector2.ZERO
 	position = feet + Vector2(0, -2)
 	facing = dir
-	z_index = 1
-	# alzata sul sedile: sotto si vede ancora (una cassetta è alta 12 pixel)
-	_sprite.offset = Vector2(-8, -37)
 	_shadow.visible = false
-	_sprite.play("sit_" + dir)
+	match dir:
+		"up":
+			# di spalle: lo schienale della sedia resta davanti e copre le gambe
+			z_index = 0
+			position = feet + Vector2(0, -5)
+			_sprite.offset = Vector2(-8, -31 - lift)
+			_sprite.play("idle_up")
+		"down":
+			z_index = 1
+			_sprite.offset = Vector2(-8, -31 - lift)
+			_sprite.play("idle_down")
+			_sprite.pause()
+		_:
+			z_index = 1
+			# alzata sul sedile: sotto si vede ancora (una cassetta è alta 12 pixel)
+			_sprite.offset = Vector2(-8, -31 - lift)
+			_sprite.play("sit_" + dir)
+
+
+## Dove eri prima di sederti: alzandoti torni lì (così non finisci dentro la sedia).
+var _stand_pos := Vector2.INF
 
 
 func stand_up() -> void:

@@ -1387,6 +1387,7 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
+			n.collision_layer = 0
 	var seats := [["PancaAda", str(GameState.npc_data("ada").get("sheet")), Vector2i(6, 17)], ["PancaRina", str(GameState.npc_data("rina").get("sheet")), Vector2i(7, 17)], ["PancaNadir", str(GameState.npc_data("nadir").get("sheet")), Vector2i(8, 18)]]
 	for s: Array in seats:
 		var c := CharSprite.new()

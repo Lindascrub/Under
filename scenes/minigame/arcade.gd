@@ -1,5 +1,7 @@
 class_name Arcade
 extends RefCounted
+
+const Art := preload("res://scripts/minigame_art.gd")
 ## I giochi classici dei turni di lavoro, rifatti con la grafica di Cheap (sprite LimeZu):
 ##   "snake"    il mocio dei bagni: cresce a ogni macchia pulita (Snake)
 ##   "simon"    i quattro telefoni del call center: ripeti la sequenza di squilli (Simon)
@@ -506,8 +508,7 @@ func _draw_snake() -> void:
 			w.draw_texture_rect_region(tiles, Rect2(o + Vector2(x, y) * SN_CELL, Vector2(SN_CELL, SN_CELL)), Rect2((42 + x % 3) * 16, (25 + y % 2) * 16, 16, 16))
 	for f in sn_food:
 		var c := o + (Vector2(f) + Vector2(0.5, 0.5)) * SN_CELL
-		w.draw_circle(c, 6, Color("6b4a1e"))
-		w.draw_circle(c + Vector2(4, 2), 3, Color("6b4a1e"))
+		Art.stain(w, c, 7)
 	var blink := sn_hurt > 0.0 and int(t * 12) % 2 == 0
 	if blink:
 		return
@@ -520,13 +521,12 @@ func _draw_snake() -> void:
 				w.draw_rect(Rect2(r.position + Vector2(1 + k * 4, r.size.y - 4), Vector2(2, 5)), Color("a8a8a0"))
 			w.draw_rect(Rect2(r.get_center() - Vector2(1, 8), Vector2(3, 8)), Color("8a5a2a"))
 		else:
-			w.draw_rect(r, Color("9fd0f0") if i % 2 == 0 else Color("7fb8e0"))
+			Art.panel(w, r, Color("75a7bb") if i % 2 == 0 else Color("6290ae"), Color("bfe6e4"))
 
 
 func _draw_simon(font: Font) -> void:
 	var c := BOX.get_center()
 	var pos := {"up": c + Vector2(0, -56), "down": c + Vector2(0, 56), "left": c + Vector2(-120, 0), "right": c + Vector2(120, 0)}
-	var sheet := Assets.tex("tiles/generic.png", Vector2i(256, 1248))
 	for dir: String in PAD_COL:
 		var p: Vector2 = pos[dir]
 		var on := si_lit == dir
@@ -534,7 +534,7 @@ func _draw_simon(font: Font) -> void:
 		w.draw_rect(Rect2(p - Vector2(34, 22), Vector2(68, 44)), col if on else col.darkened(0.7))
 		w.draw_rect(Rect2(p - Vector2(34, 22), Vector2(68, 44)), Color.WHITE if on else Color("3a3644"), false, 2.0)
 		var shake := Vector2(sin(t * 60.0) * 2.0, 0) if on else Vector2.ZERO
-		w.draw_texture_rect_region(sheet, Rect2(p - Vector2(16, 15) + shake, Vector2(32, 30)), PHONES[dir])
+		Art.phone(w, p + shake, on, Color("bec5c9"))
 	var msg := "Guarda e ascolta..." if si_phase == "show" else "Tocca a te: %d / %d" % [si_input, si_seq.size()]
 	w.draw_string(font, Vector2(c.x - 100, c.y + 5), msg, HORIZONTAL_ALIGNMENT_CENTER, 200, 12, Color.WHITE)
 
@@ -545,7 +545,7 @@ func _te_origin() -> Vector2:
 
 func _draw_tetris(font: Font) -> void:
 	var o := _te_origin()
-	w.draw_rect(Rect2(o - Vector2(2, 2), Vector2(TE_COLS, TE_ROWS) * TE_CELL + Vector2(4, 4)), Color("2a2633"))
+	Art.panel(w, Rect2(o - Vector2(4, 3), Vector2(TE_COLS, TE_ROWS) * TE_CELL + Vector2(8, 6)), Color("2d3947"), Color("87a0ae"))
 	for cell: Vector2i in te_grid:
 		_te_box(o, cell, TE_COLORS[int(te_grid[cell])])
 	for b in te_piece:
@@ -557,10 +557,7 @@ func _draw_tetris(font: Font) -> void:
 ## Una scatola di cartone: il colore, il nastro adesivo in mezzo e il bordo scuro.
 func _te_box(o: Vector2, cell: Vector2i, col: Color) -> void:
 	var r := Rect2(o + Vector2(cell) * TE_CELL, Vector2(TE_CELL, TE_CELL))
-	w.draw_rect(r, col)
-	w.draw_rect(Rect2(r.position + Vector2(r.size.x / 2.0 - 1.5, 0), Vector2(3, r.size.y)), Color("e8d29a"))
-	w.draw_rect(Rect2(r.position, Vector2(r.size.x, 2)), col.lightened(0.25))
-	w.draw_rect(r, Color("5c3f22"), false, 1.0)
+	Art.carton(w, r, col)
 
 
 func _fr_cell_size() -> Vector2:
@@ -617,11 +614,9 @@ func _draw_breakout(font: Font) -> void:
 		var on := i < br_lit
 		w.draw_rect(Rect2(BOX.position.x + 12 + i * 19, BOX.position.y - 18, 14, 10), Color("ffe9a8") if on else Color("2a2633"))
 	for b in br_bricks:
-		w.draw_circle(b.get_center() + Vector2(0, -1), 5, Color("e8e0b0"))
-		w.draw_rect(Rect2(b.get_center() + Vector2(-3, 3), Vector2(6, 3)), Color("8a8494"))
-	w.draw_rect(Rect2(br_paddle - 28, BOX.end.y - 18, 56, 6), Color("aeb4c4"))
-	w.draw_rect(Rect2(br_paddle - 28, BOX.end.y - 18, 56, 2), Color("dfe3ec"))
-	w.draw_circle(br_ball, 4, Color("ffe14d"))
+		Art.bulb(w, b.get_center() + Vector2(0, -1), "buona", 0.6, false)
+	Art.panel(w, Rect2(br_paddle - 28, BOX.end.y - 18, 56, 6), Color("8b9eae"), Color("d6e4de"))
+	Art.coin(w, br_ball, 0.67)
 	if br_stuck:
 		w.draw_string(font, Vector2(BOX.position.x, BOX.end.y - 34), GameState.fmt("{ok} per lanciare"), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, Color("8a8494"))
 
@@ -653,8 +648,7 @@ func _draw_steal(font: Font) -> void:
 		w.draw_texture_rect(crate, Rect2(vpos + Vector2(-22, -40), Vector2(44, 40)), false)
 	# il quaderno, per terra accanto a lui
 	var book := Rect2(ST_DESK - 10, floor_y - 22, 24, 18)
-	w.draw_rect(book, Color("5a3e2b"))
-	w.draw_rect(book.grow(-2), Color("f6f2e6"))
+	Art.paper(w, book, Color("f6f2e6"))
 	for k in 3:
 		w.draw_rect(Rect2(book.position + Vector2(4, 5 + k * 4), Vector2(16, 1)), Color("8a8494"))
 	# tu: cammini di soppiatto, ti fermi, copi
@@ -687,12 +681,11 @@ func _draw_steal(font: Font) -> void:
 func _draw_pong(font: Font) -> void:
 	for y in range(int(BOX.position.y) + 4, int(BOX.end.y) - 4, 14):
 		w.draw_rect(Rect2(BOX.get_center().x - 1, y, 2, 7), Color("3a3644"))
-	w.draw_rect(Rect2(BOX.position.x + 22, po_left - 20, 6, 40), Color.WHITE)
-	w.draw_rect(Rect2(BOX.end.x - 28, po_right - 20, 6, 40), Color("ffe14d"))
+	Art.panel(w, Rect2(BOX.position.x + 22, po_left - 20, 6, 40), Color("9babb8"), Color("e7eddd"))
+	Art.panel(w, Rect2(BOX.end.x - 28, po_right - 20, 6, 40), Color("c89446"), Color("ffe49a"))
 	w.draw_texture_rect(hero.get_frame_texture("idle_right", int(t * 6) % 6), Rect2(BOX.position.x + 2, po_left - 16, 16, 32), false)
 	w.draw_texture_rect(tasso.get_frame_texture("idle_left", int(t * 6) % 6), Rect2(BOX.end.x - 18, po_right - 16, 16, 32), false)
-	w.draw_circle(po_ball, 5, Color("f0c040"))
-	w.draw_circle(po_ball, 3, Color("c88c1e"))
+	Art.coin(w, po_ball)
 	w.draw_string(font, Vector2(BOX.position.x, BOX.position.y + 16), "Tu %d   -   %d Signor Tasso" % [int(w.score), int(w.mistakes)], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, Color("8a8494"))
 
 

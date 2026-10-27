@@ -2322,8 +2322,8 @@
       {
         "room": "mercato",
         "cell": [
-          5,
-          7
+          8,
+          14
         ],
         "anim": "idle_down"
       }

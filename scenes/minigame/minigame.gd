@@ -1,4 +1,6 @@
 extends Node2D
+
+const Art := preload("res://scripts/minigame_art.gd")
 ## Minigiochi "a sorpresa": partono quando dai una mano a qualcuno. Config in GameState.minigame:
 ##   type "timing":   premi Z quando il segno è nella zona verde (riparare, accordare, salire le scale)
 ##   type "collect":  muovi il cuore e raccogli tutto prima che scada il tempo (foglie, croccantini)
@@ -18,6 +20,7 @@ extends Node2D
 ## "help_on_win_only" (conta come aiuto solo se riesce; "help_on_partial": anche a metà).
 ## Se vinci, la persona ti ringrazia e ti dà qualche euro.
 
+const INV := Rect2(112, 108, 416, 198)
 const BOX := Rect2(170, 120, 300, 150)
 ## I giochi di carta della Banca hanno bisogno di più spazio (fogli da leggere).
 const BIG := Rect2(40, 104, 560, 240)
@@ -380,8 +383,7 @@ func touch_point(pos: Vector2, step: int) -> void:
 # --- SCATOLE E SCAFFALI ---------------------------------------------------------
 
 func _inv_shelf(k: int) -> Rect2:
-	var w := (BOX.size.x - 50) / 4.0
-	return Rect2(BOX.position.x + 10 + k * (w + 10), BOX.end.y - 62, w, 52)
+	return Rect2(INV.position.x + 10 + k * 102, INV.position.y + 110, 90, 76)
 
 
 func _inv_place(k: int) -> void:
@@ -805,9 +807,14 @@ func _finish(success: bool, partial := false) -> void:
 
 func _draw() -> void:
 	var font := Assets.font()
-	var frame := BIG if type in ["rate", "pratiche", "stanze", "percorso"] else BOX
-	draw_rect(frame, Color.BLACK)
-	draw_rect(frame, Color.WHITE, false, 3.0)
+	var frame := INV if type == "inventory" else (BIG if type in ["rate", "pratiche", "stanze", "percorso"] else BOX)
+	if type == "route":
+		draw_rect(Rect2(0, 0, 640, 360), Color.BLACK)
+		draw_rect(frame, Color.BLACK)
+		draw_rect(frame, Color.WHITE, false, 3.0)
+	else:
+		Art.backdrop(self)
+		Art.panel(self, frame, Color("24313e"), Color("829caa"))
 	match type:
 		"rate":
 			_draw_rate(font)
@@ -819,7 +826,7 @@ func _draw() -> void:
 			_draw_percorso(font)
 		"timing":
 			var bar := Rect2(BOX.position.x + 20, BOX.get_center().y - 10, BOX.size.x - 40, 20)
-			draw_rect(bar, Color("2a2633"))
+			Art.panel(self, bar.grow(3), Color("46566b"), Color("94a7b9"))
 			draw_rect(Rect2(bar.position.x + bar.size.x * zone.x, bar.position.y, bar.size.x * (zone.y - zone.x), bar.size.y), GREEN)
 			var mx := bar.position.x + bar.size.x * marker
 			draw_rect(Rect2(mx - 2, bar.position.y - 8, 4, bar.size.y + 16), Color.WHITE)
@@ -828,8 +835,7 @@ func _draw() -> void:
 		"collect":
 			var col := Color(str(cfg.get("color", "#e0a030")))
 			for it in items:
-				draw_rect(Rect2(it - Vector2(3, 2), Vector2(6, 4)), col)
-				draw_rect(Rect2(it - Vector2(1, 3), Vector2(2, 1)), col.lightened(0.3))
+				Art.collectible(self, it, col, str(cfg.get("title", "")))
 			# gli imprevisti: rossi, con le punte
 			for h in hazards:
 				var hp: Vector2 = h["pos"]
@@ -863,37 +869,22 @@ func _draw() -> void:
 					else:
 						draw_rect(Rect2(p + Vector2(-8, 8), Vector2(16, 2)), Color("8a8494"))
 	if flash > 0.0:
-		draw_rect(BOX, Color(1, 0.2, 0.2, flash))
+		draw_rect(INV if type == "inventory" else BOX, Color(1, 0.2, 0.2, flash))
 
 
 func _draw_bulbs(font: Font) -> void:
+	Art.panel(self, BOX.grow(-5), Color("3c4d5c"), Color("91abb7"))
 	var c := BOX.get_center() + Vector2(0, -6)
-	# a sinistra il secchio delle rotte, a destra la scatola delle buone
-	draw_rect(Rect2(BOX.position.x + 14, BOX.end.y - 56, 70, 44), Color("6a2a2a"))
-	draw_string(font, Vector2(BOX.position.x + 14, BOX.end.y - 62), "< ROTTE", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, RED)
-	draw_rect(Rect2(BOX.end.x - 84, BOX.end.y - 56, 70, 44), Color("b9894f"))
+	Art.carton(self, Rect2(BOX.position.x + 14, BOX.end.y - 56, 70, 44), Color("c46363"), true)
+	draw_string(font, Vector2(BOX.position.x + 14, BOX.end.y - 62), "< ROTTE", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, Color("ff8b84"))
+	Art.carton(self, Rect2(BOX.end.x - 84, BOX.end.y - 56, 70, 44), Color("75b47c"), true)
 	draw_string(font, Vector2(BOX.end.x - 84, BOX.end.y - 62), "BUONE >", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, GREEN)
-	# la lampadina da guardare
-	var glass := Color("ffe680")
-	match bulb:
-		"rotta":
-			glass = Color("787882")
-		"fioca":
-			glass = Color("fff0c0") if int(bulb_t * 9.0) % 3 != 0 else Color("6a6458")
-	if bulb == "buona" or (bulb == "fioca" and glass.v > 0.5):
-		draw_circle(c, 34, Color(1, 0.92, 0.5, 0.18))
-	draw_circle(c, 20, Color("221c28"))
-	draw_circle(c, 18, glass)
-	draw_circle(c + Vector2(-6, -6), 4, Color(1, 1, 1, 0.6))
-	draw_rect(Rect2(c + Vector2(-9, 16), Vector2(18, 14)), Color("221c28"))
-	draw_rect(Rect2(c + Vector2(-7, 17), Vector2(14, 12)), Color("a0a0aa"))
-	for k in 3:
-		draw_rect(Rect2(c + Vector2(-7, 19 + k * 4), Vector2(14, 1)), Color("6a6a74"))
-	if bulb == "rotta":
-		draw_line(c + Vector2(-10, -10), c + Vector2(4, 2), Color("221c28"), 2.0)
-		draw_line(c + Vector2(4, 2), c + Vector2(-2, 12), Color("221c28"), 2.0)
+	Art.bulb(self, Vector2(BOX.position.x + 45, BOX.end.y - 33), "rotta", 1, false)
+	Art.bulb(self, Vector2(BOX.end.x - 50, BOX.end.y - 33), "buona", 1)
+	var lit := bulb == "buona" or (bulb == "fioca" and int(bulb_t * 9) % 3 != 0)
+	Art.bulb(self, c, bulb, 3, lit)
 	if bulb == "fioca":
-		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/2)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/2)") % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 12, YELLOW)
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/2)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/2)") % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
 
 
 # --- LE RATE MANCANTI (Olga) ------------------------------------------------------
@@ -1147,7 +1138,7 @@ func _draw_stanze(font: Font) -> void:
 	for r in _st_rooms().size():
 		var room: Dictionary = _st_rooms()[r]
 		var rr := _st_room(r)
-		draw_rect(rr, Color("3a4a3e"))
+		Art.panel(self, rr, Color("3a4a3e"), Color("8fae96"))
 		draw_rect(rr, YELLOW if focus == "r%d" % r else Color("8fae96"), false, 2.0)
 		draw_string(font, rr.position + Vector2(0, 16), str(room["nome"]), HORIZONTAL_ALIGNMENT_CENTER, rr.size.x, 11, Color.WHITE)
 		draw_string(font, rr.position + Vector2(0, 32), "serve: %s   (%d/%d)" % [str(room["serve"]), st_where.count(r), int(room.get("max", 3))],
@@ -1155,14 +1146,15 @@ func _draw_stanze(font: Font) -> void:
 	for i in pieces.size():
 		var pr := _st_piece(i)
 		var col := Color("e8dcc0") if i != st_sel else YELLOW
-		draw_rect(pr, col)
+		Art.paper(self, pr, col)
 		draw_rect(pr, YELLOW if focus == "p%d" % i else Color("5a4a36"), false, 2.0)
 		var p: Dictionary = pieces[i]
 		if int(st_where[i]) < 0:
-			draw_string(font, pr.position + Vector2(0, 17), str(p["nome"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 9, Color("2a2018"))
-			draw_string(font, pr.position + Vector2(0, 31), str(p["tipo"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 8, Color("7a6a56"))
+			Art.furniture(self, Rect2(pr.position + Vector2(4, 3), Vector2(pr.size.x - 8, 20)), str(p["tipo"]))
+			draw_string(font, pr.position + Vector2(0, 34), str(p["nome"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 8, Color("2a2018"))
 		else:
-			draw_string(font, pr.position + Vector2(6, 14), "%s (%s)" % [str(p["nome"]), str(p["tipo"])], HORIZONTAL_ALIGNMENT_LEFT, pr.size.x - 12, 8, Color("2a2018"))
+			Art.furniture(self, Rect2(pr.position + Vector2(3, 2), Vector2(20, 16)), str(p["tipo"]))
+			draw_string(font, pr.position + Vector2(26, 14), "%s (%s)" % [str(p["nome"]), str(p["tipo"])], HORIZONTAL_ALIGNMENT_LEFT, pr.size.x - 30, 8, Color("2a2018"))
 	var b := _st_done_button()
 	PracticeCard.button(self, b, "FATTO", Color("2a8a4a"), font, focus == "done")
 	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 24), st_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 160, 9,
@@ -1364,25 +1356,31 @@ func _draw_pratiche(font: Font) -> void:
 
 
 func _draw_inventory(font: Font) -> void:
-	draw_rect(BOX.grow(-4), Color("3a2a1e"))
+	Art.panel(self, INV.grow(-4), Color("50433e"), Color("c8a57a"))
+	var card := Rect2(INV.position + Vector2(14, 12), Vector2(INV.size.x - 28, 80))
+	Art.paper(self, card, Color("eee4cc"))
 	if not inv_queue.is_empty():
 		var g: Array = inv_queue[0]
-		var card := Rect2(BOX.get_center().x - 70, BOX.position.y + 14, 140, 36)
-		draw_rect(card, Color("f4f1e6"))
-		draw_rect(card, Color.WHITE, false, 2.0)
-		draw_string(font, card.position + Vector2(0, 24), str(g[0]).to_upper(), HORIZONTAL_ALIGNMENT_CENTER, card.size.x, 16, Color("2a2633"))
-		if inv_queue.size() > 1:
-			draw_string(font, Vector2(card.end.x + 8, card.position.y + 22), "+%d" % (inv_queue.size() - 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("8a8494"))
+		Art.product(self, Rect2(card.position + Vector2(10, 6), Vector2(72, 68)), str(g[0]))
+		draw_string(font, card.position + Vector2(96, 34), str(g[0]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 17, Color("352b36"))
+		draw_string(font, card.position + Vector2(96, 56), "IN QUALE SCAFFALE?", HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 9, Color("7a6257"))
+		draw_string(font, card.position + Vector2(96, 71), "Altri prodotti: %d" % maxi(0, inv_queue.size() - 1), HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 8, Color("7a6257"))
 	if inv_msg != "":
-		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 66), inv_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 9, Color("ffb0b0"))
+		draw_string(font, Vector2(INV.position.x, INV.position.y + 105), inv_msg, HORIZONTAL_ALIGNMENT_CENTER, INV.size.x, 9, Color("ffb7aa"))
+	var examples := [["Pane", "Riso", "Biscotti"], ["Sapone", "Dentifricio", "Shampoo"], ["Matita", "Quaderno", "Righello"], ["Scopa", "Lampadina", "Spugna"]]
 	for k in INV_CATS.size():
 		var r := _inv_shelf(k)
 		var col: Color = INV_COLS[k]
-		draw_rect(r, col.darkened(0.55))
-		draw_rect(Rect2(r.position + Vector2(0, r.size.y - 10), Vector2(r.size.x, 10)), col.darkened(0.3))
-		var sel := k == inv_sel and not TouchControls.enabled
-		draw_rect(r, YELLOW if sel else col, false, 3.0 if sel else 2.0)
-		draw_string(font, r.position + Vector2(0, 24), INV_CATS[k], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 9, Color.WHITE)
+		Art.panel(self, r, Color("684b3d"), Color("c99c68"))
+		draw_rect(Rect2(r.position + Vector2(3, 3), Vector2(r.size.x - 6, 20)), col.darkened(0.58))
+		draw_string(font, r.position + Vector2(0, 16), INV_CATS[k], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 9, Art.CREAM)
+		for i in 3:
+			Art.product(self, Rect2(r.position + Vector2(5 + i * 27, 27), Vector2(26, 30)), str(examples[k][i]))
+		draw_rect(Rect2(r.position + Vector2(3, 59), Vector2(r.size.x - 6, 5)), Color("c99c68"))
+		draw_rect(Rect2(r.position + Vector2(3, 64), Vector2(r.size.x - 6, 5)), Color("4d3631"))
+		if k == inv_sel and not TouchControls.enabled:
+			draw_rect(r.grow(2), YELLOW, false, 2)
+			draw_rect(Rect2(r.get_center().x - 4, r.end.y - 9, 8, 3), YELLOW)
 
 
 func _draw_route(font: Font) -> void:
@@ -1422,32 +1420,31 @@ func _draw_route(font: Font) -> void:
 
 
 func _draw_wires(font: Font) -> void:
-	if wire_right.size() < 4:
-		return
+	if wire_right.size() < 4: return
 	var lx := BOX.position.x + 40
 	var rx := BOX.end.x - 40
 	var y0 := BOX.position.y + 26
-	var gap := (BOX.size.y - 52) / 3.0
-	draw_rect(Rect2(BOX.position.x + 10, BOX.position.y + 10, BOX.size.x - 20, BOX.size.y - 20), Color("3a3644"))
+	var gap := (BOX.size.y - 52) / 3
+	Art.panel(self, BOX.grow(-5), Color("465668"), Color("96adb8"))
+	for x in [lx - 30, rx]:
+		Art.panel(self, Rect2(x - 3, y0 - 12, 36, gap * 3 + 24), Color("293748"), Color("7a919f"))
 	for i in 4:
 		var yl := y0 + i * gap
 		var col: Color = WIRE_COLS[i]
-		draw_rect(Rect2(lx - 30, yl - 4, 30, 8), col)
 		var j := wire_right[i]
-		var colr: Color = WIRE_COLS[j]
-		draw_rect(Rect2(rx, y0 + i * gap - 4, 30, 8), colr)
+		var yr := y0 + i * gap
+		Art.cable(self, PackedVector2Array([Vector2(lx - 27, yl), Vector2(lx - 12, yl + 2), Vector2(lx, yl)]), col, 4, true)
+		Art.cable(self, PackedVector2Array([Vector2(rx, yr), Vector2(rx + 12, yr - 2), Vector2(rx + 27, yr)]), WIRE_COLS[j], 4, true)
 		if i in wire_done:
-			var to := wire_right.find(i)
-			draw_line(Vector2(lx, yl), Vector2(rx, y0 + to * gap), col, 6.0)
-	# cosa stai scegliendo
+			Art.lead(self, Vector2(lx, yl), Vector2(rx, y0 + wire_right.find(i) * gap), col, 4)
 	if wire_pick < 0:
-		draw_rect(Rect2(lx - 34, y0 + wire_sel * gap - 8, 38, 16), Color.WHITE, false, 2.0)
+		draw_rect(Rect2(lx - 34, y0 + wire_sel * gap - 8, 38, 16), Art.CREAM, false, 2)
 	else:
 		var yl2 := y0 + wire_pick * gap
 		var yr := y0 + wire_sel * gap
-		draw_line(Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 4.0)
-		draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Color.WHITE, false, 2.0)
-	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di 2" % (wire_round + 1), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, Color("8a8494"))
+		Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
+		draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
+	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di 2" % (wire_round + 1), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
 
 
 ## Freccia piena (triangolo) che punta in una direzione.

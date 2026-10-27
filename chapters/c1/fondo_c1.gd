@@ -37,8 +37,10 @@ func enter() -> void:
 			"* La musica della festa non si ferma. Nessuno si gira. Anzi, sì: uno.",
 			"* In mezzo a tutti quei colori c'è un uomo grigio, seduto su una cassetta. È l'unico che non sorride.",
 		])
-	if GameState.flags.get("c1_relight", false):
+	# dopo uno straordinario la festa si riaccende per un momento (anche se il turno è andato male)
+	if GameState.flags.get("c1_relight", false) or GameState.flags.get("c1_relight_try", false):
 		GameState.flags.erase("c1_relight")
+		GameState.flags.erase("c1_relight_try")
 		await _relight()
 	await show_pending()
 
@@ -80,6 +82,7 @@ func _station(j: Dictionary) -> void:
 		"tired": ["* Ti tremano le ginocchia.", "* Non senti più i piedi.", "* Non senti più niente. Quasi."][n],
 		"return": scene_file_path, "return_pos": player.global_position,
 	}
+	GameState.flags["c1_relight_try"] = true
 	Router.goto(Router.WORK)
 
 

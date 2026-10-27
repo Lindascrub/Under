@@ -1,4 +1,5 @@
 class_name PracticeCard
+const Art := preload("res://scripts/minigame_art.gd")
 ## Il foglio di una pratica di credito, disegnato uguale allo sportello della Banca (TURNO, work.gd)
 ## e nella PRATICA IMPOSSIBILE di Teo (minigame.gd). Dati in data/bank.json.
 
@@ -9,8 +10,7 @@ const FAINT := Color("8a8494")
 
 ## `stamp` (facoltativo) è il timbro sopra il foglio: "APPROVATA", "IN VERIFICA"...
 static func draw(ci: CanvasItem, r: Rect2, p: Dictionary, font: Font, stamp := "", stamp_col := Color("c0302a")) -> void:
-	ci.draw_rect(r, PAPER)
-	ci.draw_rect(r, Color.WHITE, false, 2.0)
+	Art.paper(ci, r, PAPER)
 	var title := "PRATICA N. %s" % str(p.get("id", "000"))
 	if p.has("nome"):
 		title += " — " + str(p["nome"]).to_upper()
@@ -31,8 +31,8 @@ static func draw(ci: CanvasItem, r: Rect2, p: Dictionary, font: Font, stamp := "
 
 ## Un bottone grande, comodo per il dito.
 static func button(ci: CanvasItem, r: Rect2, text: String, col: Color, font: Font, selected := false, size := 13) -> void:
-	ci.draw_rect(r, col)
-	ci.draw_rect(r, Color("ffe14d") if selected else Color.WHITE, false, 3.0 if selected else 2.0)
+	Art.panel(ci, r, col, Color("ffe14d") if selected else col.lightened(0.4))
+	if selected: ci.draw_rect(r.grow(-1), Color("ffe14d"), false, 2.0)
 	var lines := text.split("\n")
 	var y := r.get_center().y + 5 - (lines.size() - 1) * (size + 2) / 2.0
 	for l in lines:

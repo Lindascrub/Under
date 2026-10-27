@@ -1,3 +1,4 @@
+s
 class_name Car
 extends StaticBody2D
 ## Un'auto che percorre la strada. Se sei davanti si ferma e suona il clacson.

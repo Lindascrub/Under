@@ -736,6 +736,7 @@ func _dress_for_look_back() -> void:
 		if GameState.flags.get("c3_amir_bonus", false):
 			# è già alla stazione, col treno del fine settimana
 			amir.visible = false
+			amir.collision_layer = 0
 		else:
 			amir.activity = "wander"
 	if GameState.is_robot("amir"):
@@ -783,6 +784,8 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
+			# nascosto non basta: senza questo resta un muro invisibile dove stava
+			n.collision_layer = 0
 	for i in 2:
 		var id: String = ["leda", "amir"][i]
 		var s := CharSprite.new()

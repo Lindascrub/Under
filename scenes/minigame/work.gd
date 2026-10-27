@@ -1,4 +1,6 @@
 extends Node2D
+
+const Art := preload("res://scripts/minigame_art.gd")
 ## I turni di lavoro: ogni lavoro ha il suo minigioco. Config in GameState.minigame (kind "work"):
 ##   game "pedal":   alterna sinistra/destra per tenere la lancetta nel verde (la dinamo del -5)
 ##   game "clean":   passa la spugna sulle macchie finché spariscono (i bagni del -4)
@@ -20,6 +22,7 @@ extends Node2D
 ## Più turni hai fatto e più sei in alto nella torre, più il gioco è veloce (difficulty()).
 ## La paga dipende da quanto bene è andata; sotto metà obiettivo il turno è "fallito".
 
+const CASH := Rect2(80, 96, 480, 224)
 const BOX := Rect2(120, 96, 400, 190)
 const RED := Color("ff2a3c")
 const YELLOW := Color("ffe14d")
@@ -807,8 +810,7 @@ func _draw_smistamento(font: Font) -> void:
 		draw_string(font, BOX.position + Vector2(18, 22 + i * 15), "CENTRALINO: \"%s\"" % sm_msgs[i], HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 36, 9,
 			YELLOW if i == sm_msgs.size() - 1 else Color("8a8494"))
 	var c := _sm_card()
-	draw_rect(c, PracticeCard.PAPER)
-	draw_rect(c, Color("5a5246"), false, 2.0)
+	Art.paper(self, c, PracticeCard.PAPER)
 	var title := str(sm_cur.get("testo", "")).to_upper()
 	draw_string(font, c.position + Vector2(10, 18), title, HORIZONTAL_ALIGNMENT_LEFT, c.size.x - 20, 11, PracticeCard.INK)
 	draw_string(font, c.position + Vector2(10, 34), "Categoria: " + str(sm_cur.get("cat", "")), HORIZONTAL_ALIGNMENT_LEFT, c.size.x - 20, 9, PracticeCard.FAINT)
@@ -926,11 +928,11 @@ func _cassa_intro() -> void:
 
 
 const CS_SCAN_X := 320.0
-const CS_BELT_Y := 210.0
+const CS_BELT_Y := 236.0
 
 
 func _cs_button(k: int) -> Rect2:
-	return Rect2(BOX.position.x + 30 + k * 190, BOX.end.y - 44, 150, 34)
+	return Rect2(CASH.position.x + 24 + k * 224, CASH.end.y - 44, 208, 34)
 
 
 ## Il prossimo articolo sul nastro. Il cartellino è il prezzo dello scaffale; lo schermo, a volte, no.
@@ -1127,10 +1129,11 @@ func _finish_steal() -> void:
 
 func _draw() -> void:
 	var font := Assets.font()
-	draw_rect(BOX, Color.BLACK)
-	draw_rect(BOX, Color.WHITE, false, 3.0)
+	var area := CASH if game == "cassa" else BOX
+	Art.backdrop(self)
+	Art.panel(self, area, Color("24313e"), Color("829caa"))
 	# il tempo che resta, in basso
-	var tb := Rect2(BOX.position.x, BOX.end.y + 12, BOX.size.x, 6)
+	var tb := Rect2(area.position.x, area.end.y + 12, area.size.x, 6)
 	draw_rect(tb, Color("2a2633"))
 	draw_rect(Rect2(tb.position, Vector2(tb.size.x * clampf(time_left / duration, 0, 1), tb.size.y)), YELLOW)
 	if arcade:
@@ -1159,53 +1162,58 @@ func _draw() -> void:
 	if flash > 0.0:
 		var c := flash_col
 		c.a = flash * 1.8
-		draw_rect(BOX, c)
+		draw_rect(area, c)
 	if err_t > 0.0:
 		var k := err_t / ERR_TIME
 		var shake := Vector2(sin(t * 70.0) * 5.0 * k, 0)
-		draw_rect(Rect2(BOX.position + shake, BOX.size), RED, false, 6.0)
+		draw_rect(Rect2(area.position + shake, area.size), RED, false, 6.0)
 		var col := RED
 		col.a = minf(1.0, k * 2.0)
 		var y := BOX.position.y + 90 - (1.0 - k) * 12.0
-		draw_string_outline(font, Vector2(BOX.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 26, 6, Color(0, 0, 0, col.a))
-		draw_string(font, Vector2(BOX.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 26, col)
+		draw_string_outline(font, Vector2(area.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, area.size.x, 26, 6, Color(0, 0, 0, col.a))
+		draw_string(font, Vector2(area.position.x, y) + shake, err_msg, HORIZONTAL_ALIGNMENT_CENTER, area.size.x, 26, col)
 
 
 func _draw_pedal(font: Font) -> void:
-	var c := Vector2(BOX.get_center().x, BOX.end.y - 30)
-	var r := 120.0
-	# il quadrante: da sinistra (fermo) a destra (troppo veloce)
+	Art.panel(self, BOX.grow(-5), Color("273847"), Color("80a8b4"))
+	var machine := Art.GENERATOR
+	draw_texture_rect(machine, Rect2(138, 152, 80, 80), false)
+	draw_string(font, Vector2(133, 250), "DINAMO", HORIZONTAL_ALIGNMENT_CENTER, 90, 11, Art.CREAM)
+	var c := Vector2(354, BOX.end.y - 36)
+	var r := 91.0
 	for i in 40:
 		var a0 := PI + PI * i / 40.0
 		var a1 := PI + PI * (i + 1) / 40.0
 		var f := i / 40.0
-		var col := Color("3a3644")
-		if f >= band.x and f <= band.y:
-			col = GREEN
-		elif f > band.y:
-			col = Color("8a3030")
-		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, col, 10.0)
+		var col := Color("586471")
+		if f >= band.x and f <= band.y: col = GREEN
+		elif f > band.y: col = Color("c65b60")
+		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, Art.INK, 15)
+		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, col, 9)
+	for i in 11:
+		var a0 := PI + PI * i / 10.0
+		draw_line(c + Vector2(cos(a0), sin(a0)) * (r - 17), c + Vector2(cos(a0), sin(a0)) * (r - 23), Art.CREAM, 2)
 	var a := PI + PI * speed
+	draw_line(c + Vector2(1, 1), c + Vector2(cos(a), sin(a)) * (r - 26) + Vector2.ONE, Art.INK, 5)
 	var in_band := speed >= band.x and speed <= band.y
-	var needle := GREEN if in_band else RED
-	draw_line(c, c + Vector2(cos(a), sin(a)) * (r - 14), needle, 4.0)
-	draw_circle(c, 7, needle)
+	var needle_col := GREEN if in_band else RED
+	draw_line(c, c + Vector2(cos(a), sin(a)) * (r - 26), needle_col, 3)
+	draw_circle(c, 7, Art.INK)
+	draw_circle(c, 4, needle_col)
 	if not in_band and phase == "play":
 		var hint := "PIÙ VELOCE!" if speed < band.x else "PIANO!"
 		var hc := RED
 		hc.a = 0.6 + 0.4 * sin(t * 10.0)
-		draw_string(font, Vector2(BOX.position.x, c.y + 24), hint, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 16, hc)
-	# la lampadina di sopra: si accende con la tua fatica
-	var glow := clampf(speed * 1.2, 0.0, 1.0)
-	draw_circle(Vector2(c.x, BOX.position.y + 34), 18 + 10 * glow, Color(1, 0.9, 0.5, 0.15 + 0.35 * glow))
-	draw_circle(Vector2(c.x, BOX.position.y + 34), 10, Color(1, 0.95, 0.7).lerp(Color("3a3644"), 1.0 - glow))
-	draw_string(font, Vector2(BOX.position.x + 20, BOX.end.y - 10), "SINISTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "left" else Color("5c5666"))
-	draw_string(font, Vector2(BOX.end.x - 90, BOX.end.y - 10), "DESTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "right" else Color("5c5666"))
+		draw_string(font, Vector2(c.x - 90, c.y + 25), hint, HORIZONTAL_ALIGNMENT_CENTER, 180, 12, hc)
+	Art.bulb(self, Vector2(478, 145), "buona", 1.4, speed > 0.35)
+	Art.lead(self, Vector2(207, 219), Vector2(253, 247), Color("667c90"), 2)
+	draw_string(font, Vector2(BOX.position.x + 20, BOX.end.y - 10), "SINISTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "left" else Color("7b8b9c"))
+	draw_string(font, Vector2(BOX.end.x - 90, BOX.end.y - 10), "DESTRA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, YELLOW if last_side != "right" else Color("7b8b9c"))
 
 
 func _draw_helpdesk(font: Font) -> void:
 	# la moquette arancione del -4, sotto la scrivania
-	draw_rect(BOX.grow(-4), Color("4a2a1a"))
+	Art.panel(self, BOX.grow(-4), Color("6d4b3b"), Color("c19a70"))
 	if time_left < HD_FINALE:
 		_draw_drin(font)
 	if hd_phase == "talk":
@@ -1226,12 +1234,7 @@ func _draw_helpdesk(font: Font) -> void:
 		var on := hd_phase == "ring" and k == hd_phone
 		var shake := Vector2(sin(t * 50.0) * 2.0, 0) if on else Vector2.ZERO
 		var col := YELLOW if on else Color("d8c8a8")
-		# un telefono beige anni '80: base, cornetta, tastiera
-		draw_rect(Rect2(p + Vector2(-22, -6) + shake, Vector2(44, 22)), col)
-		draw_rect(Rect2(p + Vector2(-26, -16) + shake, Vector2(52, 9)), col.darkened(0.25))
-		for i in 3:
-			for j in 2:
-				draw_rect(Rect2(p + Vector2(-12 + i * 9, 0 + j * 7) + shake, Vector2(6, 4)), col.darkened(0.45))
+		Art.phone(self, p + shake, on, col)
 		if on:
 			draw_string(font, p + Vector2(-30, -26), "DRIN!", HORIZONTAL_ALIGNMENT_CENTER, 60, 12, YELLOW)
 			var left2 := hd_t / maxf(1.6, 3.0 - d)
@@ -1242,48 +1245,42 @@ func _draw_helpdesk(font: Font) -> void:
 
 
 func _draw_cassa(font: Font) -> void:
-	draw_rect(BOX.grow(-4), Color("20304a"))
-	# i messaggi: il cliente e la cassa
+	Art.panel(self, CASH.grow(-4), Color("33485b"), Color("8aa3b3"))
 	for i in cs_msgs.size():
 		var m: Array = cs_msgs[i]
-		var col := Color("ffe14d") if str(m[0]) == "CASSA" else Color("c8e8ff")
-		draw_string(font, Vector2(BOX.position.x + 12, BOX.position.y + 20 + i * 15), "%s: \"%s\"" % [m[0], m[1]], HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 24, 9, col)
-	# il nastro, che scorre
-	var belt := Rect2(BOX.position.x + 8, CS_BELT_Y, BOX.size.x - 16, 16)
-	draw_rect(belt, Color("2a2a30"))
-	for i in 26:
+		var col := YELLOW if str(m[0]) == "CASSA" else Color("c8e8ff")
+		draw_string(font, Vector2(CASH.position.x + 14, CASH.position.y + 20 + i * 15), "%s: \"%s\"" % [m[0], m[1]], HORIZONTAL_ALIGNMENT_LEFT, 326, 9, col)
+	var belt := Rect2(CASH.position.x + 12, CS_BELT_Y, CASH.size.x - 24, 18)
+	Art.panel(self, belt, Color("2b303e"), Color("a9b8c3"))
+	for i in 30:
 		var x := belt.position.x + fposmod(i * 16.0 + t * 40.0, belt.size.x)
-		draw_rect(Rect2(x, belt.position.y + 7, 6, 2), Color("4a4a54"))
-	# lo scanner
-	draw_rect(Rect2(CS_SCAN_X - 2, belt.position.y - 40, 4, 40), Color("ff2a3c", 0.6 if cs_phase == "scan" else 0.25))
-	# lo schermo della cassa
-	var scr := Rect2(BOX.end.x - 124, BOX.position.y + 62, 110, 40)
-	draw_rect(scr, Color("102018"))
-	draw_rect(scr, Color("3ddc84"), false, 2.0)
-	draw_string(font, scr.position + Vector2(0, 14), "SCHERMO", HORIZONTAL_ALIGNMENT_CENTER, scr.size.x, 8, Color("3ddc84"))
+		draw_rect(Rect2(x, belt.position.y + 7, 6, 3), Color("4d596b"))
+	var scr := Rect2(CASH.end.x - 122, CASH.position.y + 18, 108, 52)
+	Art.panel(self, scr.grow(5), Color("d0a046"), Color("ffe7a0"))
+	draw_rect(scr, Color("153a31"))
+	draw_string(font, scr.position + Vector2(0, 13), "CASSA", HORIZONTAL_ALIGNMENT_CENTER, scr.size.x, 9, Color("78dfab"))
 	if cs_phase in ["check", "verify", "leave"] and not cs_item.is_empty():
-		draw_string(font, scr.position + Vector2(0, 34), "%d €" % int(cs_item["screen"]), HORIZONTAL_ALIGNMENT_CENTER, scr.size.x, 16, Color("3ddc84"))
-	# l'articolo, col cartellino giallo dello scaffale
-	if not cs_item.is_empty():
-		var box := Rect2(cs_x - 26, belt.position.y - 26, 52, 26)
-		draw_rect(box, Color("e8d8b8"))
-		draw_rect(box, Color.WHITE, false, 1.0)
-		draw_string(font, box.position + Vector2(0, 16), str(cs_item["name"]), HORIZONTAL_ALIGNMENT_CENTER, box.size.x, 8, Color("2a2633"))
-		var tag := Rect2(box.position + Vector2(8, -16), Vector2(36, 13))
-		draw_rect(tag, YELLOW)
-		draw_string(font, tag.position + Vector2(0, 10), "%d €" % int(cs_item["tag"]), HORIZONTAL_ALIGNMENT_CENTER, tag.size.x, 9, Color.BLACK)
-		if cs_phase == "scan":
-			draw_string(font, Vector2(BOX.position.x, belt.position.y - 50), "TOCCA L'ARTICOLO" if TouchControls.enabled else "PREMI %s" % GameState.fmt("{ok}"), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Color.WHITE)
-		elif cs_phase == "verify":
-			draw_string(font, Vector2(BOX.position.x, belt.position.y - 50), "Verifica in corso...", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, YELLOW)
+		draw_string(font, scr.position + Vector2(0, 38), "%d €" % int(cs_item["screen"]), HORIZONTAL_ALIGNMENT_CENTER, scr.size.x, 19, Color("78dfab"))
+	for y in 2:
+		for x in 4:
+			draw_rect(Rect2(scr.position + Vector2(8 + x * 25, 66 + y * 15), Vector2(18, 9)), Color("202b3b"))
+	draw_rect(Rect2(CS_SCAN_X - 3, belt.position.y - 32, 6, 32), Color("e74d66", 0.6 if cs_phase == "scan" else 0.2))
+	if not cs_item.is_empty() and cs_x < CASH.end.x - 20:
+		var name := str(cs_item["name"])
+		Art.product(self, Rect2(cs_x - 32, belt.position.y - 66, 64, 64), name)
+		var tag := Rect2(cs_x - 28, belt.position.y - 88, 56, 18)
+		Art.paper(self, tag, Color("ffe277"))
+		draw_string(font, tag.position + Vector2(0, 14), "%d €" % int(cs_item["tag"]), HORIZONTAL_ALIGNMENT_CENTER, tag.size.x, 12, Art.INK)
+		draw_string(font, Vector2(cs_x - 80, belt.end.y + 11), name.to_upper(), HORIZONTAL_ALIGNMENT_CENTER, 160, 10, Art.CREAM)
+	if cs_phase == "scan":
+		draw_string(font, Vector2(CASH.position.x + 14, CASH.position.y + 76), "TOCCA L'ARTICOLO" if TouchControls.enabled else "PREMI %s" % GameState.fmt("{ok}"), HORIZONTAL_ALIGNMENT_LEFT, 190, 10, Art.CREAM)
+	elif cs_phase == "verify":
+		draw_string(font, Vector2(CASH.position.x + 14, CASH.position.y + 76), "Verifica in corso...", HORIZONTAL_ALIGNMENT_LEFT, 190, 10, YELLOW)
 	if cs_phase == "check":
 		for k in 2:
 			var r := _cs_button(k)
-			draw_rect(r, GREEN.darkened(0.4) if k == 0 else Color("b08020"))
-			draw_rect(r, Color.WHITE, false, 2.0)
-			var label: String = ["CONFERMA", "CORREGGI"][k]
-			if not TouchControls.enabled:
-				label = ["< CONFERMA", "CORREGGI >"][k]
+			Art.panel(self, r, Color("367454") if k == 0 else Color("ac803a"), Art.CREAM)
+			var label: String = ["CONFERMA", "CORREGGI"][k] if TouchControls.enabled else ["< CONFERMA", "CORREGGI >"][k]
 			draw_string(font, r.position + Vector2(0, 22), label, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 12, Color.WHITE)
 
 
@@ -1299,99 +1296,92 @@ func _draw_drin(font: Font) -> void:
 
 
 func _draw_clean() -> void:
-	# piastrelle del bagno
 	for y in range(int(BOX.position.y) + 4, int(BOX.end.y) - 4, 20):
 		for x in range(int(BOX.position.x) + 4, int(BOX.end.x) - 4, 20):
-			draw_rect(Rect2(x, y, 18, 18), Color("b8c6d6") if (x / 20 + y / 20) % 2 == 0 else Color("a8b8ca"))
+			var base := Color("bed0d2") if (x / 20 + y / 20) % 2 == 0 else Color("a6bec7")
+			draw_rect(Rect2(x, y, 18, 18), base)
+			draw_rect(Rect2(x, y, 18, 1), base.lightened(0.12))
 	for s in stains:
 		var p: Vector2 = s["pos"]
 		var k := clampf(float(s["life"]), 0.0, 1.0)
 		var dry := float(s["age"]) / (8.0 - d * 3.0)
-		var col := Color("6b4a1e").lerp(Color("3a2a10"), dry)
-		draw_circle(p, 6 + 8 * k, col)
-		draw_circle(p + Vector2(7, 3) * k, 4 * k + 1, col)
-	# la spugna
-	draw_rect(Rect2(sponge - Vector2(10, 7), Vector2(20, 14)), Color("ffe14d"))
-	draw_rect(Rect2(sponge - Vector2(10, 7), Vector2(20, 4)), Color("3ddc84"))
+		Art.stain(self, p, 6 + 8 * k, Color("88684d").lerp(Color("55414a"), dry))
+	Art.sponge(self, sponge)
 
 
 func _draw_calls(font: Font) -> void:
+	Art.panel(self, BOX.grow(-5), Color("354152"), Color("7e9caa"))
 	var c := BOX.get_center()
 	var pos := {"up": c + Vector2(0, -60), "down": c + Vector2(0, 60), "left": c + Vector2(-110, 0), "right": c + Vector2(110, 0)}
 	for dir: String in DIRS:
 		var p: Vector2 = pos[dir]
 		var on := ringing.has(dir)
-		var shake := Vector2(sin(t * 50.0) * 2.0, 0) if on else Vector2.ZERO
-		var col := YELLOW if on else Color("5c5666")
-		draw_rect(Rect2(p - Vector2(18, 10) + shake, Vector2(36, 20)), col)
-		draw_rect(Rect2(p - Vector2(22, 16) + shake, Vector2(44, 6)), col.darkened(0.3))
-		_arrow(p + Vector2(0, 24) if dir != "down" else p + Vector2(0, -24), dir, 6.0, col)
+		var shake := Vector2(round(sin(t * 50) * 2), 0) if on else Vector2.ZERO
+		Art.phone(self, p + shake, on, Color("b9bdc3"))
+		_arrow(p + Vector2(0, 28) if dir != "down" else p + Vector2(0, -25), dir, 6, YELLOW if on else Color("8194a6"))
 		if on:
 			var left := float(ringing[dir]) / maxf(0.9, 2.0 - d * 0.9)
-			draw_rect(Rect2(p + Vector2(-18, 14) + (Vector2(0, -46) if dir == "down" else Vector2.ZERO), Vector2(36 * left, 3)), GREEN)
-	draw_string(font, Vector2(c.x - 100, c.y + 6), "\"Grazie per la sua pazienza\"", HORIZONTAL_ALIGNMENT_CENTER, 200, 11, Color("8a8494"))
+			draw_rect(Rect2(p + Vector2(-20, 22) + (Vector2(0, -46) if dir == "down" else Vector2.ZERO), Vector2(40 * left, 3)), GREEN)
+	draw_string(font, Vector2(c.x - 100, c.y + 6), "\"Grazie per la sua pazienza\"", HORIZONTAL_ALIGNMENT_CENTER, 200, 10, Art.CREAM)
 
 
 func _draw_scale(font: Font) -> void:
-	var c := Vector2(BOX.get_center().x, BOX.end.y - 40)
-	var r := 110.0
+	Art.panel(self, BOX.grow(-5), Color("d3c5a6"), Color("8fa9b3"))
+	var c := Vector2(BOX.get_center().x, BOX.end.y - 43)
+	var r := 105.0
+	for i in 41:
+		var a0 := PI + PI * i / 40.0
+		var a1 := PI + PI * (i + 1) / 40.0
+		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, Color("626b7a"), 10)
 	for i in 21:
 		var a := PI + PI * i / 20.0
-		draw_line(c + Vector2(cos(a), sin(a)) * (r - 8), c + Vector2(cos(a), sin(a)) * r, Color.WHITE, 2.0)
+		draw_line(c + Vector2(cos(a), sin(a)) * (r - 8), c + Vector2(cos(a), sin(a)) * r, Art.CREAM, 2)
 	var aw := PI + PI * wanted
-	draw_line(c + Vector2(cos(aw), sin(aw)) * (r - 16), c + Vector2(cos(aw), sin(aw)) * (r + 6), YELLOW, 6.0)
+	draw_line(c + Vector2(cos(aw), sin(aw)) * (r - 16), c + Vector2(cos(aw), sin(aw)) * (r + 5), Art.INK, 8)
+	draw_line(c + Vector2(cos(aw), sin(aw)) * (r - 16), c + Vector2(cos(aw), sin(aw)) * (r + 5), YELLOW, 4)
 	var an := PI + PI * needle
-	draw_line(c, c + Vector2(cos(an), sin(an)) * (r - 10), RED, 3.0)
-	draw_circle(c, 6, Color.WHITE)
-	# il piatto con la frutta
-	draw_rect(Rect2(c.x - 50, c.y + 10, 100, 8), Color("aeb4c4"))
+	draw_line(c, c + Vector2(cos(an), sin(an)) * (r - 18), RED, 3)
+	draw_circle(c, 7, Art.INK)
+	draw_circle(c, 4, Art.CREAM)
+	Art.panel(self, Rect2(c.x - 57, c.y + 15, 114, 12), Color("8b9eae"), Color("d6e4de"))
 	for i in 4:
-		draw_circle(Vector2(c.x - 30 + i * 20, c.y + 4), 8, [Color("e05050"), Color("f0a030"), Color("70c040"), Color("e05050")][i])
-	draw_string(font, Vector2(BOX.position.x, BOX.position.y + 22), "Il cliente vuole: %d grammi" % int(round(wanted * 1000.0)), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color.WHITE)
+		Art.fruit(self, c + Vector2(-34 + i * 22, 9), [Color("df6355"), Color("e8a348"), Color("7caa68"), Color("df6355")][i])
+	draw_string(font, Vector2(BOX.position.x, BOX.position.y + 23), "Il cliente vuole: %d grammi" % int(round(wanted * 1000)), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 13, Art.INK)
 
 
 func _draw_sort(font: Font) -> void:
+	Art.panel(self, BOX.grow(-5), Color("3c4c5e"), Color("859cae"))
 	var cx := BOX.get_center().x
-	# il nastro
-	draw_rect(Rect2(cx - 30, BOX.position.y + 4, 60, BOX.size.y - 8), Color("3a3644"))
-	for y in range(int(BOX.position.y) + int(fmod(t * 60.0, 16.0)), int(BOX.end.y) - 4, 16):
-		draw_rect(Rect2(cx - 30, y, 60, 2), Color("4d4a57"))
-	draw_rect(Rect2(BOX.position.x + 20, BOX.end.y - 50, 70, 40), Color("8a2a2a"))
-	draw_rect(Rect2(BOX.end.x - 90, BOX.end.y - 50, 70, 40), Color("2a4a8a"))
+	Art.panel(self, Rect2(cx - 35, BOX.position.y + 5, 70, BOX.size.y - 10), Color("303543"), Color("97a6b5"))
+	for y in range(int(BOX.position.y) + int(fmod(t * 60, 16)), int(BOX.end.y) - 4, 16):
+		draw_rect(Rect2(cx - 28, y, 56, 2), Color("505b69"))
+	Art.carton(self, Rect2(BOX.position.x + 20, BOX.end.y - 50, 70, 40), RED, true)
+	Art.carton(self, Rect2(BOX.end.x - 90, BOX.end.y - 50, 70, 40), BLUE, true)
 	draw_string(font, Vector2(BOX.position.x + 20, BOX.end.y - 56), "ROSSE <", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, RED)
 	draw_string(font, Vector2(BOX.end.x - 90, BOX.end.y - 56), "> BLU", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, BLUE)
 	for b in boxes:
-		var r := Rect2(cx - 14, float(b["y"]) - 12, 28, 24)
-		draw_rect(r, Color("b9894f"))
-		draw_rect(Rect2(r.position + Vector2(8, 8), Vector2(12, 8)), RED if b["red"] else BLUE)
-		draw_rect(r, Color("5c3f22"), false, 1.0)
+		Art.carton(self, Rect2(cx - 14, float(b["y"]) - 12, 28, 24), RED if b["red"] else BLUE)
 
 
 func _draw_deliver() -> void:
-	var lane_h := (BOX.size.y - 20) / 3.0
+	var lane_h := (BOX.size.y - 20) / 3
+	draw_rect(BOX.grow(-3), Color("6c7d83"))
 	for i in 3:
 		var y := BOX.position.y + 10 + i * lane_h
-		draw_rect(Rect2(BOX.position.x + 4, y, BOX.size.x - 8, lane_h - 2), Color("3a3a44"))
-		for x in range(int(BOX.position.x) + 4 - int(fmod(t * 160.0, 40.0)) + 40, int(BOX.end.x) - 8, 40):
-			draw_rect(Rect2(x, y + lane_h - 3, 18, 2), Color("d8d8c0"))
+		draw_rect(Rect2(BOX.position.x + 4, y, BOX.size.x - 8, lane_h - 2), Color("3c4654"))
+		for x in range(int(BOX.position.x) + 4 - int(fmod(t * 160, 40)) + 40, int(BOX.end.x) - 8, 40):
+			draw_rect(Rect2(x, y + lane_h - 3, 18, 2), Art.CREAM)
 	for o in road:
-		var y := BOX.position.y + 10 + int(o["lane"]) * lane_h + lane_h / 2.0
+		var y := BOX.position.y + 10 + int(o["lane"]) * lane_h + lane_h / 2
 		var x := float(o["x"])
 		if o["parcel"]:
-			draw_rect(Rect2(x - 8, y - 8, 16, 14), Color("b9894f"))
-			draw_rect(Rect2(x - 2, y - 8, 4, 14), Color("e8d29a"))
+			Art.carton(self, Rect2(x - 8, y - 8, 16, 14))
 		else:
-			draw_rect(Rect2(x - 20, y - 9, 40, 18), Color("d23b3b"))
-			draw_rect(Rect2(x - 10, y - 6, 20, 5), Color("9fd0f0"))
-	# la bici
-	var by := BOX.position.y + 10 + lane * lane_h + lane_h / 2.0
+			Art.car(self, Rect2(x - 20, y - 9, 40, 18))
+	var by := BOX.position.y + 10 + lane * lane_h + lane_h / 2
 	var bx := BOX.position.x + 60
-	var blink := crash_t > 0.0 and int(t * 12) % 2 == 0
-	if not blink:
-		draw_circle(Vector2(bx - 10, by + 6), 6, Color.WHITE)
-		draw_circle(Vector2(bx + 10, by + 6), 6, Color.WHITE)
-		draw_rect(Rect2(bx - 8, by - 8, 16, 10), YELLOW)
-		draw_rect(Rect2(bx - 4, by - 16, 8, 8), Color("e0a080"))
+	var blink := crash_t > 0 and int(t * 12) % 2 == 0
+	if not blink: Art.courier(self, Vector2(bx, by), t)
 
 
 func _arrow(c: Vector2, dir: String, r: float, col: Color) -> void:

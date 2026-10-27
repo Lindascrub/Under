@@ -1,4 +1,6 @@
 extends Node2D
+
+const Art := preload("res://scripts/minigame_art.gd")
 ## Capitolo 6 — il TURNO di Direzione: uno schermo, tre cicli (GameState.minigame = {"cycle": n}).
 ## Non c'è uno stipendio: si dividono 100 unità fra stipendi, servizi, manutenzione e riserve.
 ## Le regole sono in direzione_regole.gd; qui c'è solo lo schermo (dito, mouse, tastiera).
@@ -126,7 +128,7 @@ func option_button(i: int) -> Rect2:
 
 func _draw() -> void:
 	var font := Assets.font()
-	draw_rect(Rect2(0, 0, 640, 360), Color("0b0a10"))
+	Art.backdrop(self)
 	draw_string(font, Vector2(16, 26), "TURNO — DIREZIONE · CICLO %d DI 3" % cycle, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, DIM)
 	draw_string(font, Vector2(16, 48), RULES.QUESTIONS[cycle], HORIZONTAL_ALIGNMENT_LEFT, -1, 18, GOLD)
 	draw_string(font, Vector2(400, 26), "Riserve: %d   Arretrato: %d" % [int(st.get("reserve", 0)), int(st.get("backlog", 0))],
@@ -144,7 +146,7 @@ func _draw_alloc(font: Font) -> void:
 	for i in RULES.CATS.size():
 		var c: String = RULES.CATS[i]
 		var row := _cat_row(i)
-		draw_rect(row, PANEL)
+		Art.panel(self, row, PANEL, Color("7896a7"))
 		if sel == i:
 			draw_rect(row, GOLD, false, 2.0)
 		draw_string(font, row.position + Vector2(8, 16), RULES.NAMES[c], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
@@ -168,7 +170,7 @@ func _draw_alloc(font: Font) -> void:
 	draw_rect(rb, GOLD if sel == 5 else DIM, false, 1.0)
 	draw_string(font, rb.position + Vector2(0, 20), "LE REGOLE", HORIZONTAL_ALIGNMENT_CENTER, rb.size.x, 11, Color.WHITE)
 	# a destra: cosa succede con questa distribuzione, prima di confermare
-	draw_rect(Rect2(330, 64, 294, 280), PANEL)
+	Art.panel(self, Rect2(330, 64, 294, 280), PANEL, Color("7896a7"))
 	draw_string(font, Vector2(342, 82), "SE CONFERMI:", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, DIM)
 	var y := 100.0
 	for line: String in RULES.hints(st, alloc):
@@ -183,7 +185,7 @@ func _draw_options(font: Font) -> void:
 		var o: Array = options[i]
 		var r := option_button(i)
 		var closed := str(o[o.size() - 1]) != ""
-		draw_rect(r, PANEL)
+		Art.panel(self, r, PANEL, Color("7896a7"))
 		draw_rect(r, GOLD if sel == i else (DIM if closed else Color.WHITE), false, 2.0 if sel == i else 1.0)
 		draw_string(font, r.position + Vector2(10, 16), str(o[1]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 12, DIM if closed else Color.WHITE)
 		var sub := str(o[o.size() - 1]) if closed else (str(o[2]) if phase == "debiti" else "")
