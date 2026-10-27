@@ -24,11 +24,11 @@ superficie commerciale. Se Amir viene robotizzato, ha lo shader del robot ed è 
 ```
  +------------------------------------------------+
  | [OGGI TUTTO AL 50%*]   [TABELLONE PREZZI]      |  muro bianco da supermercato
- | CASSA  TURNO   acqua             Nives  scale↑ |  (21,3) → Banca
- | DA LEDA                                        |
+ | CASSA  carrello acqua           Nives  scale↑ |  (21,3) → Banca
+ |                          cestini di frutta     |
  | scaffali  lavagnetta   clienti                 |
- | bancone   Leda                  pallet  Amir   |
- | scale↓      stellina            scatole  term. |
+ | bancone   Leda  carrello        pallet  Amir   |
+ | frigo scale↓ frigo frigo stellina corsia  term.|
  +------------------------------------------------+
 ```
 
@@ -37,9 +37,10 @@ superficie commerciale. Se Amir viene robotizzato, ha lo shader del robot ed è 
 | Ingresso | in basso a sinistra (4,12) | le scale dal Sottoufficio; si arriva qui |
 | TURNO — Cassa | in alto a sinistra (2-4, 4) | la cassa, il posto del TURNO (4,4) |
 | Negozio di Leda | a sinistra, stesse piastrelle della piazza (1-6, 6-9) | due scaffali (5 prodotti), il bancone, la lavagnetta, Leda (5,8) |
-| Piazza | al centro, piastrelle azzurre | distributore d'acqua (9,4), tabellone (sopra, 12-18: due immagini, prima e dopo, disegnate da `tools/make_art_mercato.py` coi prezzi di `data/market.json`), tre clienti, stellina (11,11), sportello badge (19,3: fuori dal tabellone, se no l'addetta non si vede). Niente carretto, teli o cassonetto: la piazza è libera |
+| Piazza | al centro, piastrelle azzurre | distributore d'acqua (9,4), tabellone (sopra, 12-18: due immagini, prima e dopo, disegnate da `tools/make_art_mercato.py` coi prezzi di `data/market.json`), tre clienti, stellina (11,11), sportello badge (19,3: fuori dal tabellone, se no l'addetta non si vede). Niente carretto, teli o cassonetto |
+| Supermercato | sparso in piazza, mai sui passaggi | tre frigo in fondo (1, 6, 8 sulla riga 12), una corsia di scaffali (13,12), cinque cestini di frutta (16-18 e 20-21, riga 6), due carrelli (6,5) e (8,9). Grafica LimeZu `assets/limezu/grocery/` (copiata da `tools/import_assets.ps1`). Niente insegna "DA LEDA" |
 | Magazzino di Amir | in basso a destra, cemento (15-22, 8-12) | pallet, scatole, il terminale delle consegne (22,11), Amir (19,10) |
-| Nives e l'uscita | in alto a destra | sportello badge (18,3), scale per la Banca (21,3) |
+| Nives e l'uscita | in alto a destra | sportello badge (19,3), scale per la Banca (21,3) |
 
 La scena si genera una volta con `tools/bake_c3_mercato.gd` (grafica nuova: `tools/make_art_mercato.py`), poi
 si modifica nell'editor. La logica è in `chapters/c3/mercato_c3.gd`.
@@ -72,7 +73,7 @@ si modifica nell'editor. La logica è in `chapters/c3/mercato_c3.gd`.
 | 3.12 Nives e il badge | allo sportello | Se hai aiutato Leda e Amir e Amir non è un robot: il badge "cade dal cassetto", gratis (soldi e debito restano uguali). Se no lo compri (2.000 €, a scalare dal debito). "I badge aprono le porte. Non garantiscono che dietro ci sia qualcosa di meglio." | `c3_badge` = `regalo` / `comprato` / `contratto` |
 | 3.13 Lo scontrino | primo gradino, col badge | La musica sfuma, CLANK, lo scontrino lunghissimo (RIEPILOGO ECONOMICO, paga 120 €, pane 18 → 25, aumento retribuzione 0 €, RISULTATO: POSITIVO). "Il Mercato sta meglio." I rumori da giù (Leda e Amir). "Perché non sorridi?" | `c3_rivelazione`, `c3_riepilogo` |
 | 3.14 Sguardo indietro | in cima alle scale | La stanza com'è diventata, la frase, poi CAPITOLO 4 / LA BANCA / "I tuoi soldi sono al sicuro. Il tuo futuro è ancora in verifica." Salvataggio automatico, poi la Banca. | `c3_fine`, `c3_esito` |
-| Segreta | Amir umano, tutti e due aiutati, le loro storie sentite (il sogno, la madre) | Leda e Amir seduti su due cassette in piazza (11-12, 6, accanto al distributore; si parla toccando le cassette) col panino ("Riso buonissimo." / "Io porterò il pane."). Ti puoi sedere con loro. Nessun premio. | `c3_segreta` |
+| Segreta | Amir umano, tutti e due aiutati, le loro storie sentite (il sogno, la madre) | Leda e Amir seduti su due cassette in piazza (11-12, 6, accanto al distributore; si parla toccando le cassette). Ti siedi sulla terza (13,6): ti rialzi muovendoti col panino ("Riso buonissimo." / "Io porterò il pane."). Ti puoi sedere con loro. Nessun premio. | `c3_segreta` |
 
 Dopo lo scontrino, Leda e Amir dicono le frasi "reveal" di `data/npcs.json` (una volta).
 

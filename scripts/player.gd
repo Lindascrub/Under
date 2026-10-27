@@ -14,6 +14,8 @@ var camera: Camera2D
 var _step_t := 0.0
 var _shadow: Sprite2D
 var _sprite: AnimatedSprite2D
+## Seduto su qualcosa (una cassetta, una panchina): fermo finché non ti muovi.
+var seated := false
 
 
 func _ready() -> void:
@@ -45,6 +47,12 @@ func _physics_process(_delta: float) -> void:
 	var v := Vector2.ZERO
 	if not Ui.blocks_input():
 		v = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if seated:
+		if v == Vector2.ZERO:
+			return
+		# ti alzi: un passo giù, davanti a quello su cui eri seduto
+		stand_up()
+		position.y += 14
 	if v != Vector2.ZERO:
 		if absf(v.x) > absf(v.y):
 			facing = "right" if v.x > 0 else "left"
@@ -145,6 +153,31 @@ func _find_target() -> Node:
 
 
 var _sleep_nodes: Array[Node] = []
+
+
+## Si siede su qualcosa: `feet` è il bordo in basso del sedile, `dir` dove guardi (left/right).
+## Si disegna davanti al sedile (z_index), così il sedile resta sotto e non davanti.
+func sit(feet: Vector2, dir: String) -> void:
+	seated = true
+	velocity = Vector2.ZERO
+	position = feet + Vector2(0, -2)
+	facing = dir
+	z_index = 1
+	# alzata sul sedile: sotto si vede ancora (una cassetta è alta 12 pixel)
+	_sprite.offset = Vector2(-8, -37)
+	_shadow.visible = false
+	_sprite.play("sit_" + dir)
+
+
+func stand_up() -> void:
+	if not seated:
+		return
+	seated = false
+	z_index = 0
+	_sprite.offset = Vector2(-8, -31)
+	_shadow.visible = true
+	_sprite.play("idle_down")
+	facing = "down"
 
 
 ## Si sdraia nel letto: la testa sul cuscino che respira, e sopra la coperta.

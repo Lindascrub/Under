@@ -771,8 +771,8 @@ func _secret_ready() -> bool:
 
 
 # in piazza, sul pavimento libero accanto al distributore: non coprono i clienti né i teli
-const SIT_NUDGE := -2.0
-const CRATES := [Vector2i(11, 6), Vector2i(12, 6)]
+## La terza cassetta è per te, se ti siedi con loro.
+const CRATES := [Vector2i(11, 6), Vector2i(12, 6), Vector2i(13, 6)]
 
 
 ## Leda e Amir lasciano i loro posti e si siedono su due cassette, in piazza.
@@ -783,22 +783,25 @@ func _secret_setup() -> void:
 			n.visible = false
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
-	for i in 2:
+	for i in 3:
 		var crate := add_art("res://art/crate.png", CRATES[i], 0)
 		crate.name = "Cassetta%d" % i
+		if i == 2:
+			continue
 		var s := CharSprite.new()
 		s.name = ["SedutaLeda", "SedutoAmir"][i]
 		s.person = ["leda", "amir"][i]
 		s.sheet = str(GameState.npc_data(s.person).get("sheet", "char_02"))
 		s.anim = ["sit_right", "sit_left"][i]
 		s.grey = true
-		# seduti SULLA cassetta: il sedere a metà cassetta, la cassetta copre le gambe
-		s.nudge = Vector2(0, SIT_NUDGE)
+		# seduti SULLA cassetta: alzati di mezza cassetta, così sotto si vede il legno (prima la coprivano tutta)
+		s.nudge = Vector2(0, -6)
 		s.position = cell_feet(CRATES[i])
+		s.z_index = 1
 		world.add_child(s)
-	block(Rect2i(CRATES[0], Vector2i(2, 1)))
+	block(Rect2i(CRATES[0], Vector2i(3, 1)))
 	# si parla con loro da qualunque lato: un punto su ogni cassetta
-	for c: Vector2i in CRATES:
+	for c: Vector2i in CRATES.slice(0, 2):
 		add_spot(cell_center(c), _secret)
 
 
@@ -822,8 +825,7 @@ func _secret() -> void:
 	if c != 0:
 		await Ui.say(["* Li lasci lì. Per una volta, al Mercato, qualcosa non è in vendita."])
 		return
-	player.position = cell_feet(CRATES[1] + Vector2i(1, 1))
-	player.face("left")
-	await Ui.say(["* Ti siedi per terra, accanto a loro. Il pavimento è freddo. Il panino no."])
+	player.sit(Vector2(cell_feet(CRATES[2]).x, (CRATES[2].y + 1) * T), "left")
+	await Ui.say(["* Ti siedi sulla terza cassetta, accanto a loro. È un po' storta. Il panino no."])
 	await get_tree().create_timer(3.0).timeout
 	await Ui.say(["È bello non avere fretta, ogni tanto."], "Amir")

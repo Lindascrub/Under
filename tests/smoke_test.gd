@@ -317,6 +317,9 @@ func _test_chapter3() -> void:
 	choose_queue = [0]
 	m = await _c3_call(m, "_secret")
 	_check(GameState.flags.get("c3_segreta", false), "la scena segreta si dovrebbe vedere")
+	_check(m.player.seated and m.player.z_index == 1, "ti siedi davvero sulla terza cassetta")
+	m.player.stand_up()
+	_check(not m.player.seated, "e poi ti rialzi")
 	m = await _go(Router.MERCATO, "from_below")
 	_check(m.find_child("SedutaLeda", true, false) == null, "la scena segreta non si ripete")
 	# 25, 27: il badge regalato (niente soldi, niente debito), mai due volte

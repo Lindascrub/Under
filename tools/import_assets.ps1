@@ -49,6 +49,20 @@ $interiors = [ordered]@{
     ($bathroom -f 66)    = "bath/mirror.png"
     ($bathroom -f 143)   = "bath/bucket.png"
 }
+# il supermercato del Mercato (capitolo 3): frigo, scaffali, cestini, carrelli
+$grocery = "1_Interiors/16x16/Theme_Sorter_Singles/16_Grocery_Store_Singles/Grocery_Store_Singles_{0}.png"
+$interiors[($grocery -f 57)] = "grocery/fridge_1.png"
+$interiors[($grocery -f 61)] = "grocery/fridge_2.png"
+$interiors[($grocery -f 74)] = "grocery/fridge_3.png"
+$interiors[($grocery -f 113)] = "grocery/aisle_1.png"
+$interiors[($grocery -f 115)] = "grocery/aisle_2.png"
+$interiors[($grocery -f 119)] = "grocery/basket_1.png"
+$interiors[($grocery -f 120)] = "grocery/basket_2.png"
+$interiors[($grocery -f 135)] = "grocery/basket_3.png"
+$interiors[($grocery -f 139)] = "grocery/basket_4.png"
+$interiors[($grocery -f 141)] = "grocery/basket_5.png"
+$interiors[($grocery -f 4)] = "grocery/cart_1.png"
+$interiors[($grocery -f 6)] = "grocery/cart_2.png"
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i
     $interiors["2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_$n.png"] = "characters/char_$n.png"

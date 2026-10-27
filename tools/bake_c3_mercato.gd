@@ -19,6 +19,7 @@ const TILESET_PATH := "res://world/tilesets/interni.tres"
 const OUT := "res://chapters/c3/mercato.tscn"
 const MARKET := "res://assets/limezu/market/"
 const PROPS := "res://assets/limezu/props/"
+const GROCERY := "res://assets/limezu/grocery/"
 
 ## Le piastrelle (motivi da 3x2 in room_builder): piazza azzurra, parquet da Leda,
 ## cemento nel magazzino, muro bianco da supermercato.
@@ -75,6 +76,7 @@ func _ready() -> void:
 	_cassa()
 	_negozio()
 	_piazza()
+	_supermercato()
 	_magazzino()
 	_features()
 	var arrivi := Node2D.new()
@@ -219,8 +221,7 @@ func _cassa() -> void:
 
 ## Il negozio di Leda: scaffali di legno, un bancone, la lavagnetta dei conti.
 func _negozio() -> void:
-	var sign := _sprite(decori, "InsegnaLeda", "res://art/sign_leda.png", Rect2(), Vector2i(1, 5), 0, Vector2(6, -2))
-	sign.z_index = 1
+	# niente insegna "DA LEDA": il banco si riconosce da lei
 	for i in 2:
 		_sprite(mondo, "Scaffale%d" % i, "res://art/shelf.png", Rect2(), Vector2i(1 + i * 2, 7), 12)
 	# solido tutto il piano del tavolo, non solo il bordo davanti (prima ci si finiva sotto)
@@ -249,6 +250,30 @@ func _piazza() -> void:
 		_person(c[0], c[1], c[3], c[2])
 		_examine(mondo, "Guarda" + c[0], c[2], c[4], "", ["* Sorride ancora. Sorride a tutto. Anche al tabellone."])
 		_solid("Piedi" + c[0], Rect2i(c[2], Vector2i.ONE))
+
+
+## Il supermercato sparso per la piazza: frigo in fondo, una corsia di scaffali,
+## cestini di frutta in fila, due carrelli lasciati lì. Niente sui passaggi (riga 7, le scale, la stellina).
+func _supermercato() -> void:
+	_sprite(mondo, "Frigo0", GROCERY + "fridge_1.png", Rect2(), Vector2i(6, 12), 12, Vector2(0, 6))
+	_sprite(mondo, "Frigo1", GROCERY + "fridge_2.png", Rect2(), Vector2i(8, 12), 12, Vector2(0, 6))
+	_sprite(mondo, "Frigo2", GROCERY + "fridge_3.png", Rect2(), Vector2i(1, 12), 12, Vector2(0, 6))
+	_sprite(mondo, "Corsia0", GROCERY + "aisle_1.png", Rect2(), Vector2i(13, 12), 30)
+	_examine(mondo, "GuardaFrigo", Vector2i(7, 11), [
+		"* Frigo pieni. Su ogni yogurt un adesivo giallo: \"-50%\". Sotto, uno più piccolo: \"sul prezzo di domani\".",
+	])
+	_examine(mondo, "GuardaCorsia", Vector2i(13, 11), [
+		"* Una corsia intera di biscotti. Le confezioni sono grandi, i biscotti dentro sono tre.",
+	])
+	var baskets := ["basket_1", "basket_2", "basket_3", "basket_4", "basket_5"]
+	for i in baskets.size():
+		var cell := Vector2i(16 + i, 6) if i < 3 else Vector2i(17 + i, 6)
+		_sprite(mondo, "Cestino%d" % i, GROCERY + baskets[i] + ".png", Rect2(), cell, 8, Vector2(0, 6))
+	_examine(mondo, "GuardaCestini", Vector2i(17, 6), [
+		"* Frutta lucida, tutta uguale. Le mele hanno il codice a barre stampato sulla buccia.",
+	])
+	_sprite(mondo, "Carrello0", GROCERY + "cart_1.png", Rect2(), Vector2i(8, 9), 8, Vector2(0, 4))
+	_sprite(mondo, "Carrello1", GROCERY + "cart_2.png", Rect2(), Vector2i(6, 5), 0, Vector2(0, 4))
 
 
 ## Il magazzino di Amir: scatole, scaffalature, il terminale delle consegne.
