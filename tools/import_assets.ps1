@@ -52,6 +52,8 @@ $interiors = [ordered]@{
 # il supermercato del Mercato (capitolo 3): tutti i pezzi singoli, col loro numero (grocery/<n>.png)
 $grocery = "1_Interiors/16x16/Theme_Sorter_Singles/16_Grocery_Store_Singles/Grocery_Store_Singles_{0}.png"
 foreach ($n in 1..489) { $interiors[($grocery -f $n)] = "grocery/$n.png" }
+# le nuvolette sopra la testa (emote animate degli NPC)
+$interiors["4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png"] = "ui/emotes.png"
 # la Banca (capitolo 4): fogli interi dei temi, usati a pezzi (regioni)
 $theme = "1_Interiors/16x16/Theme_Sorter/{0}"
 $interiors[($theme -f "19_Hospital_16x16.png")] = "themes/hospital.png"

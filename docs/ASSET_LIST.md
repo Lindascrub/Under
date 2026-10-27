@@ -214,3 +214,8 @@ Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anc
 
 Gli altri PNG in `art/` (cartelli, poster, stelline, scale, tornelli, emote...) vengono dai capitoli 1-2
 (`tools/make_art_fondo.py` e versioni precedenti) e sono segnaposto allo stesso modo.
+
+Le nuvolette sopra la testa degli NPC ora sono quelle animate di LimeZu (`assets/limezu/ui/emotes.png`,
+da `4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png`): la nuvoletta si gonfia e poi l'icona
+alterna i suoi due fotogrammi (`scripts/npc.gd`, `EMOTE_CELLS`: dots, bang, alarm, note, heart, question, zzz,
+coin, sweat, angry, idea). `art/emotes.png` resta solo come ripiego se gli asset LimeZu non ci sono.

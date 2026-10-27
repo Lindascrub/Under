@@ -17,7 +17,10 @@ var _home := Vector2.ZERO
 var _wander_range := 32.0
 var _wander_dir := 1.0
 var _pause := 0.0
-var _emote: Sprite2D
+var _emote: Node2D
+var _emote_top: Sprite2D
+var _emote_tail: Sprite2D
+var _emote_id := 0
 var _emote_t := 0.0
 var _greeted := false
 
@@ -62,12 +65,22 @@ func _ready() -> void:
 	sprite.frame = randi() % 6
 	if GameState.is_robot(id):
 		sprite.speed_scale = 0.0
-	_emote = Sprite2D.new()
-	var at := AtlasTexture.new()
-	at.atlas = load("res://art/emotes.png") if ResourceLoader.exists("res://art/emotes.png") else Assets.tex("_emotes", Vector2i(44, 10))
-	at.region = Rect2(0, 0, 11, 10)
-	_emote.texture = at
-	_emote.position = Vector2(4, -42)
+	_emote = Node2D.new()
+	_emote_top = Sprite2D.new()
+	_emote_tail = Sprite2D.new()
+	for s in [_emote_top, _emote_tail]:
+		s.texture = AtlasTexture.new()
+		_emote.add_child(s)
+	if ResourceLoader.exists(LIMEZU_EMOTES):
+		(_emote_top.texture as AtlasTexture).atlas = load(LIMEZU_EMOTES)
+		(_emote_tail.texture as AtlasTexture).atlas = load(LIMEZU_EMOTES)
+		_emote.position = Vector2(7, -34)
+		_emote_tail.position = Vector2(0, 16)
+	else:
+		# senza gli asset LimeZu: la vecchia nuvoletta disegnata da noi
+		(_emote_top.texture as AtlasTexture).atlas = load("res://art/emotes.png") if ResourceLoader.exists("res://art/emotes.png") else Assets.tex("_emotes", Vector2i(44, 10))
+		_emote_tail.visible = false
+		_emote.position = Vector2(4, -42)
 	_emote.visible = false
 	_emote.z_index = 5
 	add_child(_emote)
@@ -80,15 +93,58 @@ func _anim_for(act: String) -> String:
 	return act
 
 
-## Nuvoletta sopra la testa: "..." , "!", una nota, un cuore. I robot non ne fanno mai.
+const LIMEZU_EMOTES := "res://assets/limezu/ui/emotes.png"
+## Le nuvolette di LimeZu (UI_thinking_emotes_animation_16x16): caselle da 16 px, ogni icona ha due fotogrammi
+## affiancati. La nuvoletta prima "si gonfia" (colonne 0-3 delle righe 2-3), poi l'icona alterna i suoi due fotogrammi.
+const EMOTE_CELLS := {
+	"dots": Vector2i(2, 9), "bang": Vector2i(0, 4), "alarm": Vector2i(0, 5), "note": Vector2i(6, 6),
+	"heart": Vector2i(4, 2), "question": Vector2i(2, 5), "zzz": Vector2i(6, 5), "coin": Vector2i(4, 6),
+	"sweat": Vector2i(6, 9), "angry": Vector2i(0, 9), "idea": Vector2i(2, 8),
+}
+const OLD_EMOTES := ["dots", "bang", "note", "heart"]
+
+
+func _emote_frame(top: Vector2i, tail: Vector2i) -> void:
+	(_emote_top.texture as AtlasTexture).region = Rect2(top * 16, Vector2(16, 16))
+	(_emote_tail.texture as AtlasTexture).region = Rect2(tail * 16, Vector2(16, 16))
+
+
+## Nuvoletta sopra la testa: "...", "!", una nota, un cuore (e le altre di EMOTE_CELLS). I robot non ne fanno mai.
 func emote(kind: String, time := 1.6) -> void:
 	if GameState.is_robot(id):
 		return
-	var idx := ["dots", "bang", "note", "heart"].find(kind)
-	(_emote.texture as AtlasTexture).region = Rect2(maxi(idx, 0) * 11, 0, 11, 10)
+	_emote_id += 1
+	var me := _emote_id
 	_emote.visible = true
-	await get_tree().create_timer(time).timeout
-	if is_instance_valid(_emote):
+	if not _emote_tail.visible:
+		var idx := OLD_EMOTES.find(kind)
+		(_emote_top.texture as AtlasTexture).region = Rect2(maxi(idx, 0) * 11, 0, 11, 10)
+		await get_tree().create_timer(time).timeout
+	else:
+		var cell: Vector2i = EMOTE_CELLS.get(kind, EMOTE_CELLS["dots"])
+		# si gonfia
+		for f in range(1, 4):
+			_emote_frame(Vector2i(f, 2), Vector2i(f, 3))
+			await get_tree().create_timer(0.07).timeout
+			if not is_instance_valid(_emote) or me != _emote_id:
+				return
+		# l'icona, che alterna i suoi due fotogrammi
+		var left := time
+		var i := 0
+		while left > 0.0:
+			_emote_frame(cell + Vector2i(i % 2, 0), Vector2i(4 + i % 2, 3))
+			await get_tree().create_timer(0.25).timeout
+			if not is_instance_valid(_emote) or me != _emote_id:
+				return
+			left -= 0.25
+			i += 1
+		# si sgonfia
+		for f in [3, 2]:
+			_emote_frame(Vector2i(f, 2), Vector2i(f, 3))
+			await get_tree().create_timer(0.06).timeout
+			if not is_instance_valid(_emote) or me != _emote_id:
+				return
+	if is_instance_valid(_emote) and me == _emote_id:
 		_emote.visible = false
 
 
