@@ -242,9 +242,7 @@ func _r(parent: Node, nm: String, tex: String, region: Rect2, cell: Vector2i, fo
 
 func _insegne() -> void:
 	var sign := _sprite(decori, "InsegnaBanca", ART + "insegna_banca.png", Rect2(), Vector2i(13, 1), 0, Vector2(0, 12))
-	sign.z_index = 1
 	var display := _sprite(decori, "DisplayNumeri", ART + "display_numeri.png", Rect2(), Vector2i(22, 1), 0, Vector2(0, 10))
-	display.z_index = 1
 	_examine(mondo, "GuardaInsegna", Vector2i(18, 3), [], "_insegna")
 	_examine(mondo, "GuardaDisplay", Vector2i(24, 3), [], "_display")
 
@@ -289,7 +287,7 @@ func _atrio() -> void:
 
 ## La sala d'attesa: due divani, il tavolino con le riviste, le file di sedie, la TV, Olga.
 func _attesa() -> void:
-	_r(decori, "TV", HOSPITAL, TV, Vector2i(5, 2), 0, Vector2(0, -4)).z_index = 1
+	_r(decori, "TV", HOSPITAL, TV, Vector2i(5, 2), 0, Vector2(0, -4))
 	_r(mondo, "Divano0", LIVING, SOFA, Vector2i(1, 4), 10)
 	_r(mondo, "Divano1", LIVING, SOFA, Vector2i(5, 4), 10)
 	_r(mondo, "Merendine", HOSPITAL, VENDING, Vector2i(9, 4), 12)
@@ -314,7 +312,7 @@ func _attesa() -> void:
 
 ## L'ufficio badge: la bacheca, una pianta. Lo sportello e le scale sono caratteristiche.
 func _ufficio() -> void:
-	_r(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(30, 2), 0, Vector2(0, -2)).z_index = 1
+	_r(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(30, 2), 0, Vector2(0, -2))
 	_sprite(mondo, "PiantaUfficio", GROCERY + "449.png", Rect2(), Vector2i(29, 6), 8)
 
 

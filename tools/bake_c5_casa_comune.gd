@@ -89,10 +89,8 @@ func _sala() -> void:
 		"* Una libreria piena. Sul dorso dei libri, a pennarello: \"PRESTITO LIBERO. RESTITUZIONE: QUANDO PUOI\".",
 	])
 	var notice := _sprite(decori, "AvvisoChiusura", ART + "avviso_chiusura.png", Rect2(), Vector2i(2, 2), 0, Vector2(0, -2))
-	notice.z_index = 1
 	_examine(mondo, "GuardaAvviso", Vector2i(2, 3), [], "_avviso")
 	var board := _sprite(decori, "Bacheca", ART + "bacheca.png", Rect2(), Vector2i(10, 2), 0, Vector2(0, -2))
-	board.z_index = 1
 	_examine(mondo, "GuardaBacheca", Vector2i(11, 3), [], "_bacheca")
 	_sprite(mondo, "Tavolo", ART + "tavolo_lungo.png", Rect2(), Vector2i(3, 8), 14)
 	_sprite(mondo, "Sedie", ART + "sedie_spaiate.png", Rect2(), Vector2i(3, 9), 6)
@@ -125,7 +123,6 @@ func _archivio() -> void:
 	_sprite(mondo, "Armadio", ART + "armadio_documenti.png", Rect2(), Vector2i(19, 4), 12)
 	_examine(mondo, "GuardaArmadio", Vector2i(19, 4), [], "_armadio")
 	var meter := _sprite(decori, "Contatore", ART + "contatore.png", Rect2(), Vector2i(15, 2), 0, Vector2(0, 4))
-	meter.z_index = 1
 	_examine(mondo, "GuardaContatore", Vector2i(15, 3), [], "_contatore")
 	_sprite(mondo, "PiantaArchivio", PROPS + "plant.png", Rect2(), Vector2i(20, 10), 8)
 

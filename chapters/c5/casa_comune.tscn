@@ -78,14 +78,12 @@ tile_set = ExtResource("2_3jnyv")
 [node name="Decori" type="Node2D" parent="." unique_id=755834777]
 
 [node name="AvvisoChiusura" type="Sprite2D" parent="Decori" unique_id=1932091853]
-z_index = 1
 position = Vector2(32, 46)
 texture = ExtResource("3_vn8wj")
 centered = false
 offset = Vector2(0, -16)
 
 [node name="Bacheca" type="Sprite2D" parent="Decori" unique_id=1286053199]
-z_index = 1
 position = Vector2(160, 46)
 texture = ExtResource("4_d1v4x")
 centered = false
@@ -100,7 +98,6 @@ region_enabled = true
 region_rect = Rect2(48, 354, 32, 28)
 
 [node name="Contatore" type="Sprite2D" parent="Decori" unique_id=1113979789]
-z_index = 1
 position = Vector2(240, 52)
 texture = ExtResource("6_4e46h")
 centered = false
