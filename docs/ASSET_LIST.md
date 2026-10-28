@@ -223,3 +223,11 @@ coin, sweat, angry, idea). `art/emotes.png` resta solo come ripiego se gli asset
 La cyclette del Fondo ora è quella della palestra di LimeZu (`assets/limezu/themes/gym.png`, da
 `Theme_Sorter/8_Gym_16x16.png`, regione 96,480 32x32). `art/generator.png` resta per la cyclette vecchia
 della Cima (capitolo 6) e per i minigiochi.
+
+## Ascensore e scale mobili (LimeZu, non segnaposto)
+
+- `tiles/escalator_up.png` (Modern Interiors, animated_escalator_up): la scala mobile di tutte le scale che salgono
+  (`Room.add_stairs_up`), 6 fotogrammi da 32x64 ritagliati al centro dei 48x80.
+- `tiles/elevator_anim.png` e `tiles/elevator_off.png` (Modern Exteriors, ascensore della stazione): l'ascensore del Fondo
+  e del piano terra (`world/lift.gd`): porte che si aprono e si chiudono, luci spente quando è rotto o serve un badge.
+- `themes/conference.png` (bancone, bandiere, urna), `themes/subway.png` (biglietteria, tabellone): il Sottoufficio.

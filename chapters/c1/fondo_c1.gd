@@ -10,7 +10,7 @@ const EXTRA_PAY := [120, 70, 35]
 
 
 func setup() -> void:
-	_lift(Vector2i(11, 1))
+	_make_lift(Vector2i(11, 1))
 	if GameState.flags.get("c1_rivelazione", false):
 		_switch_off(false)
 		Sound.call_deferred("music_pitch", 0.75, 0.1)
@@ -19,13 +19,15 @@ func setup() -> void:
 func enter() -> void:
 	if not GameState.flags.get("c1_arrivo", false):
 		GameState.flags["c1_arrivo"] = true
+		_lift.open(false)
 		await get_tree().create_timer(0.4).timeout
 		await Ui.say([
 			"* Le porte si aprono su una festa.",
 			"* Festoni, palloncini, coriandoli per terra. Una voce registrata, allegrissima:",
 			"\"Benvenuto al Fondo! Il posto più felice della torre!\"",
 		])
-		# dietro di te, l'ascensore crolla
+		# dietro di te le porte si chiudono, e l'ascensore crolla
+		await _lift.close()
 		await get_tree().create_timer(0.3).timeout
 		Sound.sfx("clunk")
 		Sound.sfx("spark", 0.8)
@@ -364,9 +366,7 @@ func _revelation() -> void:
 
 # --- l'ascensore che crolla ------------------------------------------------------
 
-var _lift_doors: Array[ColorRect] = []
-var _lift_inside: ColorRect
-var _lift_arrow: Label
+var _lift: Lift
 
 
 func _shake(time: float) -> void:
@@ -379,47 +379,23 @@ func _shake(time: float) -> void:
 	tw.tween_property(cam, "offset", Vector2.ZERO, 0.05)
 
 
-## L'ascensore rotto: porte storte, dentro è buio, la freccia spenta.
+## L'ascensore rotto: le porte socchiuse e storte, le luci spente, dentro è buio.
 func _break_lift() -> void:
 	GameState.flags["c1_lift_broken"] = true
-	if _lift_inside:
-		_lift_inside.color = Color("0c0a10")
-	for i in _lift_doors.size():
-		_lift_doors[i].rotation = -0.12 if i == 0 else 0.1
-		_lift_doors[i].color = Color("b8a878")
-	if _lift_arrow:
-		_lift_arrow.add_theme_color_override("font_color", Color("4a4658"))
+	if _lift:
+		_lift.set_off(true)
+		_lift.modulate = Color(0.8, 0.76, 0.84)
+		_lift.rotation = -0.03
 
 
-func _lift(top_left: Vector2i) -> void:
-	var frame := ColorRect.new()
-	frame.color = Color("e8c060")
-	frame.position = Vector2(top_left.x * T, top_left.y * T + 4)
-	frame.size = Vector2(2 * T, 2 * T - 4)
-	world.add_child(frame)
-	_lift_inside = ColorRect.new()
-	_lift_inside.color = Color("fff4c8")
-	_lift_inside.position = frame.position + Vector2(2, 3)
-	_lift_inside.size = Vector2(2 * T - 4, frame.size.y - 3)
-	world.add_child(_lift_inside)
-	for k in 2:
-		var door := ColorRect.new()
-		door.color = Color("f4e2a8")
-		door.position = frame.position + Vector2(2 + k * 15, 3)
-		door.size = Vector2(13, frame.size.y - 3)
-		world.add_child(door)
-		_lift_doors.append(door)
-	var arrow := Label.new()
-	_lift_arrow = arrow
-	arrow.text = "▲"
-	arrow.add_theme_font_size_override("font_size", 8)
-	arrow.add_theme_color_override("font_color", Color("ff6a5a"))
-	arrow.position = frame.position + Vector2(12, -12)
-	arrow.z_index = 6
-	add_child(arrow)
+## L'ascensore da cui arrivi (quello di LimeZu, con le porte animate): ti scarica alla festa e crolla.
+func _make_lift(top_left: Vector2i) -> void:
+	_lift = Lift.new()
+	_lift.position = Vector2(top_left * T)
+	world.add_child(_lift)
 	if GameState.flags.get("c1_lift_broken", false):
 		_break_lift()
 	examine(cell_center(top_left + Vector2i(0, 2)) + Vector2(8, 0), [
-		"* L'ascensore dorato. Le porte sono piegate, dentro è buio. Dal soffitto pende un filo che sfrigola.",
+		"* L'ascensore. Le porte sono storte, le luci spente, dentro è buio. Dal soffitto pende un filo che sfrigola.",
 		"* Sotto la pulsantiera, un adesivo a forma di cuore: \"Si sale solo col badge. Ti vogliamo bene!\"",
 	])

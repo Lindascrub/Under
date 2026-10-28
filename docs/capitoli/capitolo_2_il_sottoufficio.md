@@ -57,6 +57,13 @@ Tilde è anche la "vittima" della promozione del capo: il suo copione scritto a 
 ## La scena
 
 `chapters/c2/sottoufficio.tscn` (fatta una volta con `tools/bake_c2_sottoufficio.gd`, poi si modifica nell'editor);
-la logica è in `chapters/c2/sottoufficio_c2.gd`. In alto lo sportello B-4 col tritacarte, a destra lo sportello dei badge
-e le scale per il -3; a sinistra il call center con Tilde; in basso a destra l'archivio con Ercole; in basso a sinistra
-le scale per il Fondo.
+la logica è in `chapters/c2/sottoufficio_c2.gd`. Quattro stanze, divise dai separatori bianchi di LimeZu (`RoomOutline`):
+- **il call center** (a sinistra, moquette arancione): i colleghi al telefono, Tilde, la scrivania del TURNO, l'angolo
+  relax col divano (ci si siede), la stellina e in basso a sinistra le scale per il Fondo;
+- **l'ufficio badge** (in alto al centro, grigio, come una biglietteria della metropolitana): lo sportello, il cordone
+  della fila, le sedie d'attesa, la biglietteria e il tabellone della stazione LimeZu, il tornello e la **scala mobile**
+  animata per il -3;
+- **la sala dello sportello B-4** (in basso al centro, rossa, da sala riunioni): la Signora Agenda dietro il bancone di
+  legno, le bandiere, l'urna dei reclami, il tritacarte, le sedie per aspettare;
+- **l'archivio di Ercole** (a destra, legno): le librerie di raccoglitori fino al soffitto, le file di schedari, gli scatoloni.
+Le sedie e il divano sono posti a sedere veri (`world/seat.gd`, da `data/props.json`); le sedie sono solide, non ci si passa sotto.

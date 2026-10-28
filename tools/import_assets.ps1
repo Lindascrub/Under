@@ -61,6 +61,9 @@ $interiors[($theme -f "8_Gym_16x16.png")] = "themes/gym.png"
 $interiors[($theme -f "16_Grocery_store_16x16.png")] = "themes/grocery.png"
 $interiors[($theme -f "2_LivingRoom_16x16.png")] = "themes/living_room.png"
 $interiors[($theme -f "5_Classroom_and_library_16x16.png")] = "themes/classroom.png"
+# il Sottoufficio (capitolo 2): la sala dello sportello B-4, la scala mobile al posto delle scale
+$interiors[($theme -f "13_Conference_Hall_16x16.png")] = "themes/conference.png"
+$interiors["3_Animated_objects/16x16/spritesheets/animated_escalator_up.png"] = "tiles/escalator_up.png"
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i
     $interiors["2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_$n.png"] = "characters/char_$n.png"
@@ -85,6 +88,10 @@ $props = @{
     "Flower_Bush_1" = "flowers"; "Billboard_1" = "billboard"; "Box_Trash_1" = "box_trash"; "Scrap_Metal_Pile_1" = "scrap"
 }
 foreach ($k in $props.Keys) { $exteriors[($cityProp -f $k)] = "street/$($props[$k]).png" }
+# l'ascensore (porte animate, e spento quando è rotto) e la stazione (biglietteria, tabellone)
+$exteriors["Modern_Exteriors_16x16/Animated_16x16/Animated_sheets_16x16/Subway_Elevator_Going_Up_16x16.png"] = "tiles/elevator_anim.png"
+$exteriors["$ext/20_Subway_and_Train_Station_Singles_16x16/ME_Singles_Subway_and_Train_Station_16x16_Elevator_Closed_Lights_Off.png"] = "tiles/elevator_off.png"
+$exteriors["$ext/20_Subway_and_Train_Station_16x16.png"] = "themes/subway.png"
 
 # Parco
 $garden = "$ext/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_{0}.png"

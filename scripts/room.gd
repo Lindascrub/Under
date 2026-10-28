@@ -763,7 +763,7 @@ const DESK_REGION := Rect2(96, 8, 16, 40)
 ## Scale che salgono al piano di sopra, dentro al muro, con il tornello accanto: si passa
 ## solo con il badge di quel piano. `bottom_left` è il primo gradino (sul pavimento).
 func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
-	var steps := add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
+	var steps := _escalator(bottom_left)
 	# gli scalini sono "pavimento": chi ci cammina sopra si vede sempre
 	world.remove_child(steps)
 	add_child(steps)
@@ -838,9 +838,34 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 		var lines: Array = []
 		if not GameState.flags.get(key, false):
 			GameState.flags[key] = true
-			lines = ["Gli scalini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
+			lines = ["La scala mobile sale da sola. I gradini sono consumati al centro, da tutti quelli che sono passati prima.", GameState.floor_name(need) + "."]
 		Router.goto(path, spawn_name, lines)
 	)
+
+
+const ESCALATOR := "res://assets/limezu/tiles/escalator_up.png"
+
+
+## La scala mobile di LimeZu (6 fotogrammi, i gradini salgono): stesse due caselle di larghezza e
+## quattro di altezza delle scale di legno, che restano se l'immagine non c'è.
+func _escalator(bottom_left: Vector2i) -> Node2D:
+	if not ResourceLoader.exists(ESCALATOR):
+		return add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
+	var tex: Texture2D = load(ESCALATOR)
+	var frames := SpriteFrames.new()
+	frames.set_animation_speed("default", 8.0)
+	for i in 6:
+		var at := AtlasTexture.new()
+		at.atlas = tex
+		at.region = Rect2(i * 48 + 8, 16, 32, 64)
+		frames.add_frame("default", at)
+	var a := AnimatedSprite2D.new()
+	a.sprite_frames = frames
+	a.centered = false
+	a.position = Vector2(bottom_left.x * T, (bottom_left.y + 1) * T - 64)
+	world.add_child(a)
+	a.play("default")
+	return a
 
 
 ## Da scrivere nelle stanze che vogliono fare qualcosa in cima alle scale, al posto di cambiare

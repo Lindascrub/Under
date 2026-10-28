@@ -106,40 +106,19 @@ func _terminal() -> void:
 	], "Terminale")
 
 
-var _lift_doors: Array[ColorRect] = []
-var _lift_light: ColorRect
+var _lift: Lift
 var _lift_cell := Vector2i.ZERO
 var _lift_open := false
 
 
-## L'ascensore del piano terra: guasto (porte chiuse, luce rossa) finché non hai il badge della Cima;
-## poi le porte restano aperte con la luce verde, e basta entrarci per salire.
+## L'ascensore del piano terra: guasto (luci spente, porte chiuse) finché non hai il badge della Cima;
+## poi la freccia si accende, le porte si aprono e restano aperte, e basta entrarci per salire.
 func _elevator(top_left: Vector2i) -> void:
 	_lift_cell = top_left
-	var frame := ColorRect.new()
-	frame.color = Color("4a4658")
-	frame.position = Vector2(top_left.x * T, top_left.y * T + 4)
-	frame.size = Vector2(2 * T, 2 * T - 4)
-	world.add_child(frame)
-	var inside := ColorRect.new()
-	inside.color = Color("1a1622")
-	inside.position = frame.position + Vector2(2, 3)
-	inside.size = Vector2(2 * T - 4, frame.size.y - 3)
-	world.add_child(inside)
-	for i in 2:
-		var door := ColorRect.new()
-		door.color = Color("aeb4c4")
-		door.position = frame.position + Vector2(2 + i * 15, 3)
-		door.size = Vector2(13, frame.size.y - 3)
-		world.add_child(door)
-		_lift_doors.append(door)
-	_lift_light = ColorRect.new()
-	_lift_light.color = Color("d0302f")
-	_lift_light.position = frame.position + Vector2(14, -3)
-	_lift_light.size = Vector2(4, 2)
-	world.add_child(_lift_light)
-	if GameState.has_badge("cima"):
-		_lift_light.color = Color("3ddc84")
+	_lift = Lift.new()
+	_lift.position = Vector2(top_left * T)
+	world.add_child(_lift)
+	_lift.set_off(not GameState.has_badge("cima"))
 	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
 
 
@@ -148,20 +127,8 @@ func _open_elevator(animate := true) -> void:
 	if _lift_open:
 		return
 	_lift_open = true
-	_lift_light.color = Color("3ddc84")
-	for i in _lift_doors.size():
-		var door := _lift_doors[i]
-		var to_x := door.position.x + (-10.0 if i == 0 else 10.0)
-		if animate:
-			var tw := door.create_tween()
-			tw.tween_property(door, "size:x", 3.0, 0.8)
-			if i == 1:
-				tw.parallel().tween_property(door, "position:x", to_x, 0.8)
-		else:
-			door.size.x = 3.0
-			if i == 1:
-				door.position.x = to_x
 	Sound.sfx("door", 1.2)
+	_lift.open(animate)
 
 
 var _riding := false
