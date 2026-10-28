@@ -760,6 +760,12 @@ const STAIRS_REGION := Rect2(168, 864, 32, 64)
 const DESK_REGION := Rect2(96, 8, 16, 40)
 
 
+const TURNSTILE := "themes/grocery.png"
+const TURNSTILE_SHEET := Vector2i(256, 1248)
+const TURNSTILE_REGION := Rect2(96, 352, 16, 32)
+var _turnstiles: Array[Sprite2D] = []
+
+
 ## Scale che salgono al piano di sopra, dentro al muro, con il tornello accanto: si passa
 ## solo con il badge di quel piano. `bottom_left` è il primo gradino (sul pavimento).
 func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need: String) -> void:
@@ -774,9 +780,12 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 	unblock(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 2))
 	# più sali, più la luce del piano di sotto resta indietro
 	_stair_zones.append({"rect": Rect2(bottom_left.x * T, (bottom_left.y - 2) * T, 2 * T, 3 * T), "up": true})
-	var turn := add_art("res://art/turnstile.png", bottom_left + Vector2i(-1, 0), 1)
-	if GameState.has_badge(need):
-		turn.modulate = Color(0.85, 1.0, 0.85)
+	# il tornello: la barriera di LimeZu (quella antitaccheggio del supermercato), tutta solida:
+	# non ci si passa né dietro né attraverso
+	var turn := add_region(TURNSTILE, TURNSTILE_SHEET, TURNSTILE_REGION, bottom_left + Vector2i(-1, 0))
+	_turnstiles.append(turn)
+	block(Rect2i(bottom_left + Vector2i(-1, 0), Vector2i.ONE))
+	turn.modulate = Color(0.85, 1.0, 0.85) if GameState.has_badge(need) else Color(1.0, 0.86, 0.86)
 	else:
 		# il tornello chiuso: una sbarra invisibile sul primo gradino
 		var gate := StaticBody2D.new()
@@ -843,29 +852,17 @@ func add_stairs_up(bottom_left: Vector2i, path: String, spawn_name: String, need
 	)
 
 
-const ESCALATOR := "res://assets/limezu/tiles/escalator_up.png"
+const ESCALATOR := "tiles/escalator_up.png"
+const ESCALATOR_DOWN := "tiles/escalator_down.png"
+const ESCALATOR_SIZE := Vector2i(288, 80)
 
 
-## La scala mobile di LimeZu (6 fotogrammi, i gradini salgono): stesse due caselle di larghezza e
+## La scala mobile di LimeZu, ferma (un fotogramma solo): stesse due caselle di larghezza e
 ## quattro di altezza delle scale di legno, che restano se l'immagine non c'è.
 func _escalator(bottom_left: Vector2i) -> Node2D:
-	if not ResourceLoader.exists(ESCALATOR):
+	if not ResourceLoader.exists(Assets.ROOT + ESCALATOR):
 		return add_region(GENERIC, GENERIC_SIZE, STAIRS_REGION, bottom_left)
-	var tex: Texture2D = load(ESCALATOR)
-	var frames := SpriteFrames.new()
-	frames.set_animation_speed("default", 8.0)
-	for i in 6:
-		var at := AtlasTexture.new()
-		at.atlas = tex
-		at.region = Rect2(i * 48 + 8, 16, 32, 64)
-		frames.add_frame("default", at)
-	var a := AnimatedSprite2D.new()
-	a.sprite_frames = frames
-	a.centered = false
-	a.position = Vector2(bottom_left.x * T, (bottom_left.y + 1) * T - 64)
-	world.add_child(a)
-	a.play("default")
-	return a
+	return add_region(ESCALATOR, ESCALATOR_SIZE, Rect2(8, 16, 32, 64), bottom_left)
 
 
 ## Da scrivere nelle stanze che vogliono fare qualcosa in cima alle scale, al posto di cambiare
@@ -890,8 +887,8 @@ func open_turnstiles() -> void:
 	for g: Dictionary in _stair_gates:
 		if GameState.has_badge(str(g["need"])) and is_instance_valid(g["node"]):
 			(g["node"] as Node).queue_free()
-	for n in world.get_children():
-		if n is Sprite2D and (n as Sprite2D).texture and (n as Sprite2D).texture.resource_path.ends_with("turnstile.png"):
+	for n in _turnstiles:
+		if is_instance_valid(n):
 			n.modulate = Color(0.85, 1.0, 0.85)
 
 
@@ -912,10 +909,15 @@ func unblock(r: Rect2i) -> void:
 			_blocked_cells.erase(Vector2i(x, y))
 
 
-## Scale che scendono al piano di sotto: le stesse scale di legno, viste dall'alto mentre
-## spariscono nel pavimento (2 caselle di larghezza, 3 di altezza). Si scendono a piedi.
+## Scale che scendono al piano di sotto: la scala mobile che scende (ferma), vista dall'alto mentre
+## sparisce nel pavimento (2 caselle di larghezza, 3 di altezza). Si scendono a piedi.
 func add_stairs_down(bottom_left: Vector2i, path: String, spawn_name: String) -> void:
-	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
+	var s: Sprite2D
+	if ResourceLoader.exists(Assets.ROOT + ESCALATOR_DOWN):
+		# la scala mobile che scende (ferma), girata: la pedana in alto, dove si sale
+		s = add_region(ESCALATOR_DOWN, ESCALATOR_SIZE, Rect2(8, 32, 32, 48), bottom_left)
+	else:
+		s = add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
 	s.flip_v = true
 	# è un buco nel pavimento: sta sopra le piastrelle ma sotto a persone e oggetti
 	world.remove_child(s)
@@ -986,29 +988,34 @@ func _do_arrival(_to: Vector2) -> void:
 
 ## Il distributore dei badge: paghi una parte del debito e ricevi il badge del piano di sopra.
 ## Lo sportello dei badge: l'addetta sta nella casella `cell`, la scrivania sotto di lei.
+## Lo sportello dei badge: la reception intera di LimeZu (ospedale), sei caselle per tre:
+## il bancone a U al centro e le due ali col monitor. L'addetta sta dentro la U, sulla casella `cell`;
+## si parla dal davanti, la casella sotto il bancone. Lo sportello fa parte del sistema: resta
+## colorato anche quando il resto si spegne.
 func add_badge_machine(cell: Vector2i) -> void:
-	var desk := cell + Vector2i(0, 1)
-	# lo sportello fa parte del sistema: resta colorato anche quando il resto si spegne.
-	# Una scrivania vera col monitor (quella bianca di "Generic" sembrava una sedia).
-	var desk_art := Assets.ROOT + "props/office_desk.png"
-	var real_desk := ResourceLoader.exists(desk_art)
-	if real_desk:
-		add_art(desk_art, desk, 1).set_meta("finto", true)
+	if ResourceLoader.exists(Assets.ROOT + RECEPTION):
+		# in due pezzi: il fondo (col monitor) dietro l'addetta, il bancone e le ali davanti
+		var r := RECEPTION_REGION
+		add_region(RECEPTION, RECEPTION_SHEET, Rect2(r.position, Vector2(r.size.x, 16)), cell + Vector2i(-2, -1)).set_meta("finto", true)
+		add_region(RECEPTION, RECEPTION_SHEET, Rect2(r.position + Vector2(0, 16), Vector2(r.size.x, 32)), cell + Vector2i(-2, 1)).set_meta("finto", true)
 	else:
-		add_computer_desk(desk).set_meta("finto", true)
+		add_computer_desk(cell + Vector2i(0, 1)).set_meta("finto", true)
 	var clerk := AnimatedSprite2D.new()
 	clerk.set_meta("finto", true)
 	clerk.sprite_frames = Assets.character(BADGE_CLERK)
 	clerk.centered = false
-	# dietro la scrivania: si vedono la testa e le spalle sopra il monitor
-	clerk.offset = Vector2(-8, -40 if real_desk else -48)
+	clerk.offset = Vector2(-8, -31)
 	clerk.position = cell_feet(cell)
 	clerk.play("idle_down")
 	world.add_child(clerk)
-	block(Rect2i(cell, Vector2i.ONE))
-	add_spot(cell_center(desk), _badge_machine)
+	# il bancone davanti e le due ali sono solidi (anche la U: dietro non si va)
+	block(Rect2i(cell + Vector2i(-2, 0), Vector2i(6, 2)))
+	add_spot(cell_center(cell + Vector2i(0, 1)), _badge_machine)
 
 
+const RECEPTION := "themes/hospital.png"
+const RECEPTION_SHEET := Vector2i(256, 1760)
+const RECEPTION_REGION := Rect2(64, 0, 96, 48)
 const BADGE_CLERK := "char_13"
 
 
@@ -1052,8 +1059,8 @@ func _badge_machine() -> void:
 		if has_method("_open_elevator"):
 			call("_open_elevator")
 		await Ui.say(["* Le porte dell'ascensore sono aperte, con la luce verde. Basta entrarci."])
-	for n in world.get_children():
-		if n is Sprite2D and (n as Sprite2D).texture and (n as Sprite2D).texture.resource_path.ends_with("turnstile.png"):
+	for n in _turnstiles:
+		if is_instance_valid(n):
 			n.modulate = Color(0.85, 1.0, 0.85)
 
 

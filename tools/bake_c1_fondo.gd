@@ -27,9 +27,10 @@ const BADGE_WALL := Vector2i(11, 41)
 const BADGE_FLOOR := Vector2i(34, 11)
 ## La cyclette: quella della palestra di LimeZu (vista di fronte).
 const BIKE := Rect2(96, 480, 32, 32)
-const CHAIR := Rect2(160, 304, 16, 16)
+## la sedia vista di lato: ci si siede con l'animazione seduta vera
+const CHAIR := Rect2(96, 288, 16, 32)
 const BOARD := Rect2(32, 0, 32, 32)
-const SOFA := Rect2(16, 448, 48, 32)
+const SOFA := Rect2(112, 448, 48, 32)
 
 const ROWS := [
 	"###################################",
@@ -349,7 +350,7 @@ func _features() -> void:
 	# la cyclette (la grafica, dalla palestra di LimeZu), e il posto di lavoro (la logica) davanti
 	_sprite(mondo, "CycletteDinamo", GYM, BIKE, Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
-	_feature("SportelloBadge", "badge", Vector2i(25, 3))
+	_feature("SportelloBadge", "badge", Vector2i(27, 7))
 	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_below", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
@@ -362,8 +363,8 @@ func _ufficio_badge() -> void:
 		"* Sotto, a pennarello: \"La festa è di là. Qui si paga.\"",
 	])
 	for i in 4:
-		_sprite(mondo, "SediaAttesa%d" % i, HOSPITAL, CHAIR, Vector2i(25 + i, 8), 6)
-	_examine(mondo, "GuardaSedie", Vector2i(25, 7), [
+		_sprite(mondo, "SediaAttesa%d" % i, HOSPITAL, CHAIR, Vector2i(25 + i, 11), 10)
+	_examine(mondo, "GuardaSedie", Vector2i(29, 11), [
 		"* Quattro sedie per chi aspetta il badge. Nessuno aspetta: o hai i soldi o torni a pedalare.",
 	])
 	# il divano contro la parete in alto, rivolto verso la stanza (ci si siede: data/props.json)

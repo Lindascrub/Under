@@ -64,6 +64,7 @@ $interiors[($theme -f "5_Classroom_and_library_16x16.png")] = "themes/classroom.
 # il Sottoufficio (capitolo 2): la sala dello sportello B-4, la scala mobile al posto delle scale
 $interiors[($theme -f "13_Conference_Hall_16x16.png")] = "themes/conference.png"
 $interiors["3_Animated_objects/16x16/spritesheets/animated_escalator_up.png"] = "tiles/escalator_up.png"
+$interiors["3_Animated_objects/16x16/spritesheets/animated_escalator_down.png"] = "tiles/escalator_down.png"
 for ($i = 1; $i -le 20; $i++) {
     $n = "{0:D2}" -f $i
     $interiors["2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_$n.png"] = "characters/char_$n.png"

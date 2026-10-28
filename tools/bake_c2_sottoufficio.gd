@@ -24,39 +24,37 @@ const FLOORS := {"c": Vector2i(38, 25), "b": Vector2i(34, 11), "r": Vector2i(42,
 const BORDER := Vector2i(12, 0)
 const AFTER := "c2_rivelazione"
 
-## Il bancone di legno della sala riunioni, le bandiere, la biglietteria e il tabellone della stazione,
-## le librerie dell'archivio, le sedie della sala d'attesa (viste di spalle), il cordone, il divano.
+## Il bancone di legno della sala riunioni, l'urna, la biglietteria della stazione,
+## le librerie dell'archivio, le sedie (viste di lato), il divano di pelle.
 const COUNTER := Rect2(144, 72, 56, 16)
-const BANNERS := [Rect2(80, 64, 16, 32), Rect2(96, 64, 16, 32), Rect2(112, 64, 16, 32)]
 const BALLOT := Rect2(112, 32, 16, 32)
 const TICKETS := Rect2(0, 288, 32, 32)
-const TIMETABLE := Rect2(64, 288, 32, 32)
 const BOOKCASE := Rect2(0, 208, 32, 48)
-const CHAIR := Rect2(160, 304, 16, 16)
-const ROPE := Rect2(208, 368, 48, 16)
-const SOFA := Rect2(16, 448, 48, 32)
+## la sedia vista di lato (ci si siede davvero, con l'animazione seduta)
+const CHAIR := Rect2(96, 288, 16, 32)
+const SOFA := Rect2(112, 448, 48, 32)
 
 ## Quattro stanze: il call center (a sinistra, con le scale per il -5 e i posti del turno),
 ## l'ufficio badge (in alto al centro: lo sportello, il tornello, la scala mobile per il -3),
 ## la sala dello sportello B-4 della Signora Agenda (in basso al centro), l'archivio di Ercole (a destra).
 const ROWS := [
-	"#####################################",
-	"#CCCCCCCCCCCCCCC#BBBBBBBB#EEEEEEEEEE#",
-	"#CCCCCCCCCCCCCCC#BBBBBBBB#EEEEEEEEEE#",
-	"#ccccccccccccccc#bbbbbbbb#eeeeeeeeee#",
-	"#ccccccccccccccc#bbbbbbbb#eeeeeeeeee#",
-	"#ccccccccccccccc#bbbbbbbb#eeeeeeeeee#",
-	"#ccccccccccccccccbbbbbbbb#eeeeeeeeee#",
-	"#ccccccccccccccccbbbbbbbb#eeeeeeeeee#",
-	"#ccccccccccccccc##########eeeeeeeeee#",
-	"#ccccccccccccccc#RRRRRRRR#eeeeeeeeee#",
-	"#ccccccccccccccc#RRRRRRRR#eeeeeeeeee#",
-	"#ccccccccccccccc#rrrrrrrr#eeeeeeeeee#",
-	"#ccccccccccccccc#rrrrrrrr#eeeeeeeeee#",
-	"#ccccccccccccccccrrrrrrrreeeeeeeeeee#",
-	"#ccccccccccccccccrrrrrrrreeeeeeeeeee#",
-	"#ccccccccccccccc#rrrrrrrr#eeeeeeeeee#",
-	"#####################################",
+	"#########################################",
+	"#CCCCCCCCCCCCCCC#BBBBBBBBBBBB#EEEEEEEEEE#",
+	"#CCCCCCCCCCCCCCC#BBBBBBBBBBBB#EEEEEEEEEE#",
+	"#ccccccccccccccc#bbbbbbbbbbbb#eeeeeeeeee#",
+	"#ccccccccccccccc#bbbbbbbbbbbb#eeeeeeeeee#",
+	"#ccccccccccccccc#bbbbbbbbbbbb#eeeeeeeeee#",
+	"#ccccccccccccccccbbbbbbbbbbbb#eeeeeeeeee#",
+	"#ccccccccccccccccbbbbbbbbbbbb#eeeeeeeeee#",
+	"#ccccccccccccccc##############eeeeeeeeee#",
+	"#ccccccccccccccc#RRRRRRRRRRRR#eeeeeeeeee#",
+	"#ccccccccccccccc#RRRRRRRRRRRR#eeeeeeeeee#",
+	"#ccccccccccccccc#rrrrrrrrrrrr#eeeeeeeeee#",
+	"#ccccccccccccccc#rrrrrrrrrrrr#eeeeeeeeee#",
+	"#ccccccccccccccccrrrrrrrrrrrreeeeeeeeeee#",
+	"#ccccccccccccccccrrrrrrrrrrrreeeeeeeeeee#",
+	"#ccccccccccccccc#rrrrrrrrrrrr#eeeeeeeeee#",
+	"#########################################",
 ]
 
 var root: Node2D
@@ -274,9 +272,8 @@ func _callcenter() -> void:
 	tilde.activity = "phone"
 	tilde.position = Vector2(6 * T + 8, 8 * T - 2)
 	_add(mondo, tilde)
-	# la scrivania vuota del turno: telefono beige e cuffia; la sedia è vera (ci si siede, non ci si passa sotto)
+	# la scrivania vuota del turno: telefono beige e cuffia
 	_sprite(mondo, "ScrivaniaTurno", GENERIC, DESK, Vector2i(8, 10), 22)
-	_sprite(mondo, "SediaTurno", "res://assets/limezu/props/office_chair.png", Rect2(), Vector2i(7, 10), 12)
 	# l'angolo relax
 	_sprite(mondo, "DivanoRelax", LIVING, SOFA, Vector2i(10, 4), 14)
 	_examine(mondo, "GuardaRelax", Vector2i(13, 4), [
@@ -288,22 +285,16 @@ func _callcenter() -> void:
 # --- l'ufficio badge: come una biglietteria della metropolitana --------------
 
 func _ufficio_badge() -> void:
-	# la biglietteria dei piani e il tabellone delle "partenze"
-	_sprite(mondo, "Biglietteria", SUBWAY, TICKETS, Vector2i(23, 3), 12)
-	_examine(mondo, "GuardaBiglietteria", Vector2i(23, 3), [
+	# la biglietteria dei piani (lo sportello vero è la reception: RoomFeature "badge")
+	_sprite(mondo, "Biglietteria", SUBWAY, TICKETS, Vector2i(17, 3), 12)
+	_examine(mondo, "GuardaBiglietteria", Vector2i(18, 3), [
 		"* Una biglietteria automatica. Sullo schermo: \"BADGE DEL PIANO -3. Selezioni il metodo di pagamento: DEBITO\".",
 		"* Non c'è un altro metodo. C'è solo il tasto DEBITO, consumato.",
 	])
-	_sprite(mondo, "Tabellone", SUBWAY, TIMETABLE, Vector2i(23, 5), 12)
-	_examine(mondo, "GuardaTabellone", Vector2i(23, 5), [
-		"* Il tabellone delle salite. \"-3 MERCATO: IN ORARIO\". \"-2 BANCA: IN ORARIO\". \"CIMA: SOPPRESSO\".",
-		"* Accanto a \"-4\" non c'è scritto niente. Da qui non parte nessuno, si direbbe.",
-	])
-	# la fila (con il cordone) e le sedie della sala d'attesa, girate verso lo sportello
-	_sprite(mondo, "Cordone", HOSPITAL, ROPE, Vector2i(18, 6), 3)
-	for x in [20, 21, 22]:
+	# le sedie della sala d'attesa, girate verso lo sportello (ci si siede)
+	for x in [21, 22, 23]:
 		_sprite(mondo, "SediaAttesa%d" % x, HOSPITAL, CHAIR, Vector2i(x, 7), 10)
-	_examine(mondo, "GuardaAttesaBadge", Vector2i(17, 7), [
+	_examine(mondo, "GuardaAttesaBadge", Vector2i(20, 7), [
 		"* Un distributore di numeri per la fila. Prendi il biglietto: 4.817.",
 		"* Sul display, il numero servito: 12.",
 	])
@@ -312,66 +303,60 @@ func _ufficio_badge() -> void:
 ## La sala dello sportello B-4: un bancone di legno da sala riunioni, le bandiere della CHEAP,
 ## la Signora Agenda dietro, il tritacarte accanto. Davanti, le sedie per aspettare.
 func _sportello() -> void:
-	_sprite(mondo, "BanconeAgenda", CONFERENCE, COUNTER, Vector2i(19, 12), 14)
-	var agenda := _person("Agenda", "char_20", "idle_down", Vector2i(20, 11), Vector2(4, 8))
+	_sprite(mondo, "BanconeAgenda", CONFERENCE, COUNTER, Vector2i(21, 12), 14)
+	var agenda := _person("Agenda", "char_20", "idle_down", Vector2i(22, 11), Vector2(4, 8))
 	agenda.set_meta("finto", true)
-	_examine(mondo, "ParlaConAgenda", Vector2i(20, 12), [], "_agenda")
-	_solid("DietroLoSportello", Rect2i(18, 11, 6, 1))
-	var tri := _sprite(mondo, "Tritacarte", "res://art/shredder.png", Rect2(), Vector2i(23, 12), 10)
+	_examine(mondo, "ParlaConAgenda", Vector2i(22, 12), [], "_agenda")
+	_solid("DietroLoSportello", Rect2i(20, 11, 6, 1))
+	var tri := _sprite(mondo, "Tritacarte", "res://art/shredder.png", Rect2(), Vector2i(26, 12), 10)
 	tri.set_meta("finto", true)
-	_examine(mondo, "GuardaTritacarte", Vector2i(23, 12), [
+	_examine(mondo, "GuardaTritacarte", Vector2i(26, 12), [
 		"* Un tritacarte, lucido come nuovo. Accanto, un cartellino: \"ARCHIVIAZIONE RAPIDA\".",
 		"* Il cestino sotto è pieno di striscioline. Su una leggi: \"...B-4...\".",
 	], "", ["* Il tritacarte. Dentro c'è il tuo B-4, in centoventi striscioline. L'archiviazione più rapida della torre."])
-	for i in BANNERS.size():
-		_sprite(decori, "Bandiera%d" % i, CONFERENCE, BANNERS[i], Vector2i([18, 21, 23][i], 10))
-	_examine(mondo, "GuardaBandiere", Vector2i(21, 11), [
-		"* Le bandiere della CHEAP. Rosso per la passione. Blu per la fiducia.",
-		"* Quella in mezzo è metà rossa e metà blu: per chi non ha ancora deciso cosa dare.",
-	])
-	_sprite(mondo, "UrnaModuli", CONFERENCE, BALLOT, Vector2i(17, 12), 12)
-	_examine(mondo, "GuardaUrna", Vector2i(17, 12), [
+	_sprite(mondo, "UrnaModuli", CONFERENCE, BALLOT, Vector2i(18, 12), 12)
+	_examine(mondo, "GuardaUrna", Vector2i(18, 12), [
 		"* Una cassetta di legno con una fessura: \"SUGGERIMENTI E RECLAMI\".",
 		"* La fessura è stata chiusa con lo scotch. Il reclamo, si vede, è stato accolto.",
 	])
-	for x in [19, 20, 21, 22]:
+	for x in [21, 22, 23, 24]:
 		_sprite(mondo, "SediaB4_%d" % x, HOSPITAL, CHAIR, Vector2i(x, 15), 10)
 
 
 # --- l'archivio di Ercole: scaffali di scartoffie -----------------------------
 
 func _archivio() -> void:
-	for x in [26, 28, 30, 32, 34]:
+	for x in [30, 32, 34, 36, 38]:
 		_sprite(mondo, "Libreria%d" % x, CLASSROOM, BOOKCASE, Vector2i(x, 3), 14)
-	_examine(mondo, "GuardaLibrerie", Vector2i(29, 4), [
+	_examine(mondo, "GuardaLibrerie", Vector2i(33, 4), [
 		"* Scaffali di raccoglitori fino al soffitto. Sulle coste: \"PRATICHE 1984\", \"PRATICHE 1985\"... \"PRATICHE DOMANI\".",
 	], "", ["* I raccoglitori di \"DOMANI\" sono già pieni. Di moduli B-4, timbrati \"in attesa\"."])
-	var rows := [[7, [27, 28, 29, 30, 32, 33, 34]], [12, [27, 28, 29, 32, 33, 34]]]
+	var rows := [[7, [31, 32, 33, 34, 36, 37, 38]], [12, [31, 32, 33, 36, 37, 38]]]
 	for r: Array in rows:
 		for x: int in r[1]:
 			_sprite(mondo, "Schedario%d_%d" % [x, r[0]], "res://art/cabinet.png", Rect2(), Vector2i(x, r[0]), 12)
-	_examine(mondo, "GuardaSchedari", Vector2i(28, 8), [
+	_examine(mondo, "GuardaSchedari", Vector2i(32, 8), [
 		"* Schedari dell'archivio, pieni fino a scoppiare. Ogni cassetto ha un'etichetta: \"1984\", \"1985\", \"1986\"...",
 		"* Il cassetto \"OGGI\" è chiuso a chiave.",
 	], "", ["* Apri un cassetto. Cartelline, cartelline, cartelline. Tutte vuote. Qualcuna ha dentro un foglio bianco, perché sembri piena."])
-	_examine(mondo, "GuardaSchedari2", Vector2i(33, 13), [
+	_examine(mondo, "GuardaSchedari2", Vector2i(37, 13), [
 		"* Uno schedario ha un post-it: \"NON APRIRE. ARCHIVIO DELL'ARCHIVIO\".",
 	], "", ["* L'archivio dell'archivio. Dentro c'è un elenco di cassetti vuoti. È l'unica cosa vera, qui dentro."])
-	_sprite(mondo, "Scatoloni0", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(30, 15), 12)
-	_sprite(mondo, "Scatoloni1", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(34, 15), 12)
+	_sprite(mondo, "Scatoloni0", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(34, 15), 12)
+	_sprite(mondo, "Scatoloni1", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(38, 15), 12)
 	# Ercole in mezzo agli scaffali: niente sgabelli intorno, si parla solo standogli vicino
 	var ercole := NpcSpot.new()
 	ercole.name = "Ercole"
 	ercole.npc_id = "ercole"
 	ercole.activity = "idle_down"
-	ercole.position = Vector2(30 * T + 8, 10 * T - 2)
+	ercole.position = Vector2(34 * T + 8, 10 * T - 2)
 	_add(mondo, ercole)
 
 
 func _plants() -> void:
 	var plants := [["res://assets/limezu/props/plant.png", Vector2i(1, 4)], ["res://assets/limezu/props/palm.png", Vector2i(13, 4)],
 		["res://assets/limezu/props/plant.png", Vector2i(5, 15)], ["res://assets/limezu/props/plant.png", Vector2i(13, 15)],
-		["res://assets/limezu/props/plant.png", Vector2i(24, 15)], ["res://assets/limezu/props/plant.png", Vector2i(17, 4)]]
+		["res://assets/limezu/props/plant.png", Vector2i(28, 15)], ["res://assets/limezu/props/plant.png", Vector2i(28, 7)]]
 	for i in plants.size():
 		var p: Array = plants[i]
 		_sprite(mondo, "Pianta%d" % i, p[0], Rect2(), p[1], 10)
@@ -392,7 +377,7 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 func _features() -> void:
 	_feature("PostoCallCenter", "station", Vector2i(8, 10), {"job": "callcenter"})
-	_feature("SportelloBadge", "badge", Vector2i(18, 3))
+	_feature("SportelloBadge", "badge", Vector2i(25, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c3/mercato.tscn", "spawn": "from_below", "need": "-3"})
 	_feature("Stellina", "save", Vector2i(11, 11))
 
