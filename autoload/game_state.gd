@@ -156,6 +156,8 @@ func new_game() -> void:
 	met_today.clear()
 	helped_today.clear()
 	flags.clear()
+	flags["boss_missions_version"] = 2
+	minigame.clear()
 	quests.clear()
 	freed.clear()
 	motives_known.clear()
@@ -702,6 +704,8 @@ func do_promotion(victim: String) -> int:
 
 ## Il capo telefona dopo un turno, ma una volta sola per piano: l'idea da rubare è una.
 func boss_call_pending() -> bool:
+	if floor_id == "0" and load("res://scripts/boss_missions.gd").uses("0") and not flags.get("c5_protesta", false):
+		return false
 	return int(flags.get("boss_call_day", 0)) == day and not flags.get("boss_call_done_%d" % day, false) 		and not flags.get("boss_call_floor_" + floor_id, false)
 
 
@@ -824,7 +828,7 @@ func has_save() -> bool:
 ## Salva tutto: anche stanza, posizione e ora (punti di salvataggio e letto).
 func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> void:
 	var data := {
-		"day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
+		"save_version": 2, "day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
 		"worked_today": worked_today, "flags": flags, "quests": quests,
@@ -832,9 +836,24 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 		"floor_id": floor_id, "badges": badges, "player_name": player_name, "self_esteem": self_esteem,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
-	var file := FileAccess.open(save_path, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(data))
+	var target := ProjectSettings.globalize_path(save_path)
+	var tmp := target + ".tmp"
+	var file := FileAccess.open(tmp, FileAccess.WRITE)
+	if not file:
+		push_error("Impossibile creare il salvataggio temporaneo.")
+		return
+	file.store_string(JSON.stringify(data))
+	file.flush()
+	file.close()
+	if not JSON.parse_string(FileAccess.get_file_as_string(tmp)) is Dictionary:
+		push_error("Salvataggio temporaneo non valido: originale conservato.")
+		return
+	if FileAccess.file_exists(target) and JSON.parse_string(FileAccess.get_file_as_string(target)) is Dictionary:
+		if DirAccess.copy_absolute(target, target + ".bak") != OK:
+			push_error("Impossibile conservare il precedente salvataggio.")
+			return
+	if DirAccess.rename_absolute(tmp, target) != OK:
+		push_error("Salvataggio non sostituito: precedente e temporaneo conservati.")
 
 
 ## Carica il salvataggio. Restituisce {"room", "pos"} per sapere dove ricomparire, oppure {} se non c'è.
@@ -842,6 +861,8 @@ func load_game() -> Dictionary:
 	if not has_save():
 		return {}
 	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(save_path))
+	if typeof(d) != TYPE_DICTIONARY:
+		d = JSON.parse_string(FileAccess.get_file_as_string(save_path + ".bak")) if FileAccess.file_exists(save_path + ".bak") else null
 	if typeof(d) != TYPE_DICTIONARY:
 		return {}
 	new_game()
@@ -869,6 +890,7 @@ func load_game() -> Dictionary:
 	badges.assign(d.get("badges", []))
 	player_name = str(d.get("player_name", "Tu"))
 	self_esteem = int(d.get("self_esteem", 0))
+	load("res://scripts/boss_missions.gd").migrate(int(d.get("save_version", 0)) < 2)
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {

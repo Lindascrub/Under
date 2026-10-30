@@ -22,18 +22,25 @@ static func apply(room: Node) -> void:
 			continue
 		for s in parent.find_children("*", "Sprite2D", true, false):
 			var spr := s as Sprite2D
-			if spr.texture == null or not spr.is_visible_in_tree():
+			if spr.texture == null or not spr.is_visible_in_tree() or _skip_branch(spr, room):
 				continue
 			var entry: Dictionary = _data.get(_key(spr), {})
 			if entry.is_empty():
-				continue
+				# Gli oggetti composti gestiscono già il proprio punto d'uso.
+				if spr.get_parent() != parent:
+					continue
+				entry = {"lines": _fallback(spr)}
 			var rect := _rect(spr)
+			if entry.has("footprint"):
+				_apply_footprint(spr, entry["footprint"])
 			if entry.has("lines") and not _busy(tree, rect.grow(4), made):
 				var e := Interactable.new()
 				var lines: Array = entry["lines"]
 				e.action = func() -> void: await Ui.say(lines)
+				e.set_meta("inspect_prop", true)
 				spr.get_parent().add_child(e)
 				e.global_position = Vector2(rect.get_center().x, rect.end.y - 4)
+				e.interaction_bounds = Rect2(rect.position - e.global_position + Vector2.ONE, rect.size - Vector2(2, 2))
 				made.append(e)
 			for st: Array in entry.get("seats", []):
 				var x := float(st[0])
@@ -47,6 +54,12 @@ static func apply(room: Node) -> void:
 				if spr.flip_h and seat.dir in ["left", "right"]:
 					seat.dir = "right" if seat.dir == "left" else "left"
 				seat.lift = float(st[3]) if st.size() > 3 else 6.0
+				if _key(spr) == "street/bench_side.png":
+					seat.low_pose = true
+					seat.set_meta("bench", true)
+					seat.approach = Vector2.LEFT if seat.dir == "left" else Vector2.RIGHT
+					seat.interaction_bounds = Rect2(-3, -16, 6, 28)
+					seat.reach = 12.0
 				spr.get_parent().add_child(seat)
 				seat.global_position = at
 				made.append(seat)
@@ -60,6 +73,68 @@ static func apply(room: Node) -> void:
 				body.add_child(shape)
 				spr.get_parent().add_child(body)
 				body.global_position = Vector2(rect.get_center().x, rect.end.y - solid / 2.0)
+
+
+static func _skip_branch(node: Node, room: Node) -> bool:
+	var current := node
+	while current != null and current != room:
+		if current.get_meta("prop_talk_skip", false):
+			return true
+		current = current.get_parent()
+	return false
+
+
+static func _fallback(spr: Sprite2D) -> Array:
+	var label := str(spr.name).to_lower()
+	if "scatol" in label or "cassa" in label or "box" in label:
+		return ["* Scatole CHEAP. Sul nastro adesivo: NON APRIRE PRIMA DI IERI."]
+	if "poster" in label or "cartell" in label or "insegna" in label:
+		return ["* Una promessa stampata a colori. Le condizioni, come sempre, sono in piccolo."]
+	if "pianta" in label:
+		return ["* Una pianta. È qui da più tempo di quasi tutti i dipendenti."]
+	if "frigo" in label:
+		return ["* Un frigorifero CHEAP. Le etichette si rinnovano più spesso dei prodotti."]
+	if "sedia" in label or "panchina" in label:
+		return ["* Un posto per fermarsi un momento."]
+	return ["* Anche questo oggetto porta il marchio CHEAP. Qui niente è lasciato al caso. Nemmeno la polvere."]
+
+
+## L'ingombro del mobile sostituisce il piccolo rettangolo ai piedi degli sprite.
+## Il corpo resta figlio del mobile, ma le dimensioni fisiche sono espresse nel mondo.
+static func _apply_footprint(spr: Sprite2D, values: Array) -> void:
+	if values.is_empty() or spr.has_meta("footprint_applied"):
+		return
+	spr.set_meta("footprint_applied", true)
+	var size := spr.region_rect.size if spr.region_enabled else spr.texture.get_size()
+	var offset := spr.offset - (size / 2.0 if spr.centered else Vector2.ZERO)
+	var bodies := spr.find_children("*", "StaticBody2D", true, false)
+	var body := bodies[0] as StaticBody2D if not bodies.is_empty() else StaticBody2D.new()
+	if bodies.is_empty():
+		body.name = "IngombroMobile"
+		spr.add_child(body)
+	for shape in body.get_children():
+		if shape is CollisionShape2D:
+			shape.disabled = true
+			shape.queue_free()
+	body.top_level = true
+	body.global_transform = Transform2D.IDENTITY
+	body.global_position = spr.global_position
+	var boxes: Array = values if values[0] is Array else [values]
+	for v: Array in boxes:
+		var box := Rect2(float(v[0]), float(v[1]), float(v[2]), float(v[3]))
+		if spr.flip_h:
+			box.position.x = size.x - box.end.x
+		if spr.flip_v:
+			box.position.y = size.y - box.end.y
+		var first := spr.global_transform * (offset + box.position)
+		var last := spr.global_transform * (offset + box.end)
+		var bounds := Rect2(first, Vector2.ZERO).expand(last).abs()
+		var rectangle := RectangleShape2D.new()
+		rectangle.size = bounds.size
+		var collision := CollisionShape2D.new()
+		collision.position = bounds.get_center() - body.global_position
+		collision.shape = rectangle
+		body.add_child(collision)
 
 
 ## La chiave in props.json: il file (dopo assets/limezu/), più @x,y del pezzo se è un foglio.

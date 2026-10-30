@@ -117,45 +117,46 @@ const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
 	# i piani: una canzone ciascuno
 	"festa": ["gettinsillywithit"],
-	"attesa": ["pkmngoldluckycornerioweitalltoyou"],
-	"mercato": ["marketjam"],
+	"attesa": ["superretrolounge"],
+	"mercato": ["waitingroomennui"],
 	"banca": ["tracerbulletprivateeye"],
 	"citta": ["metropolitancosmopolitan"],
 	"quartiere": ["wood_forest_town"],
 	"cima": ["royal_castle"],
 	"presidente": ["magic_temple"],
-	"ascensore": ["soundfontjazzclub", "slycooperclarinet"],
+	"ascensore": ["nighttownwaltz"],
 	# i turni: uno per piano (scenes/minigame/work.gd, JOB_MUSIC)
-	"turno_dinamo": ["hypnoticsynthloop"],
-	"turno_callcenter": ["frostylabratory"],
-	"turno_cassa": ["dark_factory"],
-	"turno_sportello": ["dwarven_mine"],
-	"turno_smistamento": ["military_base"],
-	"lavoro": ["volcanic_crater"],
+	"turno_dinamo": ["pkmngoldluckycornerioweitalltoyou"],
+	"turno_callcenter": ["sugarrushzoomies"],
+	"turno_cassa": ["lifeishardbase"],
+	"turno_sportello": ["pkmngoldluckycornerioweitalltoyou"],
+	"turno_smistamento": ["pkmngoldluckycornerioweitalltoyou"],
+	"lavoro": ["pkmngoldluckycornerioweitalltoyou"],
 	# il capo: quando telefona, e nel furto che ti chiede
-	"capo": ["malicious_scheme"],
+	"capo": ["metropolitancosmopolitan"],
 	# i minigiochi d'aiuto: una canzone per persona (campo "music" del minigioco in data/npcs.json)
-	"aiuto_mina": ["unknown_island"],
-	"aiuto_bulbo": ["goofy_monster"],
-	"aiuto_tilde": ["sleazyfurball"],
-	"aiuto_ercole": ["gettinwackywithit"],
-	"aiuto_leda": ["east_town"],
-	"aiuto_amir": ["trunk_knox_go_buck"],
-	"aiuto_olga": ["spirits_forest"],
-	"aiuto_teo": ["ancient_library"],
-	"aiuto_ada": ["peaceful_village"],
-	"aiuto_nadir": ["traveling_the_sky"],
-	"aiuto": ["the_old_magician"],
+	"aiuto_mina": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_bulbo": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_tilde": ["jestersdistraction"],
+	"aiuto_ercole": ["jestersdistraction"],
+	"aiuto_leda": ["mischiefgroove"],
+	"aiuto_amir": ["mischiefgroove"],
+	"aiuto_olga": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_teo": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_ada": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_nadir": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto": ["hewillneverbetheapeescapesoundtrack"],
 	# il resto
 	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
 	"notte": ["nighttownwaltz"],
+	"nives": ["lively_city"],
 	"fondo": ["dripstonecave"],
 	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
 	"tensione": ["tension1", "tension2"],
 }
 
 ## Atmosfere nuove senza un segnaposto loro: quale vecchio .wav usare se mancano le canzoni.
-const OLD_PLACEHOLDER := {"mercato": "festa", "tensione": "presidente"}
+const OLD_PLACEHOLDER := {"nives": "aiuto", "mercato": "festa", "tensione": "presidente"}
 
 var _playlist: Array = []
 var _track := ""
@@ -211,3 +212,21 @@ func _on_music_finished() -> void:
 ## La canzone che suona adesso ("" se è un segnaposto o niente). Per i test.
 func current_track() -> String:
 	return _track
+
+
+## Temporary cinematic music restores the exact stream, position, pitch and silence.
+func capture_music() -> Dictionary:
+	return {"name": _music_name, "track": _track, "playlist": _playlist.duplicate(),
+		"stream": _music.stream, "position": _music.get_playback_position(), "playing": _music.playing,
+		"pitch": _music.pitch_scale, "volume": _music.volume_db}
+
+func restore_music(saved: Dictionary) -> void:
+	_music.stop()
+	_music_name = str(saved.get("name", ""))
+	_track = str(saved.get("track", ""))
+	_playlist = saved.get("playlist", []).duplicate()
+	_music.stream = saved.get("stream")
+	_music.pitch_scale = float(saved.get("pitch", 1.0))
+	_music.volume_db = float(saved.get("volume", -8.0))
+	if bool(saved.get("playing", false)) and _music.stream:
+		_music.play(float(saved.get("position", 0.0)))

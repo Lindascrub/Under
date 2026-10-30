@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 extends EditorRoom
 ## Capitolo 5 — dentro la Casa Comune. La scena è fatta nell'editor (casa_comune.tscn).
 ## A sinistra la sala (Ada, la libreria che la odia, la lettera di CHEAP, la bacheca);

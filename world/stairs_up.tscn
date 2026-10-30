@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://world/stairs_up.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/condominium.png" id="2"]
+[ext_resource type="Script" path="res://world/ticket_gate.gd" id="3"]
+[ext_resource type="Texture2D" path="res://assets/limezu/animations/ticket_turnstile.png" id="4"]
+[ext_resource type="Script" path="res://world/examine.gd" id="5"]
+
+[sub_resource type="RectangleShape2D" id="fiancata"]
+size = Vector2(3, 64)
+
+[sub_resource type="RectangleShape2D" id="sbarra"]
+size = Vector2(32, 4)
+
+[sub_resource type="RectangleShape2D" id="cartello"]
+size = Vector2(26, 8)
+
+[sub_resource type="RectangleShape2D" id="gradino"]
+size = Vector2(26, 6)
+
+[node name="ScaleSu" type="Node2D"]
+script = ExtResource("1")
+metadata/prop_talk_skip = true
+
+[node name="Scalini" type="Sprite2D" parent="."]
+position = Vector2(0, 16)
+texture = ExtResource("2")
+centered = false
+offset = Vector2(0, -64)
+region_enabled = true
+region_rect = Rect2(16, 0, 32, 64)
+
+[node name="Tornello" type="Sprite2D" parent="."]
+position = Vector2(0, 18)
+texture = ExtResource("4")
+centered = false
+offset = Vector2(0, -48)
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 48)
+script = ExtResource("3")
+
+[node name="Fiancate" type="StaticBody2D" parent="."]
+
+[node name="Sinistra" type="CollisionShape2D" parent="Fiancate"]
+position = Vector2(1.5, -16)
+shape = SubResource("fiancata")
+
+[node name="Destra" type="CollisionShape2D" parent="Fiancate"]
+position = Vector2(30.5, -16)
+shape = SubResource("fiancata")
+
+[node name="Sbarra" type="StaticBody2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="Sbarra"]
+position = Vector2(16, 2)
+shape = SubResource("sbarra")
+
+[node name="Cartello" type="Area2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="Cartello"]
+position = Vector2(16, 12)
+shape = SubResource("cartello")
+
+[node name="PrimoGradino" type="Area2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="PrimoGradino"]
+position = Vector2(16, -4)
+shape = SubResource("gradino")
+
+[node name="Cima" type="Area2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="Cima"]
+position = Vector2(16, -28)
+shape = SubResource("cartello")
+
+[node name="GuardaTornello" type="Node2D" parent="."]
+position = Vector2(-8, 8)
+script = ExtResource("5")

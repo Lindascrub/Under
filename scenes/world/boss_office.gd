@@ -9,7 +9,7 @@ var _boss: AnimatedSprite2D
 
 func build() -> void:
 	floor_id = "cima"
-	music = "ufficio"
+	music = "capo"
 	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(42 + c.x % 3, 19 + c.y % 2)}
 	paint([
 		"##################",

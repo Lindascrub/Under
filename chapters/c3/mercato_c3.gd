@@ -11,6 +11,8 @@ const BOSS := "Il capo"
 const BADGE := "-2"
 
 const BOARD_NEW := "res://art/price_board_nuovo.png"
+## Il tabellone mentre i prezzi salgono: un fotogramma 112x34 per scatto (tools/make_price_steps.py).
+const BOARD_STEPS := "res://art/price_board_salita.png"
 
 
 ## Un po' di spazio sopra il muro: l'insegna dei saldi e il tabellone non finiscono sotto la barra in alto.
@@ -21,6 +23,32 @@ func build() -> void:
 
 func setup() -> void:
 	_price_board()
+	for old_name in ["PiediPanchine", "PiediPanchine2"]:
+		var old := find_child(old_name, true, false) as StaticBody2D
+		if old:
+			old.collision_layer = 0
+			old.queue_free()
+	# I due frigoriferi sono due oggetti: ciascuno ha la propria area raggiungibile.
+	var fridge := find_child("GuardaFrigo", true, false) as Interactable
+	if fridge:
+		fridge.interaction_bounds = Rect2(-22, -36, 28, 44)
+	var cartons := find_child("GuardaScatole", true, false) as Interactable
+	if cartons:
+		cartons.interaction_bounds = Rect2(-7, -23, 30, 30)
+	for pair in [["ProdottoPane","Pane"], ["ProdottoLatte","Latte"], ["ProdottoAria","Aria"], ["ProdottoSogno","Sogni"]]:
+		var item := find_child(pair[0], true, false) as Interactable
+		var display := find_child(pair[1], true, false) as Sprite2D
+		if item and display:
+			var r := PropTalk._rect(display)
+			item.position = Vector2(r.get_center().x, r.end.y-4)
+			item.interaction_bounds = Rect2(r.position-item.position+Vector2(4,4), r.size-Vector2(8,5))
+	var sale := find_child("GuardaSaldi", true, false) as Interactable
+	if sale:
+		sale.position = Vector2(160, 46)
+		sale.interaction_bounds = Rect2(-12, -2, 16, 2)
+		sale.approach = Vector2.DOWN
+		sale.facing_required = "up"
+		sale.reach = 10.0
 	if _secret_ready():
 		_secret_setup()
 
@@ -87,9 +115,19 @@ func board() -> Sprite2D:
 	return find_child("Tabellone", true, false) as Sprite2D
 
 
+## Dopo l'aggiornamento dei prezzi il Mercato resta grigio: a colori c'è solo il tabellone, rosso.
+const PRICE_GREY := 0.92
+const BOARD_RED := Color(1.0, 0.32, 0.3)
+
+
 func _price_board() -> void:
-	if board() and GameState.flags.get("c3_prezzi", false):
+	if not GameState.flags.get("c3_prezzi", false):
+		return
+	grey_world_to(PRICE_GREY)
+	if board():
 		board().texture = load(BOARD_NEW)
+		board().modulate = BOARD_RED
+		grey_keep = board()
 
 
 func _tabellone() -> void:
@@ -357,6 +395,9 @@ func _offer_water() -> void:
 ## "Va bene" e "Ci penso" lasciano l'offerta aperta sul terminale del magazzino (c3_capo_sospeso);
 ## "No" la chiude per sempre (c3_capo_chiuso).
 func _boss_call() -> void:
+	if load("res://scripts/boss_missions.gd").uses("-3"):
+		await load("res://scripts/boss_missions.gd").offer(self)
+		return
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
 	GameState.flags["boss_call_floor_" + GameState.floor_id] = true
 	if GameState.flags.get("c3_capo", false) or GameState.is_robot("amir"):
@@ -408,6 +449,9 @@ func _terminale() -> void:
 
 
 func _terminale_inner() -> void:
+	if load("res://scripts/boss_missions.gd").active("-3"):
+		load("res://scripts/boss_missions.gd").launch(self, "-3")
+		return
 	if GameState.flags.get("c3_capo_firmato", false):
 		await Ui.say(["* RAPPORTO CONSEGNE N. 018. RESPONSABILE: {name}.", "* Lo schermo ti fa l'occhiolino. Ha imparato da Amir. Amir non lo fa più."])
 		return
@@ -492,35 +536,73 @@ func _prices_due() -> bool:
 
 
 func _price_update() -> void:
-	GameState.flags["c3_prezzi"] = true
 	Ui.cutscene = true
-	Sound.music("")
+	var shot: Dictionary = await FocusShot.begin(self, board().global_position + Vector2(64, -17), 3.0)
 	await get_tree().create_timer(0.5).timeout
-	Sound.sfx("ding")
+	GameState.flags["c3_prezzi"] = true
+	# si spegne la musica: resta solo il clic delle rotelline che salgono
+	Sound.music("")
+	await get_tree().create_timer(0.8).timeout
+	# i clic partono lenti e accelerano sempre di più (ogni attesa è una frazione fissa della
+	# precedente): i prezzi scappano. I numeri sul tabellone salgono insieme ai clic.
+	var sheet: Texture2D = load(BOARD_STEPS)
+	var steps := sheet.get_width() / 112
+	var frame := AtlasTexture.new()
+	frame.atlas = sheet
+	frame.region = Rect2(0, 0, 112, 34)
+	const CLICKS := 70
+	const FIRST_WAIT := 0.55
+	const SPEEDUP := 0.93
+	const FASTEST := 0.035
+	var waits: Array[float] = []
+	var spin := 0.0
+	for i in CLICKS:
+		waits.append(maxf(FASTEST, FIRST_WAIT * pow(SPEEDUP, i)))
+		spin += waits[i]
+	grey_world_to(PRICE_GREY, spin)
+	if board():
+		grey_keep = board()
+		board().texture = frame
+		create_tween().tween_property(board(), "modulate", BOARD_RED, spin)
+	for i in CLICKS:
+		var t := float(i) / (CLICKS - 1)
+		# più vanno svelti, più sono acuti
+		Sound.sfx("price_click", 0.8 + 0.7 * t + randf() * 0.04)
+		frame.region = Rect2(roundi(t * (steps - 1)) * 112, 0, 112, 34)
+		await get_tree().create_timer(waits[i]).timeout
 	if board():
 		board().texture = load(BOARD_NEW)
-		var tw := create_tween()
-		for i in 4:
-			tw.tween_property(board(), "modulate", Color(2, 2, 2), 0.12)
-			tw.tween_property(board(), "modulate", Color.WHITE, 0.12)
-	var lines: Array = ["* La musica si interrompe. Sul tabellone, le rotelline dei prezzi girano tutte insieme."]
+	# l'ultimo scatto, secco, e poi silenzio
+	await get_tree().create_timer(0.6).timeout
+	Sound.sfx("price_click", 0.7)
+	await get_tree().create_timer(0.9).timeout
+	var lines: Array = ["* Clic. Clic. Clic. Le rotelline del tabellone girano da sole, una cifra alla volta.",
+		"* A ogni clic il Mercato perde un colore. Le mele, le insegne, i carrelli. Resta acceso solo il tabellone. Rosso."]
 	for key: String in ["pane", "latte", "acqua"]:
 		var p: Array = GameState.market["prezzi"][key]["prezzo"]
 		lines.append("* %s: da %s a %s." % [str(GameState.market["prezzi"][key]["nome"]).split(" ")[0].to_upper(), GameState.euros(int(p[0])), GameState.euros(int(p[1]))])
 	await Ui.say(lines)
-	await Ui.say(["COMPLIMENTI!", "Il Mercato ha raggiunto un nuovo livello di crescita!", "Per festeggiare, abbiamo aggiornato i prezzi!"], SPEAKER)
-	await Ui.say(["Ma io oggi ho guadagnato come ieri."], "Cliente")
+	await Ui.say(["COMPLIMENTI!", "Il Mercato ha raggiunto un nuovo livello di crescita!", "Per festeggiare, abbiamo aggiornato i prezzi!",
+		"Per contenere i costi, da oggi i colori sono un servizio premium."], SPEAKER)
+	await Ui.say(["Ma io oggi ho guadagnato come ieri.", "...Ieri però la frutta era rossa."], "Cliente")
 	await Ui.say(["Ecco perché abbiamo preparato un consiglio gratuito!", "Guadagna di più!"], SPEAKER)
 	if GameState.flags.get("c3_leda_inventario", false):
-		await Ui.say(["Avevo appena sistemato i conti.", "Sono durati meno delle etichette."], "Leda")
+		await Ui.say(["Avevo appena sistemato i conti.", "Sono durati meno delle etichette.",
+			"Guarda il bancone. Era giallo. L'avevo scelto io."], "Leda")
 	else:
-		await Ui.say(["Scusa, oggi non ho tempo.", "Anche ieri non avevo tempo."], "Leda")
+		await Ui.say(["Scusa, oggi non ho tempo.", "Anche ieri non avevo tempo.", "...Sei diventato grigio anche tu, o sono io?"], "Leda")
 	if GameState.is_robot("amir"):
-		await Ui.say(["PREZZI AGGIORNATI.", "FELICITÀ AGGIORNATA."], "Amir")
+		await Ui.say(["PREZZI AGGIORNATI.", "COLORI DISATTIVATI.", "FELICITÀ AGGIORNATA."], "Amir")
 	else:
-		await Ui.say(["Mi hanno aumentato il bonus.", "Di venti euro.", "L'acqua è aumentata di cinque.", "Forse dovrei bere più lentamente."], "Amir")
+		await Ui.say(["Mi hanno aumentato il bonus.", "Di venti euro.", "L'acqua è aumentata di cinque.", "Forse dovrei bere più lentamente.",
+			"Almeno il tabellone adesso si vede bene. È l'unica cosa rossa rimasta. Forse è fatto apposta."], "Amir")
+	Sound.sfx("price_click", 0.85)
+	await Ui.say(["* Clic."])
+	await FocusShot.restore(self, shot)
 	Sound.music(music)
 	Ui.cutscene = false
+	if load("res://scripts/boss_missions.gd").uses("-3"):
+		GameState.save_game(scene_file_path, player.global_position)
 
 
 # --- 3.12 Nives e il badge -------------------------------------------------------------------
@@ -795,12 +877,13 @@ func _secret_setup() -> void:
 		s.anim = ["sit_right", "sit_left"][i]
 		s.grey = true
 		# sulla seduta della panchina: un po' su e verso il sedile (lo schienale è dall'altra parte)
-		s.nudge = Vector2([3, -3][i], -3)
-		s.position = cell_feet(SEATS[id])
+		s.nudge = Vector2.ZERO
+		s.position = cell_feet(SEATS[id]) + Vector2(1 if i == 0 else -1, -8)
 		s.z_index = 1
 		world.add_child(s)
 		# si parla con loro toccandoli, dal corridoio tra le due panchine
-		add_spot(cell_center(SEATS[id]), _secret)
+		var spot := add_spot(s.position, _secret)
+		spot.interaction_bounds = Rect2(-6, -16, 12, 22)
 
 
 func _secret() -> void:
@@ -825,7 +908,7 @@ func _secret() -> void:
 		return
 	# il sedile accanto ad Amir: alla stessa altezza di chi è già seduto
 	var seat: Vector2i = SEATS["tu"]
-	player.sit(Vector2(seat.x * T + 5, (seat.y + 1) * T + 3), "left")
+	player.sit(Vector2(seat.x * T + 7, (seat.y + 1) * T - 10), "left", 6.0, true)
 	await Ui.say(["* Ti siedi accanto ad Amir. La panchina scricchiola. Il panino no."])
 	await get_tree().create_timer(3.0).timeout
 	await Ui.say(["È bello non avere fretta, ogni tanto."], "Amir")

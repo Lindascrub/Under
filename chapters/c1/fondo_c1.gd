@@ -11,6 +11,13 @@ const EXTRA_PAY := [120, 70, 35]
 
 func setup() -> void:
 	_make_lift(Vector2i(11, 1))
+	BalloonAnim.apply(self)
+	var decor_load := int(GameState.flags.get("boss_decor_load", 2))
+	if decor_load < 2:
+		for i in 7:
+			var decoration := get_node_or_null("Decori/Festone%d" % i) as CanvasItem
+			if decoration and (decor_load == 0 or i % 2 == 0):
+				decoration.modulate = Color(0.45, 0.45, 0.45)
 	if GameState.flags.get("c1_rivelazione", false):
 		_switch_off(false)
 		Sound.call_deferred("music_pitch", 0.75, 0.1)
@@ -19,6 +26,9 @@ func setup() -> void:
 func enter() -> void:
 	if not GameState.flags.get("c1_arrivo", false):
 		GameState.flags["c1_arrivo"] = true
+		# tutta la scenetta dell'arrivo blocca i comandi, anche nelle pause tra una frase e l'altra
+		# (se no si può parlare con Fermo mentre l'ascensore crolla, e i due dialoghi si incastrano)
+		Ui.cutscene = true
 		_lift.open(false)
 		await get_tree().create_timer(0.4).timeout
 		await Ui.say([
@@ -39,6 +49,7 @@ func enter() -> void:
 			"* La musica della festa non si ferma. Nessuno si gira. Anzi, sì: uno.",
 			"* In mezzo a tutti quei colori c'è un uomo grigio, seduto su una cassetta. È l'unico che non sorride.",
 		])
+		Ui.cutscene = false
 	# dopo uno straordinario la festa si riaccende per un momento (anche se il turno è andato male)
 	if GameState.flags.get("c1_relight", false) or GameState.flags.get("c1_relight_try", false):
 		GameState.flags.erase("c1_relight")
@@ -64,6 +75,9 @@ func on_stairs_step(p: Player, _need: String) -> void:
 ## Dopo la rivelazione la cyclette resta accesa: puoi pedalare ancora, al massimo tre volte.
 ## Ogni volta è più dura e paga meno, ma per cinque secondi la festa torna.
 func _station(j: Dictionary) -> void:
+	if load("res://scripts/boss_missions.gd").active("-5"):
+		await super(j)
+		return
 	if str(j.get("game", "")) != "pedal" or not GameState.flags.get("c1_rivelazione", false):
 		await super(j)
 		return
@@ -194,6 +208,10 @@ func _talk_fermo() -> void:
 		await _first_talk()
 		return
 	var who := "Fermo"
+	var consequence: Array = load("res://scripts/boss_missions.gd").npc_lines("fermo")
+	if not consequence.is_empty() and not GameState.flags.get("boss_consequence_seen_fermo", false):
+		GameState.flags["boss_consequence_seen_fermo"] = true
+		await Ui.say(consequence, who)
 	if GameState.flags.get("c1_rivelazione", false) and not GameState.flags.get("svelato_fermo", false):
 		GameState.flags["svelato_fermo"] = true
 		await Ui.say(["Adesso lo vedi.",
@@ -390,12 +408,18 @@ func _break_lift() -> void:
 
 ## L'ascensore da cui arrivi (quello di LimeZu, con le porte animate): ti scarica alla festa e crolla.
 func _make_lift(top_left: Vector2i) -> void:
-	_lift = Lift.new()
-	_lift.position = Vector2(top_left * T)
-	world.add_child(_lift)
+	_lift = world.get_node_or_null("AscensoreOriginale") as Lift
+	if not _lift:
+		_lift = Lift.new()
+		_lift.position = Vector2(top_left * T)
+		world.add_child(_lift)
+	# la luce della cabina è saltata scendendo (scenes/world/elevator_intro): dentro è nero
+	_lift.dark_inside = true
 	if GameState.flags.get("c1_lift_broken", false):
 		_break_lift()
-	examine(cell_center(top_left + Vector2i(0, 2)) + Vector2(8, 0), [
+	# il cartello "guarda" segue l'ascensore, anche se nell'editor l'hai spostato
+	var lift_cell := Vector2i((_lift.position / T).round())
+	examine(cell_center(lift_cell + Vector2i(0, 2)) + Vector2(8, 0), [
 		"* L'ascensore. Le porte sono storte, le luci spente, dentro è buio. Dal soffitto pende un filo che sfrigola.",
 		"* Sotto la pulsantiera, un adesivo a forma di cuore: \"Si sale solo col badge. Ti vogliamo bene!\"",
 	])

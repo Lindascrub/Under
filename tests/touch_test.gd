@@ -425,6 +425,8 @@ func _run() -> void:
 	_check(float(w.get("score")) >= 3.0, "le richieste chiuse contano tutte")
 
 	# --- la Cima, il TURNO di Direzione: più e meno sulle voci, CONFERMA solo a 100
+	# Existing Director control fixture; new mandate flow has its own integration test.
+	GameState.flags["boss_missions"] = {"cima": {"status": "legacy", "seen": true}}
 	GameState.flags["chapter_6"] = {"elevator": {"intro_seen": true}, "director_turn": {"rules_seen": true}}
 	GameState.minigame = {"cycle": 1}
 	Router.goto(Router.DIREZIONE)

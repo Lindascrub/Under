@@ -256,7 +256,7 @@ func _teo_first() -> void:
 func _quaderno() -> void:
 	if GameState.is_robot("teo"):
 		GameState.flags["c4_quaderno_robot"] = true
-		await Ui.say(["* Il quaderno è rimasto sulla scrivania. Nessuno lo apre più.",
+		await Ui.say(["* Il quaderno è rimasto nel cassetto della scrivania. Nessuno lo apre più.",
 			"* Il fumetto raffigura un impiegato che vola fuori dalla finestra.", "* La seconda pagina è incompleta."])
 		await Ui.say(["ATTIVITÀ NON RILEVANTE.", "TORNARE ALLE PRATICHE."], "Teo")
 		return
@@ -265,7 +265,7 @@ func _quaderno() -> void:
 			"* Il mantello è troppo lungo. Come la cravatta."])
 		return
 	GameState.flags["c4_teo_sogno"] = true
-	await Ui.say(["* Un quaderno di fumetti, nascosto sotto i documenti. Un impiegato con la cravatta lunghissima.",
+	await Ui.say(["* Nel cassetto della scrivania, sotto i documenti, un quaderno di fumetti. Un impiegato con la cravatta lunghissima.",
 		"* Nella vignetta dopo, la cravatta diventa un mantello."])
 	await Ui.say(["Quello?", "È un progetto.", "Prima o poi vorrei pubblicarlo.", "Appena avrò un lavoro un po' più tranquillo."], "Teo")
 
@@ -315,6 +315,9 @@ func quick_turn() -> void:
 ## "Va bene" e "Ci penso" lasciano l'offerta aperta sul terminale del rapporto (c4_capo_sospeso);
 ## "No" la chiude per sempre (c4_capo_chiuso). Il rapporto c'è anche se Teo non è stato aiutato.
 func _boss_call() -> void:
+	if load("res://scripts/boss_missions.gd").uses("-2"):
+		await load("res://scripts/boss_missions.gd").offer(self)
+		return
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
 	GameState.flags["boss_call_floor_" + GameState.floor_id] = true
 	if _f("c4_capo") or GameState.is_robot("teo"):
@@ -366,6 +369,9 @@ func _close_offer() -> void:
 # --- 4.08 il rapporto 404: un, due, tre, stella ------------------------------------------------
 
 func _rapporto() -> void:
+	if load("res://scripts/boss_missions.gd").active("-2"):
+		load("res://scripts/boss_missions.gd").launch(self, "-2")
+		return
 	if _f("c4_capo_firmato"):
 		await Ui.say(["* RAPPORTO DI VERIFICA N. 404. AUTORE: {name}.",
 			"* Lo schermo è lucido. Ci si vede dentro Teo, dietro di te, che timbra."])

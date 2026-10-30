@@ -32,6 +32,8 @@
 [ext_resource type="Texture2D" path="res://assets/limezu/street/hydrant.png" id="30_fbj6j"]
 [ext_resource type="Script" path="res://world/room_feature.gd" id="31_ja042"]
 
+[ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
+[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vum5e"]
 size = Vector2(224, 112)
 
@@ -45,7 +47,7 @@ size = Vector2(32, 32)
 size = Vector2(80, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g28u7"]
-size = Vector2(48, 48)
+size = Vector2(32, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c0xxv"]
 size = Vector2(32, 16)
@@ -124,6 +126,9 @@ size = Vector2(16, 336)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jabii"]
 size = Vector2(672, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5djhy_Idrante"]
+size = Vector2(12, 4)
 
 [node name="Citta" type="Node2D" unique_id=857815144]
 script = ExtResource("1_anvy5")
@@ -265,7 +270,7 @@ position = Vector2(104, 136)
 shape = SubResource("RectangleShape2D_yfaun")
 
 [node name="TorreDestra" type="StaticBody2D" parent="Mondo" unique_id=1278782203]
-position = Vector2(200, 136)
+position = Vector2(208, 136)
 
 [node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/TorreDestra" unique_id=148245437]
 shape = SubResource("RectangleShape2D_g28u7")
@@ -563,16 +568,16 @@ position = Vector2(8, -3)
 shape = SubResource("RectangleShape2D_1npvq")
 
 [node name="Idrante" type="Sprite2D" parent="Mondo" unique_id=513027428]
-position = Vector2(528, 256)
+position = Vector2(528, 254)
 texture = ExtResource("30_fbj6j")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -30)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Idrante" unique_id=475257094]
-
+position = Vector2(0, 2)
 [node name="@CollisionShape2D@48" type="CollisionShape2D" parent="Mondo/Idrante/Collisione" unique_id=1057146290]
-position = Vector2(8, -3)
-shape = SubResource("RectangleShape2D_5djhy")
+position = Vector2(8, -4)
+shape = SubResource("RectangleShape2D_5djhy_Idrante")
 
 [node name="Nadir" type="Node2D" parent="Mondo" unique_id=417633859]
 position = Vector2(392, 254)
@@ -586,15 +591,11 @@ script = ExtResource("31_ja042")
 kind = "station"
 job = "comunicazioni_citta"
 
-[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=1668386690]
-position = Vector2(96, 144)
-script = ExtResource("31_ja042")
-kind = "badge"
+[node name="SportelloBadge" parent="Mondo" instance=ExtResource("booth_tscn")]
+position = Vector2(64, 176)
 
-[node name="ScaleSu" type="Node2D" parent="Mondo" unique_id=975689662]
-position = Vector2(144, 144)
-script = ExtResource("31_ja042")
-kind = "stairs_up"
+[node name="ScaleSu" parent="Decori" instance=ExtResource("stairs_up_tscn")]
+position = Vector2(160, 144)
 target = "res://scenes/world/boss_office.tscn"
 spawn = "default"
 need = "cima"

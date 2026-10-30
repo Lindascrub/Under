@@ -11,18 +11,49 @@ const URGENZA := 300
 ## Un turno al call center li fa tacere per un po' (come la festa del Fondo che si riaccende).
 const QUIET_TIME := 25.0
 var _ring: Timer
+var _ring_voices: Array[AudioStreamPlayer2D] = []
+var _ring_next := 0
+var _ring_intense := false
+var _office_mat: ShaderMaterial
+
+
+var _stairs_down_placed := false
+
+
+## Le scale per il Fondo, o il buco sbarrato se il Fondo è stato chiuso.
+func place_stairs_down(c: Vector2i, path: String, spawn_name: String) -> void:
+	_stairs_down_placed = true
+	if GameState.flags.get("c1_sbarrato", false):
+		_barred_hole(c)
+	else:
+		add_stairs_down(c, path if path != "" else Router.FONDO, spawn_name if spawn_name != "" else "from_above")
+
+
+## Le scale per il Fondo messe nell'editor (ScaleGiu): se il Fondo è stato chiuso, al loro posto
+## c'è il buco sbarrato.
+func use_stairs_down(st: Node2D) -> void:
+	_stairs_down_placed = true
+	if GameState.flags.get("c1_sbarrato", false):
+		var c := Vector2i((to_local(st.global_position) / T).round())
+		st.queue_free()
+		_barred_hole(c)
+	else:
+		super(st)
 
 
 func setup() -> void:
-	if GameState.flags.get("c1_sbarrato", false):
-		_barred_hole(Vector2i(1, 12))
-	else:
-		add_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
+	cam_rect = cam_rect.grow_side(SIDE_TOP, 40)
+	camera_lift = 28
+	_clear_stair_landing()
+	# le scale per il Fondo: dove c'è "ScaleGiu" nella scena (si sposta nell'editor)
+	if not _stairs_down_placed:
+		place_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
+	_calibrate_interactions()
 	if GameState.flags.get("c2_rivelazione", false):
-		# la musichetta è ripartita, ma più lenta
-		Sound.call_deferred("music_pitch", 0.85, 0.1)
+		call_deferred("_fade_office", false)
+		Sound.call_deferred("music", "")
 		if not GameState.flags.get("c2_quiet", false):
-			_start_ringing()
+			_start_ringing(true)
 
 
 func enter() -> void:
@@ -42,22 +73,53 @@ func enter() -> void:
 
 
 ## Le chiamate che nessuno prende: un DRRRING dopo l'altro, da telefoni diversi.
-func _start_ringing() -> void:
+func _start_ringing(intense := false) -> void:
+	_ring_intense = intense
 	if _ring != null:
 		return
+	for i in 4:
+		var voice := AudioStreamPlayer2D.new()
+		voice.stream = load("res://audio/drring.wav")
+		voice.bus = "SFX"
+		voice.max_distance = 1400
+		voice.panning_strength = 1.6
+		voice.volume_db = -16.0
+		add_child(voice)
+		_ring_voices.append(voice)
 	_ring = Timer.new()
-	_ring.wait_time = 1.6
+	_ring.wait_time = 0.6 if intense else 1.6
 	add_child(_ring)
-	_ring.timeout.connect(func() -> void:
-		Sound.sfx("drring", randf_range(0.85, 1.2))
-		_ring.wait_time = randf_range(0.9, 2.2))
+	_ring.timeout.connect(_ring_phone)
 	_ring.start()
+	_ring_phone()
+
+
+func _ring_phone() -> void:
+	if not is_instance_valid(player) or _ring_voices.is_empty():
+		return
+	var voice := _ring_voices[_ring_next % _ring_voices.size()]
+	voice.global_position = player.camera.get_screen_center_position() + Vector2(-110 if _ring_next % 2 == 0 else 110, 0)
+	voice.pitch_scale = [0.88, 1.12, 0.98, 1.2][_ring_next % 4]
+	voice.volume_db = -10.0 if _ring_intense else -16.0
+	voice.play()
+	_ring_next += 1
+	_ring.wait_time = randf_range(0.35, 0.6) if _ring_intense else randf_range(1.0, 1.8)
+	# Le cornette si illuminano a turno: lo squillo ha una sorgente anche visibile.
+	var colleague := find_child("Collega%d" % (_ring_next % 4), true, false) as CanvasItem
+	if colleague:
+		var tw := create_tween()
+		tw.tween_property(colleague, "modulate", Color(1.35, 1.35, 1.35), 0.08)
+		tw.tween_property(colleague, "modulate", Color.WHITE, 0.25)
 
 
 func _stop_ringing() -> void:
 	if _ring != null:
 		_ring.queue_free()
 		_ring = null
+	for voice in _ring_voices:
+		voice.stop()
+		voice.queue_free()
+	_ring_voices.clear()
 
 
 ## Hai fatto il turno: le chiamate le hai prese tu. Per un po', silenzio. Poi ricominciano.
@@ -72,7 +134,7 @@ func _quiet() -> void:
 	add_child(t)
 	t.timeout.connect(func() -> void:
 		t.queue_free()
-		_start_ringing()
+		_start_ringing(true)
 		Sound.sfx("drring", 1.0)
 		if not Ui.busy and not Ui.cutscene:
 			Ui.say(["* DRRRING. Ricominciano. Il silenzio è durato meno del turno."]))
@@ -225,30 +287,27 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	GameState.flags["c2_rivelazione"] = true
 	Ui.cutscene = true
 	p.position.y += 4
-	await Ui.say(["* Metti il piede sul primo gradino."])
-	# la musica si interrompe di colpo, a metà di una nota
+	await Ui.say(["* Metti il piede sul primo gradino. Dall'altra parte della sala, un telefono squilla."])
 	Sound.music("")
-	Sound.sfx("clunk", 0.7)
-	await get_tree().create_timer(1.2).timeout
-	await Ui.say(["* La musichetta si interrompe. A metà di una nota.",
-		"* Per la prima volta, il piano -4 è in silenzio. Si sente il ronzio dei neon. E un altro rumore."])
+	_start_ringing()
+	var tri := find_child("Tritacarte", true, false) as Node2D
+	var shot: Dictionary = await FocusShot.begin(self, tri.global_position + Vector2(-16, -12), 3.5)
+	await Ui.say(["* La Signora Agenda prende il tuo modulo azzurro. Firmato. Timbrato.",
+		"* Lo avvicina al tritacarte. Continua a sorridere."])
 	await _shred()
-	var lines: Array = ["* Allo sportello, la Signora Agenda infila un foglio azzurro nel tritacarte. Sorridendo.",
-		"* È il tuo B-4. Firmato, timbrato. Triturato."]
+	var lines: Array = ["* È il tuo B-4. Non una copia."]
 	if GameState.flags.get("c2_pagato", false):
 		lines.append("* Trecento euro, in striscioline.")
-	lines.append_array(["* Ti fa ciao con la mano. Il sorriso non le si sposta di un millimetro.",
-		"* Nella sala, i colleghi restano con la cornetta in mano. Sorridono al nulla. Solo Tilde, e laggiù Ercole, ti guardano."])
+	lines.append("* Ti fa ciao con la mano. Dietro di te, squilla un altro telefono.")
 	await Ui.say(lines)
-	await get_tree().create_timer(0.6).timeout
-	Sound.music(music)
-	Sound.music_pitch(0.85, 2.0)
-	await Ui.say(["* Poi, piano piano, la musichetta riparte. Più lenta. Nessuno dice niente.",
-		"* Le scale ti aspettano. Dietro di te, due persone grigie sanno quello che sai tu."])
-	# e i telefoni: squillano, e nessuno risponde più
-	_start_ringing()
-	await Ui.say(["* DRRRING. Un telefono. Poi un altro. Poi tutti.",
-		"* Nessuno alza la cornetta. Sorridono, e lasciano squillare.",
+	await FocusShot.restore(self, shot)
+	_ring_intense = true
+	await _fade_office(true)
+	await Ui.say(["* Gli squilli si sovrappongono. A destra. A sinistra. Sempre più vicini.",
+		"* Nessuno risponde. I colleghi tengono le cornette in mano, ma le linee continuano a chiamare.",
+		"* I colori scoloriscono. Sulla carta dei manifesti compaiono macchie e strappi.",
+		"* RESTI IN LINEA. Il cartello è ancora appeso. L'inchiostro sembra vecchio di anni.",
+		"* Tilde ed Ercole ti guardano. Le scale sono davanti a te. Gli squilli, dietro, sono diventati assordanti.",
 		"* Qualcuno le chiamate dovrà pur prenderle. Il TURNO è sempre lì."])
 	Ui.cutscene = false
 
@@ -260,6 +319,18 @@ func _shred() -> void:
 	if tri == null:
 		await get_tree().create_timer(1.0).timeout
 		return
+	var paper := Polygon2D.new()
+	paper.name = "B4DaTritare"
+	paper.polygon = PackedVector2Array([Vector2(0,0), Vector2(7,0), Vector2(7,10), Vector2(0,10)])
+	paper.color = Color("8ac8ff")
+	paper.position = tri.global_position + Vector2(4, -26)
+	paper.z_index = 20
+	add_child(paper)
+	var feed := create_tween()
+	feed.tween_property(paper, "position:y", paper.position.y + 9, 0.65)
+	feed.parallel().tween_property(paper, "scale:y", 0.05, 0.65)
+	await feed.finished
+	paper.queue_free()
 	var base := tri.position
 	var tw := create_tween()
 	for i in 16:
@@ -299,7 +370,7 @@ func _look_back_line() -> String:
 	if GameState.flags.get("c2_timbro", false):
 		return "Laggiù Tilde dice una frase sua al telefono, ed Ercole tiene gli occhi aperti.\nIl B-4 è triturato. Quello che avete fatto in tre, no."
 	if GameState.flags.get("svelato_tilde", false) and GameState.flags.get("svelato_ercole", false):
-		return "Laggiù la musichetta gira di nuovo.\nMa due persone, adesso, la ascoltano sapendo cos'è."
+		return "Laggiù i telefoni continuano a squillare.\nDue persone, adesso, sanno perché nessuno risponde."
 	return "Laggiù la Signora Agenda sorride.\nSorride a chi arriva, sorride a chi sale. Il B-4 lo dà a tutti."
 
 
@@ -307,17 +378,16 @@ func _look_back_line() -> String:
 
 ## Le scale per il Fondo, chiuse alla buona: sei salito senza voltarti.
 func _barred_hole(bottom_left: Vector2i) -> void:
-	var s := add_region(GENERIC, GENERIC_SIZE, Rect2(STAIRS_REGION.position + Vector2(0, 16), Vector2(32, 48)), bottom_left)
-	s.flip_v = true
+	var s := add_region("themes/condominium.png", Vector2i(256,1664), Rect2(64,32,32,32), bottom_left)
 	s.modulate = Color(0.45, 0.45, 0.5)
 	world.remove_child(s)
 	add_child(s)
 	move_child(s, world.get_index())
 	# chi sale dal Fondo compare qui, davanti alla sbarra (gli scalini sono chiusi)
-	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 3) * T)
+	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T - 2)
 	# coni e nastro, messi lì di fretta anni fa: uno è caduto e nessuno l'ha rialzato.
 	# Stanno tutti in un nodo dentro il mondo: chi passa davanti li copre, chi passa dietro no.
-	var base_y := (bottom_left.y - 2) * T + 8.0
+	var base_y := (bottom_left.y - 1) * T + 8.0
 	var bar := Node2D.new()
 	bar.name = "Sbarramento"
 	bar.position = Vector2(0, base_y)
@@ -356,12 +426,77 @@ func _barred_hole(bottom_left: Vector2i) -> void:
 	sign.position = tops[0].lerp(tops[1], 0.5) + Vector2(0, 8)
 	sign.rotation = 0.14
 	bar.add_child(sign)
-	block(Rect2i(bottom_left.x, bottom_left.y - 2, 2, 3))
+	block(Rect2i(bottom_left.x, bottom_left.y - 1, 2, 2))
 	# il cono caduto è per terra, ma è sempre un cono: non ci si passa sopra
 	block_px(Rect2(xs[2] - 2, base_y - 6, 18, 9))
-	examine(cell_center(bottom_left + Vector2i(0, -1)) + Vector2(8, 0), [
+	examine(Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T - 6), [
 		"* Le scale per il Fondo. Tre coni e un nastro: VIETATO SCENDERE.",
 		"* Il nastro è scolorito, un cono è caduto. Nessuno l'ha rialzato. Nessuno passa di qua a controllare.",
 		"* Attaccato al nastro, un foglio: \"Lavori in corso\". La data è di quindici anni fa.",
 		"* Sei salito senza voltarti. Il Fondo, adesso, resta là sotto. Con quello che non hai voluto sapere.",
 	])
+
+
+func _calibrate_interactions() -> void:
+	# Il cordone lasciava soltanto sei pixel davanti alle sedie: il corpo non ci passava.
+	var rope := find_child("Cordone", true, false) as Node2D
+	if rope: rope.position.y -= 4
+	for i in 4:
+		var colleague := find_child("GuardaCollega%d" % i, true, false) as Interactable
+		if colleague:
+			colleague.interaction_bounds = Rect2(-7, -41, 14, 19)
+	for name_at in [["GuardaSorridi", Vector2(52, 46)], ["GuardaModulo", Vector2(126, 52)], ["GuardaAttesa", Vector2(216, 46)]]:
+		var spot := find_child(name_at[0], true, false) as Interactable
+		if spot:
+			spot.position = name_at[1]
+			spot.approach = Vector2.DOWN
+			spot.facing_required = "up"
+	# Nessuna interazione fantasma per le decorazioni eliminate.
+	var old := find_child("GuardaBandiere", true, false)
+	if old: old.queue_free()
+
+
+func _fade_office(animate: bool) -> void:
+	if _office_mat != null:
+		return
+	_office_mat = ShaderMaterial.new()
+	_office_mat.shader = preload("res://shaders/greyscale.gdshader")
+	_office_mat.set_shader_parameter("amount", 0.0 if animate else 1.0)
+	_office_mat.set_shader_parameter("darken", 0.12)
+	for parent_name in ["Pavimento", "Muri", "Mondo", "Decori"]:
+		var parent := get_node_or_null(parent_name)
+		if not parent: continue
+		var nodes: Array = [parent] if parent is TileMapLayer else parent.find_children("*", "CanvasItem", true, false)
+		for n in nodes:
+			if n == player or n.get_parent() == player or player.is_ancestor_of(n): continue
+			if n is CanvasItem and not n is Control:
+				n.material = _office_mat
+	for name_ in ["PosterSorridi", "PosterModulo", "PosterAttesa"]:
+		var poster := find_child(name_, true, false) as Node2D
+		if not poster: continue
+		poster.set("broken", true)
+		poster.rotation = 0.0
+	if animate:
+		var tw := create_tween()
+		tw.tween_method(func(v: float) -> void: _office_mat.set_shader_parameter("amount", v), 0.0, 1.0, 3.0)
+		await tw.finished
+
+
+## Riserva gradini, pianerottolo e avvicinamento nel vecchio divisorio dell'archivio.
+func _clear_stair_landing() -> void:
+	var stairs := find_children("ScaleSu", "", true, false)
+	if stairs.is_empty():
+		return
+	var cell: Vector2i = stairs[0].call("cell")
+	var walls := get_node("Muri") as TileMapLayer
+	for y in range(cell.y - 2, cell.y + 3):
+		for x in range(cell.x, cell.x + 2):
+			walls.erase_cell(Vector2i(x, y))
+			_blocked_cells.erase(Vector2i(x, y))
+	var floor_layer := get_node("Pavimento") as TileMapLayer
+	var sample := Vector2i(24, 4)
+	var source := floor_layer.get_cell_source_id(sample)
+	var atlas := floor_layer.get_cell_atlas_coords(sample) - Vector2i(sample.x % 3, sample.y % 2)
+	for y in range(cell.y, cell.y + 3):
+		for x in range(cell.x, cell.x + 2):
+			floor_layer.set_cell(Vector2i(x, y), source, atlas + Vector2i(x % 3, y % 2))

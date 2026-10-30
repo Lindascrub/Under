@@ -1,5 +1,7 @@
+@tool
 class_name Examine
 extends Interactable
+## @tool: così l'editor tiene le frasi come valori veri e non le perde quando ricarica gli script.
 ## Un punto da esaminare messo nell'editor. Scrivi le frasi in `lines` (Inspector):
 ## premendo il tasto vicino al punto, compaiono nel riquadro. Oppure, in `method`,
 ## il nome di una funzione della stanza da chiamare (per le interazioni speciali).

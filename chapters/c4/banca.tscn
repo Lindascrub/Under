@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_feh56"]
 [ext_resource type="Script" path="res://world/room_outline.gd" id="3_wkgms"]
 [ext_resource type="Texture2D" path="res://art/c4/insegna_banca.png" id="4_gkrrw"]
-[ext_resource type="Texture2D" path="res://art/c4/display_numeri.png" id="5_rej2s"]
 [ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="6_6d6qs"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/hospital.png" id="7_4m25g"]
 [ext_resource type="Script" path="res://world/examine.gd" id="8_bhnu7"]
@@ -18,15 +17,21 @@
 [ext_resource type="Script" path="res://world/npc_spot.gd" id="16_vx0p1"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/classroom.png" id="17_ekptw"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/office_desk.png" id="18_wrlwx"]
-[ext_resource type="Texture2D" path="res://art/c4/quaderno.png" id="19_nki1q"]
 [ext_resource type="Texture2D" path="res://art/c4/terminale_rapporto.png" id="20_au7u7"]
 [ext_resource type="Script" path="res://world/room_feature.gd" id="21_gpl2i"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_right.png" id="21_wkgms"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_left.png" id="23_gkrrw"]
+[ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
+[ext_resource type="Script" path="res://world/number_display.gd" id="Script_numero_servito"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3uvl6"]
-size = Vector2(60, 12)
+[ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
+[ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
+[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rej2s"]
+size = Vector2(64, 36)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o106j"]
-size = Vector2(60, 12)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6d6qs"]
+size = Vector2(64, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_eshio"]
 size = Vector2(32, 16)
@@ -61,17 +66,17 @@ size = Vector2(16, 16)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y0dwr"]
 size = Vector2(16, 16)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2sdii"]
-size = Vector2(44, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4m25g"]
+size = Vector2(30, 13)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_nqk7k"]
-size = Vector2(44, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bhnu7"]
+size = Vector2(30, 13)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d3uj0"]
 size = Vector2(28, 12)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_y4jtu"]
-size = Vector2(44, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b8kf0"]
+size = Vector2(46, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ojnwo"]
 size = Vector2(12, 6)
@@ -121,14 +126,38 @@ size = Vector2(44, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_63n3h"]
 size = Vector2(44, 12)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_d0kdd"]
-size = Vector2(12, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n8r3t"]
+size = Vector2(16, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4deln"]
 size = Vector2(28, 6)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rh8gc"]
 size = Vector2(12, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rej2s_Bancone"]
+size = Vector2(64, 34)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6d6qs_Bancone2"]
+size = Vector2(64, 34)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_d3uj0_Merendine"]
+size = Vector2(28, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b8kf0_Tavolino"]
+size = Vector2(46, 21)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wvkii_Archivio"]
+size = Vector2(44, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_63n3h_Archivio2"]
+size = Vector2(44, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n8r3t_ScrivaniaTeo"]
+size = Vector2(16, 18)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4deln_Leggio"]
+size = Vector2(28, 4)
 
 [node name="Banca" type="Node2D" unique_id=279209491]
 script = ExtResource("1_7cjwg")
@@ -154,19 +183,9 @@ texture = ExtResource("4_gkrrw")
 centered = false
 offset = Vector2(0, -28)
 
-[node name="DisplayNumeri" type="Sprite2D" parent="Decori" unique_id=1335267018]
+[node name="DisplayNumeri" type="Node2D" parent="Decori" unique_id=995174335]
 position = Vector2(352, 42)
-texture = ExtResource("5_rej2s")
-centered = false
-offset = Vector2(0, -20)
-
-[node name="Tappeto" type="Sprite2D" parent="Decori" unique_id=1184791832]
-position = Vector2(288, 254)
-texture = ExtResource("6_6d6qs")
-centered = false
-offset = Vector2(0, -48)
-region_enabled = true
-region_rect = Rect2(144, 64, 64, 48)
+script = ExtResource("Script_numero_servito")
 
 [node name="TV" type="Sprite2D" parent="Decori" unique_id=1480655607]
 position = Vector2(80, 44)
@@ -176,29 +195,13 @@ offset = Vector2(0, -24)
 region_enabled = true
 region_rect = Rect2(176, 240, 32, 24)
 
-[node name="Tappetino" type="Sprite2D" parent="Decori" unique_id=629611425]
-position = Vector2(48, 132)
-texture = ExtResource("6_6d6qs")
-centered = false
-offset = Vector2(0, -32)
-region_enabled = true
-region_rect = Rect2(144, 160, 32, 32)
-
 [node name="Bacheca" type="Sprite2D" parent="Decori" unique_id=1199201083]
-position = Vector2(480, 46)
+position = Vector2(448, 46)
 texture = ExtResource("7_4m25g")
 centered = false
 offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(32, 0, 32, 32)
-
-[node name="TappetoTeo" type="Sprite2D" parent="Decori" unique_id=356637490]
-position = Vector2(480, 244)
-texture = ExtResource("6_6d6qs")
-centered = false
-offset = Vector2(0, -32)
-region_enabled = true
-region_rect = Rect2(144, 160, 32, 32)
 
 [node name="Mondo" type="Node2D" parent="." unique_id=2056967318]
 y_sort_enabled = true
@@ -218,18 +221,19 @@ lines_after = PackedStringArray()
 method = "_display"
 
 [node name="Bancone" type="Sprite2D" parent="Mondo" unique_id=1310846545]
-position = Vector2(208, 96)
+position = Vector2(208, 94)
 texture = ExtResource("7_4m25g")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -46)
 region_enabled = true
 region_rect = Rect2(80, 0, 64, 48)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone" unique_id=1404638225]
-
-[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/Bancone/Collisione" unique_id=382415938]
-position = Vector2(32, -6)
-shape = SubResource("RectangleShape2D_3uvl6")
+position = Vector2(0, 2)
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Bancone/Collisione" unique_id=256993544]
+position = Vector2(32, -19)
+shape = SubResource("RectangleShape2D_rej2s_Bancone")
 
 [node name="GuardaBancone" type="Node2D" parent="Mondo" unique_id=103861688]
 position = Vector2(232, 88)
@@ -237,20 +241,22 @@ script = ExtResource("8_bhnu7")
 lines = PackedStringArray("* Lo sportello del settore fiducia. Sul vetro, un adesivo: \"SORRIDI, STAI PER ESSERE VALUTATO\".")
 lines_after = PackedStringArray("* Lo sportello. Il timbro APPROVATA è consumato da un lato solo.")
 after_flag = "c4_rivelazione"
+approach = Vector2(0, 1)
 
 [node name="Bancone2" type="Sprite2D" parent="Mondo" unique_id=30694467]
-position = Vector2(320, 96)
+position = Vector2(320, 94)
 texture = ExtResource("7_4m25g")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -46)
 region_enabled = true
 region_rect = Rect2(80, 0, 64, 48)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone2" unique_id=923680072]
-
-[node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/Bancone2/Collisione" unique_id=1621448202]
-position = Vector2(32, -6)
-shape = SubResource("RectangleShape2D_o106j")
+position = Vector2(0, 2)
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Bancone2/Collisione" unique_id=873127674]
+position = Vector2(32, -19)
+shape = SubResource("RectangleShape2D_6d6qs_Bancone2")
 
 [node name="Impiegata" type="AnimatedSprite2D" parent="Mondo" unique_id=1740212978]
 position = Vector2(344, 78)
@@ -262,6 +268,7 @@ position = Vector2(344, 88)
 script = ExtResource("8_bhnu7")
 lines = PackedStringArray("* \"Questo sportello è chiuso. È chiuso da quando hanno aperto quello accanto.\"")
 lines_after = PackedStringArray()
+approach = Vector2(0, 1)
 
 [node name="PiediImpiegata" type="StaticBody2D" parent="Mondo" unique_id=30146149]
 position = Vector2(352, 72)
@@ -336,27 +343,27 @@ lines_after = PackedStringArray()
 method = "_conto"
 
 [node name="Pianta0" type="Sprite2D" parent="Mondo" unique_id=434359584]
-position = Vector2(192, 80)
+position = Vector2(192, 75)
 texture = ExtResource("12_14kcq")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -27)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=558722150]
-
+position = Vector2(0, 5)
 [node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=1585072598]
-position = Vector2(8, -4)
+position = Vector2(8, -9)
 shape = SubResource("RectangleShape2D_rujpi")
 
 [node name="Pianta1" type="Sprite2D" parent="Mondo" unique_id=280282234]
-position = Vector2(432, 256)
+position = Vector2(432, 247)
 texture = ExtResource("13_gyq7i")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -23)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=1631094858]
-
+position = Vector2(0, 9)
 [node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=1199468108]
-position = Vector2(8, -4)
+position = Vector2(8, -13)
 shape = SubResource("RectangleShape2D_eqoej")
 
 [node name="Fila0" type="AnimatedSprite2D" parent="Mondo" unique_id=26595982]
@@ -440,46 +447,50 @@ position = Vector2(248, 152)
 shape = SubResource("RectangleShape2D_y0dwr")
 
 [node name="Divano0" type="Sprite2D" parent="Mondo" unique_id=700076797]
+modulate = Color(0.78, 0.68, 0.58, 1)
 position = Vector2(16, 80)
 texture = ExtResource("14_nu50v")
 centered = false
 offset = Vector2(0, -32)
 region_enabled = true
-region_rect = Rect2(16, 448, 48, 32)
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Divano0" unique_id=677181792]
 
-[node name="@CollisionShape2D@34" type="CollisionShape2D" parent="Mondo/Divano0/Collisione" unique_id=641489812]
-position = Vector2(24, -5)
-shape = SubResource("RectangleShape2D_2sdii")
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Divano0/Collisione" unique_id=2056625308]
+position = Vector2(16, -7.5)
+shape = SubResource("RectangleShape2D_4m25g")
 
 [node name="Divano1" type="Sprite2D" parent="Mondo" unique_id=417126422]
+modulate = Color(0.78, 0.68, 0.58, 1)
 position = Vector2(80, 80)
 texture = ExtResource("14_nu50v")
 centered = false
 offset = Vector2(0, -32)
 region_enabled = true
-region_rect = Rect2(16, 448, 48, 32)
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Divano1" unique_id=1171855055]
 
-[node name="@CollisionShape2D@35" type="CollisionShape2D" parent="Mondo/Divano1/Collisione" unique_id=1904317241]
-position = Vector2(24, -5)
-shape = SubResource("RectangleShape2D_nqk7k")
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Divano1/Collisione" unique_id=2078485284]
+position = Vector2(16, -7.5)
+shape = SubResource("RectangleShape2D_bhnu7")
 
 [node name="Merendine" type="Sprite2D" parent="Mondo" unique_id=126314338]
-position = Vector2(144, 80)
+position = Vector2(144, 75)
 texture = ExtResource("7_4m25g")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -43)
 region_enabled = true
 region_rect = Rect2(192, 192, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Merendine" unique_id=1922766692]
-
+position = Vector2(0, 5)
 [node name="@CollisionShape2D@36" type="CollisionShape2D" parent="Mondo/Merendine/Collisione" unique_id=80669501]
-position = Vector2(16, -6)
-shape = SubResource("RectangleShape2D_d3uj0")
+position = Vector2(16, -8.5)
+shape = SubResource("RectangleShape2D_d3uj0_Merendine")
 
 [node name="GuardaMerendine" type="Node2D" parent="Mondo" unique_id=1646622001]
 position = Vector2(152, 72)
@@ -488,18 +499,19 @@ lines = PackedStringArray("* Merendine a 4 €. Sotto, piccolo: \"Il prezzo comp
 lines_after = PackedStringArray()
 
 [node name="Tavolino" type="Sprite2D" parent="Mondo" unique_id=1908442512]
-position = Vector2(32, 128)
+position = Vector2(32, 125)
 texture = ExtResource("6_6d6qs")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -29)
 region_enabled = true
 region_rect = Rect2(80, 96, 48, 32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Tavolino" unique_id=1894511144]
-
-[node name="@CollisionShape2D@37" type="CollisionShape2D" parent="Mondo/Tavolino/Collisione" unique_id=414759120]
-position = Vector2(24, -5)
-shape = SubResource("RectangleShape2D_y4jtu")
+position = Vector2(0, 3)
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Tavolino/Collisione" unique_id=1933863639]
+position = Vector2(24, -13.5)
+shape = SubResource("RectangleShape2D_b8kf0_Tavolino")
 
 [node name="GuardaTavolino" type="Node2D" parent="Mondo" unique_id=1896985083]
 position = Vector2(56, 120)
@@ -682,15 +694,15 @@ lines = PackedStringArray("* Sedie di plastica, avvitate al pavimento. Sullo sch
 lines_after = PackedStringArray()
 
 [node name="PiantaAttesa" type="Sprite2D" parent="Mondo" unique_id=1846318510]
-position = Vector2(16, 256)
+position = Vector2(16, 251)
 texture = ExtResource("15_x3rj1")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -27)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaAttesa" unique_id=709776354]
-
+position = Vector2(0, 5)
 [node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Mondo/PiantaAttesa/Collisione" unique_id=1196875543]
-position = Vector2(16, -4)
+position = Vector2(16, -9)
 shape = SubResource("RectangleShape2D_mfwve")
 
 [node name="Olga" type="Node2D" parent="Mondo" unique_id=2097031885]
@@ -700,44 +712,44 @@ npc_id = "olga"
 activity = "idle_left"
 
 [node name="PiantaUfficio" type="Sprite2D" parent="Mondo" unique_id=845756327]
-position = Vector2(464, 112)
+position = Vector2(464, 103)
 texture = ExtResource("13_gyq7i")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -23)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaUfficio" unique_id=1095867226]
-
+position = Vector2(0, 9)
 [node name="@CollisionShape2D@51" type="CollisionShape2D" parent="Mondo/PiantaUfficio/Collisione" unique_id=1784898285]
-position = Vector2(8, -4)
+position = Vector2(8, -13)
 shape = SubResource("RectangleShape2D_pj7jm")
 
 [node name="Archivio" type="Sprite2D" parent="Mondo" unique_id=516899079]
-position = Vector2(512, 176)
+position = Vector2(512, 170)
 texture = ExtResource("17_ekptw")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -42)
 region_enabled = true
 region_rect = Rect2(0, 208, 48, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Archivio" unique_id=890662668]
-
+position = Vector2(0, 6)
 [node name="@CollisionShape2D@52" type="CollisionShape2D" parent="Mondo/Archivio/Collisione" unique_id=1904067527]
-position = Vector2(24, -6)
-shape = SubResource("RectangleShape2D_wvkii")
+position = Vector2(24, -9)
+shape = SubResource("RectangleShape2D_wvkii_Archivio")
 
 [node name="Archivio2" type="Sprite2D" parent="Mondo" unique_id=2023065411]
-position = Vector2(560, 176)
+position = Vector2(560, 170)
 texture = ExtResource("17_ekptw")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -42)
 region_enabled = true
 region_rect = Rect2(0, 208, 48, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Archivio2" unique_id=1837530120]
-
+position = Vector2(0, 6)
 [node name="@CollisionShape2D@53" type="CollisionShape2D" parent="Mondo/Archivio2/Collisione" unique_id=351156765]
-position = Vector2(24, -6)
-shape = SubResource("RectangleShape2D_63n3h")
+position = Vector2(24, -9)
+shape = SubResource("RectangleShape2D_63n3h_Archivio2")
 
 [node name="GuardaArchivio" type="Node2D" parent="Mondo" unique_id=969913198]
 position = Vector2(536, 168)
@@ -747,23 +759,17 @@ lines_after = PackedStringArray()
 method = "_archivio"
 
 [node name="ScrivaniaTeo" type="Sprite2D" parent="Mondo" unique_id=953122808]
-position = Vector2(496, 224)
+position = Vector2(496, 222)
 texture = ExtResource("18_wrlwx")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -30)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScrivaniaTeo" unique_id=1637497713]
-
-[node name="@CollisionShape2D@54" type="CollisionShape2D" parent="Mondo/ScrivaniaTeo/Collisione" unique_id=934775648]
-position = Vector2(8, -5)
-shape = SubResource("RectangleShape2D_d0kdd")
-
-[node name="Quaderno" type="Sprite2D" parent="Mondo" unique_id=1315485599]
-z_index = 1
-position = Vector2(499, 210)
-texture = ExtResource("19_nki1q")
-centered = false
-offset = Vector2(0, -8)
+position = Vector2(0, 2)
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/ScrivaniaTeo/Collisione" unique_id=1706663948]
+position = Vector2(8, -11)
+shape = SubResource("RectangleShape2D_n8r3t_ScrivaniaTeo")
 
 [node name="GuardaQuaderno" type="Node2D" parent="Mondo" unique_id=271275037]
 position = Vector2(504, 216)
@@ -771,20 +777,21 @@ script = ExtResource("8_bhnu7")
 lines = PackedStringArray()
 lines_after = PackedStringArray()
 method = "_quaderno"
+approach = Vector2(0, 1)
 
 [node name="Leggio" type="Sprite2D" parent="Mondo" unique_id=1119414611]
-position = Vector2(592, 224)
+position = Vector2(592, 218)
 texture = ExtResource("17_ekptw")
 centered = false
-offset = Vector2(0, -40)
+offset = Vector2(0, -34)
 region_enabled = true
 region_rect = Rect2(224, 232, 32, 40)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Leggio" unique_id=691234720]
-
+position = Vector2(0, 6)
 [node name="@CollisionShape2D@55" type="CollisionShape2D" parent="Mondo/Leggio/Collisione" unique_id=1100819796]
-position = Vector2(16, -3)
-shape = SubResource("RectangleShape2D_4deln")
+position = Vector2(16, -8)
+shape = SubResource("RectangleShape2D_4deln_Leggio")
 
 [node name="GuardaLeggio" type="Node2D" parent="Mondo" unique_id=1314960049]
 position = Vector2(600, 216)
@@ -823,23 +830,17 @@ script = ExtResource("21_gpl2i")
 kind = "station"
 job = "sportello_banca"
 
-[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=1423676436]
-position = Vector2(512, 48)
-script = ExtResource("21_gpl2i")
-kind = "badge"
+[node name="SportelloBadge" parent="Mondo" instance=ExtResource("booth_tscn")]
+position = Vector2(480, 80)
 
-[node name="ScaleSu" type="Node2D" parent="Mondo" unique_id=149211155]
+[node name="ScaleSu" parent="Decori" instance=ExtResource("stairs_up_tscn")]
 position = Vector2(576, 48)
-script = ExtResource("21_gpl2i")
-kind = "stairs_up"
 target = "res://scenes/world/office.tscn"
 spawn = "from_below"
 need = "0"
 
-[node name="ScaleGiu" type="Node2D" parent="Mondo" unique_id=2060294945]
+[node name="ScaleGiu" parent="Decori" instance=ExtResource("stairs_down_tscn")]
 position = Vector2(208, 240)
-script = ExtResource("21_gpl2i")
-kind = "stairs_down"
 target = "res://chapters/c3/mercato.tscn"
 spawn = "from_above"
 
@@ -847,8 +848,38 @@ spawn = "from_above"
 position = Vector2(384, 208)
 script = ExtResource("21_gpl2i")
 
+[node name="Telecamera_320" type="Sprite2D" parent="Mondo" unique_id=57453554]
+position = Vector2(320, 28)
+texture = ExtResource("21_wkgms")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+script = ExtResource("cam_sc")
+z_index = 1
+
+[node name="Telecamera_608" type="Sprite2D" parent="Mondo" unique_id=1887788358]
+position = Vector2(608, 24)
+texture = ExtResource("23_gkrrw")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+script = ExtResource("cam_sc")
+z_index = 1
+facing = "left"
+
+[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_608"]
+position = Vector2(8, 40)
+script = ExtResource("8_bhnu7")
+lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
+
 [node name="Arrivi" type="Node2D" parent="." unique_id=1858085897]
 
 [node name="default" type="Marker2D" parent="Arrivi" unique_id=96462484]
 position = Vector2(312, 206)
 metadata/facing = "up"
+
+[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_320"]
+position = Vector2(8, 40)
+script = ExtResource("8_bhnu7")
+lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
+

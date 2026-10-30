@@ -1,85 +1,14 @@
-extends Room
+extends EditorRoom
 ## Il piano terra della torre CHEAP. La botola scende alla Banca (-2), l'ascensore sale alla
 ## Direzione (con il badge della Cima), la porta esce in città. Qui lavorano Dario e Giulia.
-
-const RB := "tiles/room_builder.png"
-const DESK_TEXTS := [
-	["* Sul monitor: PRODUTTIVITÀ DEL REPARTO 37%. Sotto, a penna: \"aiuto\"."],
-	["* Una scrivania. Nel cassetto c'è una scorta di caffè solubile e di antidolorifici."],
-	["* Sul monitor è aperta un'email: \"Oggetto: ottimizzazione del personale (riservato)\"."],
-	["* Una foto di famiglia, girata verso il muro. Forse per non farsi vedere."],
-	["* Post-it sul monitor: \"Sorridi! Il cliente ti sente.\""],
-	["* Il computer è spento. Sopra c'è un biglietto: \"Grazie di tutto. Scusate.\""],
-	["* Sul monitor scorre un grafico. Sale sempre. Non c'è scritto cosa."],
-	["* Una tazza con la scritta \"Il miglior dipendente del mondo\". È piena di polvere."],
-]
+## La scena (office.tscn) si sistema nell'editor: scrivanie, piante, terminale, ascensore ("Ascensore"),
+## sportello ("SportelloBadge") e scale ("ScaleGiu") si spostano a mano. Qui c'è solo la logica.
 
 
-func build() -> void:
-	floor_id = "0"
-	music = "ufficio"
-	var floor_def := {"tex": RB, "at": func(c: Vector2i) -> Vector2i: return Vector2i(38 + c.x % 3, 11 + c.y % 2)}
-	paint([
-		"####################",
-		"#WWWWWWWWWWWWWWWWWW#",
-		"#wwwwwwwwwwwwwwwwww#",
-		"#..................#",
-		"#..................#",
-		"#..................#",
-		"#..................#",
-		"#..................#",
-		"#..................#",
-		"#..................#",
-		"#########..#########",
-		"#########dd#########",
-	], {
-		"#": {"tex": RB, "at": Vector2i(12, 0), "solid": true},
-		"W": {"tex": RB, "at": Vector2i(1, 13), "solid": true},
-		"w": {"tex": RB, "at": Vector2i(1, 14), "solid": true},
-		".": floor_def,
-		"_floor": floor_def,
-	})
-
-	add_prop("props/terminal.png", Vector2i(9, 3))
-	add_prop("props/portrait.png", Vector2i(6, 2), 0, Vector2i(16, 32), [
-		"* Il ritratto del fondatore della CHEAP. Ti sorride come sorride una banca.",
-	])
-	add_prop("props/trash.png", Vector2i(17, 3), 2, Vector2i(16, 32), [
-		"* Il cestino è pieno di curriculum. Alcuni sono ancora chiusi nella busta.",
-	])
-	add_prop("props/palm.png", Vector2i(1, 3), 1, Vector2i(32, 32), [
-		"* Una palma finta. È l'unica cosa qui dentro che non si stanca mai.",
-	])
-	add_prop("props/plant.png", Vector2i(18, 9), 1, Vector2i(16, 32), [
-		"* Una pianta vera. Qualcuno la annaffia di nascosto ogni mattina.",
-	])
-
-	# Scrivanie: la sedia sta dietro (a nord), la scrivania la copre in parte.
-	var k := 0
-	for y in [5, 8]:
-		for x in [3, 4, 14, 15]:
-			if not (x == 4 and y == 8):
-				add_prop("props/office_chair.png", Vector2i(x, y - 1), 0, Vector2i(16, 32), [], Vector2(0, -4))
-			add_computer_desk(Vector2i(x, y), DESK_TEXTS[k % DESK_TEXTS.size()])
-			k += 1
-
-	add_spot(cell_center(Vector2i(9, 3)), _terminal)
-	_elevator(Vector2i(12, 1))
+func setup() -> void:
+	_elevator()
 	add_exit(Rect2i(9, 11, 2, 1), Router.STREET, "office")
-	add_stairs_down(Vector2i(1, 9), Router.BANCA, "from_above")
-	add_badge_machine(Vector2i(16, 3))
 	spawn_people("office")
-
-	spawns["default"] = cell_feet(Vector2i(9, 9))
-	spawns["street"] = spawns["default"]
-	spawn_facing["default"] = "up"
-	spawn_facing["street"] = "up"
-	spawns["terminal"] = cell_feet(Vector2i(9, 4))
-	spawns["elevator"] = cell_feet(Vector2i(12, 4))
-	spawn_facing["elevator"] = "down"
-	spawns["from_below"] = cell_feet(Vector2i(3, 9))
-	spawn_facing["from_below"] = "right"
-	spawn_facing["terminal"] = "up"
 
 
 func enter() -> void:
@@ -107,19 +36,22 @@ func _terminal() -> void:
 
 
 var _lift: Lift
-var _lift_cell := Vector2i.ZERO
+var _lift_cell := Vector2i(12, 1)
 var _lift_open := false
 
 
-## L'ascensore del piano terra: guasto (luci spente, porte chiuse) finché non hai il badge della Cima;
-## poi la freccia si accende, le porte si aprono e restano aperte, e basta entrarci per salire.
-func _elevator(top_left: Vector2i) -> void:
-	_lift_cell = top_left
-	_lift = Lift.new()
-	_lift.position = Vector2(top_left * T)
-	world.add_child(_lift)
+## L'ascensore del piano terra (il nodo "Ascensore" della scena): guasto (luci spente, porte chiuse)
+## finché non hai il badge della Cima; poi la freccia si accende, le porte si aprono e restano aperte,
+## e basta entrarci per salire.
+func _elevator() -> void:
+	_lift = world.get_node_or_null("Ascensore") as Lift
+	if _lift == null:
+		_lift = Lift.new()
+		_lift.position = Vector2(_lift_cell * T)
+		world.add_child(_lift)
+		add_spot(cell_center(_lift_cell + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
+	_lift_cell = Vector2i((_lift.position / T).round())
 	_lift.set_off(not GameState.has_badge("cima"))
-	add_spot(cell_center(top_left + Vector2i(1, 2)) - Vector2(8, 0), _ride_elevator)
 
 
 ## Le porte si aprono e resta aperto: chi ci entra sale alla Cima.

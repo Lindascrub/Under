@@ -1,5 +1,9 @@
 # CHEAP — Documento di design
 
+> **28/10/2026 — Incarichi del Capo implementati:** per le nuove partite le missioni di furto ripetute sono sostituite da energia, pratiche, etichette, contratti e montaggio del notiziario; alla Cima le pressioni entrano nei tre bilanci esistenti. Alternative realmente giocabili, conseguenze persistenti, premi una sola volta, nessuna nuova robotizzazione. Le descrizioni storiche del furto sotto restano valide per i salvataggi che lo avevano già aperto. Specifica, audit, compatibilità, economia e prove: [BOSS_MISSIONS_REWORK.md](BOSS_MISSIONS_REWORK.md).
+
+> Nives annuncia l'arrivo, usa una musica dedicata e viene seguita dalla camera; lo sportello si usa lungo il bancone. Nel Fondo la CycletteDinamo originale è condivisa col minigioco, la biglietteria ha pavimento beige LimeZu, divisorio sottile, ritorno di muro all'ingresso e pilastro separato dalle scale. Ascensore esistente con porte originali e stipite; sei telecamere originali nei luoghi di lavoro. Le versioni precedenti sono conservate sotto `backup/`, escluso dall'importazione di Godot.
+
 > Aggiornato il 26/10/2026. La storia completa (capitoli, personaggi, tendenze, finali, variabili)
 > è in [NARRATIVE_DESIGN.md](NARRATIVE_DESIGN.md). I capitoli già rifatti hanno il loro documento in
 > [capitoli/](capitoli/). Le parti marcate **(versione precedente)** descrivono codice che esiste

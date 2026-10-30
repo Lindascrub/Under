@@ -76,7 +76,7 @@ const ARROW_PITCH := {"up": 1.5, "right": 1.25, "down": 0.75, "left": 1.0}
 const INV_CATS := ["ALIMENTARI", "IGIENE", "SCUOLA", "CASA"]
 const INV_COLS := [Color("e0a040"), Color("5ac8e8"), Color("e86a8a"), Color("8ad06a")]
 const INV_GOODS := [["Pane", 0], ["Sapone", 1], ["Matita", 2], ["Riso", 0], ["Dentifricio", 1], ["Quaderno", 2],
-	["Scopa", 3], ["Biscotti", 0], ["Shampoo", 1], ["Gomma", 2], ["Lampadina", 3], ["Pasta", 0], ["Spugna", 3], ["Righello", 2]]
+	["Scopa", 3], ["Biscotti", 0], ["Shampoo", 1], ["Gomma", 2], ["Lampadina", 3], ["Pasta", 0], ["Spugna", 3], ["Righello", 2], ["Fragola", 0], ["Cipollotto", 0], ["Patata", 0], ["Cipolla", 0]]
 var inv_queue: Array = []
 var inv_sel := 0
 var inv_done := 0
@@ -86,14 +86,14 @@ var inv_msg := ""
 ## In ogni mappa c'è una strada sicura che arriva in tempo; le scorciatoie rosse passano dal cantiere.
 const RT_MAPS := [
 	{"title": "MATTINA", "budget": 120, "parcels": [2, 4, 5],
-		"nodes": [Vector2(196, 195), Vector2(262, 146), Vector2(262, 246), Vector2(330, 195), Vector2(430, 146), Vector2(430, 246)],
-		"names": ["MAGAZZINO", "", "Scala B", "", "Via dei Fiori", "Piazza"],
+		"nodes": [Vector2(64, 190), Vector2(151, 126), Vector2(151, 258), Vector2(238, 190), Vector2(352, 126), Vector2(352, 258)],
+		"names": ["MAGAZZINO", "Incrocio A", "Scala B", "Incrocio B", "Via dei Fiori", "Piazza"],
 		"edges": [[0, 1, 30, false], [0, 2, 30, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 50, false],
 			[2, 5, 50, false], [4, 5, 30, false], [0, 3, 10, true], [3, 4, 10, true], [3, 5, 10, true]]},
 	# i nomi stanno sotto gli incroci in basso e sotto quello in alto a destra: non coprono i minuti
 	{"title": "POMERIGGIO", "budget": 150, "parcels": [2, 5, 6],
-		"nodes": [Vector2(194, 195), Vector2(250, 146), Vector2(250, 246), Vector2(318, 195), Vector2(386, 146), Vector2(386, 246), Vector2(446, 146)],
-		"names": ["MAGAZZINO", "", "Scuola", "", "", "Via Roma", "Ospedale"],
+		"nodes": [Vector2(64, 190), Vector2(137, 126), Vector2(137, 258), Vector2(210, 190), Vector2(283, 126), Vector2(283, 258), Vector2(356, 126)],
+		"names": ["MAGAZZINO", "Incrocio A", "Scuola", "Incrocio B", "Incrocio C", "Via Roma", "Ospedale"],
 		"edges": [[0, 1, 30, false], [0, 2, 40, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 60, false],
 			[2, 5, 50, false], [4, 6, 30, false], [5, 6, 50, false],
 			[0, 3, 15, true], [3, 4, 20, true], [3, 5, 20, true]]},
@@ -147,13 +147,20 @@ func _ready() -> void:
 	type = str(cfg.get("type", "timing"))
 	Ui.show_hud(false)
 	var bg := ColorRect.new()
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg.color = Color.BLACK
 	bg.size = Vector2(640, 360)
 	bg.z_index = -10
 	add_child(bg)
 	_title = _label(Vector2(0, 40), 22, YELLOW)
 	_title.text = str(cfg.get("title", "Dai una mano"))
+	if type == "route":
+		_title.position.y = 8
+		_title.add_theme_font_size_override("font_size", 18)
 	_info = _label(Vector2(0, 80), 16, Color.WHITE)
+	if type == "route":
+		_info.position.y = 38
+		_info.add_theme_font_size_override("font_size", 10)
 	# ogni persona che aiuti ha la sua canzone (campo "music"); le altre, una per tutte
 	Sound.music(str(cfg.get("music", "aiuto")))
 	if Ui.transitioning:
@@ -164,6 +171,7 @@ func _ready() -> void:
 
 func _label(pos: Vector2, size: int, col: Color) -> Label:
 	var l := Label.new()
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.position = pos
 	l.size = Vector2(640, size + 10)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -211,7 +219,7 @@ func _start() -> void:
 				rt_rng.seed = int(cfg["seed"])
 			else:
 				rt_rng.randomize()
-			_info.text = "Tocca un incrocio vicino per andarci" if TouchControls.enabled else "FRECCE scegli la strada, %s per andare" % GameState.fmt("{ok}")
+			_info.text = "Tocca una destinazione a destra. Porta tutti e tre i pacchi." if TouchControls.enabled else "FRECCE scegli la destinazione • %s viaggia • Porta tutti e tre i pacchi" % GameState.fmt("{ok}")
 		"rate":
 			rate_cards = range(_rate_docs().size())
 			var rng := RandomNumberGenerator.new()
@@ -226,7 +234,7 @@ func _start() -> void:
 					var tmp: int = rate_cards[i]
 					rate_cards[i] = rate_cards[j]
 					rate_cards[j] = tmp
-			rate_msg = "Dal più vecchio al più recente."
+			rate_msg = "Tocca i documenti dal più vecchio al più recente."
 		"pratiche":
 			pr_i = 0
 			pr_msg = ""
@@ -257,10 +265,20 @@ func _bulb_answer(ok: bool) -> void:
 		Sound.sfx("deny")
 	if bulb_done >= int(cfg.get("count", 10)):
 		_finish(true)
-	elif misses >= 4:
+	elif misses >= _max_misses():
 		_finish(false)
 	else:
 		_new_bulb()
+
+
+## Quanti errori si possono fare (lampadine e fili; "misses" nel minigioco, di solito 4).
+func _max_misses() -> int:
+	return int(cfg.get("misses", 4))
+
+
+## Quanti pannelli di fili ("rounds", di solito 2).
+func _wire_rounds() -> int:
+	return int(cfg.get("rounds", 2))
 
 
 func _new_wires() -> void:
@@ -278,7 +296,7 @@ func _wire_connect() -> void:
 		Sound.sfx("coin")
 		if wire_done.size() >= 4:
 			wire_round += 1
-			if wire_round >= 2:
+			if wire_round >= _wire_rounds():
 				_finish(true)
 				return
 			_new_wires()
@@ -287,7 +305,7 @@ func _wire_connect() -> void:
 		misses += 1
 		flash = 0.3
 		Sound.sfx("deny")
-		if misses >= 4:
+		if misses >= _max_misses():
 			_finish(false)
 			return
 	wire_pick = -1
@@ -358,7 +376,12 @@ func touch_point(pos: Vector2, step: int) -> void:
 				return
 		return
 	if type == "route" and step == 0:
-		for n in _rt_neighbors(rt_at):
+		var choices := _rt_neighbors(rt_at)
+		for i in choices.size():
+			if _rt_card(i).has_point(pos):
+				_rt_go(int(choices[i]))
+				return
+		for n in choices:
 			if pos.distance_to(rt_nodes[n]) < 26.0:
 				_rt_go(n)
 				return
@@ -547,16 +570,19 @@ func _process(delta: float) -> void:
 				bulb_t += delta
 				time_left -= delta
 				if type == "bulbs":
-					_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/4" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses]
+					_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses, _max_misses()]
+					# "per_bulb": ogni lampadina ha i suoi secondi; se ci pensi troppo, è un errore
+					if cfg.has("per_bulb") and bulb_t > float(cfg["per_bulb"]) and time_left > 0.0:
+						_bulb_answer(false)
 				else:
-					_info.text = "Tempo: %d   Pannello %d/2   Errori: %d/4" % [int(ceil(time_left)), wire_round + 1, misses]
+					_info.text = "Tempo: %d   Pannello %d/%d   Errori: %d/%d" % [int(ceil(time_left)), wire_round + 1, _wire_rounds(), misses, _max_misses()]
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "rate":
 				if rate_phase == "order":
-					_info.text = "Documenti in ordine: %d/%d   Errori: %d/3" % [rate_placed.size(), rate_cards.size(), misses]
+					_info.text = "Documenti in ordine: %d/%d   Errori: %d" % [rate_placed.size(), rate_cards.size(), misses]
 				else:
-					_info.text = "Trova la voce doppia   Errori: %d/3" % misses
+					_info.text = "Trova la commissione ripetuta   Errori: %d" % misses
 			elif type == "pratiche":
 				_info.text = "Pratica %d/%d   Errori: %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
 			elif type == "stanze":
@@ -711,7 +737,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if bulb == "fioca":
 				bulb_fix += 1
 				Sound.sfx("move", 1.0 + bulb_fix * 0.2)
-				if bulb_fix >= 2:
+				if bulb_fix >= int(cfg.get("fix", 2)):
 					bulb = "buona"
 			else:
 				_bulb_answer(false)
@@ -807,11 +833,10 @@ func _finish(success: bool, partial := false) -> void:
 
 func _draw() -> void:
 	var font := Assets.font()
-	var frame := INV if type == "inventory" else (BIG if type in ["rate", "pratiche", "stanze", "percorso"] else BOX)
+	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "stanze", "percorso"] else BOX))
 	if type == "route":
-		draw_rect(Rect2(0, 0, 640, 360), Color.BLACK)
-		draw_rect(frame, Color.BLACK)
-		draw_rect(frame, Color.WHITE, false, 3.0)
+		Art.backdrop(self)
+		Art.panel(self, frame, Color("202b35"), Color("829caa"))
 	else:
 		Art.backdrop(self)
 		Art.panel(self, frame, Color("24313e"), Color("829caa"))
@@ -928,7 +953,7 @@ func _rate_pick(k: int) -> void:
 		if rate_placed.size() == rate_cards.size():
 			rate_phase = "find"
 			rate_sel = 0
-			rate_msg = "In ordine. Ora l'estratto conto: una commissione per lo stesso ritardo è addebitata due volte. Tocca la riga di troppo."
+			rate_msg = "Stesso ritardo, stessa commissione: tocca una delle due righe."
 		else:
 			for i in rate_cards.size():
 				if int(rate_cards[i]) not in rate_placed:
@@ -941,11 +966,17 @@ func _rate_pick(k: int) -> void:
 func _rate_row_pick(i: int) -> void:
 	if phase != "play" or rate_phase != "find":
 		return
-	if i in _rate_statement().get("doppie", []):
+	# JSON carica gli indici come float; Array.has distingue 3 da 3.0.
+	var duplicated := false
+	for index in _rate_statement().get("doppie", []):
+		if int(index) == i:
+			duplicated = true
+			break
+	if duplicated:
 		Sound.sfx("stamp")
 		_finish(true)
 	else:
-		_rate_miss("Questa voce c'è una volta sola. Una per ogni cosa, dice il contratto.")
+		_rate_miss("Questa voce è unica. Cerca le due commissioni uguali.")
 
 
 func _rate_miss(msg: String) -> void:
@@ -953,8 +984,7 @@ func _rate_miss(msg: String) -> void:
 	flash = 0.3
 	rate_msg = msg
 	Sound.sfx("deny")
-	if misses >= 3:
-		_finish(false)
+	# Il puzzle si può riprovare: un errore dà un indizio, non chiude l'aiuto a Olga.
 
 
 ## 1485 -> "1.485,00 €"; -35 -> "−35,00 €".
@@ -1012,7 +1042,7 @@ func _draw_rate(font: Font) -> void:
 		draw_string(font, Vector2(paper.position.x + 12, fy), "Saldo al 30/06", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, PracticeCard.INK)
 		draw_string(font, Vector2(paper.position.x, fy), _eur(int(st.get("saldo_finale", 0))).trim_prefix("+"), HORIZONTAL_ALIGNMENT_RIGHT, paper.size.x - 12, 11, PracticeCard.INK)
 	if rate_msg != "":
-		draw_string(font, Vector2(BIG.position.x, BIG.end.y - 14), rate_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 10, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+		draw_multiline_string(font, Vector2(BIG.position.x + 12, BIG.end.y - 22), rate_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x - 24, 9, 2, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
 
 
 # --- LA PRATICA IMPOSSIBILE (Teo) ------------------------------------------------------
@@ -1367,15 +1397,16 @@ func _draw_inventory(font: Font) -> void:
 		draw_string(font, card.position + Vector2(96, 71), "Altri prodotti: %d" % maxi(0, inv_queue.size() - 1), HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 8, Color("7a6257"))
 	if inv_msg != "":
 		draw_string(font, Vector2(INV.position.x, INV.position.y + 105), inv_msg, HORIZONTAL_ALIGNMENT_CENTER, INV.size.x, 9, Color("ffb7aa"))
-	var examples := [["Pane", "Riso", "Biscotti"], ["Sapone", "Dentifricio", "Shampoo"], ["Matita", "Quaderno", "Righello"], ["Scopa", "Lampadina", "Spugna"]]
+	var examples := [["Fragola", "Cipollotto", "Patata", "Cipolla"], ["Sapone", "Dentifricio", "Shampoo"], ["Matita", "Quaderno", "Righello"], ["Scopa", "Lampadina", "Spugna"]]
 	for k in INV_CATS.size():
 		var r := _inv_shelf(k)
 		var col: Color = INV_COLS[k]
 		Art.panel(self, r, Color("684b3d"), Color("c99c68"))
 		draw_rect(Rect2(r.position + Vector2(3, 3), Vector2(r.size.x - 6, 20)), col.darkened(0.58))
 		draw_string(font, r.position + Vector2(0, 16), INV_CATS[k], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 9, Art.CREAM)
-		for i in 3:
-			Art.product(self, Rect2(r.position + Vector2(5 + i * 27, 27), Vector2(26, 30)), str(examples[k][i]))
+		var spacing := (r.size.x - 10.0) / float(examples[k].size())
+		for i in examples[k].size():
+			Art.product(self, Rect2(r.position + Vector2(5 + i * spacing, 27), Vector2(floorf(spacing - 1), 30)), str(examples[k][i]))
 		draw_rect(Rect2(r.position + Vector2(3, 59), Vector2(r.size.x - 6, 5)), Color("c99c68"))
 		draw_rect(Rect2(r.position + Vector2(3, 64), Vector2(r.size.x - 6, 5)), Color("4d3631"))
 		if k == inv_sel and not TouchControls.enabled:
@@ -1383,40 +1414,63 @@ func _draw_inventory(font: Font) -> void:
 			draw_rect(Rect2(r.get_center().x - 4, r.end.y - 9, 8, 3), YELLOW)
 
 
+func _rt_card(i: int) -> Rect2:
+	return Rect2(410, 122 + i * 43, 194, 38)
+
+
 func _draw_route(font: Font) -> void:
-	draw_rect(BOX.grow(-4), Color("1e2430"))
 	var nb := _rt_neighbors(rt_at)
+	var selected := int(nb[clampi(rt_sel, 0, nb.size()-1)]) if not nb.is_empty() else -1
+	draw_string(font, Vector2(38, 84), "%s   CONSEGNE %d/3" % [str(RT_MAPS[rt_map]["title"]), rt_done.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color.WHITE)
+	draw_string(font, Vector2(410, 84), "%d MIN DISPONIBILI" % rt_left, HORIZONTAL_ALIGNMENT_CENTER, 194, 10, YELLOW)
+	draw_line(Vector2(36, 94), Vector2(604, 94), Color("52616d"), 1)
+	# Il tragitto selezionato resta l'unico luminoso; gli altri sono sullo sfondo.
 	for e: Array in rt_edges:
 		var a: Vector2 = rt_nodes[int(e[0])]
 		var b: Vector2 = rt_nodes[int(e[1])]
 		var risky := bool(e[3])
+		var active := (int(e[0]) == rt_at and int(e[1]) == selected) or (int(e[1]) == rt_at and int(e[0]) == selected)
+		var col := YELLOW if active else (Color("bd7168") if risky else Color("617b86"))
 		if risky:
-			# a tratti, rossa: il cantiere
-			var steps := int(a.distance_to(b) / 8.0)
+			var steps := maxi(1, int(a.distance_to(b) / 9.0))
 			for i in steps:
-				if i % 2 == 0:
-					draw_line(a.lerp(b, float(i) / steps), a.lerp(b, float(i + 1) / steps), Color("ff6a5a"), 3.0)
+				if i % 2 == 0: draw_line(a.lerp(b,float(i)/steps), a.lerp(b,float(i+1)/steps), col, 3 if active else 2)
 		else:
-			draw_line(a, b, Color("8a8494"), 4.0)
+			draw_line(a, b, col, 5 if active else 3)
 		var mid := a.lerp(b, 0.5)
-		draw_string(font, mid + Vector2(-14, -3), ("%d'?" if risky else "%d'") % int(e[2]), HORIZONTAL_ALIGNMENT_CENTER, 28, 9, Color("ff9a8a") if risky else Color("c8c0d0"))
+		draw_rect(Rect2(mid-Vector2(13,7), Vector2(26,14)), Color("202b35"))
+		draw_string(font, mid+Vector2(-13,3), str(int(e[2]))+"'", HORIZONTAL_ALIGNMENT_CENTER, 26, 9, col)
 	for i in rt_nodes.size():
-		var p: Vector2 = rt_nodes[i]
-		var col := Color("4a4a5a")
-		if i in rt_parcels:
-			col = GREEN if i in rt_done else YELLOW
-		draw_circle(p, 9, col)
-		if i in nb and rt_k >= 1.0 and phase == "play":
-			var sel := nb.find(i) == rt_sel and not TouchControls.enabled
-			draw_arc(p, 13, 0, TAU, 20, Color.WHITE if sel else Color(1, 1, 1, 0.45), 3.0 if sel else 1.5)
-		if rt_names[i] != "":
-			# il magazzino ha la scritta sopra, se no copre i minuti della strada
-			draw_string(font, p + Vector2(-40, -14 if i == 0 else 22), rt_names[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 8, Color("c8c0d0"))
+		var at: Vector2 = rt_nodes[i]
+		var parcel := rt_parcels.find(i)
+		var col := GREEN if i in rt_done else (YELLOW if parcel >= 0 else Color("9baeb5"))
+		draw_circle(at, 11, Color("141e29"))
+		draw_arc(at, 11, 0, TAU, 32, col, 2)
+		if i == selected: draw_arc(at, 15, 0, TAU, 32, YELLOW, 2)
+		if parcel >= 0:
+			draw_string(font, at+Vector2(-9,4), "OK" if i in rt_done else str(parcel+1), HORIZONTAL_ALIGNMENT_CENTER, 18, 9, col)
+		elif i != rt_at:
+			draw_circle(at, 3, col)
+		# Le destinazioni stanno fuori dalle strade, mai sopra i costi.
+		var y := at.y+28 if at.y >= 190 else at.y-20
+		var name_ := str(rt_names[i]).replace("Incrocio", "Inc.")
+		draw_string(font, Vector2(at.x-48,y), name_, HORIZONTAL_ALIGNMENT_CENTER, 96, 9, col)
 	_heart(rt_from.lerp(rt_to, rt_k), RED)
-	draw_string(font, Vector2(BOX.position.x + 10, BOX.position.y + 18), "TEMPO RIMASTO: %02d:%02d" % [rt_left / 60, rt_left % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, YELLOW)
-	draw_string(font, Vector2(BOX.end.x - 160, BOX.position.y + 18), "%s %d/%d" % [str(RT_MAPS[rt_map]["title"]), rt_done.size(), rt_parcels.size()], HORIZONTAL_ALIGNMENT_RIGHT, 150, 11, Color.WHITE)
-	if rt_msg != "":
-		draw_string(font, Vector2(BOX.position.x, BOX.end.y - 8), rt_msg, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 9, Color("ff9a8a"))
+	draw_string(font, Vector2(410, 112), "SCEGLI DOVE ANDARE", HORIZONTAL_ALIGNMENT_CENTER, 194, 10, Color.WHITE)
+	for i in nb.size():
+		var n := int(nb[i])
+		var edge := _rt_edge(rt_at, n)
+		var risk := bool(edge[3])
+		var card := _rt_card(i)
+		var chosen := i == rt_sel
+		draw_rect(card, Color("3b4c58") if chosen else Color("293640"))
+		draw_rect(card, YELLOW if chosen else Color("52616d"), false, 1)
+		draw_string(font, card.position+Vector2(7,14), str(rt_names[n]), HORIZONTAL_ALIGNMENT_LEFT, 180, 10, Color.WHITE)
+		var detail := "%d min  %s" % [int(edge[2]), "CANTIERE: rischio +40" if risk else "STRADA SICURA"]
+		draw_string(font, card.position+Vector2(7,29), detail, HORIZONTAL_ALIGNMENT_LEFT, 180, 8, Color("f09c87") if risk else Color("83d6bd"))
+	draw_string(font, Vector2(38, 310), "1 2 3 = PACCHI   VERDE = CONSEGNATO", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("c4d3d7"))
+	var message := rt_msg if rt_msg != "" else "Il tempo scende solo quando viaggi. Le linee rosse passano dai cantieri."
+	draw_string(font, Vector2(38, 332), message, HORIZONTAL_ALIGNMENT_LEFT, 566, 8, Color("f0b58a") if rt_msg != "" else Color("c4d3d7"))
 
 
 func _draw_wires(font: Font) -> void:
@@ -1444,7 +1498,7 @@ func _draw_wires(font: Font) -> void:
 		var yr := y0 + wire_sel * gap
 		Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
 		draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
-	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di 2" % (wire_round + 1), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
+	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di %d" % [wire_round + 1, _wire_rounds()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
 
 
 ## Freccia piena (triangolo) che punta in una direzione.

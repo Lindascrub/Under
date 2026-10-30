@@ -153,6 +153,7 @@ func _ready() -> void:
 	# ogni turno ha la sua canzone (il furto del capo, quella del capo)
 	Sound.music(str(JOB_MUSIC.get(game, "lavoro")))
 	var bg := ColorRect.new()
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg.color = Color("0b0a10")
 	bg.size = Vector2(640, 360)
 	bg.z_index = -10
@@ -1078,14 +1079,7 @@ func _finish() -> void:
 		# al -4, dopo la rivelazione: le chiamate che nessuno prende le hai prese tu. Per un po', silenzio.
 		GameState.flags["c2_quiet"] = not failed
 	Sound.sfx("coin")
-	var lines: Array = []
-	if failed:
-		lines.append("* Il turno è andato male. Il caporeparto scrive qualcosa sul suo taccuino.")
-	elif ratio >= 1.0:
-		lines.append("* Turno perfetto. Nessuno te lo dirà, ma è così.")
-	else:
-		lines.append("* Turno finito. Dieci ore della tua vita.")
-	lines.append("* Paga: %s." % GameState.euros(pay))
+	var lines: Array = result_lines(ratio, pay)
 	if game == "smistamento":
 		lines.append("* Richieste smistate: %d. Destinazioni sbagliate: %d. Discrepanze trovate: %d su %d." % [int(score), sm_wrong, sm_found, sm_disc])
 	if game == "sportello":
@@ -1097,6 +1091,24 @@ func _finish() -> void:
 	lines.append(str(cfg.get("tired", "* Ti fa male tutto.")))
 	await Ui.say(lines)
 	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
+
+
+func result_lines(ratio: float, pay: int) -> Array:
+	var lines: Array = []
+	if score <= 0:
+		lines.append("* Il turno è finito. Non hai completato attività.")
+	elif ratio < 0.5:
+		lines.append("* Il turno è andato male. Il caporeparto scrive qualcosa sul suo taccuino.")
+	elif ratio >= 1.0:
+		lines.append("* Obiettivo del turno raggiunto.")
+	else:
+		lines.append("* Turno finito. Dieci ore della tua vita.")
+	if game == "pedal":
+		lines.append("* Secondi nella fascia corretta: %d. Errori registrati: %d." % [int(score), mistakes])
+	else:
+		lines.append("* Operazioni completate: %d. Errori registrati: %d." % [int(score), mistakes])
+	lines.append("* Paga: %s." % GameState.euros(pay))
+	return lines
 
 
 ## Com'è andato il furto dell'idea: preso il merito (promozione) o beccato (niente).
@@ -1176,8 +1188,9 @@ func _draw() -> void:
 
 func _draw_pedal(font: Font) -> void:
 	Art.panel(self, BOX.grow(-5), Color("273847"), Color("80a8b4"))
-	var machine := Art.GENERATOR
-	draw_texture_rect(machine, Rect2(138, 152, 80, 80), false)
+	# Exactly the same native bike and region as Mondo/CycletteDinamo.
+	var machine: Texture2D = preload("res://assets/limezu/themes/gym.png")
+	draw_texture_rect_region(machine, Rect2(138, 152, 80, 80), Rect2(96, 480, 32, 32))
 	draw_string(font, Vector2(133, 250), "DINAMO", HORIZONTAL_ALIGNMENT_CENTER, 90, 11, Art.CREAM)
 	var c := Vector2(354, BOX.end.y - 36)
 	var r := 91.0

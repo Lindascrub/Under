@@ -36,6 +36,10 @@ frontale. Pixel art a 16 px per casella, senza antialiasing, contorno scuro (`#1
 | `tavoli_condivisi.png` | 96x32 | I tavoli uniti del finale C | 3/4 frontale | nessuna | `finale_c6.gd`, `family_scene` (C) |
 | `torre_sezione.png` | 200x600 | La Torre in sezione, sei piani dal Fondo alla Cima | frontale, piatta | il codice la fa scorrere dall'alto in basso | `cima_c6.gd`, `_finestra` (panorama); `finale_c6.gd`, epiloghi |
 | `lampadina.png` | 8x10 | La lampadina sulla scrivania: si accende quando pedali sulla dinamo | frontale, appoggiata | spenta = scurita dal codice, accesa = più luminosa; consigliati 2 frame (spenta/accesa) con alone | `cima.tscn`, `Mondo/Lampadina` (34,7); `cima_c6.gd`, `_dinamo` |
+| `lampadina_cassetta.png` | 6x9 | Una lampadina nella cassetta di Bulbo al Fondo (12 copie, alcune sdraiate) | frontale, centrata | nessuna; disegnata a mano con `tools/draw_pixel_fondo.py` (palette LimeZu) | `fondo.tscn`, `ScatolaLampadine1/2/Lampadina1-6` (la cassetta è LimeZu `grocery/356.png`) |
+| `save_star.png` | 26x13 (2 frame da 13x13) | La stellina del salvataggio | frontale | 2 frame: normale / brilla; disegnata a mano con `tools/draw_pixel_fondo.py` | `room.gd` (salvataggio), `room_feature.gd` |
+| `glasses.png` | 10x4 | Gli occhiali smarriti | dall'alto, appoggiati | nessuna; disegnata a mano con `tools/draw_pixel_fondo.py` | `room.gd` (occhiali per terra) |
+| `tritacarte.png` | 16x18 | Il tritacarte accanto alla Signora Agenda (si mangia il B-4) | frontale, piedi a terra | nessuna (il codice lo fa vibrare); era disegnato col codice, ora è un'immagine | `sottoufficio.tscn`, `Mondo/Tritacarte` |
 | `zucchero.png` | 6x4 | Bustina di zucchero (quella che la Presidente strappa) | dall'alto, piccola | consigliata: strappo (2 frame) | **generato, non ancora usato**: le scene lo descrivono a parole |
 | `telefono.png` | 12x8 | Il telefono della scrivania (la chiamata del Capo, la Casa Comune) | dall'alto, appoggiato | consigliata: vibra quando squilla (2 frame) | **generato, non ancora usato**: lo squillo è solo sonoro (`drring.wav`) |
 
@@ -52,6 +56,7 @@ Dai props LimeZu: `palm.png`.
 | `audio/drring.wav` | breve | Il telefono della scrivania | `cima_c6.gd`, 6.08 (il Capo); `finale_c6.gd` (finale A) |
 | `audio/music_cima.wav` | 12 s, in loop | Musica della Cima e della Direzione | `cima.tscn`, `direzione.gd`, inizio del finale |
 | `audio/music_epilogo.wav` | 6 s, in loop | Musica degli epiloghi e dei titoli | `finale_c6.gd` |
+| `audio/price_click.wav` | 0,05 s | Il clic delle rotelline del tabellone quando i prezzi salgono (sintetico: una paletta che sbatte; generato a mano: da sostituire con un clic vero, tipo tabellone d'aeroporto) | `mercato_c3.gd`, aggiornamento dei prezzi |
 
 ## I personaggi (Character Generator LimeZu)
 
@@ -93,39 +98,45 @@ Olga non usa più `char_14` (lo stesso di Fermo) ma `char_09`.
 ## Musica (`assets/music/`, estratta da `tools/import_music.py`)
 
 Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Quality 16-bit RPG Music** e
-**FREE LOOPABLE MUSIC (Bishop)**. Come LimeZu, la cartella è esclusa da git: non si ridistribuisce.
+**FREE LOOPABLE MUSIC (Bishop)**, più alcuni brani di **music-loop-bundle-2026-q1** (Abstraction, licenza CC0: Super Retro Lounge, Sugar Rush, Waiting Room Ennui, Mischief GROOVE, Life Is Hard BASE; Jester's Distraction è di un altro autore, "Dani Maccari Asset Pack": la licenza va controllata a parte). Come LimeZu, la cartella è esclusa da git: non si ridistribuisce.
 **Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
 scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
 
-Ogni piano, ogni turno, ogni persona che aiuti e il capo hanno una canzone loro, che non suona da nessun'altra parte (lo controlla lo smoke test). Una canzone sola si ripete; dove ce ne sono di più, finita una ne parte un'altra
+Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'aiuto e capo possono condividerla. Una canzone sola si ripete; dove ce ne sono di più, finita una ne parte un'altra
 (`autoload/sound.gd`, `PLAYLISTS`). Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
 
 | Atmosfera | Dove | Canzoni |
 |---|---|---|
 | `festa` | Fondo (-5) | GettinSillyWithIt |
-| `attesa` | Sottoufficio (-4) | PkmnGoldLuckyCorner |
-| `mercato` | Mercato (-3) | MarketJam |
+| `attesa` | Sottoufficio (-4) | Super Retro Lounge |
+| `mercato` | Mercato (-3) | Waiting Room Ennui |
 | `banca` | Banca (-2) | TracerBulletPrivateEye |
 | `citta` | Città (0) | MetropolitanCosmopolitan |
 | `quartiere` | Casa Comune, stanze di prima | Wood Forest Town |
 | `cima` | Cima | Royal Castle |
 | `presidente` | Direzione | Magic Temple |
-| `ascensore` | Gli ascensori (quello dell'inizio rallenta e si spegne quando si rompe) | SoundfontJazzClub, SlyCooperClarinet |
-| `turno_dinamo` | TURNO del -5 (cyclette) | HypnoticSynthLoop |
-| `turno_callcenter` | TURNO del -4 (call center) | FrostyLabratory |
-| `turno_cassa` | TURNO del -3 (cassa) | Dark Factory |
-| `turno_sportello` | TURNO del -2 (sportello) | Dwarven Mine |
-| `turno_smistamento` | TURNO dello 0 (smistamento) | Military Base |
-| `lavoro` | Gli altri turni (versione precedente) | Volcanic Crater |
-| `capo` | Quando il capo telefona, e il furto che ti chiede | Malicious Scheme |
-| `aiuto_mina` / `aiuto_bulbo` | Minigiochi di Mina e Bulbo | Unknown Island / Goofy Monster |
-| `aiuto_tilde` / `aiuto_ercole` | Minigiochi di Tilde ed Ercole | SleazyFurball / GettinWackyWithIt |
-| `aiuto_leda` / `aiuto_amir` | Minigiochi di Leda e Amir | East Town / TRUNK_KNOX_GO_BUCK |
-| `aiuto_olga` / `aiuto_teo` | Minigiochi di Olga e Teo | Spirits Forest / Ancient Library |
-| `aiuto_ada` / `aiuto_nadir` | Minigiochi di Ada e Nadir | Peaceful Village / Traveling the Sky |
-| `aiuto` | Minigiochi d'aiuto della versione precedente | The Old Magician |
+| `ascensore` | Gli ascensori | NightTownWaltz |
+| `turno_dinamo` | TURNO del -5 (cyclette) | PkmnGoldLuckyCorner |
+| `turno_callcenter` | TURNO del -4 (call center) | Sugar Rush (ZOOMIES) |
+| `turno_cassa` | TURNO del -3 (cassa) | Life Is Hard (BASE) |
+| `turno_sportello` | TURNO del -2 (sportello) | PkmnGoldLuckyCorner |
+| `turno_smistamento` | TURNO dello 0 (smistamento) | PkmnGoldLuckyCorner |
+| `lavoro` | Gli altri turni | PkmnGoldLuckyCorner |
+| `capo` | Il capo: quando telefona, il furto che ti chiede, il suo ufficio | MetropolitanCosmopolitan |
+| `aiuto_mina` | Minigiochi di Mina | He Will Never Be The Ape |
+| `aiuto_bulbo` | Minigiochi di Bulbo | He Will Never Be The Ape |
+| `aiuto_tilde` | Minigiochi di Tilde | Jester's Distraction |
+| `aiuto_ercole` | Minigiochi di Ercole | Jester's Distraction |
+| `aiuto_leda` | Minigiochi di Leda | Mischief (GROOVE) |
+| `aiuto_amir` | Minigiochi di Amir | Mischief (GROOVE) |
+| `aiuto_olga` | Minigiochi di Olga | He Will Never Be The Ape |
+| `aiuto_teo` | Minigiochi di Teo | He Will Never Be The Ape |
+| `aiuto_ada` | Minigiochi di Ada | He Will Never Be The Ape |
+| `aiuto_nadir` | Minigiochi di Nadir | He Will Never Be The Ape |
+| `aiuto` | Minigiochi d'aiuto della versione precedente | He Will Never Be The Ape |
 | `epilogo` | Epiloghi e titoli | Long Journey, Holy Sanctuary, Melancholic Bittersweet Groovy Cave Journey |
 | `notte` | La notte | NightTownWaltz |
+| `nives` | Nives | Lively City |
 | `fondo` | Stanze vecchie del Fondo | DripstoneCave |
 | `battaglia` | Battaglie (versione precedente) | Battle Theme I, Battle Theme II, HaveYouEverPlayedGrimDawn |
 | `tensione` | (pronta, non ancora usata) | Tension1, Tension2 |
@@ -204,6 +215,7 @@ Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anc
 | `sign_saldi.png` | 116x16 | Insegna "OGGI TUTTO AL 50%*" (scritta in Silkscreen, se no il 5 sembra un 2 al contrario) | frontale, sul muro | nessuna | `chapters/c3/mercato.tscn`, `InsegnaSaldi` (3,1) |
 | `price_board.png` | 112x34 | Tabellone dei prezzi, prima (pane, latte, acqua da `data/market.json`) | frontale, sul muro | nessuna | `mercato.tscn`, `Tabellone` (12,2) |
 | `price_board_nuovo.png` | 112x34 | Lo stesso tabellone coi prezzi aumentati | frontale, sul muro | il cambio prezzi lampeggia (fatto dal codice) | `chapters/c3/mercato_c3.gd`, `_price_update` |
+| `price_board_salita.png` | 1008x34 (9 fotogrammi 112x34) | Il tabellone mentre i prezzi salgono di 1 a ogni scatto (18→25, 24→32, 10→15), da `tools/make_price_steps.py` | frontale, sul muro | è lei l'animazione: un fotogramma per clic | `chapters/c3/mercato_c3.gd`, `_price_update` |
 | `sign_leda.png` | 52x14 | Insegna "DA LEDA" | frontale, sul muro | nessuna | non più usata (tolta dal Mercato) |
 | `cassa.png` | 32x24 | La cassa del TURNO | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |
 | `shelf.png` | 32x32 | Scaffale del negozio di Leda | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |

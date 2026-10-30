@@ -517,6 +517,7 @@ func start_cycle() -> void:
 	if n == 1:
 		await Ui.say(["È tutto molto semplice."], PRES)
 		await Ui.say(["* La frase del Capo. Detta con la stessa voce, quasi."])
+	GameState.save_game(scene_file_path, player.global_position)
 	GameState.minigame = {"cycle": n}
 	Router.goto(DIREZIONE)
 
@@ -690,6 +691,9 @@ func _terminale() -> void:
 # --- 6.08 l'ultima offerta del Capo ------------------------------------------------------------------
 
 func _boss_scene() -> void:
+	if load("res://scripts/boss_missions.gd").uses("cima"):
+		await _boss_review()
+		return
 	var d := c6()
 	if d["boss"]["final_call_seen"]:
 		return
@@ -918,3 +922,28 @@ func _caffe() -> void:
 		_:
 			Sound.sfx("thump", 1.2)
 			await Ui.say(["* La colpisci due volte. Caffè.", "* La Presidente, da lontano: \"Visto? Due volte.\""])
+
+
+## The three real mandates replace the old global-credit offer in new games.
+func _boss_review() -> void:
+	var d := c6()
+	if d["boss"]["final_call_seen"]:
+		return
+	d["boss"]["final_call_seen"] = true
+	d["boss"]["global_credit_offer_resolved"] = true
+	var st := FINALI.turn_state()
+	var missions = load("res://scripts/boss_missions.gd")
+	var mission: Dictionary = missions.state("cima")
+	mission["status"] = "done"
+	mission["seen"] = true
+	mission["result"] = {"worker_costs": int(st.get("worker_costs", 0)), "centralized": int(st.get("centralized", 0)), "shared": int(st.get("shared", 0))}
+	Ui.cutscene = true
+	Sound.sfx("drring")
+	GameState.save_game(scene_file_path, player.global_position)
+	await Ui.say(["Tre cicli. Tariffe ai lavoratori: %d. Cicli a firma unica: %d. Decisioni condivise: %d." % [int(st.get("worker_costs", 0)), int(st.get("centralized", 0)), int(st.get("shared", 0))]], "La Presidente")
+	await Ui.say(["Hai visto? Il problema non è trovare cento unità. È decidere di chi sono i cinque che mancano.", "È tutto molto semplice!"], BOSS)
+	await Ui.say(["* Ora la frase pesa più del bilancio. Nei tre cicli qualcuno ha potuto parlare. O qualcuno ha pagato per non essere ascoltato.", "* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo."])
+	_remove(president)
+	president = _person("Presidente", PRES_SHEET, PRES_TABLE, "idle_left", talk_president, true)
+	GameState.save_game(scene_file_path, player.global_position)
+	Ui.cutscene = false

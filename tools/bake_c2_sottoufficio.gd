@@ -32,7 +32,7 @@ const TICKETS := Rect2(0, 288, 32, 32)
 const BOOKCASE := Rect2(0, 208, 32, 48)
 ## la sedia vista di lato (ci si siede davvero, con l'animazione seduta)
 const CHAIR := Rect2(96, 288, 16, 32)
-const SOFA := Rect2(112, 448, 48, 32)
+const SOFA := Rect2(112, 448, 32, 32)
 
 ## Quattro stanze: il call center (a sinistra, con le scale per il -5 e i posti del turno),
 ## l'ufficio badge (in alto al centro: lo sportello, il tornello, la scala mobile per il -3),
@@ -63,6 +63,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts := _tileset()
 	root = Node2D.new()
 	root.name = "Sottoufficio"
@@ -191,6 +196,8 @@ func _examine(parent: Node, nm: String, cell: Vector2i, lines: Array, method := 
 	e.position = Vector2(cell.x * T + 8, cell.y * T + 8)
 	e.lines = PackedStringArray(lines)
 	e.method = method
+	if method == "_agenda":
+		e.approach = Vector2.DOWN
 	if not after.is_empty():
 		e.lines_after = PackedStringArray(after)
 		e.after_flag = AFTER
@@ -225,19 +232,19 @@ func _person(nm: String, sheet: String, anim: String, cell: Vector2i, nudge := V
 
 # --- il call center: tutto finto allegro ---------------------------------------
 
-## I poster stanno sulla parete, sotto le persone: chi passa davanti si vede.
+## I poster sono fissati alla parete e si consumano senza cadere.
 func _posters() -> void:
-	_sprite(decori, "PosterSorridi", "res://art/poster_sorridi.png", Rect2(), Vector2i(2, 1), 0, Vector2(4, -2))
-	_sprite(decori, "PosterModulo", "res://art/poster_modulo.png", Rect2(), Vector2i(6, 1), 0, Vector2(2, 0))
-	_sprite(decori, "PosterAttesa", "res://art/poster_attesa.png", Rect2(), Vector2i(13, 1), 0, Vector2(6, -6))
+	_notice("PosterSorridi", "sorridi", Vector2(24,40))
+	_notice("PosterModulo", "modulo", Vector2(90,48))
+	_notice("PosterAttesa", "attesa", Vector2(184,40))
 	_examine(mondo, "GuardaSorridi", Vector2i(3, 3), [
-		"* Un poster con una faccina gialla: \"SORRIDI! È GRATIS\".",
+		"* Un poster ingiallito: \"SORRIDI! È GRATIS\".",
 		"* Sotto, in piccolo: \"Il sorriso è parte integrante della mansione (art. 4 del contratto)\".",
 	], "", ["* \"SORRIDI! È GRATIS\". Adesso che la musica si è fermata una volta, la faccina sembra un ordine."])
 	_examine(mondo, "GuardaModulo", Vector2i(7, 3), [
-		"* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\".",
-		"* Qualcuno ha cancellato \"il pensiero\" e scritto sopra a penna: \"la giornata\". Poi qualcun altro ha cancellato anche quello.",
-	], "", ["* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\". Ora sai dove vanno, i moduli. Il pensiero, invece, resta."])
+		"* \"UN MODULO AL GIORNO. NON PENSARE.\".",
+		"* Sotto, a matita: posso almeno leggere? La domanda è stata cancellata due volte.",
+	], "", ["* \"UN MODULO AL GIORNO. NON PENSARE.\". Ora sai dove vanno, i moduli. Il pensiero, invece, resta."])
 	_examine(mondo, "GuardaAttesa", Vector2i(14, 3), [
 		"* \"RESTI IN LINEA!\". Il cartello è appeso proprio sopra l'altoparlante della musichetta.",
 		"* La musichetta è sempre la stessa. Dura quarantadue secondi. L'hai già contata tre volte.",
@@ -275,8 +282,8 @@ func _callcenter() -> void:
 	# la scrivania vuota del turno: telefono beige e cuffia
 	_sprite(mondo, "ScrivaniaTurno", GENERIC, DESK, Vector2i(8, 10), 22)
 	# l'angolo relax
-	_sprite(mondo, "DivanoRelax", LIVING, SOFA, Vector2i(10, 4), 14)
-	_examine(mondo, "GuardaRelax", Vector2i(13, 4), [
+	_sprite(mondo, "DivanoRelax", LIVING, SOFA, Vector2i(10, 4), 14, Vector2(0,-8))
+	_examine(mondo, "GuardaRelax", Vector2i(11, 4), [
 		"* Un cartello sopra il divano: \"ANGOLO RELAX. Durata massima del relax: 90 secondi\".",
 		"* Sotto, un timer da cucina. È già partito.",
 	])
@@ -286,11 +293,6 @@ func _callcenter() -> void:
 
 func _ufficio_badge() -> void:
 	# la biglietteria dei piani (lo sportello vero è la reception: RoomFeature "badge")
-	_sprite(mondo, "Biglietteria", SUBWAY, TICKETS, Vector2i(17, 3), 12)
-	_examine(mondo, "GuardaBiglietteria", Vector2i(18, 3), [
-		"* Una biglietteria automatica. Sullo schermo: \"BADGE DEL PIANO -3. Selezioni il metodo di pagamento: DEBITO\".",
-		"* Non c'è un altro metodo. C'è solo il tasto DEBITO, consumato.",
-	])
 	# le sedie della sala d'attesa, girate verso lo sportello (ci si siede)
 	for x in [21, 22, 23]:
 		_sprite(mondo, "SediaAttesa%d" % x, HOSPITAL, CHAIR, Vector2i(x, 7), 10)
@@ -303,12 +305,12 @@ func _ufficio_badge() -> void:
 ## La sala dello sportello B-4: un bancone di legno da sala riunioni, le bandiere della CHEAP,
 ## la Signora Agenda dietro, il tritacarte accanto. Davanti, le sedie per aspettare.
 func _sportello() -> void:
-	_sprite(mondo, "BanconeAgenda", CONFERENCE, COUNTER, Vector2i(21, 12), 14)
+	_script_prop("BanconeAgenda", "res://world/office_counter.gd", Vector2(304,208), Rect2(0,-16,56,16))
 	var agenda := _person("Agenda", "char_20", "idle_down", Vector2i(22, 11), Vector2(4, 8))
 	agenda.set_meta("finto", true)
 	_examine(mondo, "ParlaConAgenda", Vector2i(22, 12), [], "_agenda")
 	_solid("DietroLoSportello", Rect2i(20, 11, 6, 1))
-	var tri := _sprite(mondo, "Tritacarte", "res://art/shredder.png", Rect2(), Vector2i(26, 12), 10)
+	var tri := _script_prop("Tritacarte", "res://world/office_shredder.gd", Vector2(368,208), Rect2(2,-8,12,8))
 	tri.set_meta("finto", true)
 	_examine(mondo, "GuardaTritacarte", Vector2i(26, 12), [
 		"* Un tritacarte, lucido come nuovo. Accanto, un cartellino: \"ARCHIVIAZIONE RAPIDA\".",
@@ -342,8 +344,6 @@ func _archivio() -> void:
 	_examine(mondo, "GuardaSchedari2", Vector2i(37, 13), [
 		"* Uno schedario ha un post-it: \"NON APRIRE. ARCHIVIO DELL'ARCHIVIO\".",
 	], "", ["* L'archivio dell'archivio. Dentro c'è un elenco di cassetti vuoti. È l'unica cosa vera, qui dentro."])
-	_sprite(mondo, "Scatoloni0", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(34, 15), 12)
-	_sprite(mondo, "Scatoloni1", "res://assets/limezu/props/boxes.png", Rect2(), Vector2i(38, 15), 12)
 	# Ercole in mezzo agli scaffali: niente sgabelli intorno, si parla solo standogli vicino
 	var ercole := NpcSpot.new()
 	ercole.name = "Ercole"
@@ -359,7 +359,8 @@ func _plants() -> void:
 		["res://assets/limezu/props/plant.png", Vector2i(28, 15)], ["res://assets/limezu/props/plant.png", Vector2i(28, 7)]]
 	for i in plants.size():
 		var p: Array = plants[i]
-		_sprite(mondo, "Pianta%d" % i, p[0], Rect2(), p[1], 10)
+		var plant := _sprite(mondo, "Pianta%d" % i, p[0], Rect2(), p[1], 10)
+		if i == 1: plant.position += Vector2(8,-8)
 	_examine(mondo, "GuardaPianta", Vector2i(1, 4), [
 		"* Una pianta di plastica. La terra nel vaso è bagnata: qualcuno la annaffia lo stesso, ogni mattina.",
 	])
@@ -377,8 +378,8 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 func _features() -> void:
 	_feature("PostoCallCenter", "station", Vector2i(8, 10), {"job": "callcenter"})
-	_feature("SportelloBadge", "badge", Vector2i(25, 3))
-	_feature("ScaleSu", "stairs_up", Vector2i(21, 3), {"target": "res://chapters/c3/mercato.tscn", "spawn": "from_below", "need": "-3"})
+	_feature("SportelloBadge", "badge", Vector2i(21, 3))
+	_feature("ScaleSu", "stairs_up", Vector2i(25, 3), {"target": "res://chapters/c3/mercato.tscn", "spawn": "from_below", "need": "-3"})
 	_feature("Stellina", "save", Vector2i(11, 11))
 
 
@@ -388,3 +389,28 @@ func _arrival(parent: Node, nm: String, cell: Vector2i, facing: String) -> void:
 	m.position = Vector2(cell.x * T + T / 2.0, (cell.y + 1) * T - 2)
 	m.set_meta("facing", facing)
 	_add(parent, m)
+
+
+## Oggetto disegnato dal suo script, con un ingombro preciso sul pavimento.
+func _script_prop(nm: String, script_path: String, feet: Vector2, footprint: Rect2) -> Node2D:
+	var prop := Node2D.new()
+	prop.name = nm
+	prop.set_script(load(script_path))
+	prop.position = feet
+	_add(mondo, prop)
+	var body := StaticBody2D.new()
+	var collision := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = footprint.size
+	collision.shape = rectangle
+	collision.position = footprint.get_center()
+	prop.add_child(body); body.owner = root
+	body.add_child(collision); collision.owner = root
+	return prop
+
+
+func _notice(nm: String, kind: String, feet: Vector2) -> void:
+	var notice := Node2D.new()
+	notice.set_script(load("res://world/wall_notice.gd"))
+	notice.name = nm; notice.position = feet; notice.set("kind",kind)
+	_add(decori, notice)

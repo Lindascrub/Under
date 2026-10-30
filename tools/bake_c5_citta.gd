@@ -32,6 +32,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts := _tileset()
 	root = Node2D.new()
 	root.name = "Citta"
@@ -106,7 +111,7 @@ func _torre() -> void:
 	_solid("TorreSinistra", Rect2i(0, 7, 2, 3))
 	_solid("SopraPorta", Rect2i(2, 7, 2, 2))
 	_solid("TorreNives", Rect2i(4, 7, 5, 3))
-	_solid("TorreDestra", Rect2i(11, 7, 3, 3))
+	_solid("TorreDestra", Rect2i(12, 7, 2, 3))
 	_solid("SopraScala", Rect2i(9, 6, 2, 1))
 	var lamp := _sprite(mondo, "Lampione", L + "street/lamp.png", Rect2(), Vector2i(12, 11), 6)
 	var speaker := _sprite(lamp, "Altoparlante", ART + "altoparlante.png", Rect2(), Vector2i.ZERO, 0, Vector2(18, -60))
@@ -188,7 +193,7 @@ func _features() -> void:
 	_feature("PostoTurno", "station", Vector2i(23, 10), {"job": "comunicazioni_citta"})
 	_feature("SportelloBadge", "badge", Vector2i(6, 9))
 	# la scala esterna della Torre porta alla Cima: in cima la stanza fa lo sguardo indietro
-	_feature("ScaleSu", "stairs_up", Vector2i(9, 9), {"target": "res://scenes/world/boss_office.tscn", "spawn": "default", "need": "cima"})
+	_feature("ScaleSu", "stairs_up", Vector2i(10, 9), {"target": "res://scenes/world/boss_office.tscn", "spawn": "default", "need": "cima"})
 	_feature("Stellina", "save", Vector2i(13, 16))
 
 

@@ -1919,7 +1919,9 @@
           "* Il pannello ha i fili staccati.",
           "* Collega ogni filo a quello dello stesso colore: SU e GIÙ per scegliere, {ok} per collegare."
         ],
-        "time": 30,
+        "time": 20,
+        "rounds": 3,
+        "misses": 2,
         "reward": 10
       }
     },
@@ -1975,8 +1977,11 @@
           "* Una lampadina alla volta.",
           "* Le buone a destra, le rotte a sinistra. Quelle che sfarfallano si avvitano su e giù."
         ],
-        "count": 10,
-        "time": 25,
+        "count": 12,
+        "time": 16,
+        "per_bulb": 1.6,
+        "fix": 3,
+        "misses": 2,
         "reward": 10
       }
     },

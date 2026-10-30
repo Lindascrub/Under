@@ -84,7 +84,7 @@ static func facts() -> Dictionary:
 		"betrayed": betrayed().size(),
 		"networks": RULES.networks(st).size(),
 		"evidence": RULES.evidence().size(),
-		"power": bool(c6.get("boss", {}).get("global_credit_accepted", false)),
+		"power": bool(c6.get("boss", {}).get("global_credit_accepted", false)) or int(st.get("centralized", 0)) >= 2,
 		"roles_filled": filled,
 		"policy": sm,
 		"casa_open": RULES.casa_open(str(sm["casa"])),

@@ -57,6 +57,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts := _tileset()
 	root = Node2D.new()
 	root.name = "Fondo"
@@ -350,25 +355,19 @@ func _features() -> void:
 	# la cyclette (la grafica, dalla palestra di LimeZu), e il posto di lavoro (la logica) davanti
 	_sprite(mondo, "CycletteDinamo", GYM, BIKE, Vector2i(3, 6), 10)
 	_feature("Cyclette", "station", Vector2i(4, 6), {"job": "dinamo"})
-	_feature("SportelloBadge", "badge", Vector2i(27, 7))
+	_feature("SportelloBadge", "badge", Vector2i(27, 3))
 	_feature("ScaleSu", "stairs_up", Vector2i(31, 3), {"target": "res://chapters/c2/sottoufficio.tscn", "spawn": "from_below", "need": "-4"})
 	_feature("Stellina", "save", Vector2i(5, 11))
 
 
 ## L'ufficio badge, di là dalla festa: lo sportello, le sedie d'attesa, la bacheca coi prezzi, le scale.
 func _ufficio_badge() -> void:
-	_sprite(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(29, 2))
-	_examine(mondo, "GuardaBacheca", Vector2i(29, 3), [
-		"* La bacheca dell'ufficio badge. \"BADGE -4: 500 €. Ogni piano costa il doppio.\"",
-		"* Sotto, a pennarello: \"La festa è di là. Qui si paga.\"",
-	])
 	for i in 4:
 		_sprite(mondo, "SediaAttesa%d" % i, HOSPITAL, CHAIR, Vector2i(25 + i, 11), 10)
 	_examine(mondo, "GuardaSedie", Vector2i(29, 11), [
 		"* Quattro sedie per chi aspetta il badge. Nessuno aspetta: o hai i soldi o torni a pedalare.",
 	])
 	# il divano contro la parete in alto, rivolto verso la stanza (ci si siede: data/props.json)
-	_sprite(mondo, "Divano", LIVING, SOFA, Vector2i(26, 4), 10)
 	_sprite(mondo, "PiantaBadge0", GROCERY + "449.png", Rect2(), Vector2i(24, 3), 8)
 	_sprite(mondo, "PiantaBadge1", GROCERY + "451.png", Rect2(), Vector2i(33, 11), 8)
 	_sprite(mondo, "PiantaBadge2", GROCERY + "449.png", Rect2(), Vector2i(24, 12), 8)
@@ -380,3 +379,21 @@ func _arrival(parent: Node, nm: String, cell: Vector2i, facing: String) -> void:
 	m.position = Vector2(cell.x * T + T / 2.0, (cell.y + 1) * T - 2)
 	m.set_meta("facing", facing)
 	_add(parent, m)
+
+
+## Oggetto disegnato dal suo script, con un ingombro preciso sul pavimento.
+func _script_prop(nm: String, script_path: String, feet: Vector2, footprint: Rect2) -> Node2D:
+	var prop := Node2D.new()
+	prop.name = nm
+	prop.set_script(load(script_path))
+	prop.position = feet
+	_add(mondo, prop)
+	var body := StaticBody2D.new()
+	var collision := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = footprint.size
+	collision.shape = rectangle
+	collision.position = footprint.get_center()
+	prop.add_child(body); body.owner = root
+	body.add_child(collision); collision.owner = root
+	return prop

@@ -52,6 +52,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts := _tileset()
 	root = Node2D.new()
 	root.name = "Mercato"
@@ -292,8 +297,11 @@ func _supermercato() -> void:
 	for i in 6:
 		var c := _g("Frutta%d" % i, crates[i], Vector2i(16 + i, 15), 10)
 		_on_top(c, "Sopra", GROCERY + "%d.png" % fruit[i], 22)
+		if i < 4:
+			c.set_script(load("res://world/produce_stand.gd"))
+			c.set("produce_name", ["Fragola", "Cipollotto", "Patata", "Cipolla"][i])
 	_examine(mondo, "GuardaFrutta", Vector2i(18, 14), [
-		"* Frutta lucida, tutta uguale. Le mele hanno il codice a barre stampato sulla buccia.",
+		"* Fragole, cipollotti, patate e cipolle: quattro cassette del reparto ortofrutta. Più in là, le mele con il codice a barre sulla buccia.",
 	])
 	_g("Pianta0", 451, Vector2i(22, 7), 8)
 	_g("Pianta1", 449, Vector2i(1, 12), 8)
@@ -359,8 +367,6 @@ func _magazzino() -> void:
 	var bl := _sprite(mondo, "PanchinaSinistra", STREET + "bench_side.png", Rect2(), Vector2i(31, 15), 0)
 	bl.flip_h = true
 	_sprite(mondo, "PanchinaDestra", STREET + "bench_side.png", Rect2(), Vector2i(33, 15), 0)
-	_solid("PiediPanchine", Rect2i(31, 13, 1, 3))
-	_solid("PiediPanchine2", Rect2i(33, 13, 1, 3))
 	_examine(mondo, "GuardaPanchine", Vector2i(32, 14), [
 		"* L'angolo pausa: due panchine prese dal parco. Qualcuno ci ha scritto sopra a matita: \"5 MINUTI\".",
 	])

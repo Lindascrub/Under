@@ -326,6 +326,8 @@ func _roles_lines() -> Array:
 		lines.append("* %s: %s." % [FINALI.ROLES[r]["name"], _name(id) if id != "" else "nessuno, per ora"])
 	if bool(d["boss"]["global_credit_accepted"]):
 		lines.append("* In fondo al foglio, stampata, la tua firma sull'attribuzione globale. Qualcuno la indica. Nessuno dice niente. Per ora.")
+	elif int(FINALI.turn_state().get("centralized", 0)) >= 2:
+		lines.append("* Due bilanci sono passati con la tua firma unica. I rappresentanti chiedono che la prima decisione condivisa sia restituire il loro diritto di intervenire.")
 	return lines
 
 

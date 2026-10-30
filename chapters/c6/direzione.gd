@@ -1,5 +1,6 @@
 extends Node2D
 
+const B := preload("res://scripts/boss_missions.gd")
 const Art := preload("res://scripts/minigame_art.gd")
 ## Capitolo 6 — il TURNO di Direzione: uno schermo, tre cicli (GameState.minigame = {"cycle": n}).
 ## Non c'è uno stipendio: si dividono 100 unità fra stipendi, servizi, manutenzione e riserve.
@@ -44,6 +45,10 @@ func _ready() -> void:
 		st = RULES.new_state()
 	st["cycle"] = cycle
 	alloc = RULES.start_alloc(st)
+	var draft: Dictionary = dt.get("draft", {})
+	if int(draft.get("cycle", 0)) == cycle:
+		alloc = draft.get("alloc", alloc).duplicate(true)
+	st["mandate"] = ""
 	Ui.show_hud(false)
 	Sound.music("cima")
 	queue_redraw()
@@ -86,6 +91,12 @@ func situation() -> Array:
 
 func _intro() -> void:
 	phase = "intro"
+	if B.uses("cima") and not _dt().get("boss_brief_%d" % cycle, false):
+		_dt()["boss_brief_%d" % cycle] = true
+		_save_draft()
+		await Ui.say(["OTTIMIZZAZIONE FINALE. Ciclo %d." % cycle,
+			["Il bilancio deve tornare. Puoi far pagare cinque unità a chi usa i servizi. Le chiami tariffe, non tagli.", "Troppi interlocutori rallentano. Una sola firma libera cinque unità dai servizi. La tua firma.", "Se vuoi consultare gli altri, costa cinque unità. Puoi farlo. Ma poi devi trovare dove prenderle."][cycle - 1], "È tutto molto semplice!"], "Il Capo")
+
 	match cycle:
 		1:
 			await Ui.say(situation(), PRES)
@@ -291,6 +302,7 @@ func _nudge(i: int, d: int) -> void:
 	else:
 		msg = ""
 		Sound.sfx("blip", 1.0 + 0.05 * d)
+	_save_draft()
 	queue_redraw()
 
 
@@ -308,6 +320,26 @@ func _confirm() -> void:
 		Sound.sfx("deny")
 		queue_redraw()
 		return
+	if B.uses("cima"):
+		phase = "mandate"
+		await Ui.say(["Prima della conferma scegli chi sostiene i costi e chi partecipa. Il bilancio resta di cento unità.",
+			"Tariffe: +5 riserve, ma 5 sono pagati dai lavoratori. Firma unica: sposti 5 dai servizi alle riserve e salti i rappresentanti.",
+			"Tutele: almeno 40 stipendi e 20 servizi effettivi. Consultazione: 5 di coordinamento, pagati dalle riserve e poi dai servizi."], "La Presidente")
+		var mode: int = await Ui.choose("Mandato di questo ciclo", ["Mantieni le tutele", "Tariffe ai lavoratori (+5 riserve)", "Firma unica (servizi -5, riserve +5)", "Decisione condivisa (costo 5)"])
+		st["mandate"] = ["tutele", "tariffe", "accentrata", "condivisa"][mode]
+		var issue := RULES.invalid(st, alloc)
+		if issue != "":
+			msg = issue
+			st["mandate"] = ""
+			phase = "alloc"
+			queue_redraw()
+			return
+		await Ui.say(RULES.hints(st, alloc))
+		if mode == 3:
+			await Ui.say(["Non possiamo fissare i turni senza sapere chi accompagna i bambini. I rappresentanti portano gli orari, noi dobbiamo rispettare il bilancio.", "La consultazione non crea soldi. Cambia chi può contestare una decisione prima che venga applicata."], "Rappresentante dei servizi")
+		var accept: int = await Ui.choose("Applica questo bilancio e questo mandato?", ["Conferma", "Rivedi il bilancio"])
+		if accept != 0:
+			st["mandate"] = ""; phase = "alloc"; queue_redraw(); return
 	Sound.sfx("stamp")
 	if cycle == 2:
 		options = RULES.casa_options(st, alloc)
@@ -359,6 +391,8 @@ func _finish() -> void:
 	decisions.append({"cycle": cycle, "alloc": alloc.duplicate(), "choice": choice_id})
 	dt["decisions"] = decisions
 	dt["pending"] = cycle
+	dt.erase("draft")
+	GameState.save_game(CIMA, Vector2(520, 158))
 	await Ui.say(lines)
 	Router.goto(CIMA, "desk")
 
@@ -391,3 +425,10 @@ static func _debt_text(c: String) -> String:
 		"alternative":
 			return "le reti che già funzionano pagano una parte dei servizi."
 	return "tutto come prima."
+
+
+func _save_draft() -> void:
+	if B.uses("cima"):
+		_dt()["draft"] = {"cycle": cycle, "alloc": alloc.duplicate(true)}
+		GameState.save_game(CIMA, Vector2(520, 158))
+

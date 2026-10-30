@@ -47,6 +47,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts: TileSet = load(TILESET_PATH)
 	var src := ts.get_source(0) as TileSetAtlasSource
 	for base: Vector2i in [GOLD_FLOOR, PINK_FLOOR, PURPLE_FLOOR, DYNAMO_FLOOR, LIFT_WALL, MIRROR_WALL, OFFICE_WALL, DYNAMO_WALL]:
@@ -159,7 +164,7 @@ func _corridoio() -> void:
 
 ## La stanza della dinamo: la prima cyclette, identica a quella del Fondo. Si entra dall'ufficio.
 func _dinamo() -> void:
-	_sprite(mondo, "CycletteVecchia", "res://art/generator.png", Rect2(), Vector2i(16, 16), 10)
+	_sprite(mondo, "CycletteVecchia", "res://assets/limezu/themes/gym.png", Rect2(96,480,32,32), Vector2i(16,16), 10, Vector2(4,0))
 	_examine(mondo, "UsaDinamo", Vector2i(17, 17), [], "_dinamo")
 	_sprite(mondo, "ScatoleDinamo", PROPS + "boxes_small.png", Rect2(), Vector2i(19, 18), 6)
 	_examine(mondo, "GuardaScatole", Vector2i(19, 17), [
@@ -174,7 +179,6 @@ func _ufficio() -> void:
 	window.z_index = 1
 	_examine(mondo, "GuardaFinestra", Vector2i(33, 4), [], "_finestra")
 	# centro: la scrivania (con la cartellina e la lampadina della dinamo)
-	_sprite(decori, "Tappeto", GENERIC, RUG, Vector2i(31, 9), 0, Vector2(8, 4))
 	_sprite(mondo, "Scrivania", ART + "scrivania_presidenza.png", Rect2(), Vector2i(31, 7), 14)
 	var folder := _sprite(mondo, "Cartellina", ART + "cartellina_obbligo.png", Rect2(), Vector2i(32, 7), 0, Vector2(4, -26))
 	folder.z_index = 1

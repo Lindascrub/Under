@@ -181,7 +181,7 @@ func _fail(what: String) -> void:
 
 ## Il Mercato da capo, al -3 col badge del -3 (l'arrivo già visto).
 func _c3_reset(money := 0) -> Room:
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3"])
 	GameState.flags["c3_arrivo"] = true
 	GameState.money = money
@@ -217,7 +217,7 @@ func _c3_settle() -> Room:
 
 func _test_chapter3() -> void:
 	# 9-10: dal Sottoufficio si arriva al Mercato; l'ingresso si vede una volta sola
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3"])
 	var m: Room = await _go(Router.MERCATO, "from_below")
 	while Ui.cutscene or Ui.busy:
@@ -273,24 +273,25 @@ func _test_chapter3() -> void:
 	m = await _c3_talk("amir")
 	_check(GameState.flags.get("c3_acqua_amir", false) and "Acqua economica" not in GameState.items, "l'acqua si può regalare ad Amir")
 
-	# 14-16, 23: il turno alla cassa paga 120 €, una volta al giorno; il capo chiama una volta
+	# 14-16, 23: il turno alla cassa paga la paga configurata, una volta al giorno; il capo chiama una volta
+	var base_pay := int(GameState.job("cassa_mercato")["battle"]["pay"])
 	var money0 := GameState.money
 	choose_queue = [0, 0, 1]
 	m = await _c3_call(m, "_station", [GameState.job("cassa_mercato")])
-	_check(GameState.money == money0 + 120 and int(GameState.flags.get("c3_turni", 0)) == 1, "il turno alla cassa dovrebbe pagare 120 € (pagati %d)" % (GameState.money - money0))
+	_check(GameState.money == money0 + base_pay and int(GameState.flags.get("c3_turni", 0)) == 1, "il turno alla cassa dovrebbe pagare la paga configurata (pagati %d)" % (GameState.money - money0))
 	_check(GameState.flags.get("c3_capo", false) and GameState.flags.get("c3_capo_sospeso", false) and not GameState.flags.get("c3_capo_chiuso", false), "dopo il turno il capo chiama; 'Ci penso' lascia l'offerta aperta")
 	choose_queue = [0]
 	m = await _c3_call(m, "_station", [GameState.job("cassa_mercato")])
-	_check(GameState.money == money0 + 120, "un secondo turno nello stesso giorno non dovrebbe pagare")
+	_check(GameState.money == money0 + base_pay, "un secondo turno nello stesso giorno non dovrebbe pagare")
 	# la notte passa: gli interessi salgono, i soldi no
 	var debt0 := GameState.debt
 	GameState.call("_new_day")
 	GameState.call("_new_day")
-	_check(GameState.debt > debt0 and GameState.money == money0 + 120, "due notti: il debito cresce, il saldo resta")
+	_check(GameState.debt > debt0 and GameState.money == money0 + base_pay, "due notti: il debito cresce, il saldo resta")
 	GameState.pending_lines.clear()
 	choose_queue = [0]
 	m = await _c3_call(m, "_station", [GameState.job("cassa_mercato")])
-	_check(GameState.money == money0 + 240 and int(GameState.flags.get("c3_turni", 0)) == 2, "il giorno dopo si lavora di nuovo, sempre 120 €")
+	_check(GameState.money == money0 + base_pay * 2 and int(GameState.flags.get("c3_turni", 0)) == 2, "il giorno dopo si lavora di nuovo, sempre la paga configurata")
 	_check(choose_queue.is_empty() and GameState.flags.get("c3_capo_sospeso", false), "il capo non dovrebbe richiamare")
 	# 18: al terminale si chiude l'offerta per sempre; 21-22: poi i prezzi salgono, una volta
 	choose_queue = [2]
@@ -304,7 +305,7 @@ func _test_chapter3() -> void:
 	money0 = GameState.money
 	choose_queue = [0]
 	m = await _c3_call(m, "_station", [GameState.job("cassa_mercato")])
-	_check(GameState.money == money0 + 120, "dopo l'aumento dei prezzi la paga resta 120 €")
+	_check(GameState.money == money0 + base_pay, "dopo l'aumento dei prezzi la paga resta la paga configurata")
 	# 24: la seconda visita a Leda: gli ordini condivisi solo dopo l'inventario e la fattura
 	money0 = GameState.money
 	choose_queue = [0, 1]
@@ -334,7 +335,7 @@ func _test_chapter3() -> void:
 	# 28-30: la rivelazione e lo sguardo indietro, poi la Banca col salvataggio automatico
 	await m.call("on_stairs_step", m.player, "-2")
 	_check(GameState.flags.get("c3_rivelazione", false) and GameState.flags.get("c3_riepilogo", false), "sul primo gradino lo scontrino")
-	_check("RETRIBUZIONE TURNO: 120 €" in m.call("receipt_lines") and "PREZZO PANE AGGIORNATO: 25 €" in m.call("receipt_lines"), "lo scontrino dovrebbe riportare paga e pane")
+	_check(("RETRIBUZIONE TURNO: %d €" % base_pay) in m.call("receipt_lines") and "PREZZO PANE AGGIORNATO: 25 €" in m.call("receipt_lines"), "lo scontrino dovrebbe riportare paga e pane")
 	_check(m.call("look_back_line") == "Per la prima volta, qualcuno aveva smesso di fare i conti da solo.", "con gli ordini condivisi, la frase degli ordini")
 	_check(m.call("on_stairs_top", m.player), "in cima alle scale lo sguardo indietro")
 	await _wait_scene(Router.BANCA, 60000)
@@ -375,7 +376,7 @@ func _test_chapter3() -> void:
 	m = await _c3_call(m, "_badge_machine")
 	_check(GameState.has_badge("-2") and GameState.money == 0 and GameState.debt == debt0 - 2000 and GameState.flags.get("c3_badge", "") == "comprato", "2.000 € esatti: badge comprato, debito giù")
 	GameState.save_game(Router.MERCATO, m.player.position)
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.load_game()
 	_check(GameState.is_robot("amir") and GameState.flags.get("c3_capo_firmato", false) and GameState.has_badge("-2") and int(GameState.flags.get("c3_turni", 0)) == 1, "salvare e ricaricare conserva tutto")
 
@@ -395,7 +396,7 @@ func _test_chapter3() -> void:
 
 ## La Banca da capo, al -2 col badge del -2 (l'arrivo già visto).
 func _c4_reset(money := 0) -> Room:
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3", "-2"])
 	GameState.flags["c4_arrivo"] = true
 	GameState.money = money
@@ -430,7 +431,7 @@ func _c4_settle() -> Room:
 func _test_chapter4() -> void:
 	var bank := GameState.bank
 	# 1-2: dal Mercato si arriva alla Banca, l'arrivo una volta sola; Olga e Teo ci sono, grigi
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3", "-2"])
 	var m: Room = await _go(Router.BANCA, "from_below")
 	while Ui.cutscene or Ui.busy:
@@ -598,7 +599,7 @@ func _test_chapter4() -> void:
 	m = await _c4_call(m, "_badge_machine")
 	_check(GameState.has_badge("0") and GameState.money == 0 and GameState.debt == debt0 - 4000 and GameState.flags.get("c4_badge", "") == "comprato", "4.000 € esatti: badge comprato, debito giù")
 	GameState.save_game(Router.BANCA, m.player.position)
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.load_game()
 	_check(GameState.is_robot("teo") and GameState.flags.get("c4_capo_firmato", false) and GameState.has_badge("0"), "salvare e ricaricare conserva tutto")
 
@@ -630,7 +631,7 @@ func _test_chapter4() -> void:
 
 ## La Città da capo, al piano terra col badge del piano terra (l'arrivo già visto).
 func _c5_reset(money := 0) -> Room:
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3", "-2", "0"])
 	GameState.flags["c5_arrivo"] = true
 	GameState.money = money
@@ -669,7 +670,7 @@ func _c5_settle() -> Room:
 
 ## La Cima da capo: le scelte dei capitoli prima date per fatte, il badge della Cima in tasca.
 func _c6_reset(rich := true) -> void:
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3", "-2", "0", "cima"])
 	choose_queue = []
 	choose_index = 0
@@ -822,6 +823,10 @@ func _test_chapter6() -> void:
 		var seen := {}
 		for mood: String in Sound.PLAYLISTS:
 			if mood in ["epilogo", "battaglia", "tensione", "fondo", "notte"]:
+				continue
+			# scelte di Linda: una canzone sola per tutti i turni, una per tutti gli aiuti, e il capo
+			# ha quella della Città
+			if mood.begins_with("turno_") or mood.begins_with("aiuto") or mood in ["lavoro", "capo"]:
 				continue
 			for track: String in Sound.PLAYLISTS[mood]:
 				_check(not seen.has(track), "%s suona sia in %s che in %s" % [track, seen.get(track, ""), mood])
@@ -999,7 +1004,7 @@ func _test_chapter6() -> void:
 	_check(all_ok, "33: 1200 combinazioni, sempre una variante della famiglia giusta")
 
 	# --- I: un salvataggio con dati mancanti -----------------------------------------------------------
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.flags["chapter_6"] = {"entered": true, "director_turn": {"cycle_1_completed": true}}
 	c6 = logic.c6()
 	_check(c6["director_turn"]["cycle_1_completed"] and not c6["director_turn"]["cycle_2_completed"] and c6["final_decision"]["confirmed"] == false \
@@ -1019,7 +1024,7 @@ func _test_chapter6() -> void:
 	c6["outcome"] = fin.decide("B")
 	c6["epilogue"]["step"] = 7
 	GameState.save_game(Router.FINALE)
-	GameState.new_game()
+	_legacy_new_game()
 	choose_queue = [2]
 	Router.continue_game()
 	await _wait_scene(Router.FINALE)
@@ -1034,7 +1039,7 @@ func _test_chapter5() -> void:
 	var city := GameState.city
 	var logic: GDScript = load("res://chapters/c5/citta_c5.gd")
 	# 13-15: dalla Banca si arriva alla Città, l'arrivo una volta sola; Nadir e Rina ci sono, grigi
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.badges.assign(["-4", "-3", "-2", "0"])
 	GameState.flags["c1_arrivo"] = true
 	GameState.flags["c2_b4"] = true
@@ -1226,7 +1231,7 @@ func _test_chapter5() -> void:
 	m = await _c5_call(m, "_badge_machine")
 	_check(GameState.has_badge("cima") and GameState.money == 0 and GameState.debt == debt0 - 8000 and str(GameState.flags.get("c5_badge", "")) == "comprato", "8.000 € esatti: badge comprato, debito giù")
 	GameState.save_game(Router.CITY, m.player.position)
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.load_game()
 	_check(GameState.is_robot("ada") and GameState.flags.get("c5_capo_firmato", false) and GameState.has_badge("cima") and GameState.flags.get("c5_assemblea", false), "salvare e ricaricare conserva tutto")
 
@@ -1274,7 +1279,7 @@ func _run() -> void:
 	await _go(Router.MENU)
 
 	# --- casa
-	GameState.new_game()
+	_legacy_new_game()
 	var home := await _go(Router.HOME, "bed")
 	home.call("_computer")
 	await _idle()
@@ -1521,7 +1526,7 @@ func _run() -> void:
 	GameState.minutes = GameState.DAY_START
 
 	# --- debito pagato: dormendo si va al finale
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.exploited = 2
 	GameState.money = GameState.debt + 10000
 	GameState.pay_debt(GameState.debt)
@@ -1534,7 +1539,7 @@ func _run() -> void:
 	_check(GameState.debt <= 0, "pagando tutto il debito dovrebbe arrivare a zero")
 
 	# --- strada del baratto: chiedere il motivo, conquistare fiducia, liberare
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.flags["street_intro"] = true
 	GameState.quests["esame_luca"] = "declined"
 	choose_queue = []
@@ -1562,7 +1567,7 @@ func _run() -> void:
 	for state in ["normale", "liberi", "aiutati"]:
 		for day in [1, 2, 3, 4]:
 			for minutes in [9 * 60, 19 * 60]:
-				GameState.new_game()
+				_legacy_new_game()
 				for f in ["street_intro", "park_intro", "shelter_intro", "office_intro"]:
 					GameState.flags[f] = true
 				GameState.day = day
@@ -1583,7 +1588,7 @@ func _run() -> void:
 								_fail("%s e %s sovrapposti in %s (giorno %d, ore %d, %s)" % [ps[i].get("id"), ps[j].get("id"), room.get_file(), day, minutes / 60, state])
 
 	# --- una nuova partita: l'ascensore scende e si rompe al piano -5
-	GameState.new_game()
+	_legacy_new_game()
 	choose_queue = []
 	choose_index = 0
 	Router.goto(Router.ELEVATOR)
@@ -1592,6 +1597,12 @@ func _run() -> void:
 	var fondo: Room = get_tree().current_scene
 	_check(GameState.floor_id == "-5", "la partita dovrebbe cominciare al piano -5")
 	await get_tree().create_timer(1.5).timeout
+	await _idle()
+	# la scenetta dell'arrivo (l'ascensore che crolla) finisce prima di parlare con Fermo
+	var ct := 0
+	while Ui.cutscene and ct < 3000:
+		await get_tree().process_frame
+		ct += 1
 	await _idle()
 	choose_queue = [0, 0]
 	fondo.call("_talk_fermo")
@@ -1683,7 +1694,7 @@ func _run() -> void:
 	_check(_scene_path() == Router.SOTTOUFFICIO, "senza badge il tornello non dovrebbe far passare")
 
 	# --- chi aiuta tutti quelli del piano riceve il badge in regalo (e un'amica)
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.flags["fermo_talked"] = true
 	GameState.flags["fermo_called"] = true
 	var esteem0 := GameState.self_esteem
@@ -1696,7 +1707,7 @@ func _run() -> void:
 	_check(GameState.flags.get("clerk_friend", false) and GameState.self_esteem > esteem0, "l'addetta ai badge dovrebbe diventare tua amica e l'autostima salire")
 
 	# --- capitolo 2: il giro del Modulo B-4, e come se ne esce (Ercole firma, Tilde fa la voce)
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.flags["c2_arrivo"] = true
 	GameState.money = 5000
 	var c2: Room = await _go(Router.SOTTOUFFICIO, "from_below")
@@ -1728,7 +1739,7 @@ func _run() -> void:
 	await _idle()
 	_check(GameState.flags.get("c2_fine", false) and GameState.floor_id == "-3", "dopo lo sguardo indietro si dovrebbe arrivare al Mercato")
 	# la procedura d'urgenza: paghi e il B-4 è timbrato subito
-	GameState.new_game()
+	_legacy_new_game()
 	GameState.flags["c2_arrivo"] = true
 	GameState.flags["c2_b4"] = true
 	GameState.money = 1000
@@ -1773,7 +1784,7 @@ func _run() -> void:
 		["baratto", 0, GameState.workers().slice(0, ceili(GameState.workers().size() * 0.9)), "quasi_tutti"],
 	]
 	for c: Array in cases:
-		GameState.new_game()
+		_legacy_new_game()
 		GameState.exploited = int(c[1])
 		if c[0] == "capitalismo":
 			GameState.money = 90000
@@ -1791,3 +1802,12 @@ func _run() -> void:
 	else:
 		print("SMOKE TEST FALLITO:\n- " + "\n- ".join(_failures))
 	get_tree().quit(0 if _failures.is_empty() else 1)
+
+
+## This historical story matrix intentionally exercises legacy theft/global-credit saves.
+## The six new missions and their input/reload paths are covered by boss_*_test.
+func _legacy_new_game() -> void:
+	GameState.new_game()
+	GameState.flags["boss_missions"] = {}
+	for floor: String in ["-5", "-4", "-3", "-2", "0", "cima"]:
+		GameState.flags["boss_missions"][floor] = {"status": "legacy", "seen": true}

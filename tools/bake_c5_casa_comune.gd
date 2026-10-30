@@ -31,6 +31,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts: TileSet = load(TILESET_PATH)
 	root = Node2D.new()
 	root.name = "CasaComune"
@@ -111,7 +116,6 @@ func _sala() -> void:
 	])
 	_npc("Ada", "ada", "idle_up", Vector2i(6, 5))
 	# lo zerbino: da qui si esce in piazza
-	_sprite(decori, "Zerbino", GENERIC, RUG, Vector2i(3, 11), 0, Vector2(0, 4))
 
 
 ## L'archivio: la porta resta chiusa fino alla manifestazione (vedi casa_comune_c5.gd).

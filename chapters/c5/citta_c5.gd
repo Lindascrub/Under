@@ -443,6 +443,9 @@ func quick_turn() -> void:
 
 ## Il capo chiama dopo il primo turno, una volta sola: 6.000 € per il progetto di Ada.
 func _boss_call() -> void:
+	if load("res://scripts/boss_missions.gd").uses("0"):
+		await load("res://scripts/boss_missions.gd").offer(self)
+		return
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
 	GameState.flags["boss_call_floor_" + GameState.floor_id] = true
 	if _f("c5_capo") or GameState.is_robot("ada"):
@@ -505,6 +508,9 @@ func _close_offer() -> void:
 # --- 5.10 un, due, tre, stella: il progetto di Ada ------------------------------------------------
 
 func _presentazioni() -> void:
+	if load("res://scripts/boss_missions.gd").active("0"):
+		load("res://scripts/boss_missions.gd").launch(self, "0")
+		return
 	if _f("c5_capo_firmato"):
 		await Ui.say(["* PROPOSTA DI RIUTILIZZO DELLA CASA COMUNE. RESPONSABILE: {name}.",
 			"* DATI RACCOLTI DA: RESIDENTI E STUDENTI. Questa riga nessuno l'ha cambiata. Nessuno la legge."])
@@ -612,7 +618,7 @@ static func _antenna(n: Node2D) -> void:
 func protest_ready() -> bool:
 	if _f("c5_protesta") or _f("c5_fine") or int(GameState.flags.get("c5_turni", 0)) < 1:
 		return false
-	if _f("c5_capo_chiuso"):
+	if load("res://scripts/boss_missions.gd").uses("0") or _f("c5_capo_chiuso"):
 		return true
 	return GameState.day > int(GameState.flags.get("c5_turno_giorno", GameState.day))
 
@@ -621,7 +627,7 @@ func _protest() -> void:
 	GameState.flags["c5_protesta"] = true
 	GameState.flags["c5_protesta_giorno"] = GameState.day
 	Ui.cutscene = true
-	if not _f("c5_capo_chiuso"):
+	if not load("res://scripts/boss_missions.gd").uses("0") and not _f("c5_capo_chiuso"):
 		var was_offered := _f("c5_capo")
 		_close_offer()
 		if was_offered:
@@ -655,7 +661,21 @@ func _protest() -> void:
 			"Se vogliamo fare qualcosa insieme, dobbiamo pensare anche a chi lavora qui."], "Rina")
 	await _three_proposals()
 	await _crash()
+	var missions = load("res://scripts/boss_missions.gd")
+	# These lines have just been spoken above; old saves never synthesize an archive.
+	missions.record_quote("student", "Studente", "Sono qui perché chiudono il posto dove studio.", "La protesta riguarda la chiusura della Casa Comune.", 20)
+	if not GameState.is_robot("ada"):
+		missions.record_quote("casa", "Ada", "Vogliamo capire perché l'unica soluzione proposta è far pagare chi lo usa.", "Ada ha detto che tetto e manutenzione richiedono soldi.", 22)
+	else:
+		missions.record_quote("casa", "Lavoratore", "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Il lavoratore parla del tempo perso nei trasporti.", 22)
+	missions.record_quote("rina", "Rina", "L'avevo appena riparata.", "La vetrina è rotta. Non si è visto chi è stato; Rina non ha chiesto di chiudere la Casa.", 18)
 	Ui.cutscene = false
+	if missions.uses("0") and not missions.state("0").get("seen", false):
+		var score := Sound.capture_music()
+		Sound.music("capo")
+		await _boss_call()
+		if not Ui.transitioning:
+			Sound.restore_music(score)
 
 
 func organizer() -> String:
@@ -936,6 +956,18 @@ func _teo() -> void:
 
 func assembly() -> void:
 	var who := organizer()
+	if GameState.flags.get("boss_news_divisive", false) and not GameState.flags.get("boss_news_rectified", false):
+		await Ui.say(["Dopo il notiziario qualcuno non vuole venire. Pensa che stiamo discutendo contro chi ha un negozio.", "Possiamo mostrare le registrazioni complete, ma serve il tempo per ricontattare le persone. Senza rettifica serve una risorsa in più per organizzare la gestione."], who)
+		var fix: int = await Ui.choose("Prima dell'assemblea:", ["Rettifica pubblica e ricontatta (30 minuti)", "Procedi con chi è presente", "Torno più tardi"], who)
+		if fix == 2:
+			return
+		if fix == 0:
+			for clip: Dictionary in load("res://scripts/boss_missions.gd").news_sources():
+				await Ui.say([clip["quote"], "* " + str(clip["context"])], str(clip["who"]))
+			GameState.spend(30)
+			GameState.flags["boss_news_rectified"] = true
+			await Ui.say(["* La rettifica parte. Non cancella la prima notizia, ma alcune persone tornano ad ascoltare."])
+
 	if not _f("c5_rapporto"):
 		var c: int = await Ui.choose("Il rapporto dei bilanci è nell'archivio della Casa Comune: oggi è aperto.",
 			["Cominciate pure", "Prima vado a leggerlo"], who)
@@ -1041,7 +1073,8 @@ static func outcome(support: String) -> Dictionary:
 	var info := _f("c5_rapporto_presentato")
 	var org := _f("c5_ada_stanze")
 	var res := resources()
-	var ready := info and org and res.size() >= 2
+	var needed := 3 if _f("boss_news_divisive") and not _f("boss_news_rectified") else 2
+	var ready := info and org and res.size() >= needed
 	var esito := ""
 	if ready and support != "A":
 		esito = "comunitaria"

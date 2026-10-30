@@ -34,7 +34,7 @@ const ROPE := Rect2(208, 368, 48, 16)       # cordone rosso tra colonnine dorate
 const VENDING := Rect2(192, 192, 32, 48)    # distributore di merendine
 const TV := Rect2(176, 240, 32, 24)         # la TV appesa
 const BOARD := Rect2(32, 0, 32, 32)         # bacheca con i fogli
-const SOFA := Rect2(16, 448, 48, 32)        # divano grigio (soggiorno)
+const SOFA := Rect2(112, 448, 32, 32)       # variante marrone del soggiorno
 const TABLE := Rect2(80, 96, 48, 32)        # tavolino basso
 const RUG := Rect2(144, 64, 64, 48)         # tappeto rosso e oro
 const RUG_SMALL := Rect2(144, 160, 32, 32)  # tappetino
@@ -68,6 +68,11 @@ var decori: Node2D
 
 
 func _ready() -> void:
+	# la scena si sistema a mano nell'editor: non la sovrascrivo (si rifà da zero solo con -- --force)
+	if FileAccess.file_exists(OUT) and not "--force" in OS.get_cmdline_user_args():
+		print("BAKE saltato: ", OUT, " esiste già (spostamenti fatti nell'editor). Per rifarla da zero: -- --force")
+		get_tree().quit()
+		return
 	var ts := _tileset()
 	root = Node2D.new()
 	root.name = "Banca"
@@ -193,6 +198,8 @@ func _examine(parent: Node, nm: String, cell: Vector2i, lines: Array, method := 
 	e.position = Vector2(cell.x * T + 8, cell.y * T + 8)
 	e.lines = PackedStringArray(lines)
 	e.method = method
+	if nm in ["GuardaBancone", "GuardaImpiegata", "GuardaQuaderno"]:
+		e.approach = Vector2.DOWN
 	if not after.is_empty():
 		e.lines_after = PackedStringArray(after)
 		e.after_flag = AFTER
@@ -242,14 +249,17 @@ func _r(parent: Node, nm: String, tex: String, region: Rect2, cell: Vector2i, fo
 
 func _insegne() -> void:
 	var sign := _sprite(decori, "InsegnaBanca", ART + "insegna_banca.png", Rect2(), Vector2i(13, 1), 0, Vector2(0, 12))
-	var display := _sprite(decori, "DisplayNumeri", ART + "display_numeri.png", Rect2(), Vector2i(22, 1), 0, Vector2(0, 10))
+	var display := Node2D.new()
+	display.set_script(preload("res://world/number_display.gd"))
+	display.name = "DisplayNumeri"
+	display.position = Vector2(352, 42)
+	_add(decori, display)
 	_examine(mondo, "GuardaInsegna", Vector2i(18, 3), [], "_insegna")
 	_examine(mondo, "GuardaDisplay", Vector2i(24, 3), [], "_display")
 
 
 ## L'atrio: due sportelli (il primo è il tuo TURNO), la fila grigia, i cordoni, il distributore dei numeri.
 func _atrio() -> void:
-	_r(decori, "Tappeto", GENERIC, RUG, Vector2i(18, 15), 0, Vector2(0, -2))
 	_r(mondo, "Bancone", HOSPITAL, DESK, Vector2i(13, 5), 12)
 	_examine(mondo, "GuardaBancone", Vector2i(14, 5), [
 		"* Lo sportello del settore fiducia. Sul vetro, un adesivo: \"SORRIDI, STAI PER ESSERE VALUTATO\".",
@@ -294,7 +304,6 @@ func _attesa() -> void:
 	_examine(mondo, "GuardaMerendine", Vector2i(9, 4), [
 		"* Merendine a 4 €. Sotto, piccolo: \"Il prezzo comprende la commissione di attesa\".",
 	])
-	_r(decori, "Tappetino", GENERIC, RUG_SMALL, Vector2i(3, 7), 0, Vector2(0, 4))
 	_r(mondo, "Tavolino", GENERIC, TABLE, Vector2i(2, 7), 10)
 	_examine(mondo, "GuardaTavolino", Vector2i(3, 7), [
 		"* Riviste: \"Risparmiare con gioia\", \"Il tuo mutuo e te\". Sono di tre anni fa. Le copertine sorridono ancora.",
@@ -312,7 +321,7 @@ func _attesa() -> void:
 
 ## L'ufficio badge: la bacheca, una pianta. Lo sportello e le scale sono caratteristiche.
 func _ufficio() -> void:
-	_r(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(30, 2), 0, Vector2(0, -2))
+	_r(decori, "Bacheca", HOSPITAL, BOARD, Vector2i(28, 2), 0, Vector2(0, -2))
 	_sprite(mondo, "PiantaUfficio", GROCERY + "449.png", Rect2(), Vector2i(29, 6), 8)
 
 
@@ -321,10 +330,7 @@ func _teo() -> void:
 	_r(mondo, "Archivio", CLASSROOM, BOOKCASE, Vector2i(32, 10), 12)
 	_r(mondo, "Archivio2", CLASSROOM, BOOKCASE, Vector2i(35, 10), 12)
 	_examine(mondo, "GuardaArchivio", Vector2i(33, 10), [], "_archivio")
-	_r(decori, "TappetoTeo", GENERIC, RUG_SMALL, Vector2i(30, 14), 0, Vector2(0, 4))
 	_sprite(mondo, "ScrivaniaTeo", PROPS + "office_desk.png", Rect2(), Vector2i(31, 13), 10)
-	var nb := _sprite(mondo, "Quaderno", ART + "quaderno.png", Rect2(), Vector2i(31, 13), 0, Vector2(3, -14))
-	nb.z_index = 1
 	_examine(mondo, "GuardaQuaderno", Vector2i(31, 13), [], "_quaderno")
 	_r(mondo, "Leggio", CLASSROOM, LECTERN, Vector2i(37, 13), 6)
 	_examine(mondo, "GuardaLeggio", Vector2i(37, 13), [

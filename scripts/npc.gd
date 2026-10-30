@@ -290,6 +290,11 @@ func interact() -> void:
 			return
 		await Ui.say([GameState.robot_line(id)], who)
 		return
+	var consequence: Array = load("res://scripts/boss_missions.gd").npc_lines(id)
+	var consequence_key := "boss_consequence_seen_" + id + ("_copy" if id == "olga" and GameState.day > int(GameState.flags.get("boss_olga_offer_day", GameState.day)) else "")
+	if not consequence.is_empty() and not GameState.flags.get(consequence_key, false):
+		GameState.flags[consequence_key] = true
+		await Ui.say(consequence, who)
 	if await Quests.handle_npc(self):
 		return
 	# la stanza può avere qualcosa di speciale da far dire a questa persona (talk_<id>)

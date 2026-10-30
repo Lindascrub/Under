@@ -28,6 +28,7 @@ const MIN_WAGES := 30
 const MAINT_NEED := 25
 const BILL := 15
 const BREAKDOWN_AT := 10
+const POLICY_NAMES := {"tutele": "Tutele nei contratti", "tariffe": "Costi ai lavoratori", "accentrata": "Firma unica", "condivisa": "Consultazione vincolante"}
 
 const QUESTIONS := {
 	1: "QUANTO VALE IL LAVORO?",
@@ -82,6 +83,14 @@ static func invalid(st: Dictionary, a: Dictionary) -> String:
 	for c: String in CATS:
 		if int(a[c]) < 0 or int(a[c]) > MAX_CAT:
 			return "Nessuna voce può superare %d." % MAX_CAT
+	if str(st.get("mandate", "")) == "tutele" and (int(a["stipendi"]) < 40 or int(a["servizi"]) - int(_cover(st, a)["from_services"]) < 20):
+		return "Le tutele richiedono stipendi 40 e servizi effettivi 20."
+	if str(st.get("mandate", "")) == "accentrata" and int(a["servizi"]) < 5:
+		return "La firma unica sposta 5 dai servizi: devono esserci."
+	if str(st.get("mandate", "")) != "":
+		var coverage := _cover(st, a)
+		if int(coverage["from_reserve"]) + int(coverage["from_services"]) < int(coverage["cost"]):
+			return "Riserve e servizi non coprono tutte le spese annunciate: rivedi il bilancio."
 	return ""
 
 
@@ -116,6 +125,8 @@ static func service_label(v: int) -> String:
 ## Quello che il ciclo ha già addosso prima di decidere: la bolletta, il guasto annunciato.
 static func due(st: Dictionary) -> int:
 	var d := 0
+	if str(st.get("mandate", "")) == "condivisa":
+		d += 5
 	if int(st["cycle"]) == 2 and not st.get("bill_paid", false):
 		d += BILL
 	if st.get("breakdown_due", false):
@@ -126,13 +137,15 @@ static func due(st: Dictionary) -> int:
 ## Le righe da leggere prima di confermare: cosa succede con questa distribuzione. Niente è nascosto.
 static func hints(st: Dictionary, a: Dictionary) -> Array:
 	var out: Array = []
+	if str(st.get("mandate", "")) != "":
+		out.append(policy_hint(str(st["mandate"])))
 	var s := int(a["stipendi"])
 	var v := int(a["servizi"])
 	var m := int(a["manutenzione"])
 	var r := int(a["riserve"])
 	out.append("STIPENDI %d: %s." % [s, wage_label(s)] + (" Un aumento è per sempre: dopo non si scende sotto %d." % s if s > maxi(40, minimum(st, "stipendi")) else ""))
 	var cover := _cover(st, a)
-	var v_eff := v - int(cover["from_services"])
+	var v_eff := v - int(cover["from_services"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0)
 	var vs := "SERVIZI %d: %s." % [v, service_label(v_eff)]
 	if int(cover["from_services"]) > 0:
 		vs += " (Ne restano %d: %d vanno a coprire le spese.)" % [v_eff, int(cover["from_services"])]
@@ -155,9 +168,10 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 ## Come si coprono le spese di questo ciclo: prima le riserve (comprese quelle nuove), poi i servizi.
 static func _cover(st: Dictionary, a: Dictionary) -> Dictionary:
 	var cost := due(st)
-	var pot := int(st["reserve"]) + int(a["riserve"])
+	var pot := int(st["reserve"]) + int(a["riserve"]) + (5 if str(st.get("mandate", "")) in ["tariffe", "accentrata"] else 0)
 	var from_reserve := mini(cost, pot)
-	var from_services := mini(cost - from_reserve, int(a["servizi"]))
+	var available_services := maxi(0, int(a["servizi"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0))
+	var from_services := mini(cost - from_reserve, available_services)
 	return {"cost": cost, "from_reserve": from_reserve, "from_services": from_services, "reserve_after": pot - from_reserve}
 
 
@@ -166,7 +180,13 @@ static func apply(st: Dictionary, a: Dictionary) -> Array:
 	var out: Array = []
 	var cover := _cover(st, a)
 	var s := int(a["stipendi"])
-	var v_eff := int(a["servizi"]) - int(cover["from_services"])
+	var mandate := str(st.get("mandate", ""))
+	var v_eff := int(a["servizi"]) - int(cover["from_services"]) - (5 if mandate == "accentrata" else 0)
+	if mandate != "":
+		out.append(policy_hint(mandate))
+		st["worker_costs"] = int(st.get("worker_costs", 0)) + (5 if mandate == "tariffe" else 0)
+		st["centralized"] = int(st.get("centralized", 0)) + (1 if mandate == "accentrata" else 0)
+		st["shared"] = int(st.get("shared", 0)) + (1 if mandate == "condivisa" else 0)
 	if int(cover["cost"]) > 0:
 		out.append("Spese del ciclo: %d. Dalle riserve: %d." % [int(cover["cost"]), int(cover["from_reserve"])]
 			+ (" Dai servizi: %d." % int(cover["from_services"]) if int(cover["from_services"]) > 0 else ""))
@@ -188,9 +208,18 @@ static func apply(st: Dictionary, a: Dictionary) -> Array:
 		st["wage_floor"] = s
 	out.push_front("Stipendi: %s. Servizi: %s." % [wage_label(s), service_label(v_eff)])
 	(st["log"] as Array).append({"cycle": int(st["cycle"]), "alloc": a.duplicate(), "services_eff": v_eff,
-		"reserve": int(st["reserve"]), "backlog": int(st["backlog"])})
+		"reserve": int(st["reserve"]), "backlog": int(st["backlog"]), "mandate": mandate})
 	st["cycle"] = int(st["cycle"]) + 1
 	return out
+
+
+static func policy_hint(mode: String) -> String:
+	match mode:
+		"tutele": return "TUTELE: turni protetti; minimo 40 stipendi e 20 servizi. Meno margine da spostare alle riserve."
+		"tariffe": return "TARIFFE: +5 alle riserve, pagati dai lavoratori fuori dalle 100 unità. Il servizio resta, costa a chi lo usa."
+		"accentrata": return "FIRMA UNICA: 5 dai servizi alle riserve. Meno servizi e nessun veto dei rappresentanti in questo ciclo. Due cicli accentrano il potere."
+		"condivisa": return "CONSULTAZIONE: i rappresentanti partecipano; 5 di coordinamento pagati da riserve, poi servizi. Meno risorse per il resto."
+	return ""
 
 
 # --- le scelte del ciclo 2 e 3 -----------------------------------------------------------------------
@@ -206,7 +235,7 @@ static func casa_state() -> String:
 ## Le opzioni del ciclo 2 sulla Casa Comune: [id, testo, motivo se chiusa ("" se aperta)].
 static func casa_options(st: Dictionary, a: Dictionary) -> Array:
 	var f := GameState.flags
-	var v := int(a["servizi"]) - int(_cover(st, a)["from_services"])
+	var v := int(a["servizi"]) - int(_cover(st, a)["from_services"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0)
 	var out: Array = []
 	match casa_state():
 		"riconversione":

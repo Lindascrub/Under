@@ -1,5 +1,5 @@
 {
-  "_info": "Le cose della mappa con cui si può interagire anche senza un esame scritto a mano (world/prop_talk.gd). Chiave: il file della texture (dopo assets/limezu/ o art/), con @x,y se è un pezzo di un foglio. lines = cosa si legge; seats = posti dove sedersi [x, y, dir, lift] dall'angolo in basso a sinistra dello sprite; solid = pixel solidi in basso se l'oggetto non ne ha.",
+  "_info": "Le cose della mappa con cui si può interagire anche senza un esame scritto a mano (world/prop_talk.gd). Chiave: il file della texture (dopo assets/limezu/ o art/), con @x,y se è un pezzo di un foglio. lines = cosa si legge; seats = posti dove sedersi [x, y, dir, lift] dall'angolo in basso a sinistra dello sprite; solid = pixel solidi in basso se l'oggetto non ne ha. footprint = [x, y, larghezza, altezza] nello sprite: ingombro fisico che sostituisce le collisioni ai piedi.",
   "tiles/birthday.png@0,64": {
     "lines": [
       "* Un festone di bandierine. Su ogni bandierina c'è il logo della CHEAP.",
@@ -137,6 +137,12 @@
   "props/office_desk.png": {
     "lines": [
       "* Una scrivania. Sotto il vetro, un foglietto: \"Sorridi, il cliente ti vede\"."
+    ],
+    "footprint": [
+      0,
+      12,
+      16,
+      20
     ]
   },
   "tiles/generic.png@96,8": {
@@ -187,21 +193,45 @@
     "lines": [
       "* Un banco frigo. Surgelati che scadono l'anno prossimo.",
       "* Il prezzo, invece, scade domani."
+    ],
+    "footprint": [
+      1,
+      8,
+      30,
+      23
     ]
   },
   "grocery/149.png": {
     "lines": [
       "* Un banco frigo. Il ghiaccio sul bordo è l'unica cosa gratis del Mercato."
+    ],
+    "footprint": [
+      1,
+      8,
+      30,
+      23
     ]
   },
   "grocery/58.png": {
     "lines": [
       "* Un frigo con le porte di vetro. Il latte, dentro, costa quanto un'ora di cassa."
+    ],
+    "footprint": [
+      1,
+      0,
+      30,
+      48
     ]
   },
   "grocery/61.png": {
     "lines": [
       "* Un frigo. Le bottiglie sono girate tutte con l'etichetta in avanti. Qualcuno lo fa ogni sera."
+    ],
+    "footprint": [
+      1,
+      0,
+      30,
+      48
     ]
   },
   "grocery/401.png": {
@@ -242,22 +272,54 @@
   "market/table_3.png": {
     "lines": [
       "* Un pallet di scatole da consegnare. La data sull'etichetta è di ieri."
+    ],
+    "footprint": [
+      [
+        1,
+        23,
+        46,
+        24
+      ],
+      [
+        12,
+        15,
+        16,
+        8
+      ],
+      [
+        32,
+        20,
+        12,
+        3
+      ]
     ]
   },
   "market/table_1.png": {
     "lines": [
       "* Un tavolo apparecchiato per la festa. I piatti sono di carta. Le forchette di plastica.",
       "* Il conto, invece, è vero."
+    ],
+    "footprint": [
+      1,
+      6,
+      46,
+      26
     ]
   },
   "street/bench_side.png": {
     "seats": [
       [
-        16,
-        -2,
+        7,
+        -10,
         "left",
         6
       ]
+    ],
+    "footprint": [
+      2,
+      14,
+      12,
+      33
     ]
   },
   "themes/hospital.png@176,240": {
@@ -281,6 +343,12 @@
   "themes/hospital.png@80,0": {
     "lines": [
       "* Il bancone della reception. Lucido, grande, alto quanto basta per non vederti le mani."
+    ],
+    "footprint": [
+      0,
+      12,
+      64,
+      36
     ]
   },
   "themes/classroom.png@0,208": {
@@ -366,13 +434,13 @@
         -4,
         "down",
         8
-      ],
-      [
-        39,
-        -4,
-        "down",
-        8
       ]
+    ],
+    "footprint": [
+      1,
+      18,
+      30,
+      13
     ]
   },
   "themes/hospital.png@64,16": {
@@ -383,11 +451,131 @@
   "themes/conference.png@144,72": {
     "lines": [
       "* Il bancone di legno dello sportello B-4. Sul piano, un timbro. Non è per te."
+    ],
+    "footprint": [
+      0,
+      0,
+      56,
+      16
     ]
   },
   "themes/subway.png@0,288": {
     "lines": [
       "* Una biglietteria automatica. Accetta solo il DEBITO."
+    ]
+  },
+  "grocery/145.png": {
+    "footprint": [
+      1,
+      8,
+      30,
+      23
+    ],
+    "lines": [
+      "* Un banco frigo. Controlli i prezzi, poi controlli che siano davvero gli stessi prodotti."
+    ]
+  },
+  "grocery/146.png": {
+    "footprint": [
+      1,
+      8,
+      30,
+      23
+    ],
+    "lines": [
+      "* Un banco frigo. Controlli i prezzi, poi controlli che siano davvero gli stessi prodotti."
+    ]
+  },
+  "tiles/generic.png@80,96": {
+    "footprint": [
+      1,
+      8,
+      46,
+      24
+    ]
+  },
+  "art/c5/tavolo_lungo.png": {
+    "footprint": [
+      1,
+      4,
+      46,
+      20
+    ]
+  },
+  "art/c6/tavolo_decisione.png": {
+    "footprint": [
+      1,
+      8,
+      46,
+      24
+    ]
+  },
+  "art/c6/scrivania_presidenza.png": {
+    "footprint": [
+      1,
+      8,
+      62,
+      24
+    ]
+  },
+  "themes/grocery.png@0,368": {
+    "footprint": [
+      [
+        1,
+        1,
+        14,
+        45
+      ],
+      [
+        14,
+        38,
+        15,
+        8
+      ],
+      [
+        28,
+        10,
+        3,
+        28
+      ]
+    ]
+  },
+  "themes/grocery.png@64,368": {
+    "footprint": [
+      [
+        1,
+        1,
+        14,
+        45
+      ],
+      [
+        14,
+        38,
+        15,
+        8
+      ],
+      [
+        28,
+        10,
+        3,
+        28
+      ]
+    ]
+  },
+  "grocery/249.png": {
+    "footprint": [
+      4,
+      6,
+      24,
+      25
+    ]
+  },
+  "grocery/250.png": {
+    "footprint": [
+      4,
+      6,
+      24,
+      25
     ]
   }
 }

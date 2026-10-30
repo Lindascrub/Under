@@ -7,6 +7,7 @@ extends Interactable
 @export var dir := "down"
 ## Quanto è alto il sedile, in pixel.
 @export var lift := 6.0
+@export var low_pose := false
 ## Cosa si dice sedendosi (vuoto: niente, ti siedi e basta).
 @export var line := ""
 
@@ -15,7 +16,7 @@ func interact() -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p == null or p.seated:
 		return
-	p.sit(global_position, dir, lift)
+	p.sit(global_position, dir, lift, low_pose)
 	Sound.sfx("select", 0.8)
 	if line != "":
 		await Ui.say([line])

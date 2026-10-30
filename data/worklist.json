@@ -443,8 +443,8 @@
     "station_text": "La cassa del Mercato: un nastro nero, uno scanner che fa BIP, uno schermo che ha sempre ragione.",
     "battle": {
       "name": "La Cassa",
-      "pay": 120,
-      "pay_max": 160,
+      "pay": 400,
+      "pay_max": 500,
       "duration": 40,
       "short_duration": 24,
       "short_after": 3,

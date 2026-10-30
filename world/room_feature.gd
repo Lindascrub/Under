@@ -39,12 +39,12 @@ func _preview() -> void:
 	_shown = Node2D.new()
 	add_child(_shown)
 	var generic := Assets.tex("tiles/generic.png", Vector2i(256, 1248))
+	var stair_texture := Assets.tex("themes/condominium.png", Vector2i(256,1664))
 	match kind:
 		"stairs_up":
-			_region(generic, Rect2(168, 864, 32, 64), Vector2(0, T - 64))
+			_region(stair_texture, Rect2(16,0,32,64), Vector2(0,T-64))
 		"stairs_down":
-			var s := _region(generic, Rect2(168, 880, 32, 48), Vector2(0, T - 48))
-			s.flip_v = true
+			_region(stair_texture, Rect2(64,32,32,32), Vector2(0,T-32))
 		"save":
 			var st := Sprite2D.new()
 			st.texture = load("res://art/save_star.png")
@@ -53,17 +53,21 @@ func _preview() -> void:
 			st.position = Vector2(8, 4)
 			_shown.add_child(st)
 		"station":
-			var st2 := Sprite2D.new()
-			st2.texture = load("res://art/generator.png")
-			st2.centered = false
-			st2.position = Vector2(-T, T - 32)
-			_shown.add_child(st2)
+			if job == "dinamo":
+				# The real CycletteDinamo is already in the scene; no second preview on top.
+				_shown.queue_free()
+				_shown = null
+				return
+			var caption := Label.new()
+			caption.text = "TURNO"
+			caption.position = Vector2(-12, -12)
+			caption.add_theme_font_override("font", preload("res://fonts/Silkscreen-Regular.ttf"))
+			caption.add_theme_font_size_override("font_size", 8)
+			_shown.add_child(caption)
 		"badge":
-			_region(generic, Rect2(96, 8, 16, 40), Vector2(0, 2 * T - 40))
-			var c := CharSprite.new()
-			c.sheet = "char_13"
-			c.position = Vector2(8, T - 2)
-			_shown.add_child(c)
+			var booth: Node2D = load("res://world/badge_booth.tscn").instantiate()
+			booth.position = Vector2(-32,32)
+			_shown.add_child(booth)
 	_shown.modulate.a = 0.8
 
 
@@ -85,7 +89,11 @@ func setup_in_room(room: Room) -> void:
 		"stairs_up":
 			room.add_stairs_up(c, target, spawn, need)
 		"stairs_down":
-			room.add_stairs_down(c, target, spawn)
+			# la stanza può decidere da sé (il -4: scale vere o buco sbarrato)
+			if room.has_method("place_stairs_down"):
+				room.call("place_stairs_down", c, target, spawn)
+			else:
+				room.add_stairs_down(c, target, spawn)
 		"save":
 			room.add_save_point(c)
 		"station":

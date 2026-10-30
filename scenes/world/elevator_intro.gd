@@ -2,17 +2,47 @@ extends Node2D
 ## L'inizio: sei dentro l'ascensore della Torre CHEAP e scendi. -1, -2, -3, -4...
 ## Sul display c'è il tuo debito. Al -5 l'ascensore si blocca, la luce salta,
 ## le porte si aprono a metà sul buio.
+## La scena è fatta di nodi (scenes/world/elevator_intro.tscn): cabina, pareti, display, pulsantiera,
+## porte e giocatore si spostano nell'editor. Qui c'è solo la sequenza.
 
-const CABIN := Rect2(224, 36, 192, 252)
-const WALL_H := 74.0
+@onready var _cabin: Node2D = $Cabina
+@onready var _display: Node2D = $Cabina/Display
+@onready var _number: Label = $Cabina/Display/Numero
+@onready var _buttons: Node = $Cabina/Pulsantiera
+@onready var _door_l: ColorRect = $Cabina/Porte/PortaSinistra
+@onready var _door_r: ColorRect = $Cabina/Porte/PortaDestra
+@onready var _glow: ColorRect = $Cabina/RiflessoLuce
+@onready var _dark: ColorRect = $Buio
+@onready var _player: AnimatedSprite2D = $Giocatore
+@onready var _exit: Marker2D = $Uscita
 
-var _player: AnimatedSprite2D
-var _floor_text := "0"
+var _floor_text := "0":
+	set(v):
+		_floor_text = v
+		if is_node_ready():
+			_number.text = v
+			_light_buttons()
 var _light := 1.0
 var _shake := 0.0
-var _doors := 0.0
-var _display_on := true
-var _sparks: Array[Vector2] = []
+## Quanto sono aperte le porte (0 chiuse, 1 tutte aperte): le due ante si stringono verso i lati.
+var _doors := 0.0:
+	set(v):
+		_doors = v
+		if is_node_ready():
+			var w := _door_w * (1.0 - v)
+			_door_l.size.x = w
+			_door_r.size.x = w
+			_door_r.position.x = _door_end - w
+## Le porte come le hai messe nell'editor: larghezza di un'anta e bordo destro.
+var _door_w := 96.0
+var _door_end := 192.0
+var _display_on := true:
+	set(v):
+		_display_on = v
+		if is_node_ready():
+			_number.visible = v
+			_light_buttons()
+var _sparks: Array[ColorRect] = []
 var _t := 0.0
 
 
@@ -21,14 +51,10 @@ func _ready() -> void:
 	Ui.cutscene = true
 	# musica da ascensore: rilassante, aziendale, finché l'ascensore non si rompe
 	Sound.music("ascensore")
-	_player = AnimatedSprite2D.new()
-	_player.sprite_frames = Assets.character("char_01")
-	_player.centered = false
-	_player.offset = Vector2(-8, -31)
-	_player.scale = Vector2(2, 2)
-	_player.position = Vector2(320, 236)
 	_player.play("idle_up")
-	add_child(_player)
+	_number.text = _floor_text
+	_door_w = _door_l.size.x
+	_door_end = _door_r.position.x + _door_r.size.x
 	if Ui.transitioning:
 		await Ui.faded_in
 	await _sequence()
@@ -85,7 +111,7 @@ func _sequence() -> void:
 	await Ui.say(["* Le porte si aprono a metà, poi si incastrano.",
 		"* Fuori è buio. Da qualche parte, laggiù, c'è una piccola luce."])
 	var walk := create_tween()
-	walk.tween_property(_player, "position:y", 300.0, 1.3)
+	walk.tween_property(_player, "position", _exit.position, 1.3)
 	_player.play("walk_down")
 	await walk.finished
 	Ui.cutscene = false
@@ -96,9 +122,25 @@ func _wait(s: float) -> void:
 	await get_tree().create_timer(s).timeout
 
 
+## Si accende il pulsante del piano in cui sei (Pulsante1 = -1 ... Pulsante5 = -5).
+func _light_buttons() -> void:
+	for k in 5:
+		var b := _buttons.get_node_or_null("Pulsante%d" % (k + 1)) as ColorRect
+		if b:
+			b.color = Color("f2b23a") if _display_on and str(-(k + 1)) == _floor_text else Color("5a5666")
+
+
+## Scintille dal display: quadratini che compaiono sotto lo schermo e spariscono.
 func _add_sparks() -> void:
+	var under := Vector2(_number.size.x / 2.0, _number.size.y + 2)
 	for i in 6:
-		_sparks.append(Vector2(randf_range(-10, 10), randf_range(-4, 4)))
+		var s := ColorRect.new()
+		s.color = Color("ffe08a")
+		s.size = Vector2(2, 2)
+		s.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		s.position = under + Vector2(randf_range(-10, 10), randf_range(-4, 4)) * 2.0
+		_display.add_child(s)
+		_sparks.append(s)
 
 
 func _process(delta: float) -> void:
@@ -106,56 +148,11 @@ func _process(delta: float) -> void:
 	_shake = maxf(0.0, _shake - delta * 1.6)
 	position = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * 6.0 * _shake
 	if not _sparks.is_empty() and randf() < 0.3:
-		_sparks.pop_front()
-	queue_redraw()
-
-
-func _draw() -> void:
-	var font := Assets.font()
-	draw_rect(Rect2(-20, -20, 680, 400), Color("05040a"))
-	var r := CABIN
-	var dim := func(c: Color) -> Color: return c.darkened(1.0 - (0.15 + 0.85 * _light))
-	# pavimento di lamiera
-	draw_rect(Rect2(r.position.x, r.position.y + WALL_H, r.size.x, r.size.y - WALL_H), dim.call(Color("4d4a57")))
-	for y in range(int(r.position.y + WALL_H) + 6, int(r.end.y) - 16, 12):
-		for x in range(int(r.position.x) + 6, int(r.end.x) - 4, 12):
-			draw_rect(Rect2(x + (y / 12 % 2) * 6, y, 4, 2), dim.call(Color("5d5a68")))
-	# parete di fondo, con le pannellature
-	draw_rect(Rect2(r.position, Vector2(r.size.x, WALL_H)), dim.call(Color("8a8696")))
-	for k in 4:
-		draw_rect(Rect2(r.position.x + 8 + k * 46, r.position.y + 8, 40, WALL_H - 22), dim.call(Color("9b97a8")))
-	draw_rect(Rect2(r.position.x, r.position.y + WALL_H - 10, r.size.x, 4), dim.call(Color("c8c4d2")))  # corrimano
-	draw_rect(Rect2(r.position.x, r.position.y + WALL_H - 2, r.size.x, 2), dim.call(Color("2a2632")))
-	# pareti laterali
-	draw_rect(Rect2(r.position.x - 8, r.position.y, 8, r.size.y), dim.call(Color("3a3644")))
-	draw_rect(Rect2(r.end.x, r.position.y, 8, r.size.y), dim.call(Color("3a3644")))
-	# display del piano e del debito
-	var disp := Rect2(296, r.position.y + 12, 48, 26)
-	draw_rect(disp.grow(2), Color("1a1622"))
-	draw_rect(disp, Color("0c0a10"))
-	if _display_on:
-		draw_string(font, Vector2(disp.position.x, disp.position.y + 20), _floor_text, HORIZONTAL_ALIGNMENT_CENTER, disp.size.x, 20, Color("e8453a"))
-	# pulsantiera
-	var panel := Rect2(r.end.x - 34, r.position.y + 16, 18, 40)
-	draw_rect(panel, dim.call(Color("b7b3c2")))
-	for k in 5:
-		var on := _display_on and str(-(k + 1)) == _floor_text
-		draw_circle(Vector2(panel.position.x + 9, panel.position.y + 5 + k * 7.5), 2.5, Color("f2b23a") if on else dim.call(Color("5a5666")))
-	# luce al soffitto (fuori dal quadro: si vede solo il suo riflesso)
-	if _light > 0.05:
-		draw_rect(Rect2(r.position.x + 40, r.position.y + WALL_H + 4, r.size.x - 80, 3), Color(1, 0.95, 0.75, 0.15 * _light))
-	# le porte, in basso
-	var door_y := r.end.y - 14
-	var half := r.size.x / 2.0
-	var gap := half * _doors
-	draw_rect(Rect2(r.position.x, door_y, r.size.x, 14), Color("05040a"))
-	draw_rect(Rect2(r.position.x, door_y, half - gap, 14), dim.call(Color("aeb4c4")))
-	draw_rect(Rect2(r.position.x + half + gap, door_y, half - gap, 14), dim.call(Color("aeb4c4")))
-	draw_line(Vector2(r.position.x + half - gap, door_y), Vector2(r.position.x + half - gap, door_y + 14), Color("2a2632"), 2)
-	draw_line(Vector2(r.position.x + half + gap, door_y), Vector2(r.position.x + half + gap, door_y + 14), Color("2a2632"), 2)
-	# scintille dal display
-	for s in _sparks:
-		draw_rect(Rect2(Vector2(320, r.position.y + 40) + s * 2.0, Vector2(2, 2)), Color("ffe08a"))
-	# buio che avvolge la cabina quando salta la luce
-	if _light < 1.0:
-		draw_rect(Rect2(-20, -20, 680, 400), Color(0, 0, 0, 0.55 * (1.0 - _light)))
+		_sparks.pop_front().queue_free()
+	# la luce: la cabina si scurisce, il display (che ha la sua luce) no
+	var v := 0.15 + 0.85 * _light
+	_cabin.modulate = Color(v, v, v)
+	_display.modulate = Color(1.0 / v, 1.0 / v, 1.0 / v)
+	_glow.visible = _light > 0.05
+	_glow.color.a = 0.15 * _light
+	_dark.color.a = 0.55 * (1.0 - _light)

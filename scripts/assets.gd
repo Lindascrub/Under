@@ -11,6 +11,8 @@ const DIRS: Array[String] = ["right", "up", "left", "down"]
 const EXTRA_ANIMS := {
 	"sit_right": [4, 0, 6, 5.0],
 	"sit_left": [4, 6, 6, 5.0],
+	"sit_high_right": [5, 0, 6, 5.0],
+	"sit_high_left": [5, 6, 6, 5.0],
 	"phone": [6, 3, 6, 5.0],
 	"read": [7, 0, 6, 4.0],
 }

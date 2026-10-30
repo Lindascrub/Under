@@ -7,7 +7,6 @@ const CREAM := Color("fff0cd")
 const GOLD := Color("f4c85c")
 const STEEL := Color("8b9eae")
 const TEAL := Color("326e78")
-const GENERATOR: Texture2D = preload("res://art/generator.png")
 const FURNITURE := {
 	"tavolo": preload("res://art/c5/tavolo_lungo.png"),
 	"scaffale": preload("res://art/c5/libreria.png"),

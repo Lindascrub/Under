@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_3jnyv"]
 [ext_resource type="Texture2D" path="res://art/c5/avviso_chiusura.png" id="3_vn8wj"]
 [ext_resource type="Texture2D" path="res://art/c5/bacheca.png" id="4_d1v4x"]
-[ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="5_extjj"]
 [ext_resource type="Texture2D" path="res://art/c5/contatore.png" id="6_4e46h"]
 [ext_resource type="Texture2D" path="res://art/c5/libreria.png" id="7_u0r0v"]
 [ext_resource type="Script" path="res://world/examine.gd" id="8_u4p8y"]
@@ -26,14 +25,14 @@ size = Vector2(28, 14)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oc7gj"]
 size = Vector2(28, 14)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_754pr"]
-size = Vector2(44, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x46gy"]
+size = Vector2(46, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5a2ha"]
 size = Vector2(28, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_i2p4b"]
-size = Vector2(44, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6lfuj"]
+size = Vector2(46, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t1oqg"]
 size = Vector2(28, 6)
@@ -62,6 +61,12 @@ size = Vector2(28, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtrsf"]
 size = Vector2(12, 8)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bidll_Cassettiera"]
+size = Vector2(28, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7fxa0_Scatoloni"]
+size = Vector2(28, 7)
+
 [node name="CasaComune" type="Node2D" unique_id=1546043959]
 script = ExtResource("1_6lfuj")
 room_music = "quartiere"
@@ -88,14 +93,6 @@ position = Vector2(160, 46)
 texture = ExtResource("4_d1v4x")
 centered = false
 offset = Vector2(0, -24)
-
-[node name="Zerbino" type="Sprite2D" parent="Decori" unique_id=1753108998]
-position = Vector2(48, 196)
-texture = ExtResource("5_extjj")
-centered = false
-offset = Vector2(0, -28)
-region_enabled = true
-region_rect = Rect2(48, 354, 32, 28)
 
 [node name="Contatore" type="Sprite2D" parent="Decori" unique_id=1113979789]
 position = Vector2(240, 52)
@@ -155,12 +152,13 @@ position = Vector2(48, 144)
 texture = ExtResource("9_2s2yh")
 centered = false
 offset = Vector2(0, -24)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Tavolo" unique_id=1721937137]
 
-[node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/Tavolo/Collisione" unique_id=1388388403]
-position = Vector2(24, -7)
-shape = SubResource("RectangleShape2D_754pr")
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Tavolo/Collisione" unique_id=476428080]
+position = Vector2(24, -10)
+shape = SubResource("RectangleShape2D_x46gy")
 
 [node name="Sedie" type="Sprite2D" parent="Mondo" unique_id=331716198]
 position = Vector2(48, 160)
@@ -179,12 +177,13 @@ position = Vector2(128, 144)
 texture = ExtResource("9_2s2yh")
 centered = false
 offset = Vector2(0, -24)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Tavolo2" unique_id=917814770]
 
-[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Tavolo2/Collisione" unique_id=117170313]
-position = Vector2(24, -7)
-shape = SubResource("RectangleShape2D_i2p4b")
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Tavolo2/Collisione" unique_id=849528680]
+position = Vector2(24, -10)
+shape = SubResource("RectangleShape2D_6lfuj")
 
 [node name="LetteraCheap" type="Sprite2D" parent="Mondo" unique_id=1079617462]
 z_index = 1
@@ -213,16 +212,16 @@ position = Vector2(16, -3)
 shape = SubResource("RectangleShape2D_t1oqg")
 
 [node name="Cassettiera" type="Sprite2D" parent="Mondo" unique_id=68929133]
-position = Vector2(176, 80)
+position = Vector2(176, 71)
 texture = ExtResource("12_kc5ao")
 centered = false
-offset = Vector2(0, -48)
+offset = Vector2(0, -39)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cassettiera" unique_id=1138158677]
-
+position = Vector2(0, 9)
 [node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/Cassettiera/Collisione" unique_id=871615775]
-position = Vector2(16, -7)
-shape = SubResource("RectangleShape2D_bidll")
+position = Vector2(16, -11.5)
+shape = SubResource("RectangleShape2D_bidll_Cassettiera")
 
 [node name="CartellaB4" type="Sprite2D" parent="Mondo" unique_id=411912804]
 z_index = 1
@@ -239,40 +238,40 @@ lines_after = PackedStringArray()
 method = "_cartella_b4"
 
 [node name="Pianta0" type="Sprite2D" parent="Mondo" unique_id=141779514]
-position = Vector2(16, 64)
+position = Vector2(16, 57)
 texture = ExtResource("14_23euy")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=1000953942]
-
+position = Vector2(0, 7)
 [node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=1111582323]
-position = Vector2(8, -4)
+position = Vector2(8, -11)
 shape = SubResource("RectangleShape2D_ia3v4")
 
 [node name="Pianta1" type="Sprite2D" parent="Mondo" unique_id=1359895866]
-position = Vector2(208, 64)
+position = Vector2(208, 57)
 texture = ExtResource("14_23euy")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=339583027]
-
+position = Vector2(0, 7)
 [node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=213940403]
-position = Vector2(8, -4)
+position = Vector2(8, -11)
 shape = SubResource("RectangleShape2D_1g6eu")
 
 [node name="Scatoloni" type="Sprite2D" parent="Mondo" unique_id=2076114200]
-position = Vector2(176, 176)
+position = Vector2(176, 171)
 texture = ExtResource("15_rowhi")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -27)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Scatoloni" unique_id=1327411386]
-
+position = Vector2(0, 5)
 [node name="@CollisionShape2D@30" type="CollisionShape2D" parent="Mondo/Scatoloni/Collisione" unique_id=1000144228]
-position = Vector2(16, -6)
-shape = SubResource("RectangleShape2D_7fxa0")
+position = Vector2(16, -8.5)
+shape = SubResource("RectangleShape2D_7fxa0_Scatoloni")
 
 [node name="GuardaScatoloni" type="Node2D" parent="Mondo" unique_id=730551313]
 position = Vector2(184, 168)
@@ -351,15 +350,15 @@ lines_after = PackedStringArray()
 method = "_contatore"
 
 [node name="PiantaArchivio" type="Sprite2D" parent="Mondo" unique_id=1768866598]
-position = Vector2(320, 176)
+position = Vector2(320, 169)
 texture = ExtResource("14_23euy")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaArchivio" unique_id=1835430080]
-
+position = Vector2(0, 7)
 [node name="@CollisionShape2D@34" type="CollisionShape2D" parent="Mondo/PiantaArchivio/Collisione" unique_id=1939456785]
-position = Vector2(8, -4)
+position = Vector2(8, -11)
 shape = SubResource("RectangleShape2D_dtrsf")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=302027506]

@@ -31,7 +31,7 @@ func _ready() -> void:
 	_sprite.offset = Vector2(-8, -31)
 	add_child(_sprite)
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(10, 6)
+	shape.size = Vector2(14, 6)
 	var col := CollisionShape2D.new()
 	col.shape = shape
 	col.position = Vector2(0, -3)
@@ -146,10 +146,22 @@ func _find_target() -> Node:
 	var best: Node = null
 	var best_d := 16.0
 	for n in get_tree().get_nodes_in_group("interactable"):
-		var d := probe.distance_to(n.call("hotspot"))
+		if n is Interactable and n.facing_required != "" and n.facing_required != facing:
+			continue
+		var at: Vector2 = n.interaction_point(probe) if n is Interactable else n.call("hotspot")
+		var side: Vector2 = n.approach if n is Interactable else Vector2.ZERO
+		if side != Vector2.ZERO and (global_position - at).dot(side.normalized()) < 0.0:
+			continue
+		var d := probe.distance_to(at)
+		if n is Interactable and d > n.reach:
+			continue
 		# Se una persona e un oggetto sono nello stesso punto (Bruno sulla panchina), vince la persona.
 		if n.is_in_group("npc") or n.is_in_group("walker"):
 			d -= 6.0
+		elif n is Seat:
+			d -= 4.0
+		elif n.get_meta("inspect_prop", false):
+			d += 3.0
 		if d < best_d:
 			best_d = d
 			best = n
@@ -163,7 +175,7 @@ var _sleep_nodes: Array[Node] = []
 ## left/right: di profilo (panchine, divani laterali), davanti al sedile (z_index).
 ## down: su una sedia vista di fronte, alzata sul sedile. up: di spalle, dietro lo schienale.
 ## `lift` = quanto è alto il sedile (una cassetta 6, una sedia 6, un divano 8).
-func sit(feet: Vector2, dir: String, lift := 6.0) -> void:
+func sit(feet: Vector2, dir: String, lift := 6.0, low_pose := false) -> void:
 	if not seated:
 		_stand_pos = position
 	seated = true
@@ -176,18 +188,18 @@ func sit(feet: Vector2, dir: String, lift := 6.0) -> void:
 			# di spalle: lo schienale della sedia resta davanti e copre le gambe
 			z_index = 0
 			position = feet + Vector2(0, -5)
-			_sprite.offset = Vector2(-8, -31 - lift)
+			_sprite.offset = Vector2(-8, -23 - lift)
 			_sprite.play("idle_up")
 		"down":
 			z_index = 1
-			_sprite.offset = Vector2(-8, -31 - lift)
+			_sprite.offset = Vector2(-8, -23 - lift)
 			_sprite.play("idle_down")
 			_sprite.pause()
 		_:
 			z_index = 1
 			# alzata sul sedile: sotto si vede ancora (una cassetta è alta 12 pixel)
-			_sprite.offset = Vector2(-8, -31 - lift)
-			_sprite.play("sit_" + dir)
+			_sprite.offset = Vector2(-8, -23 - lift)
+			_sprite.play(("sit_high_" if lift >= 6.0 and not low_pose else "sit_") + dir)
 
 
 ## Dove eri prima di sederti: alzandoti torni lì (così non finisci dentro la sedia).
