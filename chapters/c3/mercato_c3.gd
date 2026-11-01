@@ -532,7 +532,7 @@ func _prices_due() -> bool:
 
 func _price_update() -> void:
 	Ui.cutscene = true
-	var shot: Dictionary = await FocusShot.begin(self, board().global_position + Vector2(64, -17), 3.0)
+	var shot: Dictionary = await FocusShot.begin(self, $Inquadrature/Tabellone as Inquadratura)
 	await get_tree().create_timer(0.5).timeout
 	GameState.flags["c3_prezzi"] = true
 	Sound.music("")
@@ -661,10 +661,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	await Ui.say(_sounds_below())
 	await Ui.say(["Perché non sorridi?"], "Voce CHEAP")
 	await get_tree().create_timer(1.5).timeout
-	var tw := create_tween()
-	tw.tween_property(layer.get_child(0), "modulate:a", 0.0, 0.8)
-	await tw.finished
-	layer.queue_free()
+	await layer.call("scompari")
 	await Ui.say(["* Clic. Clic. Clic. Sul tabellone i prezzi non si fermano più.",
 		"* Le cifre non ci stanno. Escono dalle colonne, si mangiano le parole PANE, LATTE, ACQUA.",
 		"* Il Mercato è grigio. L'unica cosa che ha ancora un colore è il prezzo."])
@@ -765,28 +762,11 @@ func receipt_lines() -> Array:
 	return lines
 
 
-## Lo scontrino scende dalla fessura e si srotola sullo schermo.
+## Lo scontrino scende dalla fessura e si srotola sullo schermo (la scena chapters/c3/scontrino.tscn).
 func _receipt() -> CanvasLayer:
-	var layer := CanvasLayer.new()
-	layer.layer = 14
+	var layer := load("res://chapters/c3/scontrino.tscn").instantiate() as CanvasLayer
 	add_child(layer)
-	var paper := ColorRect.new()
-	paper.color = Color("f4f1e6")
-	var lines := receipt_lines()
-	paper.size = Vector2(300, 24 + lines.size() * 15)
-	paper.position = Vector2(170, -paper.size.y)
-	layer.add_child(paper)
-	var text := Label.new()
-	text.text = "\n".join(lines)
-	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	text.position = Vector2(6, 10)
-	text.size = Vector2(288, paper.size.y - 20)
-	text.add_theme_font_size_override("font_size", 10)
-	text.add_theme_constant_override("line_spacing", 0)
-	text.add_theme_color_override("font_color", Color("2a2633"))
-	paper.add_child(text)
-	var tw := create_tween()
-	tw.tween_property(paper, "position:y", 8.0, 3.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	layer.call("srotola", receipt_lines())
 	return layer
 
 

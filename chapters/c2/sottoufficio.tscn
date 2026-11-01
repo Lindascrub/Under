@@ -34,6 +34,9 @@
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="Texture2D" uid="uid://dahldxko6cj3j" path="res://art/tritacarte.png" id="trita_png"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 
 [sub_resource type="RectangleShape2D" id="poster_PosterSorridi"]
 size = Vector2(56, 24)
@@ -3522,6 +3525,7 @@ size = Vector2(32, 15)
 size = Vector2(30, 15)
 
 [node name="Sottoufficio" type="Node2D" unique_id=1256184881]
+camera_lift = 28
 script = ExtResource("1_upwdg")
 room_music = "attesa"
 room_floor = "-4"
@@ -3630,25 +3634,31 @@ shape = SubResource("pedana_Destra")
 y_sort_enabled = true
 
 [node name="GuardaSorridi" type="Node2D" parent="Mondo" unique_id=886084119]
-position = Vector2(56, 56)
+position = Vector2(52, 46)
 script = ExtResource("8_08xbl")
 lines = PackedStringArray("* Un poster con una faccina gialla: \"SORRIDI! È GRATIS\".", "* Sotto, in piccolo: \"Il sorriso è parte integrante della mansione (art. 4 del contratto)\".")
 lines_after = PackedStringArray("* \"SORRIDI! È GRATIS\". Adesso che la musica si è fermata una volta, la faccina sembra un ordine.")
 after_flag = "c2_rivelazione"
+approach = Vector2(0, 1)
+facing_required = "up"
 
 [node name="GuardaModulo" type="Node2D" parent="Mondo" unique_id=629820226]
-position = Vector2(120, 56)
+position = Vector2(126, 52)
 script = ExtResource("8_08xbl")
 lines = PackedStringArray("* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\".", "* Qualcuno ha cancellato \"il pensiero\" e scritto sopra a penna: \"la giornata\". Poi qualcun altro ha cancellato anche quello.")
 lines_after = PackedStringArray("* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\". Ora sai dove vanno, i moduli. Il pensiero, invece, resta.")
 after_flag = "c2_rivelazione"
+approach = Vector2(0, 1)
+facing_required = "up"
 
 [node name="GuardaAttesa" type="Node2D" parent="Mondo" unique_id=702898909]
-position = Vector2(232, 56)
+position = Vector2(216, 46)
 script = ExtResource("8_08xbl")
 lines = PackedStringArray("* \"RESTI IN LINEA!\". Il cartello è appeso proprio sopra l\'altoparlante della musichetta.", "* La musichetta è sempre la stessa. Dura quarantadue secondi. L\'hai già contata tre volte.")
 lines_after = PackedStringArray("* \"RESTI IN LINEA!\". La musichetta è ripartita, più lenta. Come una giostra che nessuno ha il coraggio di spegnere.")
 after_flag = "c2_rivelazione"
+approach = Vector2(0, 1)
+facing_required = "up"
 
 [node name="BanconeAgenda" type="Node2D" parent="Mondo" unique_id=1589051683]
 y_sort_enabled = true
@@ -3998,7 +4008,7 @@ lines = PackedStringArray("* Il tabellone delle salite. \"-3 MERCATO: IN ORARIO\
 lines_after = PackedStringArray()
 
 [node name="Cordone" type="Sprite2D" parent="Mondo" unique_id=1044364576]
-position = Vector2(271, 95)
+position = Vector2(271, 91)
 texture = ExtResource("desk_hospital")
 centered = false
 offset = Vector2(0, -16)
@@ -4375,18 +4385,26 @@ script = ExtResource("8_08xbl")
 lines = PackedStringArray("* Una pianta di plastica. La terra nel vaso è bagnata: qualcuno la annaffia lo stesso, ogni mattina.")
 lines_after = PackedStringArray()
 
-[node name="PostoCallCenter" type="Node2D" parent="Mondo" unique_id=352594526]
+[node name="PostoCallCenter" parent="Mondo" unique_id=352594526 instance=ExtResource("posto_tscn")]
 position = Vector2(128, 160)
-script = ExtResource("22_q02fj")
-kind = "station"
 job = "callcenter"
+avvicinamento = "su"
+guarda_verso = "down"
+
+[node name="PuntoUso" parent="Mondo/PostoCallCenter" index="0"]
+position = Vector2(8, -18)
+
+[node name="Targhetta" parent="Mondo/PostoCallCenter" index="1"]
+offset_left = -5.0
+offset_top = -48.0
+offset_right = 21.0
+offset_bottom = -36.0
 
 [node name="SportelloBadge" parent="Mondo" unique_id=514751075 instance=ExtResource("booth_tscn")]
 position = Vector2(272, 78)
 
-[node name="Stellina" type="Node2D" parent="Mondo" unique_id=752157852]
+[node name="Stellina" parent="Mondo" unique_id=752157852 instance=ExtResource("stellina_tscn")]
 position = Vector2(176, 176)
-script = ExtResource("22_q02fj")
 
 [node name="Telecamera_192" type="Sprite2D" parent="Mondo" unique_id=1037982607]
 z_index = 1
@@ -4626,3 +4644,49 @@ metadata/facing = "down"
 [node name="elevator" type="Marker2D" parent="Arrivi" unique_id=712637914]
 position = Vector2(184, 110)
 metadata/facing = "down"
+
+[node name="Inquadrature" type="Node2D" parent="."]
+
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+position = Vector2(296, 116)
+script = ExtResource("inq_script")
+zoom = 1.2857
+durata = 3.5
+durata_ritorno = 0.65
+
+[node name="Tritacarte" type="Marker2D" parent="Inquadrature"]
+position = Vector2(340, 212)
+script = ExtResource("inq_script")
+zoom = 3.5
+durata = 0.75
+durata_ritorno = 0.65
+
+[node name="IngressoFoglio" type="Marker2D" parent="Mondo/Tritacarte"]
+position = Vector2(4, -26)
+
+[node name="Foglio" type="Polygon2D" parent="Mondo/Tritacarte/IngressoFoglio"]
+visible = false
+z_index = 20
+color = Color(0.541176, 0.784314, 1, 1)
+polygon = PackedVector2Array(0, 0, 7, 0, 7, 10, 0, 10)
+
+[node name="UscitaStrisce" type="Marker2D" parent="Mondo/Tritacarte"]
+position = Vector2(4, -6)
+
+[node name="StrisciaA" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce"]
+visible = false
+z_index = 20
+offset_right = 1.0
+offset_bottom = 5.0
+mouse_filter = 2
+color = Color(0.541176, 0.784314, 1, 1)
+
+[node name="StrisciaB" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce"]
+visible = false
+z_index = 20
+offset_right = 1.0
+offset_bottom = 5.0
+mouse_filter = 2
+color = Color(0.811765, 0.901961, 1, 1)
+
+[editable path="Mondo/PostoCallCenter"]

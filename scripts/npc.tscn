@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/npc.gd" id="1_npc"]
+[ext_resource type="Texture2D" path="res://art/ombra.png" id="2_ombra"]
+[ext_resource type="Shader" path="res://shaders/robot.gdshader" id="3_robot"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_robot"]
+resource_local_to_scene = true
+shader = ExtResource("3_robot")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_piedi"]
+size = Vector2(12, 8)
+
+[node name="Npc" type="StaticBody2D"]
+script = ExtResource("1_npc")
+
+[node name="Ombra" type="Sprite2D" parent="."]
+position = Vector2(0, -1)
+texture = ExtResource("2_ombra")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_robot")
+centered = false
+offset = Vector2(-8, -31)
+
+[node name="Collisione" type="CollisionShape2D" parent="."]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_piedi")
+
+[node name="Fumetto" type="Node2D" parent="."]
+visible = false
+z_index = 5
+position = Vector2(7, -34)
+
+[node name="Sopra" type="Sprite2D" parent="Fumetto"]
+
+[node name="Coda" type="Sprite2D" parent="Fumetto"]
+position = Vector2(0, 16)

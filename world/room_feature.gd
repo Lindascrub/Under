@@ -5,8 +5,8 @@ extends Node2D
 ## è l'angolo in alto a sinistra della casella su cui sta (in basso a sinistra per le scale).
 ##   kind "stairs_up"   scale per il piano di sopra (con tornello): target, spawn, need (badge)
 ##   kind "stairs_down" la botola per il piano di sotto: target, spawn
-##   kind "save"        la stellina
-##   kind "station"     un posto di lavoro: job (id in data/worklist.json)
+##   kind "save"        la stellina (meglio: la scena world/stellina.tscn, che si vede com'è)
+##   kind "station"     un posto di lavoro: job (meglio: la scena world/posto_turno.tscn)
 ##   kind "badge"       lo sportello dei badge (l'addetta sta qui, la scrivania sotto)
 
 @export_enum("stairs_up", "stairs_down", "save", "station", "badge") var kind := "save":
@@ -46,24 +46,9 @@ func _preview() -> void:
 		"stairs_down":
 			_region(stair_texture, Rect2(64,32,32,32), Vector2(0,T-32))
 		"save":
-			var st := Sprite2D.new()
-			st.texture = load("res://art/save_star.png")
-			st.region_enabled = true
-			st.region_rect = Rect2(0, 0, 13, 13)
-			st.position = Vector2(8, 4)
-			_shown.add_child(st)
+			_shown.add_child(load("res://world/stellina.tscn").instantiate())
 		"station":
-			if job == "dinamo":
-				# The real CycletteDinamo is already in the scene; no second preview on top.
-				_shown.queue_free()
-				_shown = null
-				return
-			var caption := Label.new()
-			caption.text = "TURNO"
-			caption.position = Vector2(-12, -12)
-			caption.add_theme_font_override("font", preload("res://fonts/Silkscreen-Regular.ttf"))
-			caption.add_theme_font_size_override("font_size", 8)
-			_shown.add_child(caption)
+			_shown.add_child(load("res://world/posto_turno.tscn").instantiate())
 		"badge":
 			var booth: Node2D = load("res://world/badge_booth.tscn").instantiate()
 			booth.position = Vector2(-32,32)

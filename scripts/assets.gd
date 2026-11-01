@@ -74,18 +74,9 @@ static func _add(sf: SpriteFrames, anim: String, t: Texture2D, row: int, first: 
 
 
 ## Un'ombra ovale sotto i personaggi, per farli "poggiare" a terra.
+## È un'immagine vera (art/ombra.png): si cambia lì.
 static func shadow() -> Texture2D:
-	if _textures.has("_shadow"):
-		return _textures["_shadow"]
-	var img := Image.create(12, 4, false, Image.FORMAT_RGBA8)
-	for y in 4:
-		for x in 12:
-			var d := pow((x - 5.5) / 6.0, 2) + pow((y - 1.5) / 2.0, 2)
-			if d <= 1.0:
-				img.set_pixel(x, y, Color(0, 0, 0, 0.35))
-	var t := ImageTexture.create_from_image(img)
-	_textures["_shadow"] = t
-	return t
+	return load("res://art/ombra.png")
 
 
 ## C'è qualcuno (persona, passante o giocatore) subito davanti a chi cammina?

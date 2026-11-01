@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://world/stellina.gd" id="1_stellina"]
+[ext_resource type="Texture2D" path="res://art/save_star.png" id="2_star"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a"]
+atlas = ExtResource("2_star")
+region = Rect2(0, 0, 13, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b"]
+atlas = ExtResource("2_star")
+region = Rect2(13, 0, 13, 13)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_star"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b")
+}],
+"loop": true,
+"name": &"default",
+"speed": 2.0
+}]
+
+[node name="Stellina" type="Node2D"]
+script = ExtResource("1_stellina")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(8, 4)
+sprite_frames = SubResource("SpriteFrames_star")
+autoplay = "default"
+
+[node name="Tocco" type="Marker2D" parent="."]
+position = Vector2(8, 8)
+
+[node name="Risveglio" type="Marker2D" parent="."]
+position = Vector2(8, 30)

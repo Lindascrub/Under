@@ -13,9 +13,10 @@ const VOICE := "Voce CHEAP"
 const BADGE := "0"
 ## Il Capitolo 5 (La Città) lo sta facendo qualcun altro: finché la scena non c'è, si sale all'Ufficio.
 const CITY := "res://chapters/c5/citta.tscn"
-const ANTENNA := "res://art/c4/antenna_robot.png"
-const STAMP := "res://art/c4/timbro.png"
-const LETTER := "res://art/c4/lettera.png"
+## Il pannello della rivelazione del primo gradino.
+const REVELATION := "res://chapters/c4/rivelazione_banca.tscn"
+const ROBOT_ANTENNA := "res://world/antenna_robot.tscn"
+const ROBOT_STAMP := "res://chapters/c4/timbro_robot.tscn"
 
 
 ## Dove portano le scale: la Città se esiste già, se no il Piano Terra di prima.
@@ -479,22 +480,9 @@ func _robot_teo() -> void:
 	var t := _npc("teo")
 	if t == null or t.has_node("Antenna"):
 		return
-	var antenna := Sprite2D.new()
-	antenna.name = "Antenna"
-	antenna.texture = load(ANTENNA)
-	antenna.position = Vector2(0, -27)
-	antenna.z_index = 1
-	t.add_child(antenna)
-	var stamp := Sprite2D.new()
-	stamp.name = "Timbro"
-	stamp.texture = load(STAMP)
-	stamp.position = Vector2(12, -16)
-	stamp.z_index = 1
-	t.add_child(stamp)
-	var tw := stamp.create_tween().set_loops()
-	tw.tween_property(stamp, "position:y", -22.0, 0.25)
-	tw.tween_property(stamp, "position:y", -16.0, 0.08)
-	tw.tween_interval(0.4)
+	# world/antenna_robot.tscn e chapters/c4/timbro_robot.tscn (lì posizione e ritmo del timbro)
+	t.add_child(load(ROBOT_ANTENNA).instantiate())
+	t.add_child(load(ROBOT_STAMP).instantiate())
 
 
 # --- 4.09 il conto del protagonista ----------------------------------------------------------------
@@ -666,42 +654,18 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	await get_tree().create_timer(1.2).timeout
 	Sound.music("")
 	await get_tree().create_timer(0.5).timeout
-	var layer := CanvasLayer.new()
-	layer.layer = 14
-	add_child(layer)
-	var panel := ColorRect.new()
-	panel.color = Color("0b0a10")
-	panel.size = Vector2(500, 190)
-	panel.position = Vector2(70, 40)
-	panel.modulate.a = 0.0
-	layer.add_child(panel)
-	var frame := ReferenceRect.new()
-	frame.border_color = Color("c0302a")
-	frame.border_width = 2.0
-	frame.editor_only = false
-	frame.size = panel.size
-	panel.add_child(frame)
-	var a := create_tween()
-	a.tween_property(panel, "modulate:a", 1.0, 0.6)
-	await a.finished
-	var y := 22.0
-	for line: String in revelation_lines():
-		var l := Label.new()
-		l.text = line
-		l.position = Vector2(20, y)
-		l.size = Vector2(460, 20)
-		l.add_theme_font_size_override("font_size", 13)
-		l.add_theme_color_override("font_color", Color("ff5a50") if line.begins_with("NESSUN") else Color("e8e2d0"))
-		panel.add_child(l)
-		Sound.sfx("blip", 1.3)
-		y += 26.0
-		await get_tree().create_timer(0.7).timeout
-	await get_tree().create_timer(1.2).timeout
+	# il pannello è la scena chapters/c4/rivelazione_banca.tscn (posizioni, colori e tempi si cambiano lì)
+	var panel := load(REVELATION).instantiate() as PannelloRighe
+	add_child(panel)
+	await panel.appari()
+	var lines := revelation_lines()
+	var marked: Array = []
+	for i in lines.size():
+		if str(lines[i]).begins_with("NESSUN"):
+			marked.append(i)
+	await panel.scrivi(lines, marked)
 	await Ui.say(["Non preoccuparti.", "Non è necessario capire un debito per pagarlo.", "È necessario soltanto continuare."], VOICE)
-	var b := create_tween()
-	b.tween_property(panel, "modulate:a", 0.0, 0.8)
-	await b.finished
-	layer.queue_free()
+	await panel.scompari()
 	Sound.music(music)
 	Sound.music_pitch(0.85, 2.0)
 	Ui.cutscene = false
@@ -735,12 +699,19 @@ func look_back_line() -> String:
 	return "Avevi attraversato la Banca. La Banca sarebbe rimasta."
 
 
+## Nello sguardo indietro la fila avanza di `fila_passo` pixel in `fila_durata` secondi,
+## e Olga va verso Punti/UscitaOlga in `olga_uscita_durata` secondi.
+@export var fila_passo := 6.0
+@export var fila_durata := 6.0
+@export var olga_uscita_durata := 5.0
+
+
 func _dress_for_look_back() -> void:
 	# la fila continua a muoversi, lentamente, sempre
 	for n in world.get_children():
 		if n is CharSprite and str(n.name).begins_with("Fila"):
 			var tw := (n as Node2D).create_tween()
-			tw.tween_property(n, "position:y", (n as Node2D).position.y - 6.0, 6.0)
+			tw.tween_property(n, "position:y", (n as Node2D).position.y - fila_passo, fila_durata)
 	var teo := _npc("teo")
 	if teo:
 		if GameState.is_robot("teo"):
@@ -760,28 +731,18 @@ func _dress_for_look_back() -> void:
 	var olga := _npc("olga")
 	if olga and _f("c4_olga_contestazione"):
 		# esce con la sua lettera
-		var letter := Sprite2D.new()
-		letter.texture = load(LETTER)
-		letter.position = Vector2(6, -14)
-		olga.add_child(letter)
+		olga.add_child(load("res://chapters/c4/lettera_olga.tscn").instantiate())
 		olga.set_physics_process(false)
 		var tw := olga.create_tween()
-		# verso la porta della sala d'attesa
-		tw.tween_property(olga, "position", cell_feet(Vector2i(11, 11)), 5.0)
+		# verso la porta della sala d'attesa (il nodo Punti/UscitaOlga della scena)
+		var door := get_node_or_null("Punti/UscitaOlga") as Node2D
+		if door:
+			tw.tween_property(olga, "position", door.position, olga_uscita_durata)
 	if _f("c4_anomalia"):
 		# un terminale continua a cercare il contratto
 		var term := find_child("TerminaleConto", true, false) as Node2D
 		if term:
-			var l := Label.new()
-			l.text = "RICERCA CONTRATTO..."
-			l.add_theme_font_size_override("font_size", 6)
-			l.add_theme_color_override("font_color", Color("ff5a50"))
-			l.position = Vector2(-20, -44)
-			l.z_index = 30
-			term.add_child(l)
-			var tw := l.create_tween().set_loops()
-			tw.tween_property(l, "modulate:a", 0.2, 0.5)
-			tw.tween_property(l, "modulate:a", 1.0, 0.5)
+			term.add_child(load("res://chapters/c4/ricerca_contratto.tscn").instantiate())
 
 
 ## Le conseguenze per i capitoli 5-6, tutte in un posto, coi nomi della specifica:

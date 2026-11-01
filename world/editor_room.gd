@@ -8,6 +8,9 @@ extends Room
 ## Gli oggetti con collisione sono Sprite2D con uno StaticBody2D figlio.
 ## Le stanze vere estendono questa e scrivono solo la loro logica (dialoghi, eventi).
 
+## Le scritte dello sguardo indietro di fine capitolo.
+const LOOK_BACK_CARD := "res://world/sguardo_indietro.tscn"
+
 @export var room_music := "fondo"
 @export var room_floor := ""
 
@@ -51,12 +54,14 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	Ui.show_hud(false)
 	p.set_physics_process(false)
 	p.face("down")
-	# la telecamera si allarga su tutta la stanza, com'è diventata
-	# solo il pavimento e i muri: niente bordo scuro, niente fuori-mappa
-	var inner := cam_rect
-	var fit := maxf(640.0 / inner.size.x, 360.0 / inner.size.y)
-	var half := Vector2(320, 180) / fit
-	var look := (inner.get_center() + Vector2(0, 10)).clamp(inner.position + half, inner.end - half)
+	# la telecamera si allarga su tutta la stanza, com'è diventata: dove la porta il nodo
+	# Inquadrature/SguardoIndietro della scena (si sposta e si cambia lo zoom nell'editor)
+	var shot := get_node_or_null("Inquadrature/SguardoIndietro") as Inquadratura
+	if shot == null:
+		push_warning("Manca il nodo Inquadrature/SguardoIndietro in " + scene_file_path)
+	var look := shot.global_position if shot else cam_rect.get_center()
+	var fit := shot.zoom if shot else maxf(640.0 / cam_rect.size.x, 360.0 / cam_rect.size.y)
+	var duration := shot.durata if shot else 3.5
 	var cam := p.camera
 	Sound.music_pitch(0.6, 4.0)
 	# la telecamera si stacca dal giocatore (così i bordi della stanza la tengono dentro)
@@ -65,85 +70,20 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	cam.top_level = true
 	cam.global_position = from
 	var tw := create_tween()
-	tw.tween_property(cam, "global_position", look, 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.parallel().tween_property(cam, "zoom", Vector2(fit, fit), 3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(cam, "global_position", look, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.parallel().tween_property(cam, "zoom", Vector2(fit, fit), duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await tw.finished
-	await get_tree().create_timer(0.8).timeout
-	# una frase sola, quella che ti sei guadagnato
-	var layer := CanvasLayer.new()
-	layer.layer = 15
-	add_child(layer)
-	# la frase in basso, su una striscia scura, per non coprire la stanza
-	var band := ColorRect.new()
-	band.color = Color(0, 0, 0, 0)
-	band.position = Vector2(0, 278)
-	band.size = Vector2(640, 82)
-	layer.add_child(band)
-	var shade := ColorRect.new()
-	shade.color = Color(0, 0, 0, 0)
-	shade.size = Vector2(640, 360)
-	layer.add_child(shade)
-	var label := big_label(layer, line, Vector2(40, 280), Vector2(560, 78), 13, Color.WHITE)
-	label.modulate.a = 0.0
-	var a := create_tween().set_parallel()
-	a.tween_property(band, "color:a", 0.75, 1.2)
-	a.tween_property(label, "modulate:a", 1.0, 1.2)
-	await a.finished
-	await get_tree().create_timer(4.0).timeout
-	# buio, poi il capitolo dopo
-	var b := create_tween()
-	b.tween_property(label, "modulate:a", 0.0, 0.8)
-	b.tween_property(shade, "color:a", 1.0, 1.0)
-	await b.finished
+	# una frase sola, quella che ti sei guadagnato; poi buio e il capitolo dopo.
+	# Le scritte sono la scena world/sguardo_indietro.tscn (posizioni, colori e tempi si cambiano lì).
+	var card := load(LOOK_BACK_CARD).instantiate() as SguardoIndietro
+	add_child(card)
+	await card.frase(line)
+	await card.buio()
 	Sound.music("")
 	# qualche riga sul buio prima del titolo (la Città: "PRESIDENZA CHEAP. SEI ARRIVATO.")
 	if not preface.is_empty():
-		var lines: Array[Label] = []
-		for i in preface.size():
-			var pl := big_label(layer, str(preface[i]), Vector2(40, 120 + i * 34), Vector2(560, 30), 18 if i == 0 else 13,
-				Color.WHITE if i == 0 else Color("8a8494"))
-			pl.modulate.a = 0.0
-			lines.append(pl)
-		for pl in lines:
-			var f := create_tween()
-			f.tween_property(pl, "modulate:a", 1.0, 0.9)
-			Sound.sfx("blip", 0.8)
-			await f.finished
-			await get_tree().create_timer(1.0).timeout
-		await get_tree().create_timer(1.5).timeout
-		var g := create_tween().set_parallel()
-		for pl in lines:
-			g.tween_property(pl, "modulate:a", 0.0, 0.8)
-		await g.finished
-	var small := big_label(layer, chapter, Vector2(0, 138), Vector2(640, 24), 13, Color("8a8494"))
-	var big := big_label(layer, title, Vector2(0, 162), Vector2(640, 40), 26, Color("ffe14d"))
-	small.modulate.a = 0.0
-	big.modulate.a = 0.0
-	var c := create_tween()
-	c.tween_property(small, "modulate:a", 1.0, 0.8)
-	c.tween_property(big, "modulate:a", 1.0, 0.8)
-	Sound.sfx("stamp", 0.8)
-	if subtitle != "":
-		var sub := big_label(layer, subtitle, Vector2(60, 210), Vector2(520, 40), 12, Color.WHITE)
-		sub.modulate.a = 0.0
-		c.tween_interval(0.4)
-		c.tween_property(sub, "modulate:a", 1.0, 1.0)
-	await c.finished
-	await get_tree().create_timer(2.5 if subtitle != "" else 2.0).timeout
+		await card.premessa(preface)
+	await card.titolo(chapter, title, subtitle)
 	Ui.cutscene = false
 	Router.goto(path, spawn_name, narration)
 
-
-func big_label(parent: Node, text: String, pos: Vector2, size: Vector2, font_size: int, col: Color) -> Label:
-	var l := Label.new()
-	# l'a capo prima della larghezza: se no la scritta si allarga quanto tutta la frase ed esce dallo schermo
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	l.text = text
-	l.position = pos
-	l.size = size
-	l.add_theme_font_size_override("font_size", font_size)
-	l.add_theme_color_override("font_color", col)
-	parent.add_child(l)
-	return l

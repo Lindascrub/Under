@@ -4,9 +4,15 @@ extends StaticBody2D
 ## Attività possibili (campo "anim"): idle_<dir>, sit_left, sit_right, phone, read, wander.
 ## Se GameState.is_robot(id) è vero, la persona è stata sostituita da un robot:
 ## stessa faccia, frasi vuote, ferma a guardarti invece di fare le sue cose.
+## È la scena scripts/npc.tscn: Ombra, Sprite (l'offset è dove stanno i piedi), Collisione,
+## Fumetto (la nuvoletta sopra la testa, con Sopra e Coda).
 
-const ROBOT_SHADER := preload("res://shaders/robot.gdshader")
 const WANDER_SPEED := 18.0
+
+## Chi è seduto scende di questi pixel (così resta sopra la panchina)...
+@export var seduto_abbassa := 3.0
+## ...e lo sprite si sposta così (guardando a destra; a sinistra la x è al contrario).
+@export var seduto_spostamento := Vector2(3, -13)
 
 var id := ""
 var activity := "idle_down"
@@ -37,24 +43,10 @@ func _ready() -> void:
 	add_to_group("npc")
 	data = GameState.npc_data(id)
 	_home = position
-	var shadow := Sprite2D.new()
-	shadow.texture = Assets.shadow()
-	shadow.position = Vector2(0, -1)
-	add_child(shadow)
-	sprite = AnimatedSprite2D.new()
+	var shadow := $Ombra as Sprite2D
+	sprite = $Sprite as AnimatedSprite2D
 	sprite.sprite_frames = Assets.character(str(data.get("sheet", "char_02")))
-	sprite.centered = false
-	sprite.offset = Vector2(-8, -31)
-	_mat = ShaderMaterial.new()
-	_mat.shader = ROBOT_SHADER
-	sprite.material = _mat
-	add_child(sprite)
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(12, 8)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(0, -4)
-	add_child(col)
+	_mat = sprite.material as ShaderMaterial
 
 	if GameState.is_robot(id) and not activity.begins_with("sit"):
 		activity = "idle_down"
@@ -62,8 +54,8 @@ func _ready() -> void:
 		# Seduto su una panchina: un po' più in basso nell'ordinamento, così resta sopra la panchina.
 		# La panchina laterale ha lo schienale a destra: chi è seduto (guarda a sinistra) va sulla seduta.
 		shadow.visible = false
-		position.y += 3
-		sprite.offset += Vector2(-3, -13) if activity == "sit_left" else Vector2(3, -13)
+		position.y += seduto_abbassa
+		sprite.offset += Vector2(-seduto_spostamento.x, seduto_spostamento.y) if activity == "sit_left" else seduto_spostamento
 	# le persone vere, in un piano colorato e finto, sono grigie (campo "grey"): ognuna nel suo grigio,
 	# con un gesto suo (data/looks.json). I robot no.
 	if not GameState.is_robot(id):
@@ -72,25 +64,20 @@ func _ready() -> void:
 	sprite.frame = randi() % 6
 	if GameState.is_robot(id):
 		sprite.speed_scale = 0.0
-	_emote = Node2D.new()
-	_emote_top = Sprite2D.new()
-	_emote_tail = Sprite2D.new()
+	_emote = $Fumetto as Node2D
+	_emote_top = $Fumetto/Sopra as Sprite2D
+	_emote_tail = $Fumetto/Coda as Sprite2D
 	for s in [_emote_top, _emote_tail]:
 		s.texture = AtlasTexture.new()
-		_emote.add_child(s)
 	if ResourceLoader.exists(LIMEZU_EMOTES):
 		(_emote_top.texture as AtlasTexture).atlas = load(LIMEZU_EMOTES)
 		(_emote_tail.texture as AtlasTexture).atlas = load(LIMEZU_EMOTES)
-		_emote.position = Vector2(7, -34)
-		_emote_tail.position = Vector2(0, 16)
 	else:
 		# senza gli asset LimeZu: la vecchia nuvoletta disegnata da noi
 		(_emote_top.texture as AtlasTexture).atlas = load("res://art/emotes.png") if ResourceLoader.exists("res://art/emotes.png") else Assets.tex("_emotes", Vector2i(44, 10))
 		_emote_tail.visible = false
-		_emote.position = Vector2(4, -42)
+		_emote.position += Vector2(-3, -8)
 	_emote.visible = false
-	_emote.z_index = 5
-	add_child(_emote)
 	_emote_t = randf_range(3.0, 10.0)
 	_fidget_t = randf_range(2.0, 6.0)
 

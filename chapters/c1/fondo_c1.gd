@@ -41,7 +41,7 @@ func enter() -> void:
 		await get_tree().create_timer(0.3).timeout
 		Sound.sfx("clunk")
 		Sound.sfx("spark", 0.8)
-		_shake(0.6)
+		_shake(scossa_durata)
 		_break_lift()
 		await get_tree().create_timer(0.6).timeout
 		await Ui.say([
@@ -385,6 +385,12 @@ func _revelation() -> void:
 # --- l'ascensore che crolla ------------------------------------------------------
 
 var _lift: Lift
+## Quando l'ascensore crolla la telecamera trema: di quanti pixel al massimo...
+@export var scossa_forza := 3.0
+## ...e quanti secondi dura ogni scossone.
+@export var scossa_colpo := 0.05
+## Quanti secondi trema in tutto.
+@export var scossa_durata := 0.6
 
 
 func _shake(time: float) -> void:
@@ -392,9 +398,9 @@ func _shake(time: float) -> void:
 		return
 	var cam := player.camera
 	var tw := create_tween()
-	for i in int(time / 0.05):
-		tw.tween_property(cam, "offset", Vector2(randf_range(-3, 3), randf_range(-3, 3)), 0.05)
-	tw.tween_property(cam, "offset", Vector2.ZERO, 0.05)
+	for i in int(time / scossa_colpo):
+		tw.tween_property(cam, "offset", Vector2(randf_range(-scossa_forza, scossa_forza), randf_range(-scossa_forza, scossa_forza)), scossa_colpo)
+	tw.tween_property(cam, "offset", Vector2.ZERO, scossa_colpo)
 
 
 ## L'ascensore rotto: le porte socchiuse e storte, le luci spente, dentro è buio.

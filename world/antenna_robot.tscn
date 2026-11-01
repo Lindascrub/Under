@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/c4/antenna_robot.png" id="1_antenna"]
+
+[node name="Antenna" type="Sprite2D"]
+z_index = 1
+position = Vector2(0, -27)
+texture = ExtResource("1_antenna")

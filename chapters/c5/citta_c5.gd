@@ -11,12 +11,12 @@ const VOICE := "Voce CHEAP"
 const SPEAKER := "Altoparlante"
 const BADGE := "cima"
 const ART := "res://art/c5/"
-const ANTENNA := "res://art/c4/antenna_robot.png"
+## Il pannello della rivelazione del primo gradino.
+const REVELATION := "res://chapters/c5/rivelazione_citta.tscn"
 ## Dove porta la scala esterna: la Cima (il capitolo 6).
 const NEXT := "res://chapters/c6/cima.tscn"
 const CASA_DOOR := Rect2i(16, 9, 2, 1)
 const TOWER_DOOR := Rect2i(2, 9, 2, 1)
-const BENCH := Vector2i(6, 18)
 const SIGNS := ["VOGLIAMO UN POSTO PER STUDIARE.", "IL TEMPO NON SI RECUPERA.",
 	"UN SERVIZIO PUBBLICO NON È UN LUSSO.", "LAVORARE NON BASTA?"]
 
@@ -93,17 +93,12 @@ func _arrival() -> void:
 	await Ui.say(["* Una porta di vetro. Sopra, un'insegna: BENVENUTO ALL'ESTERNO.", "* Sotto, più piccolo: \"Servizio soggetto a disponibilità.\""])
 	Sound.sfx("door")
 	await get_tree().create_timer(0.5).timeout
-	# la telecamera guarda in su: il cielo
-	var cam := player.camera
-	var tw := create_tween()
-	tw.tween_property(cam, "offset", Vector2(0, -110), 2.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	await tw.finished
+	# la telecamera guarda in su: il cielo (il nodo Inquadrature/Cielo della scena)
+	var sky: Dictionary = await FocusShot.begin(self, $Inquadrature/Cielo as Inquadratura)
 	Sound.sfx("flap", 1.3)
 	await Ui.say(["* La porta si apre. Per la prima volta, sopra di te, c'è il cielo.",
 		"* Vento. Uccelli. Qualcuno che parla. Il campanello di una bicicletta."])
-	var back := create_tween()
-	back.tween_property(cam, "offset", Vector2.ZERO, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	await back.finished
+	await FocusShot.restore(self, sky)
 	await get_tree().create_timer(0.8).timeout
 	await _billboard_flash()
 	await Ui.say(["* Un cartellone enorme si accende: ANCHE IL CIELO HA UN LIMITE. SUPERALO CON PREMIUM."])
@@ -383,28 +378,20 @@ func _vetrina_rotta() -> void:
 	await Ui.say(["* La vetrina già rotta. Scotch a stella, da anni. Ormai è un modello."])
 
 
+## La vetrina rotta e il cartone sopra: i nodi VetrinaRottaNuova e Cartone della scena (nascosti finché servono).
 func _broken_window() -> void:
-	if find_child("VetrinaRottaNuova", true, false):
-		return
-	var s := Sprite2D.new()
-	s.name = "VetrinaRottaNuova"
-	s.texture = load(ART + "vetrina_rotta.png")
-	s.centered = false
-	s.position = Vector2(33 * T + 2, 7 * T + 6)
-	s.z_index = 2
-	add_child(s)
+	_show_node("VetrinaRottaNuova")
 
 
 func _cardboard() -> void:
-	if find_child("Cartone", true, false):
-		return
-	var s := Sprite2D.new()
-	s.name = "Cartone"
-	s.texture = load(ART + "cartone.png")
-	s.centered = false
-	s.position = Vector2(33 * T + 2, 7 * T + 6)
-	s.z_index = 3
-	add_child(s)
+	_show_node("Cartone")
+
+
+func _show_node(nm: String) -> CanvasItem:
+	var n := get_node_or_null(nm) as CanvasItem
+	if n:
+		n.visible = true
+	return n
 
 
 # --- 5.08 il TURNO: Comunicazioni (dal terzo turno, lo smistamento rapido) ------------------------
@@ -582,7 +569,7 @@ func _sign(prize: int) -> void:
 	var ada := CharSprite.new()
 	ada.sheet = str(GameState.npc_data("ada").get("sheet"))
 	ada.anim = "idle_down"
-	ada.position = cell_feet(Vector2i(16, 10))
+	ada.position = _posto("AdaUscita")
 	ada.modulate.a = 0.0
 	world.add_child(ada)
 	_antenna(ada)
@@ -603,12 +590,8 @@ func _sign(prize: int) -> void:
 static func _antenna(n: Node2D) -> void:
 	if n.has_node("Antenna"):
 		return
-	var a := Sprite2D.new()
-	a.name = "Antenna"
-	a.texture = load(ANTENNA)
-	a.position = Vector2(0, -27)
-	a.z_index = 1
-	n.add_child(a)
+	# world/antenna_robot.tscn: lì si sposta e si cambia
+	n.add_child(load("res://world/antenna_robot.tscn").instantiate())
 
 
 # --- 5.11 / 5.12 / 5.13 la manifestazione, le tre proposte, la vetrina ---------------------------
@@ -714,7 +697,7 @@ func _crash() -> void:
 	await get_tree().create_timer(0.8).timeout
 	await Ui.say(["* CRASH.", "* La vetrina della bottega di Rina va in pezzi. Non hai visto chi è stato. Da qui, nessuno l'ha visto bene."])
 	await Ui.say(["No.", "No, no, no.", "L'avevo appena riparata."], "Rina")
-	_add_person("Giornalista", "char_07", Vector2i(36, 11), "idle_left", _giornalista)
+	_add_person("Giornalista", "char_07", "idle_left", _giornalista)
 	await Ui.say(["* Arriva qualcuno con un taccuino e un microfono che ha visto giorni migliori."])
 	await Ui.say(["Possiamo avere una dichiarazione?"], "Giornalista")
 	await Ui.say(["* (Puoi parlare con Rina, con chi manifesta, con il giornalista. Nell'ordine che vuoi. E poi c'è l'assemblea: %s la sta organizzando.)" % organizer()])
@@ -771,7 +754,16 @@ func _headline() -> void:
 # --- la piazza durante la manifestazione -------------------------------------------------------
 
 ## Una persona in piazza (senza dati in npcs.json): uno sprite, una casella occupata, un'azione.
-func _add_person(nm: String, sheet: String, cell: Vector2i, anim: String, action: Callable, grey := true) -> CharSprite:
+## Dove sta ognuno: il Marker2D Posti/Posto<nome> della scena (si trascina nell'editor).
+func _posto(nm: String) -> Vector2:
+	var m := get_node_or_null("Posti/Posto" + nm) as Node2D
+	if m == null:
+		push_warning("Manca il nodo Posti/Posto%s nella scena della Città" % nm)
+		return Vector2.ZERO
+	return m.position
+
+
+func _add_person(nm: String, sheet: String, anim: String, action: Callable, grey := true) -> CharSprite:
 	if people.has(nm) and is_instance_valid(people[nm]):
 		return people[nm]
 	var c := CharSprite.new()
@@ -780,7 +772,8 @@ func _add_person(nm: String, sheet: String, cell: Vector2i, anim: String, action
 	c.person = nm.to_lower()
 	c.anim = anim
 	c.grey = grey
-	c.position = cell_feet(cell)
+	c.position = _posto(nm)
+	var cell := Vector2i((c.position / T).floor())
 	world.add_child(c)
 	block(Rect2i(cell, Vector2i.ONE))
 	var spot := add_spot(cell_center(cell), action)
@@ -803,42 +796,39 @@ func _remove_person(nm: String) -> void:
 
 
 func _sign_on(c: Node2D, text: String) -> void:
-	var s := Sprite2D.new()
-	s.texture = load(ART + "cartello_protesta.png")
-	s.position = Vector2(0, -34)
-	s.z_index = 1
-	c.add_child(s)
+	# chapters/c5/cartello_in_mano.tscn: lì si sposta il cartello rispetto ai piedi
+	c.add_child(load("res://chapters/c5/cartello_in_mano.tscn").instantiate())
 	c.set_meta("sign", text)
 
 
 func _dress_protest() -> void:
 	var org := organizer()
 	if org == "Ada":
-		_add_person("Ada", str(GameState.npc_data("ada").get("sheet")), Vector2i(16, 15), "idle_down", _organizer_talk)
+		_add_person("Ada", str(GameState.npc_data("ada").get("sheet")), "idle_down", _organizer_talk)
 	else:
-		_add_person("Studente", "char_09", Vector2i(16, 15), "idle_down", _organizer_talk)
-		var ada := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), Vector2i(15, 11), "idle_down", _robot_ada_square, false)
+		_add_person("Studente", "char_09", "idle_down", _organizer_talk)
+		var ada := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), "idle_down", _robot_ada_square, false)
 		_antenna(ada)
 	var crowd := [
-		["StudenteFolla", "char_20", Vector2i(14, 17), "Sono qui perché chiudono il posto dove studio.", "Studente"],
-		["Lavoratore", "char_15", Vector2i(21, 17), "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Lavoratore"],
-		["Passante", "char_11", Vector2i(28, 18), "Io volevo soltanto comprare del pane.", "Passante"],
-		["AltroPassante", "char_12", Vector2i(29, 18), "Hai trovato quello economico? No? Allora sei dei nostri.", "Altro passante"],
+		["StudenteFolla", "char_20", "Sono qui perché chiudono il posto dove studio.", "Studente"],
+		["Lavoratore", "char_15", "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Lavoratore"],
+		["Passante", "char_11", "Io volevo soltanto comprare del pane.", "Passante"],
+		["AltroPassante", "char_12", "Hai trovato quello economico? No? Allora sei dei nostri.", "Altro passante"],
 	]
 	for p: Array in crowd:
-		var line: String = p[3]
-		var who: String = p[4]
-		_add_person(p[0], p[1], p[2], "idle_up", func() -> void: await Ui.say([line], who))
-	var m := _add_person("Manifestante", "char_06", Vector2i(23, 19), "idle_up", _manifestante)
+		var line: String = p[2]
+		var who: String = p[3]
+		_add_person(p[0], p[1], "idle_up", func() -> void: await Ui.say([line], who))
+	var m := _add_person("Manifestante", "char_06", "idle_up", _manifestante)
 	_sign_on(m, SIGNS[3])
-	var holders := [["Cartello0", "char_05", Vector2i(14, 19)], ["Cartello1", "char_10", Vector2i(20, 19)], ["Cartello2", "char_08", Vector2i(27, 16)]]
+	var holders := [["Cartello0", "char_05"], ["Cartello1", "char_10"], ["Cartello2", "char_08"]]
 	for i in holders.size():
 		var h: Array = holders[i]
 		var text: String = SIGNS[i]
-		var c := _add_person(h[0], h[1], h[2], "idle_up", func() -> void: await Ui.say(["* Il cartello dice: " + text]))
+		var c := _add_person(h[0], h[1], "idle_up", func() -> void: await Ui.say(["* Il cartello dice: " + text]))
 		_sign_on(c, text)
 	if _f("c5_vetrina"):
-		_add_person("Giornalista", "char_07", Vector2i(36, 11), "idle_left", _giornalista)
+		_add_person("Giornalista", "char_07", "idle_left", _giornalista)
 
 
 ## Ada robot in piazza: volantini CHEAP. Si può parlarle, ma risponde il volantino.
@@ -873,15 +863,15 @@ func _organizer_talk() -> void:
 
 func _visitors() -> void:
 	if _f("c3_leda"):
-		_add_person("Leda", str(GameState.npc_data("leda").get("sheet")), Vector2i(30, 16), "idle_left", _leda)
+		_add_person("Leda", str(GameState.npc_data("leda").get("sheet")), "idle_left", _leda)
 	if _f("c3_amir"):
-		var amir := _add_person("Amir", str(GameState.npc_data("amir").get("sheet")), Vector2i(32, 15), "idle_left", _amir, not GameState.is_robot("amir"))
+		var amir := _add_person("Amir", str(GameState.npc_data("amir").get("sheet")), "idle_left", _amir, not GameState.is_robot("amir"))
 		if GameState.is_robot("amir"):
 			_antenna(amir)
 	if _f("c4_olga"):
-		_add_person("Olga", str(GameState.npc_data("olga").get("sheet")), Vector2i(10, 18), "idle_right", _olga)
+		_add_person("Olga", str(GameState.npc_data("olga").get("sheet")), "idle_right", _olga)
 	if _f("c4_teo"):
-		var teo := _add_person("Teo", str(GameState.npc_data("teo").get("sheet")), Vector2i(11, 19), "idle_right", _teo, not GameState.is_robot("teo"))
+		var teo := _add_person("Teo", str(GameState.npc_data("teo").get("sheet")), "idle_right", _teo, not GameState.is_robot("teo"))
 		if GameState.is_robot("teo"):
 			_antenna(teo)
 
@@ -1133,19 +1123,12 @@ func _dress_after() -> void:
 		"rinvio":
 			label = "CHIUSURA RINVIATA"
 			col = Color("ffe14d")
-	if label != "" and not has_node("InsegnaEsito"):
-		var l := Label.new()
-		l.name = "InsegnaEsito"
-		l.text = label
-		l.add_theme_font_size_override("font_size", 6)
-		l.add_theme_color_override("font_color", col)
-		l.add_theme_constant_override("outline_size", 3)
-		l.add_theme_color_override("font_outline_color", Color.BLACK)
-		l.position = Vector2(14 * T, 4 * T + 4)
-		l.size = Vector2(6 * T, 10)
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.z_index = 30
-		add_child(l)
+	# l'insegna è il nodo InsegnaEsito della scena: qui cambiano solo la scritta e il colore
+	var sign := get_node_or_null("InsegnaEsito") as Label
+	if label != "" and sign and not sign.visible:
+		sign.text = label
+		sign.add_theme_color_override("font_color", col)
+		sign.visible = true
 
 
 # --- 5.16 Nives e l'ultimo badge -----------------------------------------------------------------
@@ -1234,61 +1217,24 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Sound.music_pitch(0.5, 1.2)
 	await get_tree().create_timer(1.2).timeout
 	Sound.music("")
-	var layer := CanvasLayer.new()
-	layer.layer = 14
-	add_child(layer)
-	var panel := ColorRect.new()
-	panel.color = Color("0b0a10")
-	panel.size = Vector2(560, 300)
-	panel.position = Vector2(40, 24)
-	panel.modulate.a = 0.0
-	layer.add_child(panel)
-	var map := TextureRect.new()
-	map.texture = load(ART + "mappa_citta.png")
-	map.position = Vector2(120, 16)
-	panel.add_child(map)
-	var a := create_tween()
-	a.tween_property(panel, "modulate:a", 1.0, 0.6)
-	await a.finished
+	# il pannello è la scena chapters/c5/rivelazione_citta.tscn (mappa, simboli, colori e tempi si cambiano lì)
+	var panel := load(REVELATION).instantiate() as PannelloRighe
+	add_child(panel)
+	await panel.appari()
 	# i quattro simboli: i quattro piani di sotto, tutti collegati alla stessa città
-	var symbols := [["simbolo_energia.png", "ENERGIA"], ["simbolo_amministrazione.png", "AMMINISTRAZIONE"],
-		["simbolo_commercio.png", "COMMERCIO"], ["simbolo_finanza.png", "FINANZA"]]
-	for i in symbols.size():
-		var s := TextureRect.new()
-		s.texture = load(ART + str(symbols[i][0]))
-		s.position = Vector2(150 + i * 72, 60)
-		panel.add_child(s)
-		var l := Label.new()
-		l.text = str(symbols[i][1])
-		l.position = Vector2(126 + i * 72, 88)
-		l.size = Vector2(72, 12)
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.add_theme_font_size_override("font_size", 7)
-		panel.add_child(l)
-		Sound.sfx("blip", 1.0 + i * 0.1)
-		await get_tree().create_timer(0.5).timeout
+	await panel.mostra_simboli()
 	await Ui.say(["Congratulazioni.", "La città è cresciuta.", "Abbiamo aumentato l'efficienza.", "Ottimizzato le risorse.",
 		"Migliorato il valore delle attività."], VOICE)
-	var y := 180.0
-	for line: String in revelation_lines():
-		var l := Label.new()
-		l.text = line
-		l.position = Vector2(30, y)
-		l.size = Vector2(500, 20)
-		l.add_theme_font_size_override("font_size", 13)
-		l.add_theme_color_override("font_color", Color("8fe08f") if line.contains("POSITIVA") else Color("ff5a50"))
-		panel.add_child(l)
-		Sound.sfx("blip", 1.3)
-		y += 26.0
-		await get_tree().create_timer(0.9).timeout
-	await get_tree().create_timer(1.0).timeout
+	var lines := revelation_lines()
+	var marked: Array = []
+	for i in lines.size():
+		if str(lines[i]).contains("POSITIVA"):
+			marked.append(i)
+	await panel.scrivi(lines, marked)
 	await Ui.say(["La città sta meglio."], VOICE)
 	await get_tree().create_timer(1.2).timeout
 	await Ui.say(["Perché continuate a lamentarvi?"], VOICE)
-	var b := create_tween()
-	b.tween_property(panel, "modulate:a", 0.0, 0.8)
-	await b.finished
-	layer.queue_free()
+	await panel.scompari()
 	Sound.music(music)
 	Sound.music_pitch(0.85, 2.0)
 	Ui.cutscene = false
@@ -1338,34 +1284,23 @@ func _dress_for_look_back() -> void:
 	_dress_after()
 	# Ada: seduta sulla soglia con un libro, o con i volantini CHEAP
 	if GameState.is_robot("ada"):
-		var r := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), Vector2i(15, 11), "idle_down", func() -> void: pass, false)
+		var r := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), "idle_down", func() -> void: pass, false)
 		_antenna(r)
 	elif _f("c5_ada"):
-		_add_person("AdaSoglia", str(GameState.npc_data("ada").get("sheet")), Vector2i(18, 11), "idle_down", func() -> void: pass)
+		_add_person("AdaSoglia", str(GameState.npc_data("ada").get("sheet")), "idle_down", func() -> void: pass)
 	# Nadir alla fermata: da solo, o con altri pendolari se la rete è partita
 	if _f("c5_nadir_rete"):
-		_add_person("Pendolare0", "char_15", Vector2i(26, 15), "idle_left", func() -> void: pass)
-		_add_person("Pendolare1", "char_11", Vector2i(27, 15), "idle_left", func() -> void: pass)
+		_add_person("Pendolare0", "char_15", "idle_left", func() -> void: pass)
+		_add_person("Pendolare1", "char_11", "idle_left", func() -> void: pass)
 	# la manifestazione senza assemblea: cartelli rimasti a terra
 	if _f("c5_protesta") and not _f("c5_assemblea"):
-		for i in 3:
-			var s := Sprite2D.new()
-			s.texture = load(ART + "cartello_protesta.png")
-			s.position = cell_center(Vector2i(15 + i * 5, 17 + i % 2))
-			s.rotation = 1.4 + i * 0.3
-			add_child(s)
+		_show_node("CartelliATerra")
 	if _f("c5_vetrina"):
 		_broken_window()
 	# l'autobus arriva, finalmente, mentre nessuno guarda
-	var board := find_child("Tabellone", true, false) as Node2D
-	if board:
-		var l := Label.new()
-		l.text = "IN ARRIVO"
-		l.add_theme_font_size_override("font_size", 6)
-		l.add_theme_color_override("font_color", Color("ffe14d"))
-		l.position = Vector2(-2, -44)
-		l.z_index = 30
-		board.add_child(l)
+	var arriving := find_child("InArrivo", true, false) as CanvasItem
+	if arriving:
+		arriving.visible = true
 
 
 ## Le conseguenze per il capitolo 6, tutte in un posto, coi nomi della specifica:
@@ -1421,16 +1356,16 @@ func _secret_setup() -> void:
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
 			n.collision_layer = 0
-	var seats := [["PancaAda", str(GameState.npc_data("ada").get("sheet")), Vector2i(6, 17)], ["PancaRina", str(GameState.npc_data("rina").get("sheet")), Vector2i(7, 17)], ["PancaNadir", str(GameState.npc_data("nadir").get("sheet")), Vector2i(8, 18)]]
+	var seats := [["PancaAda", str(GameState.npc_data("ada").get("sheet"))], ["PancaRina", str(GameState.npc_data("rina").get("sheet"))], ["PancaNadir", str(GameState.npc_data("nadir").get("sheet"))]]
 	for s: Array in seats:
 		var c := CharSprite.new()
 		c.name = s[0]
 		c.sheet = s[1]
 		c.anim = "idle_down"
 		c.grey = true
-		c.position = cell_feet(s[2])
+		c.position = _posto(s[0])
 		world.add_child(c)
-		block(Rect2i(s[2], Vector2i.ONE))
+		block(Rect2i(Vector2i((c.position / T).floor()), Vector2i.ONE))
 
 
 func _panchina() -> void:
@@ -1466,12 +1401,8 @@ func _secret() -> void:
 	await Ui.say(["Anche.", "Che tra dieci anni saremo ancora qui a cercare un posto dove stare."], "Ada")
 	await Ui.say(["Può darsi.", "Però oggi un posto ce l'abbiamo."], "Rina")
 	await Ui.say(["Ed è pure gratis."], "Nadir")
-	var sign := Sprite2D.new()
-	sign.texture = load(ART + "panca_premium.png")
-	sign.position = cell_center(BENCH) + Vector2(16, -30)
-	sign.z_index = 30
+	var sign := _show_node("CartelloPremium")
 	sign.modulate.a = 0.0
-	add_child(sign)
 	Sound.sfx("spark", 1.4)
 	var s := sign.create_tween()
 	s.tween_property(sign, "modulate:a", 1.0, 0.3)

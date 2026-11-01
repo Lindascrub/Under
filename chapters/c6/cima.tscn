@@ -23,6 +23,8 @@
 [ext_resource type="Texture2D" path="res://assets/limezu/props/palm.png" id="22_kc68t"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/lamp.png" id="23_l6d22"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="Texture_bici_originale"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f7vec"]
 size = Vector2(19, 6)
@@ -189,9 +191,8 @@ script = ExtResource("9_aqhgw")
 lines = PackedStringArray("* Ritratti. I Presidenti di prima. Stessa giacca, stessa poltrona, facce diverse.", "* L\'ultima cornice è vuota. Sotto c\'è scritto: \"PROSSIMAMENTE\".")
 lines_after = PackedStringArray()
 
-[node name="Stellina" type="Node2D" parent="Mondo" unique_id=715646177]
+[node name="Stellina" parent="Mondo" unique_id=715646177 instance=ExtResource("stellina_tscn")]
 position = Vector2(304, 192)
-script = ExtResource("10_jseg7")
 
 [node name="VasoCorridoio0" type="Sprite2D" parent="Mondo" unique_id=1295491810]
 position = Vector2(112, 208)
@@ -480,3 +481,17 @@ metadata/facing = "right"
 [node name="desk" type="Marker2D" parent="Arrivi" unique_id=1507420200]
 position = Vector2(520, 158)
 metadata/facing = "up"
+[node name="Posti" type="Node2D" parent="."]
+
+[node name="PostoScrivania" type="Marker2D" parent="Posti"]
+position = Vector2(568, 142)
+
+[node name="PostoTavolo" type="Marker2D" parent="Posti"]
+position = Vector2(584, 254)
+
+[node name="PostoCapo" type="Marker2D" parent="Posti"]
+position = Vector2(440, 190)
+
+[node name="PostoDinamo" type="Marker2D" parent="Posti"]
+position = Vector2(328, 286)
+

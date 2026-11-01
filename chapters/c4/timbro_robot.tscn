@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/c4/timbro.png" id="1_timbro"]
+[ext_resource type="Script" path="res://chapters/c4/timbro_robot.gd" id="2_script"]
+
+[node name="Timbro" type="Sprite2D"]
+z_index = 1
+position = Vector2(12, -16)
+texture = ExtResource("1_timbro")
+script = ExtResource("2_script")

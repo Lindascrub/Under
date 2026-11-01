@@ -4,6 +4,8 @@ extends StaticBody2D
 ## Una comparsa che gira per la stanza (chi fa la spesa, chi aspetta in banca): va da un punto all'altro
 ## di `route`, a ogni punto si ferma a guardare (lo scaffale, il tabellone), poi riparte.
 ## Non ti passa attraverso: se sei davanti, o le sei vicino, si ferma. Toccandola dice una frase.
+## È la scena world/comparsa.tscn (Ombra, Sprite, Collisione). Il giro sono i Marker2D dentro
+## il suo figlio `Giro`: trascinali nell'editor (il primo è dove parte).
 
 ## Il foglio LimeZu ("char_07") e se è grigia (le persone vere, nei piani colorati e finti).
 @export var sheet := "char_07":
@@ -14,14 +16,19 @@ extends StaticBody2D
 	set(v):
 		grey = v
 		_refresh()
-## Il giro: punti (in pixel, coordinate della stanza) da visitare in ordine, poi si ricomincia.
-@export var route: PackedVector2Array = []
+## Il giro (preso dai punti di `Giro` quando la stanza parte), da visitare in ordine, poi si ricomincia.
+var route: PackedVector2Array = []
 ## Dove guarda quando si ferma a ogni punto ("up" = lo scaffale contro il muro).
 @export var look := "up"
 @export var lines: PackedStringArray = []
 @export var who := "Cliente"
+## Pixel al secondo, e quanto vicino a te si ferma.
+@export var velocita := 22.0
+@export var distanza_stop := 26.0
+## Secondi di sosta a ogni punto (a caso fra il minimo e il massimo).
+@export var sosta_min := 2.0
+@export var sosta_max := 5.0
 
-const SPEED := 22.0
 var _sprite: AnimatedSprite2D
 var _next := 0
 var _wait := 0.0
@@ -35,17 +42,11 @@ func _ready() -> void:
 		return
 	add_to_group("interactable")
 	add_to_group("walker")
-	var shadow := Sprite2D.new()
-	shadow.texture = Assets.shadow()
-	shadow.position = Vector2(0, -1)
-	add_child(shadow)
-	move_child(shadow, 0)
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(10, 6)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(0, -3)
-	add_child(col)
+	var giro := get_node_or_null("Giro")
+	if giro:
+		for m in giro.get_children():
+			if m is Node2D:
+				route.append(get_parent().to_local((m as Node2D).global_position))
 	_wait = randf_range(0.5, 3.0)
 	_line = randi() % maxi(lines.size(), 1)
 	if not route.is_empty():
@@ -56,10 +57,9 @@ func _refresh() -> void:
 	if not is_inside_tree():
 		return
 	if _sprite == null:
-		_sprite = AnimatedSprite2D.new()
-		_sprite.centered = false
-		_sprite.offset = Vector2(-8, -31)
-		add_child(_sprite)
+		_sprite = get_node_or_null("Sprite") as AnimatedSprite2D
+		if _sprite == null:
+			return
 	_sprite.sprite_frames = Assets.character(sheet)
 	_sprite.play("idle_" + look)
 	_sprite.material = null
@@ -73,7 +73,7 @@ func _process(delta: float) -> void:
 	if Engine.is_editor_hint() or route.is_empty():
 		return
 	var p := get_tree().get_first_node_in_group("player") as Node2D
-	if Ui.blocks_input() or (p != null and p.global_position.distance_to(global_position) < 26):
+	if Ui.blocks_input() or (p != null and p.global_position.distance_to(global_position) < distanza_stop):
 		_idle()
 		return
 	if _wait > 0.0:
@@ -83,7 +83,7 @@ func _process(delta: float) -> void:
 	if to.length() < 1.0:
 		# arrivata: guarda lo scaffale, poi il prossimo punto
 		_sprite.play("idle_" + look)
-		_wait = randf_range(2.0, 5.0)
+		_wait = randf_range(sosta_min, sosta_max)
 		_next = (_next + 1) % route.size()
 		return
 	# un passo alla volta, prima in orizzontale e poi in verticale (come si cammina tra gli scaffali)
@@ -98,7 +98,7 @@ func _process(delta: float) -> void:
 			_next = (_next + 1) % route.size()
 		return
 	_stuck = 0
-	var amount := minf(SPEED * delta, absf(to.x) if step.x != 0.0 else absf(to.y))
+	var amount := minf(velocita * delta, absf(to.x) if step.x != 0.0 else absf(to.y))
 	position += step * amount
 	var anim := "walk_" + _dir(step)
 	if _sprite.animation != anim:

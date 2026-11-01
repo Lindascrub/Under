@@ -1,0 +1,141 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://world/pannello_righe.gd" id="1_pannello"]
+[ext_resource type="Texture2D" path="res://art/c5/mappa_citta.png" id="2_mappa"]
+[ext_resource type="Texture2D" path="res://art/c5/simbolo_energia.png" id="s0"]
+[ext_resource type="Texture2D" path="res://art/c5/simbolo_amministrazione.png" id="s1"]
+[ext_resource type="Texture2D" path="res://art/c5/simbolo_commercio.png" id="s2"]
+[ext_resource type="Texture2D" path="res://art/c5/simbolo_finanza.png" id="s3"]
+
+[node name="RivelazioneCitta" type="CanvasLayer"]
+layer = 14
+script = ExtResource("1_pannello")
+pausa_tra_righe = 0.9
+pausa_dopo_righe = 1.0
+pausa_tra_simboli = 0.5
+colore_evidenza = Color(0.560784, 0.878431, 0.560784, 1)
+
+[node name="Pannello" type="ColorRect" parent="."]
+offset_left = 40.0
+offset_top = 24.0
+offset_right = 600.0
+offset_bottom = 324.0
+mouse_filter = 2
+color = Color(0.0431373, 0.0392157, 0.0627451, 1)
+
+[node name="Mappa" type="TextureRect" parent="Pannello"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 16.0
+texture = ExtResource("2_mappa")
+
+[node name="Simboli" type="Control" parent="Pannello"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Energia" type="TextureRect" parent="Pannello/Simboli"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 60.0
+texture = ExtResource("s0")
+
+[node name="Nome" type="Label" parent="Pannello/Simboli/Energia"]
+layout_mode = 0
+offset_left = -24.0
+offset_top = 28.0
+offset_right = 48.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 7
+text = "ENERGIA"
+horizontal_alignment = 1
+
+[node name="Amministrazione" type="TextureRect" parent="Pannello/Simboli"]
+layout_mode = 0
+offset_left = 222.0
+offset_top = 60.0
+texture = ExtResource("s1")
+
+[node name="Nome" type="Label" parent="Pannello/Simboli/Amministrazione"]
+layout_mode = 0
+offset_left = -24.0
+offset_top = 28.0
+offset_right = 48.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 7
+text = "AMMINISTRAZIONE"
+horizontal_alignment = 1
+
+[node name="Commercio" type="TextureRect" parent="Pannello/Simboli"]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 60.0
+texture = ExtResource("s2")
+
+[node name="Nome" type="Label" parent="Pannello/Simboli/Commercio"]
+layout_mode = 0
+offset_left = -24.0
+offset_top = 28.0
+offset_right = 48.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 7
+text = "COMMERCIO"
+horizontal_alignment = 1
+
+[node name="Finanza" type="TextureRect" parent="Pannello/Simboli"]
+layout_mode = 0
+offset_left = 366.0
+offset_top = 60.0
+texture = ExtResource("s3")
+
+[node name="Nome" type="Label" parent="Pannello/Simboli/Finanza"]
+layout_mode = 0
+offset_left = -24.0
+offset_top = 28.0
+offset_right = 48.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 7
+text = "FINANZA"
+horizontal_alignment = 1
+
+[node name="Righe" type="VBoxContainer" parent="Pannello"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 180.0
+offset_right = 530.0
+offset_bottom = 300.0
+theme_override_constants/separation = 6
+
+[node name="Riga0" type="Label" parent="Pannello/Righe"]
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 13
+text = "RIGA 1"
+
+[node name="Riga1" type="Label" parent="Pannello/Righe"]
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 13
+text = "RIGA 2"
+
+[node name="Riga2" type="Label" parent="Pannello/Righe"]
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 13
+text = "RIGA 3"
+
+[node name="Riga3" type="Label" parent="Pannello/Righe"]
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 13
+text = "RIGA 4"
+
+[node name="Riga4" type="Label" parent="Pannello/Righe"]
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 13
+text = "RIGA 5"

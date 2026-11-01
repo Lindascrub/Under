@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://world/lampeggia.gd" id="1_lampeggia"]
+
+[node name="RicercaContratto" type="Label"]
+z_index = 30
+offset_left = -20.0
+offset_top = -44.0
+offset_right = 40.0
+offset_bottom = -36.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.313726, 1)
+theme_override_font_sizes/font_size = 6
+text = "RICERCA CONTRATTO..."
+script = ExtResource("1_lampeggia")

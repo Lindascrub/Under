@@ -10,10 +10,14 @@ const FACING_VECTORS := {
 
 var sheet := "char_01"
 var facing := "down"
-var camera: Camera2D
+## La scena è scripts/player.tscn: ombra, sprite, collisione e telecamera sono nodi veri, da spostare
+## nell'editor. Lo zoom della telecamera nella scena è quello normale del gioco.
+@onready var camera: Camera2D = $Camera
+@onready var _shadow: Sprite2D = $Ombra
+@onready var _sprite: AnimatedSprite2D = $Sprite
 var _step_t := 0.0
-var _shadow: Sprite2D
-var _sprite: AnimatedSprite2D
+## Dove sta lo sprite in piedi (dalla scena): da seduto si abbassa partendo da qui.
+var _stand_offset := Vector2.ZERO
 ## Seduto su qualcosa (una cassetta, una panchina): fermo finché non ti muovi.
 var seated := false
 
@@ -21,24 +25,8 @@ var seated := false
 func _ready() -> void:
 	add_to_group("player")
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
-	_shadow = Sprite2D.new()
-	_shadow.texture = Assets.shadow()
-	_shadow.position = Vector2(0, -1)
-	add_child(_shadow)
-	_sprite = AnimatedSprite2D.new()
 	_sprite.sprite_frames = Assets.character(sheet)
-	_sprite.centered = false
-	_sprite.offset = Vector2(-8, -31)
-	add_child(_sprite)
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(14, 6)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(0, -3)
-	add_child(col)
-	camera = Camera2D.new()
-	camera.zoom = Vector2(2, 2)
-	add_child(camera)
+	_stand_offset = _sprite.offset
 	camera.make_current()
 	_sprite.play("idle_" + facing)
 
@@ -188,17 +176,17 @@ func sit(feet: Vector2, dir: String, lift := 6.0, low_pose := false) -> void:
 			# di spalle: lo schienale della sedia resta davanti e copre le gambe
 			z_index = 0
 			position = feet + Vector2(0, -5)
-			_sprite.offset = Vector2(-8, -23 - lift)
+			_sprite.offset = _stand_offset + Vector2(0, 8 - lift)
 			_sprite.play("idle_up")
 		"down":
 			z_index = 1
-			_sprite.offset = Vector2(-8, -23 - lift)
+			_sprite.offset = _stand_offset + Vector2(0, 8 - lift)
 			_sprite.play("idle_down")
 			_sprite.pause()
 		_:
 			z_index = 1
 			# alzata sul sedile: sotto si vede ancora (una cassetta è alta 12 pixel)
-			_sprite.offset = Vector2(-8, -23 - lift)
+			_sprite.offset = _stand_offset + Vector2(0, 8 - lift)
 			_sprite.play(("sit_high_" if lift >= 6.0 and not low_pose else "sit_") + dir)
 
 
@@ -211,7 +199,7 @@ func stand_up() -> void:
 		return
 	seated = false
 	z_index = 0
-	_sprite.offset = Vector2(-8, -31)
+	_sprite.offset = _stand_offset
 	_shadow.visible = true
 	_sprite.play("idle_down")
 	facing = "down"

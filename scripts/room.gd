@@ -16,12 +16,16 @@ var markers: Dictionary = {}
 var spawns: Dictionary = {}
 var spawn_facing: Dictionary = {}
 ## Quanto la camera può salire sopra la mappa (per mostrare edifici alti).
-var camera_top := 0
+@export var camera_top := 0
 ## Cosa può inquadrare la telecamera (in pixel): mai il nero fuori dalla mappa.
 ## Se resta vuoto si usa tutta la mappa (più camera_top sopra).
 var cam_rect := Rect2()
-## Sposta la visuale verso l'alto (per vedere gli edifici sullo sfondo).
-var camera_lift := 0
+## Sposta la visuale verso l'alto (per vedere gli edifici sullo sfondo), in pixel.
+@export var camera_lift := 0
+## La visuale sale quando il giocatore è sopra questa riga di caselle...
+@export var camera_lift_riga := 10.0
+## ...e arriva al massimo dopo queste righe.
+@export var camera_lift_righe := 4.0
 ## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
 var music := "quartiere"
 var outdoor := false
@@ -52,6 +56,8 @@ var _descending_stairs := false
 const BadgeBoothScript = preload("res://world/badge_booth.gd")
 const BadgeBoothScene = preload("res://world/badge_booth.tscn")
 const StairsUpScene = preload("res://world/stairs_up.tscn")
+## Il giocatore: una scena vera (sprite, ombra, collisione e telecamera si cambiano lì).
+const PLAYER_SCENE := "res://scripts/player.tscn"
 const StairsDownScene = preload("res://world/stairs_down.tscn")
 const TicketGateScript = preload("res://world/ticket_gate.gd")
 var _badge_booth: BadgeBoothScript
@@ -143,7 +149,7 @@ func grey_world_to(amount: float, time := 0.0) -> void:
 ## Il filtro grigio segue quello che inquadra la telecamera (anche ai bordi della mappa).
 func _process(_delta: float) -> void:
 	if is_instance_valid(_clerk_camera_actor) and is_instance_valid(player):
-		player.camera.global_position = player.camera.global_position.lerp(_clerk_camera_actor.global_position + Vector2(0, 12), minf(1.0, _delta * 7.0))
+		player.camera.global_position = player.camera.global_position.lerp(_clerk_camera_actor.global_position + _clerk_camera_offset, minf(1.0, _delta * _clerk_camera_speed))
 	if player and not _descending_stairs and not _stair_zones.is_empty():
 		var shade := 0.0
 		for z: Dictionary in _stair_zones:
@@ -153,7 +159,7 @@ func _process(_delta: float) -> void:
 				shade = maxf(shade, clampf(f, 0.0, 1.0))
 		player.set_shade(shade)
 	if camera_lift > 0 and player and not player.camera.top_level:
-		var t := clampf((10.0 * T - player.position.y) / (4.0 * T), 0.0, 1.0)
+		var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
 		player.camera.offset.y = lerpf(player.camera.offset.y, -camera_lift * t, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
@@ -193,44 +199,36 @@ func add_station(room_key: String) -> void:
 		add_station_at(j, Vector2i(int(j["station"][0]), int(j["station"][1])))
 
 
-## Un posto di lavoro in una casella precisa (usato anche dalle stanze fatte nell'editor).
+## Il posto di lavoro: la scena world/posto_turno.tscn (nei piani fatti nell'editor è già nella scena).
+const POSTO_TURNO := "res://world/posto_turno.tscn"
+const STELLINA := "res://world/stellina.tscn"
+## Le persone: la scena scripts/npc.tscn.
+const NPC_SCENE := "res://scripts/npc.tscn"
+
+
+## Un posto di lavoro in una casella precisa (per le stanze fatte col codice).
 func add_station_at(j: Dictionary, cell: Vector2i) -> void:
-	# la targhetta "TURNO" sopra al posto di lavoro resta sempre: gialla e dondolante finché
-	# c'è da lavorare, grigia e ferma quando il turno di oggi è finito
-	var mark := Label.new()
-	mark.text = "TURNO"
-	mark.add_theme_font_size_override("font_size", 8)
-	mark.add_theme_color_override("font_color", Color("8a8494") if GameState.worked_today else Color("ffe14d"))
-	mark.add_theme_constant_override("outline_size", 3)
-	mark.add_theme_color_override("font_outline_color", Color.BLACK)
-	var use_point := cell_center(cell)
-	var job_id := str(j.get("id", ""))
-	if job_id == "callcenter":
-		use_point += Vector2(0, -26)
-	elif job_id == "cassa_mercato":
-		use_point += Vector2(-16, 0)
-	elif job_id == "sportello_banca":
-		use_point += Vector2(8, 0)
-	mark.position = use_point + Vector2(-13, -30)
-	mark.z_index = 30
-	add_child(mark)
+	var posto := load(POSTO_TURNO).instantiate() as PostoTurno
+	posto.job = str(j.get("id", ""))
+	posto.position = Vector2(cell * T)
+	add_child(posto)
+	use_station(posto, j)
+
+
+## Accende un posto di lavoro: la targhetta "TURNO" resta sempre, gialla e dondolante finché
+## c'è da lavorare, grigia e ferma quando il turno di oggi è finito.
+func use_station(posto: PostoTurno, j: Dictionary) -> void:
+	var mark := posto.get_node("Targhetta") as Label
+	mark.add_theme_color_override("font_color", posto.colore_fatto if GameState.worked_today else posto.colore_da_fare)
 	if not GameState.worked_today:
 		var tw := mark.create_tween().set_loops()
-		tw.tween_property(mark, "position:y", mark.position.y - 3, 0.4)
-		tw.tween_property(mark, "position:y", mark.position.y, 0.4)
+		tw.tween_property(mark, "position:y", mark.position.y - posto.dondolio, posto.durata_dondolio)
+		tw.tween_property(mark, "position:y", mark.position.y, posto.durata_dondolio)
 	var jj := j
-	var spot := add_spot(use_point, func() -> void: _station(jj))
-	spot.set_meta("job_id", job_id)
-	if job_id == "sportello_banca":
-		# dietro al bancone, rivolta verso i clienti
-		spot.approach = Vector2.UP
-		spot.facing_required = "down"
-	elif job_id == "callcenter":
-		spot.approach = Vector2.UP
-		spot.facing_required = "down"
-	elif job_id == "cassa_mercato":
-		spot.approach = Vector2.RIGHT
-		spot.facing_required = "left"
+	var spot := add_spot((posto.get_node("PuntoUso") as Node2D).global_position, func() -> void: _station(jj))
+	spot.set_meta("job_id", str(j.get("id", "")))
+	spot.approach = posto.direzione_avvicinamento()
+	spot.facing_required = posto.verso_richiesto()
 
 
 func _station(j: Dictionary) -> void:
@@ -319,12 +317,9 @@ func _pity_offer() -> void:
 	await Ui.say(["* %s ti chiama. Ha la faccia di chi ti guarda da tre giorni." % who])
 	await Ui.say(p[2], who, str(p[1]))
 	# il Signor Rata arriva sempre al momento giusto. Cioè quello peggiore.
-	var rata := AnimatedSprite2D.new()
-	rata.sprite_frames = Assets.character("char_18")
-	rata.centered = false
-	rata.offset = Vector2(-8, -31)
-	rata.position = player.position + Vector2(-28, 0)
-	rata.play("idle_right")
+	# (world/signor_rata.tscn: il nodo è dove sei tu, lo Sprite è dove compare lui)
+	var rata := load("res://world/signor_rata.tscn").instantiate() as Node2D
+	rata.position = player.position
 	rata.modulate.a = 0.0
 	world.add_child(rata)
 	var tw := rata.create_tween()
@@ -383,6 +378,8 @@ func start_steal(victim: String, promo: Dictionary, extra := {}) -> void:
 
 ## Se hai aiutato tutti quelli del piano, l'addetta ai badge te lo regala (e il tornello si apre).
 var _clerk_camera_actor: Node2D
+var _clerk_camera_offset := Vector2.ZERO
+var _clerk_camera_speed := 7.0
 
 
 func _floor_gift() -> void:
@@ -407,9 +404,12 @@ func _floor_gift() -> void:
 	Sound.sfx("ding")
 	var clerk_shot: Dictionary = {}
 	if is_instance_valid(_badge_booth):
-		clerk_shot = await FocusShot.begin(self, _badge_booth.clerk.global_position + Vector2(0, -15), 3.0)
+		var clerk_frame := _badge_booth.get_node("InquadraturaAddetta") as Inquadratura
+		clerk_shot = await FocusShot.begin(self, clerk_frame)
 		await Ui.say(["Ehi, {name}! Un momento. Vengo io da te."], who, BADGE_CLERK)
 		_clerk_camera_actor = _badge_booth.clerk
+		_clerk_camera_offset = clerk_frame.global_position - _badge_booth.clerk.global_position
+		_clerk_camera_speed = clerk_frame.velocita_inseguimento
 		# da quando esce a quando rientra, tu e chi le sta vicino vi girate verso di lei
 		_watch_actor(_badge_booth.clerk)
 		await _badge_booth.come_out()
@@ -698,31 +698,25 @@ func _solid_rect(tex: Texture2D, rows: int) -> Rect2:
 	return out
 
 
-## Punto di salvataggio: una stellina che brilla. Salva stanza, posizione e ora, e ridà energia.
+## Punto di salvataggio: una stellina che brilla (world/stellina.tscn). Salva stanza, posizione e ora, e ridà energia.
 func add_save_point(cell: Vector2i) -> void:
-	var star := AnimatedSprite2D.new()
-	var frames := SpriteFrames.new()
-	var tex: Texture2D = load("res://art/save_star.png") if ResourceLoader.exists("res://art/save_star.png") else Assets.tex("_star", Vector2i(26, 13))
-	for i in 2:
-		var at := AtlasTexture.new()
-		at.atlas = tex
-		at.region = Rect2(i * 13, 0, 13, 13)
-		frames.add_frame("default", at)
-	frames.set_animation_speed("default", 2.0)
-	star.sprite_frames = frames
-	star.position = cell_center(cell) + Vector2(0, -4)
-	star.play()
+	var star := load(STELLINA).instantiate() as Stellina
+	star.position = Vector2(cell * T)
 	world.add_child(star)
-	var spot := add_spot(cell_center(cell), func() -> void: _save_here(cell))
+	use_save_point(star)
+
+
+func use_save_point(star: Stellina) -> void:
+	var here := (star.get_node("Risveglio") as Node2D).global_position
+	var spot := add_spot((star.get_node("Tocco") as Node2D).global_position, func() -> void: _save_here(here))
 	# chi sta sopra la stellina parla con lei, non con la scrivania accanto
-	spot.interaction_bounds = Rect2(-12, -24, 24, 32)
+	spot.interaction_bounds = star.zona_tocco
 
 
 ## La stellina salva, ridà energia e, se vuoi, fa passare la notte (così il giorno dopo si può
-## lavorare di nuovo). La notte però costa: gli interessi corrono.
-func _save_here(cell: Vector2i) -> void:
+## lavorare di nuovo). La notte però costa: gli interessi corrono. `here`: dove ti ritrovi.
+func _save_here(here: Vector2) -> void:
 	GameState.restore(GameState.MAX_ENERGY)
-	var here := cell_feet(cell + Vector2i(0, 1))
 	var c: int = await Ui.choose("* (Una stellina brilla a mezz'aria. Guardarla ti fa tornare la voglia di andare avanti.)",
 		["Salva", "Salva e lascia passare la notte", "Lascia stare"])
 	if c == 2:
@@ -759,33 +753,17 @@ func spawn_people(room_key: String) -> void:
 		_add_quest_item(it["quest"], it["cell"])
 
 
-## L'oggetto nascosto di una missione: un gatto che dorme o un paio di occhiali per terra.
+## L'oggetto nascosto di una missione: un gatto che dorme (world/gatto.tscn) o un paio di occhiali
+## per terra (world/occhiali.tscn). Nelle scene: `Sprite` è il disegno, `Tocco` il punto da cui lo raccogli.
+const QUEST_ITEMS := {"cat": "res://world/gatto.tscn", "glasses": "res://world/occhiali.tscn"}
+
+
 func _add_quest_item(q: Dictionary, cell: Vector2i) -> void:
-	var node: Node2D
-	if q.get("item") == "cat":
-		var cat := AnimatedSprite2D.new()
-		var frames := SpriteFrames.new()
-		var tex := Assets.tex("props/cat.png", Vector2i(576, 16))
-		for i in 12:
-			var at := AtlasTexture.new()
-			at.atlas = tex
-			at.region = Rect2(i * 48, 0, 48, 16)
-			frames.add_frame("default", at)
-		frames.set_animation_speed("default", 6.0)
-		cat.sprite_frames = frames
-		cat.centered = false
-		cat.offset = Vector2(-24, -15)
-		cat.play()
-		node = cat
-	else:
-		var s := Sprite2D.new()
-		s.texture = load("res://art/glasses.png") if ResourceLoader.exists("res://art/glasses.png") else Assets.tex("_glasses", Vector2i(10, 6))
-		s.offset = Vector2(0, -4)
-		node = s
+	var node := load(QUEST_ITEMS["cat"] if q.get("item") == "cat" else QUEST_ITEMS["glasses"]).instantiate() as Node2D
 	node.position = cell_feet(cell)
 	world.add_child(node)
 	var holder: Array = []
-	holder.append(add_spot(cell_feet(cell) + Vector2(0, -6), func() -> void:
+	holder.append(add_spot((node.get_node("Tocco") as Node2D).global_position, func() -> void:
 		node.queue_free()
 		for h: Node in holder:
 			h.queue_free()
@@ -863,7 +841,7 @@ func _near_person(c: Vector2i) -> bool:
 
 
 func add_npc(id: String, cell: Vector2i, activity := "idle_down") -> Npc:
-	var n := Npc.new()
+	var n := load(NPC_SCENE).instantiate() as Npc
 	n.id = id
 	n.activity = activity if activity.contains("_") or activity in ["phone", "read", "wander"] else "idle_" + activity
 	cell = free_cell(cell, n.activity.begins_with("sit"))
@@ -1186,7 +1164,7 @@ func add_exit(r: Rect2i, path: String, spawn_name: String) -> void:
 
 
 func _spawn_player() -> void:
-	player = Player.new()
+	player = load(PLAYER_SCENE).instantiate() as Player
 	if Router.spawn == "_back" and GameState.battle.has("return_pos"):
 		spawns["_back"] = GameState.battle["return_pos"]
 	if Router.spawn == "_mg" and GameState.minigame.has("return_pos"):
@@ -1201,7 +1179,7 @@ func _spawn_player() -> void:
 	if cam_rect.size == Vector2.ZERO:
 		cam_rect = Rect2(0, -camera_top, map_size.x * T, map_size.y * T + camera_top)
 	# se la stanza è più piccola dello schermo, si avvicina la telecamera invece di mostrare il nero
-	var z := maxf(2.0, maxf(VIEW.x * 2.0 / cam_rect.size.x, VIEW.y * 2.0 / cam_rect.size.y))
+	var z := maxf(cam.zoom.x, maxf(VIEW.x * 2.0 / cam_rect.size.x, VIEW.y * 2.0 / cam_rect.size.y))
 	cam.zoom = Vector2(z, z)
 	cam.limit_left = int(cam_rect.position.x)
 	cam.limit_right = int(ceil(cam_rect.end.x))

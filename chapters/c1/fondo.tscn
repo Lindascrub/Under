@@ -27,6 +27,9 @@
 [ext_resource type="Script" uid="uid://0dvkw17htlqe" path="res://world/thin_wall.gd" id="thin_wall"]
 
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 [sub_resource type="RectangleShape2D" id="muro_MuroTramezzo"]
 size = Vector2(6, 145)
 
@@ -1386,10 +1389,8 @@ region_rect = Rect2(96, 480, 32, 32)
 position = Vector2(16, -12)
 shape = SubResource("RectangleShape2D_51mel")
 
-[node name="UsaCycletteDinamo" type="Node2D" parent="Mondo" unique_id=1488878892]
+[node name="UsaCycletteDinamo" parent="Mondo" unique_id=1488878892 instance=ExtResource("posto_tscn")]
 position = Vector2(64, 100)
-script = ExtResource("17_xgsui")
-kind = "station"
 job = "dinamo"
 
 [node name="SportelloBadge" parent="Mondo" unique_id=1882302969 instance=ExtResource("booth_tscn")]
@@ -1401,9 +1402,8 @@ target = "res://chapters/c2/sottoufficio.tscn"
 spawn = "from_below"
 need = "-4"
 
-[node name="Stellina" type="Node2D" parent="Mondo" unique_id=1568763228]
+[node name="Stellina" parent="Mondo" unique_id=1568763228 instance=ExtResource("stellina_tscn")]
 position = Vector2(80, 176)
-script = ExtResource("17_xgsui")
 
 [node name="AscensoreOriginale" type="Node2D" parent="Mondo" unique_id=1137108137]
 position = Vector2(176, 16)
@@ -1451,3 +1451,14 @@ metadata/facing = "down"
 [node name="from_above" type="Marker2D" parent="Arrivi" unique_id=1955589954]
 position = Vector2(504, 94)
 metadata/facing = "down"
+
+[node name="Inquadrature" type="Node2D" parent="."]
+
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+position = Vector2(280, 112)
+script = ExtResource("inq_script")
+zoom = 1.875
+durata = 3.5
+durata_ritorno = 0.65
+
+[editable path="Mondo/UsaCycletteDinamo"]

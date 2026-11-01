@@ -10,6 +10,9 @@ const URGENZA := 300
 ## Dopo la rivelazione nessuno prende più le chiamate: i telefoni squillano senza sosta.
 ## Un turno al call center li fa tacere per un po' (come la festa del Fondo che si riaccende).
 const QUIET_TIME := 25.0
+## Quanto la camera può salire sopra la stanza (in pixel), per vedere il muro in alto.
+@export var camera_spazio_sopra := 40
+
 var _ring: Timer
 var _ring_voices: Array[AudioStreamPlayer2D] = []
 var _ring_next := 0
@@ -42,13 +45,11 @@ func use_stairs_down(st: Node2D) -> void:
 
 
 func setup() -> void:
-	cam_rect = cam_rect.grow_side(SIDE_TOP, 40)
-	camera_lift = 28
+	cam_rect = cam_rect.grow_side(SIDE_TOP, camera_spazio_sopra)
 	_clear_stair_landing()
 	# le scale per il Fondo: dove c'è "ScaleGiu" nella scena (si sposta nell'editor)
 	if not _stairs_down_placed:
 		place_stairs_down(Vector2i(1, 12), Router.FONDO, "from_above")
-	_calibrate_interactions()
 	if GameState.flags.get("c2_rivelazione", false):
 		call_deferred("_fade_office", false)
 		Sound.call_deferred("music", "")
@@ -290,8 +291,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	await Ui.say(["* Metti il piede sul primo gradino. Dall'altra parte della sala, un telefono squilla."])
 	Sound.music("")
 	_start_ringing()
-	var tri := find_child("Tritacarte", true, false) as Node2D
-	var shot: Dictionary = await FocusShot.begin(self, tri.global_position + Vector2(-16, -12), 3.5)
+	var shot: Dictionary = await FocusShot.begin(self, $Inquadrature/Tritacarte as Inquadratura)
 	await Ui.say(["* La Signora Agenda prende il tuo modulo azzurro. Firmato. Timbrato.",
 		"* Lo avvicina al tritacarte. Continua a sorridere."])
 	await _shred()
@@ -312,43 +312,57 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Ui.cutscene = false
 
 
-## Il tritacarte si mangia il B-4: vibra, e sputa striscioline azzurre.
+## Il tritacarte si mangia il B-4: vibra, e sputa striscioline azzurre. Nella scena, dentro
+## Mondo/Tritacarte: IngressoFoglio/Foglio (il foglio che entra) e UscitaStrisce/StrisciaA e StrisciaB
+## (le striscioline, alternate). I tempi sono qui sotto, nell'Inspector della stanza.
+@export var tritacarte_entrata := 0.65
+@export var tritacarte_scosse := 16
+@export var tritacarte_scossa := 0.05
+@export var tritacarte_strisce := 10
+@export var tritacarte_caduta := 0.6
+@export var tritacarte_sparizione := 0.4
+
+
 func _shred() -> void:
 	var tri := find_child("Tritacarte", true, false) as Node2D
 	Sound.sfx("shredder")
-	if tri == null:
+	if tri == null or not tri.has_node("IngressoFoglio/Foglio"):
 		await get_tree().create_timer(1.0).timeout
 		return
-	var paper := Polygon2D.new()
+	var paper := _copy_effect(tri.get_node("IngressoFoglio/Foglio") as CanvasItem) as Node2D
 	paper.name = "B4DaTritare"
-	paper.polygon = PackedVector2Array([Vector2(0,0), Vector2(7,0), Vector2(7,10), Vector2(0,10)])
-	paper.color = Color("8ac8ff")
-	paper.position = tri.global_position + Vector2(4, -26)
-	paper.z_index = 20
-	add_child(paper)
 	var feed := create_tween()
-	feed.tween_property(paper, "position:y", paper.position.y + 9, 0.65)
-	feed.parallel().tween_property(paper, "scale:y", 0.05, 0.65)
+	feed.tween_property(paper, "position:y", paper.position.y + 9, tritacarte_entrata)
+	feed.parallel().tween_property(paper, "scale:y", 0.05, tritacarte_entrata)
 	await feed.finished
 	paper.queue_free()
 	var base := tri.position
 	var tw := create_tween()
-	for i in 16:
-		tw.tween_property(tri, "position", base + Vector2(randf_range(-1, 1), randf_range(-1, 0)), 0.05)
-	tw.tween_property(tri, "position", base, 0.05)
-	for i in 10:
-		var strip := ColorRect.new()
-		strip.color = Color("8ac8ff") if i % 2 == 0 else Color("cfe6ff")
-		strip.size = Vector2(1, 5)
-		strip.position = tri.global_position + Vector2(4 + i, -6)
-		strip.z_index = 20
-		add_child(strip)
+	for i in tritacarte_scosse:
+		tw.tween_property(tri, "position", base + Vector2(randf_range(-1, 1), randf_range(-1, 0)), tritacarte_scossa)
+	tw.tween_property(tri, "position", base, tritacarte_scossa)
+	var strips: Array[CanvasItem] = [tri.get_node("UscitaStrisce/StrisciaA"), tri.get_node("UscitaStrisce/StrisciaB")]
+	for i in tritacarte_strisce:
+		var strip := _copy_effect(strips[i % 2]) as Control
+		strip.position += Vector2(i, 0)
 		var fall := create_tween()
-		fall.tween_property(strip, "position", strip.position + Vector2(randf_range(-6, 6), 10), 0.6).set_delay(i * 0.06)
-		fall.tween_property(strip, "modulate:a", 0.0, 0.4)
+		fall.tween_property(strip, "position", strip.position + Vector2(randf_range(-6, 6), 10), tritacarte_caduta).set_delay(i * 0.06)
+		fall.tween_property(strip, "modulate:a", 0.0, tritacarte_sparizione)
 		fall.tween_callback(strip.queue_free)
 	await tw.finished
 	await get_tree().create_timer(0.4).timeout
+
+
+## Una copia visibile di un pezzo d'effetto nascosto nella scena, nello stesso punto (fuori dal tritacarte che vibra).
+func _copy_effect(src: CanvasItem) -> CanvasItem:
+	var c := src.duplicate() as CanvasItem
+	c.visible = true
+	add_child(c)
+	if c is Node2D:
+		(c as Node2D).global_position = (src as Node2D).global_position
+	else:
+		(c as Control).global_position = (src as Control).global_position
+	return c
 
 
 # --- lo sguardo indietro: fine del capitolo 2 ----------------------------------
@@ -376,84 +390,18 @@ func _look_back_line() -> String:
 
 # --- le scale per il Fondo, chiuse ---------------------------------------------
 
-## Le scale per il Fondo, chiuse alla buona: sei salito senza voltarti.
+## Le scale per il Fondo, chiuse alla buona: sei salito senza voltarti. È la scena
+## chapters/c2/scale_chiuse.tscn (il nodo è l'angolo in alto a sinistra della casella di `bottom_left`):
+## Botola (sotto a tutto), Sbarramento (coni, nastro e cartello: va nel Mondo, così chi passa davanti
+## li copre), Collisioni, Guarda (le frasi) e Arrivo (dove compare chi sale dal Fondo).
 func _barred_hole(bottom_left: Vector2i) -> void:
-	var s := add_region("themes/condominium.png", Vector2i(256,1664), Rect2(64,32,32,32), bottom_left)
-	s.modulate = Color(0.45, 0.45, 0.5)
-	world.remove_child(s)
-	add_child(s)
-	move_child(s, world.get_index())
-	# chi sale dal Fondo compare qui, davanti alla sbarra (gli scalini sono chiusi)
-	_stairs_down_exit = Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T - 2)
-	# coni e nastro, messi lì di fretta anni fa: uno è caduto e nessuno l'ha rialzato.
-	# Stanno tutti in un nodo dentro il mondo: chi passa davanti li copre, chi passa dietro no.
-	var base_y := (bottom_left.y - 1) * T + 8.0
-	var bar := Node2D.new()
-	bar.name = "Sbarramento"
-	bar.position = Vector2(0, base_y)
-	world.add_child(bar)
-	var xs := [bottom_left.x * T + 2.0, bottom_left.x * T + 30.0, bottom_left.x * T + 40.0]
-	var tops: Array[Vector2] = []
-	for k in 3:
-		var cone := Sprite2D.new()
-		cone.texture = preload("res://art/cone.png")
-		cone.offset = Vector2(0, -8)
-		cone.position = Vector2(xs[k], 0)
-		if k == 2:
-			# quello caduto, di traverso
-			cone.rotation = 1.45
-			cone.position += Vector2(6, 2)
-			cone.modulate = Color(0.85, 0.85, 0.85)
-		bar.add_child(cone)
-		tops.append(Vector2(xs[k], -14))
-	# il nastro bianco e rosso: tra i primi due coni pende, poi casca a terra dove il cono è caduto
-	var pts: Array[Vector2] = []
-	for i in 9:
-		var f := i / 8.0
-		pts.append(tops[0].lerp(tops[1], f) + Vector2(0, sin(f * PI) * 5.0))
-	for i in range(1, 7):
-		var f := i / 6.0
-		pts.append(tops[1].lerp(Vector2(xs[2] + 6, -2), f) + Vector2(0, sin(f * PI) * 3.0))
-	for i in pts.size() - 1:
-		var seg := Line2D.new()
-		seg.points = PackedVector2Array([pts[i], pts[i + 1]])
-		seg.width = 2.0
-		seg.default_color = Color("d8302a") if i % 2 == 0 else Color("eeeae0")
-		bar.add_child(seg)
-	# il cartello appeso al nastro, storto
-	var sign := Sprite2D.new()
-	sign.texture = preload("res://art/sign_vietato.png")
-	sign.position = tops[0].lerp(tops[1], 0.5) + Vector2(0, 8)
-	sign.rotation = 0.14
-	bar.add_child(sign)
-	block(Rect2i(bottom_left.x, bottom_left.y - 1, 2, 2))
-	# il cono caduto è per terra, ma è sempre un cono: non ci si passa sopra
-	block_px(Rect2(xs[2] - 2, base_y - 6, 18, 9))
-	examine(Vector2(bottom_left.x * T + T, (bottom_left.y - 1) * T - 6), [
-		"* Le scale per il Fondo. Tre coni e un nastro: VIETATO SCENDERE.",
-		"* Il nastro è scolorito, un cono è caduto. Nessuno l'ha rialzato. Nessuno passa di qua a controllare.",
-		"* Attaccato al nastro, un foglio: \"Lavori in corso\". La data è di quindici anni fa.",
-		"* Sei salito senza voltarti. Il Fondo, adesso, resta là sotto. Con quello che non hai voluto sapere.",
-	])
-
-
-func _calibrate_interactions() -> void:
-	# Il cordone lasciava soltanto sei pixel davanti alle sedie: il corpo non ci passava.
-	var rope := find_child("Cordone", true, false) as Node2D
-	if rope: rope.position.y -= 4
-	for i in 4:
-		var colleague := find_child("GuardaCollega%d" % i, true, false) as Interactable
-		if colleague:
-			colleague.interaction_bounds = Rect2(-7, -41, 14, 19)
-	for name_at in [["GuardaSorridi", Vector2(52, 46)], ["GuardaModulo", Vector2(126, 52)], ["GuardaAttesa", Vector2(216, 46)]]:
-		var spot := find_child(name_at[0], true, false) as Interactable
-		if spot:
-			spot.position = name_at[1]
-			spot.approach = Vector2.DOWN
-			spot.facing_required = "up"
-	# Nessuna interazione fantasma per le decorazioni eliminate.
-	var old := find_child("GuardaBandiere", true, false)
-	if old: old.queue_free()
+	var hole := load("res://chapters/c2/scale_chiuse.tscn").instantiate() as Node2D
+	hole.position = Vector2(bottom_left * T)
+	add_child(hole)
+	move_child(hole, world.get_index())
+	(hole.get_node("Sbarramento") as Node2D).reparent(world)
+	_stairs_down_exit = (hole.get_node("Arrivo") as Node2D).global_position
+	(hole.get_node("Guarda") as Examine).setup_in_room(self)
 
 
 func _fade_office(animate: bool) -> void:

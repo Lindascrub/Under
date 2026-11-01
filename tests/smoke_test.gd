@@ -1099,13 +1099,13 @@ func _test_chapter5() -> void:
 	_check(GameState.flags.get("c5_capo", false) and GameState.flags.get("c5_capo_chiuso", false) and not GameState.is_robot("ada") and GameState.exploited == 0, "il capo chiama; 'No' chiude l'offerta e Ada resta Ada")
 	# 28, 30: la manifestazione, le tre proposte, la vetrina
 	_check(GameState.flags.get("c5_protesta", false) and GameState.flags.get("c5_vetrina", false) and str(GameState.flags.get("c5_proposta", "")) == "B", "la manifestazione parte, si sostiene B, poi CRASH")
-	_check(m.find_child("VetrinaRottaNuova", true, false) != null and m.get("people").has("Ada") and m.get("people").has("Giornalista"), "in piazza: la vetrina rotta, Ada, il giornalista")
+	_check(_shown(m, "VetrinaRottaNuova") and m.get("people").has("Ada") and m.get("people").has("Giornalista"), "in piazza: la vetrina rotta, Ada, il giornalista")
 	choose_queue = [0]
 	m = await _c5_call(m, "_station", [job])
 	_check(GameState.money == money0 + 1600, "un secondo turno nello stesso giorno non paga")
 	choose_queue = [0]
 	m = await _c5_talk("rina")
-	_check(GameState.flags.get("c5_vetrina_aiuto", false) and "rina" in GameState.helped_ids and m.find_child("Cartone", true, false) != null, "Rina: la vetrina messa in sicurezza (1 ora, senza soldi)")
+	_check(GameState.flags.get("c5_vetrina_aiuto", false) and "rina" in GameState.helped_ids and _shown(m, "Cartone"), "Rina: la vetrina messa in sicurezza (1 ora, senza soldi)")
 	_check(GameState.money == money0 + 1600, "aiutare Rina non costa soldi")
 	m = await _c5_call(m, "_manifestante")
 	choose_queue = [2]
@@ -1156,7 +1156,7 @@ func _test_chapter5() -> void:
 	choose_queue = [0, 1]
 	m = await _c5_call(m, "assembly")
 	_check(GameState.flags.get("c5_assemblea", false) and GameState.flags.get("c5_rapporto_presentato", false) and str(GameState.flags.get("c5_esito", "")) == "comunitaria", "assemblea: conti veri, stanze, risorse: gestione comunitaria (esito %s)" % str(GameState.flags.get("c5_esito", "")))
-	_check(m.find_child("InsegnaEsito", true, false) != null and not m.get("people").has("Manifestante"), "dopo l'assemblea la folla se ne va, resta l'insegna")
+	_check(_shown(m, "InsegnaEsito") and not m.get("people").has("Manifestante"), "dopo l'assemblea la folla se ne va, resta l'insegna")
 	_check(logic.closure_text().begins_with("CHIUSURA ANNULLATA"), "l'avviso segue l'esito")
 	# 40: la scena segreta, una volta sola, senza premi
 	m = await _go(Router.CITY, "from_casa")
@@ -1673,7 +1673,7 @@ func _run() -> void:
 	# la stellina fa passare la notte: il giorno dopo si può lavorare di nuovo
 	var day_star := GameState.day
 	choose_queue = [1]
-	fondo.call("_save_here", Vector2i(12, 9))
+	fondo.call("_save_here", fondo.call("cell_feet", Vector2i(12, 10)))
 	await get_tree().create_timer(0.5).timeout
 	await _wait_scene(Router.FONDO)
 	await _idle()
@@ -1811,3 +1811,9 @@ func _legacy_new_game() -> void:
 	GameState.flags["boss_missions"] = {}
 	for floor: String in ["-5", "-4", "-3", "-2", "0", "cima"]:
 		GameState.flags["boss_missions"][floor] = {"status": "legacy", "seen": true}
+
+
+## Un nodo della scena che il gioco mostra quando serve (nascosto all'inizio).
+func _shown(room: Node, nm: String) -> bool:
+	var n := room.find_child(nm, true, false) as CanvasItem
+	return n != null and n.visible

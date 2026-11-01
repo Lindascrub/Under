@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://world/badge_booth.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/museum.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/limezu/animations/ticket_door.png" id="3"]
 [ext_resource type="Script" path="res://world/char_sprite.gd" id="4"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 
 [sub_resource type="RectangleShape2D" id="cabina"]
 size = Vector2(96, 48)
@@ -141,3 +142,11 @@ metadata/prop_talk_skip = true
 [node name="Forma" type="CollisionShape2D" parent="Collisione"]
 position = Vector2(48, -24)
 shape = SubResource("cabina")
+
+[node name="InquadraturaAddetta" type="Marker2D" parent="."]
+position = Vector2(40, -6)
+script = ExtResource("inq_script")
+zoom = 3
+durata = 0.75
+durata_ritorno = 0.65
+velocita_inseguimento = 7

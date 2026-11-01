@@ -21,11 +21,6 @@ const BOSS := "Il Capo"
 const BOSS_SHEET := "cheap_capo"
 const LIFT := "Ascensore"
 const VOICE := "Voce CHEAP"
-const PRES_DESK := Vector2i(35, 8)
-const PRES_TABLE := Vector2i(36, 15)
-const BOSS_CELL := Vector2i(27, 11)
-## la stanza della dinamo: dove si affaccia la Presidente quando pedali
-const DYNAMO_PRES := Vector2i(20, 17)
 const FLOORS := [
 	["-5", "IL FONDO", ["fermo", "bulbo", "mina"]],
 	["-4", "IL SOTTOUFFICIO", ["tilde", "ercole"]],
@@ -101,7 +96,7 @@ func setup() -> void:
 	var d := c6()
 	if d["final_decision"]["confirmed"]:
 		return
-	var at := PRES_TABLE if bool(d["boss"]["final_call_seen"]) else PRES_DESK
+	var at := _posto("Tavolo") if bool(d["boss"]["final_call_seen"]) else _posto("Scrivania")
 	president = _person("Presidente", PRES_SHEET, at, "idle_left", talk_president, true)
 
 
@@ -129,6 +124,16 @@ func enter() -> void:
 ## Alla Cima il vecchio capo non telefona: il Capo arriva di persona, una volta sola (6.08).
 func _boss_call() -> void:
 	GameState.flags["boss_call_done_%d" % GameState.day] = true
+
+
+## Dove stanno la Presidente e il Capo: i Marker2D Posti/Posto<nome> della scena (Scrivania, Tavolo,
+## Capo, Dinamo: la Presidente che si affaccia quando pedali). Si trascinano nell'editor.
+func _posto(nm: String) -> Vector2i:
+	var m := get_node_or_null("Posti/Posto" + nm) as Node2D
+	if m == null:
+		push_warning("Manca il nodo Posti/Posto%s nella scena della Cima" % nm)
+		return Vector2i.ZERO
+	return Vector2i((m.position / T).floor())
 
 
 func _person(nm: String, sheet: String, cell: Vector2i, anim: String, action: Callable, grey := true) -> CharSprite:
@@ -206,34 +211,11 @@ func _elevator() -> void:
 	Ui.cutscene = false
 
 
-## Lo specchio: le persone incontrate, una accanto all'altra. Robot colorati con l'antenna, persone grigie.
+## Lo specchio: le persone incontrate, una accanto all'altra (la scena chapters/c6/specchio.tscn).
 func _mirror_layer(ids: Array) -> CanvasLayer:
-	var layer := CanvasLayer.new()
-	layer.layer = 12
+	var layer := load("res://chapters/c6/specchio.tscn").instantiate() as CanvasLayer
 	add_child(layer)
-	var frame := ColorRect.new()
-	frame.color = Color("bedcf0")
-	frame.position = Vector2(170, 40)
-	frame.size = Vector2(300, 110)
-	layer.add_child(frame)
-	var inner := ColorRect.new()
-	inner.color = Color("1a1420")
-	inner.position = Vector2(176, 46)
-	inner.size = Vector2(288, 98)
-	layer.add_child(inner)
-	var n := ids.size()
-	for i in n:
-		var id: String = ids[i]
-		var s := CharSprite.new()
-		s.sheet = str(GameState.npc_data(id).get("sheet", "char_02"))
-		s.person = id
-		s.anim = "idle_down"
-		s.grey = not GameState.is_robot(id)
-		s.scale = Vector2(2, 2)
-		s.position = Vector2(176 + (i + 0.5) * 288.0 / maxi(n, 1), 136)
-		layer.add_child(s)
-		if GameState.is_robot(id):
-			C5._antenna(s)
+	layer.call("mostra", ids)
 	return layer
 
 
@@ -404,14 +386,9 @@ func _offer() -> void:
 ## Il timbro DEBITO ANNULLATO, mostrato e rimesso nel cassetto.
 func _stamp_preview() -> void:
 	Sound.sfx("stamp", 0.8)
-	var layer := CanvasLayer.new()
-	layer.layer = 12
+	# il timbro sullo schermo: la scena chapters/c6/timbro.tscn
+	var layer := load("res://chapters/c6/timbro.tscn").instantiate() as CanvasLayer
 	add_child(layer)
-	var s := TextureRect.new()
-	s.texture = load(ART + "timbro_annullato.png")
-	s.position = Vector2(272, 120)
-	s.scale = Vector2(1.0, 1.0)
-	layer.add_child(s)
 	await Ui.say(["* La Presidente prende un timbro: DEBITO ANNULLATO. Lo tiene sospeso sopra la cartellina.", "* Non timbra."])
 	layer.queue_free()
 
@@ -469,7 +446,7 @@ func _dinamo() -> void:
 		lamp.modulate = Color(1.6, 1.5, 0.9)
 	await Ui.say(["* Pedali. Dall'ufficio arriva una luce gialla: sulla scrivania della Presidente si è accesa una lampadina.",
 		"* Se rallenti, trema. Se smetti, si spegne."])
-	var p := _person("PresidenteDinamo", PRES_SHEET, DYNAMO_PRES, "idle_left", Callable(), true)
+	var p := _person("PresidenteDinamo", PRES_SHEET, _posto("Dinamo"), "idle_left", Callable(), true)
 	await Ui.say(["Oh. Funziona ancora."], PRES)
 	var asked := false
 	while true:
@@ -700,7 +677,7 @@ func _boss_scene() -> void:
 	Ui.cutscene = true
 	Sound.sfx("drring")
 	await Ui.say(["* DRRRRING."])
-	boss = _person("Capo", BOSS_SHEET, BOSS_CELL, "idle_right", func() -> void: pass, true)
+	boss = _person("Capo", BOSS_SHEET, _posto("Capo"), "idle_right", func() -> void: pass, true)
 	await Ui.say(["* Il Capo entra dal corridoio degli specchi. Niente costume, niente colori. Una camicia stirata male."])
 	await Ui.say(["Ehi.", "Guarda un po' dove sei arrivato."], BOSS)
 	var r: int = await Ui.choose("Cosa rispondi?", ["Finalmente.", "Non grazie a te.", "Non so ancora cosa fare."], BOSS)
@@ -739,7 +716,7 @@ func _boss_scene() -> void:
 	Sound.sfx("door")
 	# la Presidente va al tavolo: lì si decide
 	_remove(president)
-	president = _person("Presidente", PRES_SHEET, PRES_TABLE, "idle_left", talk_president, true)
+	president = _person("Presidente", PRES_SHEET, _posto("Tavolo"), "idle_left", talk_president, true)
 	await Ui.say(["* La Presidente spegne il terminale e va al tavolo rotondo.", "Vieni, quando vuoi. Prima, se vuoi, guarda dalla finestra."], PRES)
 	Ui.cutscene = false
 
@@ -871,14 +848,9 @@ func _finestra() -> void:
 	var d := c6()
 	if d["final_decision"]["confirmed"]:
 		return
-	var layer := CanvasLayer.new()
-	layer.layer = 11
+	# la Torre vista dalla finestra: la scena chapters/c6/finestra_torre.tscn
+	var layer := load("res://chapters/c6/finestra_torre.tscn").instantiate() as CanvasLayer
 	add_child(layer)
-	var tower := TextureRect.new()
-	tower.texture = load(ART + "torre_sezione.png")
-	tower.position = Vector2(470, 8)
-	tower.scale = Vector2(0.5, 0.5)
-	layer.add_child(tower)
 	await Ui.say(["* Dalla finestra si vede tutta la Torre, piano per piano. Da quassù le persone sembrano formiche.",
 		"* Da quassù è facile dimenticare che non lo sono."])
 	var seen: Array = d["panorama"]["locations_seen"]
@@ -944,6 +916,6 @@ func _boss_review() -> void:
 	await Ui.say(["Hai visto? Il problema non è trovare cento unità. È decidere di chi sono i cinque che mancano.", "È tutto molto semplice!"], BOSS)
 	await Ui.say(["* Ora la frase pesa più del bilancio. Nei tre cicli qualcuno ha potuto parlare. O qualcuno ha pagato per non essere ascoltato.", "* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo."])
 	_remove(president)
-	president = _person("Presidente", PRES_SHEET, PRES_TABLE, "idle_left", talk_president, true)
+	president = _person("Presidente", PRES_SHEET, _posto("Tavolo"), "idle_left", talk_president, true)
 	GameState.save_game(scene_file_path, player.global_position)
 	Ui.cutscene = false

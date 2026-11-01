@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/c6/timbro_annullato.png" id="1_timbro"]
+
+[node name="Timbro" type="CanvasLayer"]
+layer = 12
+
+[node name="Timbro" type="TextureRect" parent="."]
+offset_left = 272.0
+offset_top = 120.0
+mouse_filter = 2
+texture = ExtResource("1_timbro")

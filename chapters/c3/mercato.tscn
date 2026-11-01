@@ -55,6 +55,10 @@
 [ext_resource type="Script" uid="uid://42f58xkur48k" path="res://world/produce_stand.gd" id="Script_ortofrutta"]
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="PackedScene" path="res://world/comparsa.tscn" id="comparsa_tscn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iph5s"]
 size = Vector2(24, 25)
@@ -773,35 +777,74 @@ position = Vector2(0, 9)
 position = Vector2(8, -13)
 shape = SubResource("RectangleShape2D_lalta")
 
-[node name="Cliente0" type="StaticBody2D" parent="Mondo" unique_id=2033517770]
+[node name="Cliente0" parent="Mondo" unique_id=2033517770 instance=ExtResource("comparsa_tscn")]
 position = Vector2(184, 126)
-script = ExtResource("37_6ra1p")
 sheet = "char_15"
-route = PackedVector2Array(184, 126, 184, 206, 248, 206, 248, 126)
 look = "left"
 lines = PackedStringArray("Ho comprato tre cose che non mi servono. Ma erano al 50%!", "Lo scontrino è più lungo di me. Lo tengo come ricordo.", "Il carrello cigola. Lo prendo come un complimento.")
 
-[node name="Cliente1" type="StaticBody2D" parent="Mondo" unique_id=232408115]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente0"]
+
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+position = Vector2(0, 0)
+
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+position = Vector2(0, 80)
+
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+position = Vector2(64, 80)
+
+[node name="Punto3" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+position = Vector2(64, 0)
+
+[node name="Cliente1" parent="Mondo" unique_id=232408115 instance=ExtResource("comparsa_tscn")]
 position = Vector2(200, 94)
-script = ExtResource("37_6ra1p")
 sheet = "char_16"
-route = PackedVector2Array(200, 94, 296, 94, 264, 94)
 lines = PackedStringArray("Mi scusi, sa dov\'è il reparto Felicità? Sulla mappa c\'è, ma è in esaurimento.", "Il latte costa quanto un\'ora di cassa. Lo guardo e basta. Guardare è ancora gratis. Credo.")
 
-[node name="Cliente2" type="StaticBody2D" parent="Mondo" unique_id=1697630145]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente1"]
+
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente1/Giro"]
+position = Vector2(0, 0)
+
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente1/Giro"]
+position = Vector2(96, 0)
+
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente1/Giro"]
+position = Vector2(64, 0)
+
+[node name="Cliente2" parent="Mondo" unique_id=1697630145 instance=ExtResource("comparsa_tscn")]
 position = Vector2(264, 222)
-script = ExtResource("37_6ra1p")
 sheet = "char_19"
-route = PackedVector2Array(264, 222, 344, 222, 312, 222)
 look = "down"
 lines = PackedStringArray("Le mele hanno il codice a barre sulla buccia. Così si sa subito quanto costa morderle.", "Prendo una banana. Una. Il resto lo guardo.")
 
-[node name="Cliente3" type="StaticBody2D" parent="Mondo" unique_id=1427172841]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente2"]
+
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente2/Giro"]
+position = Vector2(0, 0)
+
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente2/Giro"]
+position = Vector2(80, 0)
+
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente2/Giro"]
+position = Vector2(48, 0)
+
+[node name="Cliente3" parent="Mondo" unique_id=1427172841 instance=ExtResource("comparsa_tscn")]
 position = Vector2(312, 158)
-script = ExtResource("37_6ra1p")
-route = PackedVector2Array(312, 158, 312, 110, 216, 78)
 look = "right"
 lines = PackedStringArray("Cerco il surgelato in offerta. Ogni volta che lo trovo, l\'offerta è finita.", "Faccio la spesa per tre. Vivo da solo. Ma la confezione singola costa di più.")
+
+[node name="Giro" type="Node2D" parent="Mondo/Cliente3"]
+
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente3/Giro"]
+position = Vector2(0, 0)
+
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente3/Giro"]
+position = Vector2(0, -48)
+
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente3/Giro"]
+position = Vector2(-96, -80)
 
 [node name="CassaLeda" type="Sprite2D" parent="Mondo" unique_id=1079740534]
 position = Vector2(96, 256)
@@ -1105,18 +1148,26 @@ script = ExtResource("7_phso2")
 lines = PackedStringArray("* L\'angolo pausa: due panchine prese dal parco. Qualcuno ci ha scritto sopra a matita: \"5 MINUTI\".")
 lines_after = PackedStringArray()
 
-[node name="PostoCassa" type="Node2D" parent="Mondo" unique_id=1879937149]
+[node name="PostoCassa" parent="Mondo" unique_id=1879937149 instance=ExtResource("posto_tscn")]
 position = Vector2(192, 224)
-script = ExtResource("49_jk605")
-kind = "station"
 job = "cassa_mercato"
+avvicinamento = "destra"
+guarda_verso = "left"
+
+[node name="PuntoUso" parent="Mondo/PostoCassa" index="0"]
+position = Vector2(-8, 8)
+
+[node name="Targhetta" parent="Mondo/PostoCassa" index="1"]
+offset_left = -21.0
+offset_top = -22.0
+offset_right = 5.0
+offset_bottom = -10.0
 
 [node name="SportelloBadge" parent="Mondo" unique_id=791083012 instance=ExtResource("booth_tscn")]
 position = Vector2(384, 79)
 
-[node name="Stellina" type="Node2D" parent="Mondo" unique_id=1335140241]
+[node name="Stellina" parent="Mondo" unique_id=1335140241 instance=ExtResource("stellina_tscn")]
 position = Vector2(192, 192)
-script = ExtResource("49_jk605")
 
 [node name="CarrelloFila0" type="Sprite2D" parent="Mondo" unique_id=145916653]
 position = Vector2(8, 168)
@@ -1264,3 +1315,21 @@ lines_after = PackedStringArray()
 [node name="default" type="Marker2D" parent="Arrivi" unique_id=1492536864]
 position = Vector2(184, 110)
 metadata/facing = "down"
+
+[node name="Inquadrature" type="Node2D" parent="."]
+
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+position = Vector2(288, 120)
+script = ExtResource("inq_script")
+zoom = 1.3235
+durata = 3.5
+durata_ritorno = 0.65
+
+[node name="Tabellone" type="Marker2D" parent="Inquadrature"]
+position = Vector2(256, 60)
+script = ExtResource("inq_script")
+zoom = 3
+durata = 0.75
+durata_ritorno = 0.65
+
+[editable path="Mondo/PostoCassa"]

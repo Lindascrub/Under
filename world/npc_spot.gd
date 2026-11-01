@@ -37,7 +37,7 @@ func _preview() -> void:
 func setup_in_room(room: Room) -> void:
 	if npc_id == "":
 		return
-	var n := Npc.new()
+	var n := load(Room.NPC_SCENE).instantiate() as Npc
 	n.id = npc_id
 	n.activity = activity
 	n.position = position

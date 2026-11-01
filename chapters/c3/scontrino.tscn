@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://chapters/c3/scontrino.gd" id="1_scontrino"]
+
+[node name="Scontrino" type="CanvasLayer"]
+layer = 14
+script = ExtResource("1_scontrino")
+
+[node name="Carta" type="ColorRect" parent="."]
+offset_left = 170.0
+offset_top = 8.0
+offset_right = 470.0
+offset_bottom = 300.0
+mouse_filter = 2
+color = Color(0.956863, 0.945098, 0.901961, 1)
+
+[node name="Testo" type="Label" parent="Carta"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 10.0
+offset_right = 294.0
+offset_bottom = 290.0
+theme_override_colors/font_color = Color(0.164706, 0.14902, 0.2, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 10
+text = "SCONTRINO
+riga
+riga"
+horizontal_alignment = 1
