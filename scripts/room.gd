@@ -113,45 +113,7 @@ func _grey_world() -> void:
 
 
 ## Porta il grigio del mondo a `amount` (0 = colori, 1 = tutto grigio), piano piano se `time` > 0.
-## Quello che ha z_index sopra GREY_Z resta a colori (il tabellone rosso del Mercato).
 const GREY_Z := 100
-
-
-## Lo sprite che resta a colori nel mondo grigio (il tabellone del Mercato). Il giocatore, se ci passa
-## davanti, resta grigio.
-var grey_keep: Sprite2D
-
-
-func _grey_keep_update() -> void:
-	var m := _grey_rect.material as ShaderMaterial
-	if not is_instance_valid(grey_keep):
-		m.set_shader_parameter("keep_rect", Vector4.ZERO)
-		return
-	m.set_shader_parameter("keep_rect", _screen_uv(grey_keep.global_transform * grey_keep.get_rect()))
-	# il buco ha la forma esatta del giocatore: il fotogramma che sta mostrando adesso
-	var spr: AnimatedSprite2D = player.get("_sprite")
-	var tex := spr.sprite_frames.get_frame_texture(spr.animation, spr.frame) if spr else null
-	if tex == null:
-		m.set_shader_parameter("hole_rect", Vector4.ZERO)
-		return
-	var sheet := tex
-	var region := Rect2(Vector2.ZERO, tex.get_size())
-	if tex is AtlasTexture:
-		sheet = (tex as AtlasTexture).atlas
-		region = (tex as AtlasTexture).region
-	var full := sheet.get_size()
-	m.set_shader_parameter("hole_tex", sheet)
-	m.set_shader_parameter("hole_region", Vector4(region.position.x / full.x, region.position.y / full.y, region.size.x / full.x, region.size.y / full.y))
-	m.set_shader_parameter("hole_flip", spr.flip_h)
-	m.set_shader_parameter("hole_rect", _screen_uv(spr.global_transform * Rect2(spr.offset, region.size)))
-
-
-## Un rettangolo del mondo in coordinate dello schermo (0..1), come le legge lo shader.
-func _screen_uv(r: Rect2) -> Vector4:
-	var vp := get_viewport()
-	var size := vp.get_visible_rect().size
-	var on_screen := vp.get_canvas_transform() * r
-	return Vector4(on_screen.position.x / size.x, on_screen.position.y / size.y, on_screen.size.x / size.x, on_screen.size.y / size.y)
 
 
 func grey_world_to(amount: float, time := 0.0) -> void:
@@ -195,7 +157,6 @@ func _process(_delta: float) -> void:
 		player.camera.offset.y = lerpf(player.camera.offset.y, -camera_lift * t, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
-		_grey_keep_update()
 
 
 func _update_light() -> void:
@@ -248,6 +209,8 @@ func add_station_at(j: Dictionary, cell: Vector2i) -> void:
 		use_point += Vector2(0, -26)
 	elif job_id == "cassa_mercato":
 		use_point += Vector2(-16, 0)
+	elif job_id == "sportello_banca":
+		use_point += Vector2(8, 0)
 	mark.position = use_point + Vector2(-13, -30)
 	mark.z_index = 30
 	add_child(mark)
@@ -259,7 +222,9 @@ func add_station_at(j: Dictionary, cell: Vector2i) -> void:
 	var spot := add_spot(use_point, func() -> void: _station(jj))
 	spot.set_meta("job_id", job_id)
 	if job_id == "sportello_banca":
-		spot.approach = Vector2.DOWN
+		# dietro al bancone, rivolta verso i clienti
+		spot.approach = Vector2.UP
+		spot.facing_required = "down"
 	elif job_id == "callcenter":
 		spot.approach = Vector2.UP
 		spot.facing_required = "down"

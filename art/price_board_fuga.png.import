@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwvmeocdbwgvn"
-path="res://.godot/imported/price_board_salita.png-ed2b360ba3292d2dc867b7fd8226bf62.ctex"
+uid="uid://bxp4kut32gil6"
+path="res://.godot/imported/price_board_fuga.png-e9bcc57980fe9f7603a7c3df66e914fa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/price_board_salita.png"
-dest_files=["res://.godot/imported/price_board_salita.png-ed2b360ba3292d2dc867b7fd8226bf62.ctex"]
+source_file="res://art/price_board_fuga.png"
+dest_files=["res://.godot/imported/price_board_fuga.png-e9bcc57980fe9f7603a7c3df66e914fa.ctex"]
 
 [params]
 

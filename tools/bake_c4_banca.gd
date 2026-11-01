@@ -352,7 +352,7 @@ func _feature(nm: String, kind: String, cell: Vector2i, props := {}) -> void:
 
 
 func _features() -> void:
-	_feature("PostoSportello", "station", Vector2i(13, 6), {"job": "sportello_banca"})
+	_feature("PostoSportello", "station", Vector2i(14, 4), {"job": "sportello_banca"})
 	_feature("SportelloBadge", "badge", Vector2i(32, 3))
 	# le scale per il Piano Terra (la Città)
 	_feature("ScaleSu", "stairs_up", Vector2i(36, 3), {"target": "res://scenes/world/office.tscn", "spawn": "from_below", "need": "0"})

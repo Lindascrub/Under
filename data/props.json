@@ -577,5 +577,18 @@
       24,
       25
     ]
+  },
+  "assets/bank/Conference_Hall_Singles_57.png": {
+    "lines": [
+      "* Una poltroncina arancione. Comoda quanto basta per aspettare, non abbastanza per restare."
+    ],
+    "seats": [
+      [
+        8,
+        -3,
+        "down",
+        5
+      ]
+    ]
   }
 }

@@ -1,8 +1,8 @@
-"""Il tabellone del Mercato mentre i prezzi salgono: una striscia di fotogrammi 112x34, uno per scatto
-delle rotelline (pane, latte e acqua salgono di 1 a ogni clic finché arrivano al prezzo nuovo).
-Lo usa chapters/c3/mercato_c3.gd (_price_update). Disegnato come art/price_board_nuovo.png
-(tools/make_art_codex.py, price_board), con i numeri intermedi.
-Esegui:  python tools/make_price_steps.py   (scrive art/price_board_salita.png)
+"""Il tabellone del Mercato alla fine del capitolo 3, quando i prezzi scappano: una striscia di
+fotogrammi 112x34, uno per clic. Si parte dai prezzi nuovi e ogni scatto li moltiplica, finché le
+cifre non entrano più nelle colonne. Lo usa chapters/c3/mercato_c3.gd (_price_run).
+Disegnato come art/price_board_nuovo.png (tools/make_art_codex.py, price_board).
+Esegui:  python tools/make_price_steps.py   (scrive art/price_board_fuga.png)
 """
 import json
 import sys
@@ -18,7 +18,7 @@ SIZE = (112, 34)
 KEYS = ("pane", "latte", "acqua")
 
 
-def board(values):
+def board(values, overflow=False):
     im, d = codex.canvas(SIZE)
     w, h = SIZE
     codex.panel(d, (w, h - 2), '#253548', trim=codex.PINK)
@@ -29,24 +29,38 @@ def board(values):
         if i:
             d.line((x - 3, 13, x - 3, 28), fill='#4b6072')
         codex.centered(d, (x, 12, x + 31, 17), key, codex.CREAM)
-        codex.centered(d, (x, 20, x + 31, 30), str(values[i]), '#fb9a85', scale=2)
+        if overflow:
+            # a grandezza piena, anche se non ci sta: le cifre escono dalla colonna e dal tabellone
+            value = str(values[i])
+            width = codex.measure(value, 2, 1)
+            codex.text(d, (x + 16 - width // 2, 20), value, '#fb9a85', 2)
+        else:
+            codex.centered(d, (x, 20, x + 31, 30), str(values[i]), '#fb9a85', scale=2)
     d.rectangle((9, h - 2, 11, h - 1), fill=codex.EDGE)
     d.rectangle((w - 12, h - 2, w - 10, h - 1), fill=codex.EDGE)
     return im
 
 
-def main():
-    prices = json.loads((ROOT / 'data/market.json').read_text(encoding='utf-8'))['prezzi']
-    start = [prices[k]['prezzo'][0] for k in KEYS]
-    end = [prices[k]['prezzo'][1] for k in KEYS]
-    steps = max(e - s for s, e in zip(start, end))
-    frames = [board([min(s + n, e) for s, e in zip(start, end)]) for n in range(steps + 1)]
+def save_sheet(frames, name):
     sheet = Image.new('RGBA', (SIZE[0] * len(frames), SIZE[1]), (0, 0, 0, 0))
     for n, f in enumerate(frames):
         sheet.paste(f, (n * SIZE[0], 0))
-    out = ROOT / 'art/price_board_salita.png'
+    out = ROOT / 'art' / name
     sheet.save(out)
     print(out.relative_to(ROOT), sheet.size, len(frames), 'fotogrammi')
+
+
+def main():
+    prices = json.loads((ROOT / 'data/market.json').read_text(encoding='utf-8'))['prezzi']
+    end = [prices[k]['prezzo'][1] for k in KEYS]
+    # La fine del capitolo, sulle scale: i prezzi nuovi scappano. Ogni scatto li moltiplica,
+    # finché le cifre non entrano più nelle colonne e si mangiano il tabellone.
+    values = list(end)
+    frames = []
+    while values[0] < 10 ** 8:
+        frames.append(board(values, overflow=True))
+        values = [int(v * 1.6) + 1 for v in values]
+    save_sheet(frames, 'price_board_fuga.png')
 
 
 if __name__ == '__main__':

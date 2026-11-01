@@ -11,8 +11,9 @@ const BOSS := "Il capo"
 const BADGE := "-2"
 
 const BOARD_NEW := "res://art/price_board_nuovo.png"
-## Il tabellone mentre i prezzi salgono: un fotogramma 112x34 per scatto (tools/make_price_steps.py).
-const BOARD_STEPS := "res://art/price_board_salita.png"
+## La fine del capitolo: i prezzi scappano finché non entrano più nel tabellone.
+## Un fotogramma 112x34 per scatto (tools/make_price_steps.py).
+const BOARD_RUN := "res://art/price_board_fuga.png"
 
 
 ## Un po' di spazio sopra il muro: l'insegna dei saldi e il tabellone non finiscono sotto la barra in alto.
@@ -51,6 +52,10 @@ func setup() -> void:
 		sale.reach = 10.0
 	if _secret_ready():
 		_secret_setup()
+	# dopo il primo gradino il Mercato resta grigio, senza canzone, e i prezzi continuano a scappare
+	if GameState.flags.get("c3_rivelazione", false):
+		call_deferred("_price_run", false)
+		Sound.call_deferred("music", "")
 
 
 func enter() -> void:
@@ -115,19 +120,9 @@ func board() -> Sprite2D:
 	return find_child("Tabellone", true, false) as Sprite2D
 
 
-## Dopo l'aggiornamento dei prezzi il Mercato resta grigio: a colori c'è solo il tabellone, rosso.
-const PRICE_GREY := 0.92
-const BOARD_RED := Color(1.0, 0.32, 0.3)
-
-
 func _price_board() -> void:
-	if not GameState.flags.get("c3_prezzi", false):
-		return
-	grey_world_to(PRICE_GREY)
-	if board():
+	if board() and GameState.flags.get("c3_prezzi", false):
 		board().texture = load(BOARD_NEW)
-		board().modulate = BOARD_RED
-		grey_keep = board()
 
 
 func _tabellone() -> void:
@@ -540,64 +535,31 @@ func _price_update() -> void:
 	var shot: Dictionary = await FocusShot.begin(self, board().global_position + Vector2(64, -17), 3.0)
 	await get_tree().create_timer(0.5).timeout
 	GameState.flags["c3_prezzi"] = true
-	# si spegne la musica: resta solo il clic delle rotelline che salgono
 	Sound.music("")
-	await get_tree().create_timer(0.8).timeout
-	# i clic partono lenti e accelerano sempre di più (ogni attesa è una frazione fissa della
-	# precedente): i prezzi scappano. I numeri sul tabellone salgono insieme ai clic.
-	var sheet: Texture2D = load(BOARD_STEPS)
-	var steps := sheet.get_width() / 112
-	var frame := AtlasTexture.new()
-	frame.atlas = sheet
-	frame.region = Rect2(0, 0, 112, 34)
-	const CLICKS := 70
-	const FIRST_WAIT := 0.55
-	const SPEEDUP := 0.93
-	const FASTEST := 0.035
-	var waits: Array[float] = []
-	var spin := 0.0
-	for i in CLICKS:
-		waits.append(maxf(FASTEST, FIRST_WAIT * pow(SPEEDUP, i)))
-		spin += waits[i]
-	grey_world_to(PRICE_GREY, spin)
-	if board():
-		grey_keep = board()
-		board().texture = frame
-		create_tween().tween_property(board(), "modulate", BOARD_RED, spin)
-	for i in CLICKS:
-		var t := float(i) / (CLICKS - 1)
-		# più vanno svelti, più sono acuti
-		Sound.sfx("price_click", 0.8 + 0.7 * t + randf() * 0.04)
-		frame.region = Rect2(roundi(t * (steps - 1)) * 112, 0, 112, 34)
-		await get_tree().create_timer(waits[i]).timeout
+	await get_tree().create_timer(0.5).timeout
+	Sound.sfx("ding")
 	if board():
 		board().texture = load(BOARD_NEW)
-	# l'ultimo scatto, secco, e poi silenzio
-	await get_tree().create_timer(0.6).timeout
-	Sound.sfx("price_click", 0.7)
-	await get_tree().create_timer(0.9).timeout
-	var lines: Array = ["* Clic. Clic. Clic. Le rotelline del tabellone girano da sole, una cifra alla volta.",
-		"* A ogni clic il Mercato perde un colore. Le mele, le insegne, i carrelli. Resta acceso solo il tabellone. Rosso."]
+		var tw := create_tween()
+		for i in 4:
+			tw.tween_property(board(), "modulate", Color(2, 2, 2), 0.12)
+			tw.tween_property(board(), "modulate", Color.WHITE, 0.12)
+	var lines: Array = ["* La musica si interrompe. Sul tabellone, le rotelline dei prezzi girano tutte insieme."]
 	for key: String in ["pane", "latte", "acqua"]:
 		var p: Array = GameState.market["prezzi"][key]["prezzo"]
 		lines.append("* %s: da %s a %s." % [str(GameState.market["prezzi"][key]["nome"]).split(" ")[0].to_upper(), GameState.euros(int(p[0])), GameState.euros(int(p[1]))])
 	await Ui.say(lines)
-	await Ui.say(["COMPLIMENTI!", "Il Mercato ha raggiunto un nuovo livello di crescita!", "Per festeggiare, abbiamo aggiornato i prezzi!",
-		"Per contenere i costi, da oggi i colori sono un servizio premium."], SPEAKER)
-	await Ui.say(["Ma io oggi ho guadagnato come ieri.", "...Ieri però la frutta era rossa."], "Cliente")
+	await Ui.say(["COMPLIMENTI!", "Il Mercato ha raggiunto un nuovo livello di crescita!", "Per festeggiare, abbiamo aggiornato i prezzi!"], SPEAKER)
+	await Ui.say(["Ma io oggi ho guadagnato come ieri."], "Cliente")
 	await Ui.say(["Ecco perché abbiamo preparato un consiglio gratuito!", "Guadagna di più!"], SPEAKER)
 	if GameState.flags.get("c3_leda_inventario", false):
-		await Ui.say(["Avevo appena sistemato i conti.", "Sono durati meno delle etichette.",
-			"Guarda il bancone. Era giallo. L'avevo scelto io."], "Leda")
+		await Ui.say(["Avevo appena sistemato i conti.", "Sono durati meno delle etichette."], "Leda")
 	else:
-		await Ui.say(["Scusa, oggi non ho tempo.", "Anche ieri non avevo tempo.", "...Sei diventato grigio anche tu, o sono io?"], "Leda")
+		await Ui.say(["Scusa, oggi non ho tempo.", "Anche ieri non avevo tempo."], "Leda")
 	if GameState.is_robot("amir"):
-		await Ui.say(["PREZZI AGGIORNATI.", "COLORI DISATTIVATI.", "FELICITÀ AGGIORNATA."], "Amir")
+		await Ui.say(["PREZZI AGGIORNATI.", "FELICITÀ AGGIORNATA."], "Amir")
 	else:
-		await Ui.say(["Mi hanno aumentato il bonus.", "Di venti euro.", "L'acqua è aumentata di cinque.", "Forse dovrei bere più lentamente.",
-			"Almeno il tabellone adesso si vede bene. È l'unica cosa rossa rimasta. Forse è fatto apposta."], "Amir")
-	Sound.sfx("price_click", 0.85)
-	await Ui.say(["* Clic."])
+		await Ui.say(["Mi hanno aumentato il bonus.", "Di venti euro.", "L'acqua è aumentata di cinque.", "Forse dovrei bere più lentamente."], "Amir")
 	await FocusShot.restore(self, shot)
 	Sound.music(music)
 	Ui.cutscene = false
@@ -684,9 +646,12 @@ func on_stairs_step(p: Player, _need: String) -> void:
 		GameState.flags["c3_badge"] = "contratto"
 	Ui.cutscene = true
 	p.position.y += 4
-	Sound.music_pitch(0.5, 1.5)
-	await get_tree().create_timer(1.5).timeout
-	Sound.music("")
+	await Ui.say(["* Metti il piede sul primo gradino. Dietro di te, il tabellone fa clic."])
+	# la canzone del piano rallenta, si fa triste e sparisce: restano solo i clic dei prezzi
+	Sound.music_pitch(0.55, 3.0)
+	Sound.music_fade_out(9.0)
+	_price_run(true)
+	await get_tree().create_timer(2.5).timeout
 	Sound.sfx("clunk", 0.6)
 	await get_tree().create_timer(0.6).timeout
 	await Ui.say(["* CLANK. Nel muro accanto alle scale si apre una fessura.", "* Ne esce uno scontrino. Lungo. Lunghissimo."])
@@ -700,9 +665,89 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	tw.tween_property(layer.get_child(0), "modulate:a", 0.0, 0.8)
 	await tw.finished
 	layer.queue_free()
-	Sound.music(music)
-	Sound.music_pitch(0.8, 2.0)
+	await Ui.say(["* Clic. Clic. Clic. Sul tabellone i prezzi non si fermano più.",
+		"* Le cifre non ci stanno. Escono dalle colonne, si mangiano le parole PANE, LATTE, ACQUA.",
+		"* Il Mercato è grigio. L'unica cosa che ha ancora un colore è il prezzo."])
 	Ui.cutscene = false
+
+
+# --- la fuga dei prezzi: la fine del capitolo ------------------------------------------------
+# Dal primo gradino in poi il Mercato perde il colore (come la festa del Fondo e l'ufficio del -4)
+# e il tabellone, rosso, non smette di fare clic: ogni clic arriva prima del precedente.
+
+const RUN_FIRST_WAIT := 0.6
+const RUN_SPEEDUP := 0.94
+const RUN_FASTEST := 0.04
+const BOARD_RED := Color(1.0, 0.35, 0.32)
+
+var _run_mat: ShaderMaterial
+var _run_timer: Timer
+var _run_voices: Array[AudioStreamPlayer] = []
+var _run_frame: AtlasTexture
+var _run_clicks := 0
+
+
+## `animate`: sul gradino il grigio arriva piano piano e i clic partono lenti; tornando al
+## piano dopo la fine, è già tutto grigio e i clic vanno già di corsa.
+func _price_run(animate: bool) -> void:
+	if _run_timer != null:
+		return
+	var board_node := board()
+	_run_mat = ShaderMaterial.new()
+	_run_mat.shader = preload("res://shaders/greyscale.gdshader")
+	_run_mat.set_shader_parameter("amount", 0.0 if animate else 1.0)
+	_run_mat.set_shader_parameter("darken", 0.15)
+	for parent_name in ["Pavimento", "Muri", "Bordo", "Decori", "Mondo"]:
+		var parent := get_node_or_null(parent_name)
+		if parent == null:
+			continue
+		# anche dentro le scene incluse (la biglietteria, le scale): owned = false
+		var nodes: Array = [parent] if parent is TileMapLayer else parent.find_children("*", "CanvasItem", true, false)
+		for n in nodes:
+			# tu resti a colori; e anche chi era già grigio resta col suo grigio
+			if n == board_node or n == player or player.is_ancestor_of(n) or n is Control:
+				continue
+			if (n as CanvasItem).material == null:
+				(n as CanvasItem).material = _run_mat
+	if animate:
+		create_tween().tween_method(func(v: float) -> void: _run_mat.set_shader_parameter("amount", v), 0.0, 1.0, 8.0)
+	var sheet: Texture2D = load(BOARD_RUN)
+	_run_frame = AtlasTexture.new()
+	_run_frame.atlas = sheet
+	_run_frame.region = Rect2(0, 0, 112, 34)
+	if board_node:
+		board_node.texture = _run_frame
+		if animate:
+			create_tween().tween_property(board_node, "modulate", BOARD_RED, 4.0)
+		else:
+			board_node.modulate = BOARD_RED
+	for i in 3:
+		var voice := AudioStreamPlayer.new()
+		voice.stream = load("res://audio/price_click.wav")
+		voice.bus = "SFX"
+		voice.volume_db = -6.0
+		add_child(voice)
+		_run_voices.append(voice)
+	_run_clicks = 0 if animate else 999
+	_run_timer = Timer.new()
+	_run_timer.one_shot = true
+	add_child(_run_timer)
+	_run_timer.timeout.connect(_run_click)
+	_run_click()
+
+
+## Un clic: il tabellone scatta di un fotogramma (i prezzi crescono di colpo), il prossimo clic
+## arriva un po' prima di questo. Arrivati in fondo, le cifre restano lì e i clic continuano.
+func _run_click() -> void:
+	var frames := _run_frame.atlas.get_width() / 112
+	var wait := maxf(RUN_FASTEST, RUN_FIRST_WAIT * pow(RUN_SPEEDUP, _run_clicks))
+	var voice := _run_voices[_run_clicks % _run_voices.size()]
+	# più vanno svelti, più sono acuti
+	voice.pitch_scale = remap(wait, RUN_FIRST_WAIT, RUN_FASTEST, 0.85, 1.5) + randf() * 0.05
+	voice.play()
+	_run_frame.region = Rect2(mini(_run_clicks, frames - 1) * 112, 0, 112, 34)
+	_run_clicks += 1
+	_run_timer.start(wait)
 
 
 func receipt_lines() -> Array:

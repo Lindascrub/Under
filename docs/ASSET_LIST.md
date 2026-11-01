@@ -56,7 +56,7 @@ Dai props LimeZu: `palm.png`.
 | `audio/drring.wav` | breve | Il telefono della scrivania | `cima_c6.gd`, 6.08 (il Capo); `finale_c6.gd` (finale A) |
 | `audio/music_cima.wav` | 12 s, in loop | Musica della Cima e della Direzione | `cima.tscn`, `direzione.gd`, inizio del finale |
 | `audio/music_epilogo.wav` | 6 s, in loop | Musica degli epiloghi e dei titoli | `finale_c6.gd` |
-| `audio/price_click.wav` | 0,05 s | Il clic delle rotelline del tabellone quando i prezzi salgono (sintetico: una paletta che sbatte; generato a mano: da sostituire con un clic vero, tipo tabellone d'aeroporto) | `mercato_c3.gd`, aggiornamento dei prezzi |
+| `audio/price_click.wav` | 0,05 s | Il clic delle rotelline del tabellone quando i prezzi salgono (sintetico: una paletta che sbatte; generato a mano: da sostituire con un clic vero, tipo tabellone d'aeroporto) | `mercato_c3.gd`, fine del capitolo (`_price_run`) |
 
 ## I personaggi (Character Generator LimeZu)
 
@@ -98,7 +98,7 @@ Olga non usa più `char_14` (lo stesso di Fermo) ma `char_09`.
 ## Musica (`assets/music/`, estratta da `tools/import_music.py`)
 
 Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Quality 16-bit RPG Music** e
-**FREE LOOPABLE MUSIC (Bishop)**, più alcuni brani di **music-loop-bundle-2026-q1** (Abstraction, licenza CC0: Super Retro Lounge, Sugar Rush, Waiting Room Ennui, Mischief GROOVE, Life Is Hard BASE; Jester's Distraction è di un altro autore, "Dani Maccari Asset Pack": la licenza va controllata a parte). Come LimeZu, la cartella è esclusa da git: non si ridistribuisce.
+**FREE LOOPABLE MUSIC (Bishop)**, più alcuni brani di **music-loop-bundle-2026-q1** (Abstraction, licenza CC0: Super Retro Lounge, Sugar Rush, Waiting Room Ennui, Mischief GROOVE, Life Is Hard BASE, Vacation Day ADVENTURE, Alley Cat DUMPSTER PARTY, Distant Skyline CITY LIGHTS; Jester's Distraction è di un altro autore, "Dani Maccari Asset Pack": la licenza va controllata a parte). Come LimeZu, la cartella è esclusa da git: non si ridistribuisce.
 **Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
 scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
 
@@ -110,7 +110,7 @@ Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'
 | `festa` | Fondo (-5) | GettinSillyWithIt |
 | `attesa` | Sottoufficio (-4) | Super Retro Lounge |
 | `mercato` | Mercato (-3) | Waiting Room Ennui |
-| `banca` | Banca (-2) | TracerBulletPrivateEye |
+| `banca` | Banca (-2) | Vacation Day (ADVENTURE) |
 | `citta` | Città (0) | MetropolitanCosmopolitan |
 | `quartiere` | Casa Comune, stanze di prima | Wood Forest Town |
 | `cima` | Cima | Royal Castle |
@@ -119,7 +119,7 @@ Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'
 | `turno_dinamo` | TURNO del -5 (cyclette) | PkmnGoldLuckyCorner |
 | `turno_callcenter` | TURNO del -4 (call center) | Sugar Rush (ZOOMIES) |
 | `turno_cassa` | TURNO del -3 (cassa) | Life Is Hard (BASE) |
-| `turno_sportello` | TURNO del -2 (sportello) | PkmnGoldLuckyCorner |
+| `turno_sportello` | TURNO del -2 (sportello) | Alley Cat (DUMPSTER PARTY) |
 | `turno_smistamento` | TURNO dello 0 (smistamento) | PkmnGoldLuckyCorner |
 | `lavoro` | Gli altri turni | PkmnGoldLuckyCorner |
 | `capo` | Il capo: quando telefona, il furto che ti chiede, il suo ufficio | MetropolitanCosmopolitan |
@@ -129,8 +129,8 @@ Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'
 | `aiuto_ercole` | Minigiochi di Ercole | Jester's Distraction |
 | `aiuto_leda` | Minigiochi di Leda | Mischief (GROOVE) |
 | `aiuto_amir` | Minigiochi di Amir | Mischief (GROOVE) |
-| `aiuto_olga` | Minigiochi di Olga | He Will Never Be The Ape |
-| `aiuto_teo` | Minigiochi di Teo | He Will Never Be The Ape |
+| `aiuto_olga` | Minigiochi di Olga | Distant Skyline (CITY LIGHTS) |
+| `aiuto_teo` | Minigiochi di Teo | Distant Skyline (CITY LIGHTS) |
 | `aiuto_ada` | Minigiochi di Ada | He Will Never Be The Ape |
 | `aiuto_nadir` | Minigiochi di Nadir | He Will Never Be The Ape |
 | `aiuto` | Minigiochi d'aiuto della versione precedente | He Will Never Be The Ape |
@@ -215,7 +215,7 @@ Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anc
 | `sign_saldi.png` | 116x16 | Insegna "OGGI TUTTO AL 50%*" (scritta in Silkscreen, se no il 5 sembra un 2 al contrario) | frontale, sul muro | nessuna | `chapters/c3/mercato.tscn`, `InsegnaSaldi` (3,1) |
 | `price_board.png` | 112x34 | Tabellone dei prezzi, prima (pane, latte, acqua da `data/market.json`) | frontale, sul muro | nessuna | `mercato.tscn`, `Tabellone` (12,2) |
 | `price_board_nuovo.png` | 112x34 | Lo stesso tabellone coi prezzi aumentati | frontale, sul muro | il cambio prezzi lampeggia (fatto dal codice) | `chapters/c3/mercato_c3.gd`, `_price_update` |
-| `price_board_salita.png` | 1008x34 (9 fotogrammi 112x34) | Il tabellone mentre i prezzi salgono di 1 a ogni scatto (18→25, 24→32, 10→15), da `tools/make_price_steps.py` | frontale, sul muro | è lei l'animazione: un fotogramma per clic | `chapters/c3/mercato_c3.gd`, `_price_update` |
+| `price_board_fuga.png` | 3696x34 (33 fotogrammi 112x34) | La fine del capitolo 3: i prezzi nuovi moltiplicati a ogni clic, finché le cifre escono dalle colonne. Da `tools/make_price_steps.py` | frontale, sul muro | è lei l'animazione: un fotogramma per clic | `chapters/c3/mercato_c3.gd`, `_price_run` |
 | `sign_leda.png` | 52x14 | Insegna "DA LEDA" | frontale, sul muro | nessuna | non più usata (tolta dal Mercato) |
 | `cassa.png` | 32x24 | La cassa del TURNO | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |
 | `shelf.png` | 32x32 | Scaffale del negozio di Leda | 3/4 frontale | nessuna | non più usata (al Mercato ci sono i pezzi LimeZu del supermercato) |

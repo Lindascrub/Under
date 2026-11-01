@@ -121,4 +121,55 @@ func build_image() -> Image:
 				continue
 			var inner := px > 0 and px < w - 1 and py > 0 and py < h - 1 				and mask[py * w + px - 1] == 1 and mask[py * w + px + 1] == 1 				and mask[(py - 1) * w + px] == 1 and mask[(py + 1) * w + px] == 1
 			img.set_pixel(px, py, WHITE if inner else DARK)
+	# dove un separatore finisce in mezzo al pavimento si vede la sua faccia, come le pareti
+	for c: Vector2i in dividers:
+		if _kind(floor_l, walls, c + Vector2i.DOWN) == 1 and dividers.has(c + Vector2i.UP) \
+				and _kind(floor_l, walls, c + Vector2i.LEFT) != 0 and _kind(floor_l, walls, c + Vector2i.RIGHT) != 0:
+			_paint_face(img, (c - used.position) * T, _wall_beside(floor_l, walls, c))
 	return img
+
+
+## Quanto è alta la faccia sotto la fine di un separatore (la parete senza il suo bordo bianco).
+const FACE := 26
+
+var _sheets := {}
+
+
+## La parete della stanza accanto al separatore (a destra, se no a sinistra): le sue due caselle,
+## così la faccia ha i colori del piano.
+func _wall_beside(floor_l: TileMapLayer, walls: TileMapLayer, c: Vector2i) -> Array:
+	for side in [Vector2i.RIGHT, Vector2i.LEFT]:
+		var p: Vector2i = c + side
+		while _kind(floor_l, walls, p) == 1:
+			p += Vector2i.UP
+		if _kind(floor_l, walls, p) == 2 and walls.get_cell_source_id(p) != -1 \
+				and walls.get_cell_source_id(p + Vector2i.UP) != -1:
+			return [p + Vector2i.UP, p]
+	# nessuna parete sopra le due stanze (il muro è disegnato a mano): una parete qualsiasi del piano
+	for p in walls.get_used_cells():
+		if _kind(floor_l, walls, p) == 2 and _kind(floor_l, walls, p + Vector2i.UP) == 2 \
+				and _kind(floor_l, walls, p + Vector2i.DOWN) == 1 and walls.get_cell_source_id(p + Vector2i.UP) != -1:
+			return [p + Vector2i.UP, p]
+	return []
+
+
+func _paint_face(img: Image, o: Vector2i, cells: Array) -> void:
+	if cells.is_empty():
+		return
+	var walls := get_parent().get_node("Muri") as TileMapLayer
+	# le due caselle della parete una sopra l'altra, saltando il bordo bianco in cima
+	for k in FACE:
+		var row := 2 * T - FACE + k
+		var cell: Vector2i = cells[row / T]
+		var src := walls.tile_set.get_source(walls.get_cell_source_id(cell)) as TileSetAtlasSource
+		var region := src.get_tile_texture_region(walls.get_cell_atlas_coords(cell))
+		if not _sheets.has(src.texture):
+			var sheet := src.texture.get_image()
+			if sheet.is_compressed():
+				sheet.decompress()
+			_sheets[src.texture] = sheet
+		var sheet: Image = _sheets[src.texture]
+		var y := o.y + T - FACE + k
+		for x in T:
+			var col := DARK if x == 0 or x == T - 1 else sheet.get_pixel(region.position.x + x, region.position.y + row % T)
+			img.set_pixel(o.x + x, y, col)

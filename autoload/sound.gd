@@ -110,6 +110,16 @@ func music_pitch(p: float, time := 2.0) -> void:
 	tw.tween_property(_music, "pitch_scale", p, time)
 
 
+## La musica si spegne piano piano (poi resta il silenzio, come Sound.music("")).
+func music_fade_out(time := 4.0) -> void:
+	_fade = create_tween()
+	_fade.tween_property(_music, "volume_db", -60.0, time).set_ease(Tween.EASE_IN)
+	_fade.tween_callback(music.bind(""))
+
+
+var _fade: Tween
+
+
 ## Le canzoni vere (pacchetti comprati/scaricati, in res://assets/music/, esclusi da git come LimeZu).
 ## Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra (mai la stessa due volte di fila).
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
@@ -119,7 +129,7 @@ const PLAYLISTS := {
 	"festa": ["gettinsillywithit"],
 	"attesa": ["superretrolounge"],
 	"mercato": ["waitingroomennui"],
-	"banca": ["tracerbulletprivateeye"],
+	"banca": ["vacationdayadventure"],
 	"citta": ["metropolitancosmopolitan"],
 	"quartiere": ["wood_forest_town"],
 	"cima": ["royal_castle"],
@@ -129,7 +139,7 @@ const PLAYLISTS := {
 	"turno_dinamo": ["pkmngoldluckycornerioweitalltoyou"],
 	"turno_callcenter": ["sugarrushzoomies"],
 	"turno_cassa": ["lifeishardbase"],
-	"turno_sportello": ["pkmngoldluckycornerioweitalltoyou"],
+	"turno_sportello": ["alleycat"],
 	"turno_smistamento": ["pkmngoldluckycornerioweitalltoyou"],
 	"lavoro": ["pkmngoldluckycornerioweitalltoyou"],
 	# il capo: quando telefona, e nel furto che ti chiede
@@ -141,8 +151,8 @@ const PLAYLISTS := {
 	"aiuto_ercole": ["jestersdistraction"],
 	"aiuto_leda": ["mischiefgroove"],
 	"aiuto_amir": ["mischiefgroove"],
-	"aiuto_olga": ["hewillneverbetheapeescapesoundtrack"],
-	"aiuto_teo": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_olga": ["distantskyline"],
+	"aiuto_teo": ["distantskyline"],
 	"aiuto_ada": ["hewillneverbetheapeescapesoundtrack"],
 	"aiuto_nadir": ["hewillneverbetheapeescapesoundtrack"],
 	"aiuto": ["hewillneverbetheapeescapesoundtrack"],
@@ -167,6 +177,10 @@ func music(name: String) -> void:
 		return
 	_music_name = name
 	_music.pitch_scale = 1.0
+	# una canzone nuova (o il silenzio) interrompe la dissolvenza e torna al volume normale
+	if _fade and _fade.is_valid():
+		_fade.kill()
+	_music.volume_db = -8.0
 	_playlist = []
 	_track = ""
 	if name == "":
