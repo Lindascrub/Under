@@ -128,6 +128,18 @@ func _boss_call() -> void:
 
 ## Dove stanno la Presidente e il Capo: i Marker2D Posti/Posto<nome> della scena (Scrivania, Tavolo,
 ## Capo, Dinamo: la Presidente che si affaccia quando pedali). Si trascinano nell'editor.
+## La stampante dietro la Presidente (Mondo/Stampante) trema mentre stampa.
+func _vrrr() -> void:
+	var s := get_node_or_null("Mondo/Stampante") as Node2D
+	if s == null:
+		return
+	var x := s.position.x
+	var tw := create_tween()
+	for i in 6:
+		tw.tween_property(s, "position:x", x + (1 if i % 2 == 0 else -1), 0.05)
+	tw.tween_property(s, "position:x", x, 0.05)
+
+
 func _posto(nm: String) -> Vector2i:
 	var m := get_node_or_null("Posti/Posto" + nm) as Node2D
 	if m == null:
@@ -391,9 +403,11 @@ func _origin() -> void:
 			"Servivano energia, amministrazione, merci, crediti, manutenzione.",
 			"Ogni nuovo abitante veniva registrato come beneficiario di tutto questo.", "E gli veniva assegnata una quota."], PRES)
 	Sound.sfx("blip", 0.6)
+	_vrrr()
 	await Ui.say(["* Dietro la Presidente, una stampante. Vrrr. Esce un fascicolo."])
 	await Ui.say(["Adesso non serve più un Consiglio. Ogni nuovo abitante viene registrato, e la stampante gli assegna la sua quota. Da sola."], PRES)
 	Sound.sfx("blip", 0.6)
+	_vrrr()
 	await Ui.say(["* Vrrr. Un altro."])
 	var asked: Array = []
 	while asked.size() < 3:

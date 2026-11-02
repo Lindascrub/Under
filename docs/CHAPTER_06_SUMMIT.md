@@ -80,7 +80,8 @@ Dalla storia approvata (`docs/STORIA_BANCA_CIMA.md`, sezioni 4-5 e caso 1):
   (arrivata, a mano o archiviata: quella archiviata la Presidente la riprende; la copia di Teo aggiunge solo una scena). Dopo l'origine (6.04) la Presidente fa la verifica (se manca: "Te la faccio qui, gratis") e chiede
   se contesti la registrazione (`c6_contestazione`, col numero d'ordine). Si può contestare anche dopo, da
   "Il debito, ancora.", fino alla scelta finale. La contestazione non annulla niente.
-- **La stampante** nell'origine, e il Capo che commenta prima del ciclo 2 (`c6_capo_cicli`).
+- **La stampante** nell'origine: è il nodo `Mondo/Stampante` dietro la Presidente (LimeZu, Hospital_Singles_126) e trema
+  quando stampa (`_vrrr`). Poi il Capo che commenta prima del ciclo 2 (`c6_capo_cicli`).
 - Al ciclo 3 `direzione.gd` salva `debt_other_open`: se "Conserva" è stato scelto mentre un'altra regola era aperta (finale A1).
 
 Dalla revisione della storia (vedi `docs/COHERENCE.md`):

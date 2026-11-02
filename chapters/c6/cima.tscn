@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="Texture_bici_originale"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_126.png" id="tex_stampante"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f7vec"]
 size = Vector2(19, 6)
@@ -40,6 +41,9 @@ size = Vector2(12, 6)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uiv8x"]
 size = Vector2(62, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stampante"]
+size = Vector2(30, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_42ej2"]
 size = Vector2(12, 8)
@@ -280,6 +284,18 @@ metadata/footprint_applied = true
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Scrivania/Collisione" unique_id=1582027417]
 position = Vector2(32, -12)
 shape = SubResource("RectangleShape2D_uiv8x")
+
+[node name="Stampante" type="Sprite2D" parent="Mondo"]
+position = Vector2(560, 128)
+texture = ExtResource("tex_stampante")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Stampante"]
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Stampante/Collisione"]
+position = Vector2(16, -8)
+shape = SubResource("RectangleShape2D_stampante")
 
 [node name="Cartellina" type="Sprite2D" parent="Mondo" unique_id=2069813968]
 z_index = 1
