@@ -233,7 +233,7 @@ func _test_citta() -> void:
 func _test_cima() -> void:
 	var cima: GDScript = load("res://chapters/c6/cima_c6.gd")
 	# 6.02: le quattro versioni della richiesta
-	var casi := {"direzione": true, "a_mano": true, "archivio": false, "riepilogo": false}
+	var casi := {"direzione": true, "a_mano": true, "archivio": true, "riepilogo": false}
 	for r: String in casi:
 		_c6_reset()
 		var f := GameState.flags
@@ -246,7 +246,7 @@ func _test_cima() -> void:
 	GameState.flags["c4_verifica"] = true
 	GameState.flags["c5_richiesta"] = "archivio"
 	GameState.flags["c4_ricevuta_copia"] = true
-	_check(cima.verification_done(), "Cima: in archivio, ma con la copia di Teo la verifica è fatta")
+	_check(cima.verification_done(), "Cima: in archivio, con la copia di Teo la verifica è fatta lo stesso")
 	_c6_reset()
 	GameState.flags["c4_verifica"] = true
 	_check(Storia.richiesta() == "direzione", "Cima: richiesta fatta in Banca ma centralino mai visto: è andata alla Direzione")

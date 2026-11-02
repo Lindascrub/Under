@@ -303,7 +303,8 @@ func _request_answer() -> void:
 				await Ui.say(["* Le appoggi sulla scrivania la richiesta che hai portato su a mano. È ancora piegata come in tasca."])
 			await Ui.say(["Richiesta di verifica. È arrivata.", "La Direzione sono io. Non mi immaginavi così."], PRES)
 		"archivio":
-			await Ui.say(["La tua richiesta è arrivata in archivio. Da lì di solito non risale."], PRES)
+			# l'hai presentata: è arrivata, poi l'hanno archiviata. Si riprende da lì, con o senza la copia
+			await Ui.say(["La tua richiesta è arrivata. Poi è stata archiviata.", "Possiamo riprenderla adesso."], PRES)
 			if _f("c4_ricevuta_copia"):
 				await Ui.say(["* Le mostri la copia, con il supereroe nell'angolo."])
 				await Ui.say(["Una copia. Firmata da un supereroe. Va bene: la metto sopra."], PRES)
@@ -311,15 +312,19 @@ func _request_answer() -> void:
 			await Ui.say(["Hai un riepilogo, non una richiesta. Sei salito lo stesso."], PRES)
 
 
-## La verifica è fatta se la richiesta è arrivata (o se la copia di Teo l'ha rimessa sopra).
+## La verifica è fatta se la richiesta è stata presentata: arrivata, consegnata a mano o archiviata
+## (quella archiviata la Presidente la riprende). Solo il riepilogo, o niente, vuol dire nessuna richiesta.
 static func verification_done() -> bool:
-	return Storia.richiesta_arrivata() or (Storia.richiesta() == "archivio" and _f("c4_ricevuta_copia"))
+	return Storia.richiesta() in ["direzione", "a_mano", "archivio"]
 
 
 ## Verifica e contestazione sono due cose diverse: la contestazione (c6_contestazione) non annulla niente,
 ## ma resta scritta. Si può fare qui o dopo, da "Il debito, ancora.", fino alla decisione finale.
 func _verification() -> void:
-	if verification_done():
+	if Storia.richiesta() == "archivio":
+		await Ui.say(["* La Presidente apre un cassetto, sfoglia, tira fuori un foglio con il timbro ARCHIVIATA."])
+		await Ui.say(["Ripresa. La verifica è fatta. Per il regolamento, la registrazione è valida."], PRES)
+	elif verification_done():
 		await Ui.say(["La verifica è fatta. Per il regolamento, la registrazione è valida."], PRES)
 	else:
 		await Ui.say(["Non hai chiesto una verifica. Te la faccio qui, gratis. Valida."], PRES)

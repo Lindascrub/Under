@@ -221,8 +221,9 @@ Flag: `offerta_fermo`.
 - **Richiesta arrivata:**
   > PRESIDENTE: «Richiesta di verifica. È arrivata.»
   > PRESIDENTE: «La Direzione sono io. Non mi immaginavi così.»
-- **Richiesta finita in archivio:**
-  > PRESIDENTE: «La tua richiesta è arrivata in archivio. Da lì di solito non risale.»
+- **Richiesta finita in archivio** (rivisto: l'hai presentata, quindi conta come presentata):
+  > PRESIDENTE: «La tua richiesta è arrivata. Poi è stata archiviata.»
+  > PRESIDENTE: «Possiamo riprenderla adesso.»
   
   Con la copia di Teo:
   > \* *Le mostri la copia, con il supereroe nell'angolo.*
@@ -238,9 +239,12 @@ Flag: `offerta_fermo`.
 > \* *Vrrr. Un altro.*
 
 **Verifica e contestazione [NUOVO].** Sono due cose diverse.
-- Con la richiesta arrivata:
+- Con la richiesta arrivata (o consegnata a mano):
   > PRESIDENTE: «La verifica è fatta. Per il regolamento, la registrazione è valida.»
-- Senza richiesta:
+- Con la richiesta archiviata (con o senza la copia di Teo):
+  > \* *La Presidente apre un cassetto, sfoglia, tira fuori un foglio con il timbro ARCHIVIATA.*
+  > PRESIDENTE: «Ripresa. La verifica è fatta. Per il regolamento, la registrazione è valida.»
+- Senza richiesta (solo il riepilogo, o un salvataggio vecchio):
   > PRESIDENTE: «Non hai chiesto una verifica. Te la faccio qui, gratis. Valida.»
 
 Scelta: **[Contesto la registrazione.]** / **[Non adesso.]**

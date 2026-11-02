@@ -76,8 +76,8 @@ Dalla storia approvata (`docs/STORIA_BANCA_CIMA.md`, sezioni 4-5 e caso 1):
 - **6.02, prima di STRAP** (`_request_answer`): la richiesta della Banca arriva alla Presidente (`"direzione"`),
   arriva consegnata a mano (`"a_mano"`, una riga in più), resta in archivio (`"archivio"`; con la copia di Teo
   la Presidente "la mette sopra"), oppure c'è solo il riepilogo.
-- **Verifica e contestazione** sono due cose separate. `verification_done()`: richiesta arrivata, oppure archivio
-  con la copia. Dopo l'origine (6.04) la Presidente fa la verifica (se manca: "Te la faccio qui, gratis") e chiede
+- **Verifica e contestazione** sono due cose separate. `verification_done()`: richiesta presentata
+  (arrivata, a mano o archiviata: quella archiviata la Presidente la riprende; la copia di Teo aggiunge solo una scena). Dopo l'origine (6.04) la Presidente fa la verifica (se manca: "Te la faccio qui, gratis") e chiede
   se contesti la registrazione (`c6_contestazione`, col numero d'ordine). Si può contestare anche dopo, da
   "Il debito, ancora.", fino alla scelta finale. La contestazione non annulla niente.
 - **La stampante** nell'origine, e il Capo che commenta prima del ciclo 2 (`c6_capo_cicli`).
