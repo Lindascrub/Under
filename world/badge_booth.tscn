@@ -78,9 +78,9 @@ metadata/prop_talk_skip = true
 position = Vector2(0, 0)
 texture = ExtResource("2")
 centered = false
-offset = Vector2(0, -20)
+offset = Vector2(0, -24)
 region_enabled = true
-region_rect = Rect2(0, 44, 64, 20)
+region_rect = Rect2(0, 40, 64, 24)
 metadata/prop_talk_skip = true
 
 [node name="Fogli1" type="Sprite2D" parent="."]

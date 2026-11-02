@@ -242,9 +242,9 @@ func _posters() -> void:
 		"* Sotto, in piccolo: \"Il sorriso è parte integrante della mansione (art. 4 del contratto)\".",
 	], "", ["* \"SORRIDI! È GRATIS\". Adesso che la musica si è fermata una volta, la faccina sembra un ordine."])
 	_examine(mondo, "GuardaModulo", Vector2i(7, 3), [
-		"* \"UN MODULO AL GIORNO. NON PENSARE.\".",
+		"* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\".",
 		"* Sotto, a matita: posso almeno leggere? La domanda è stata cancellata due volte.",
-	], "", ["* \"UN MODULO AL GIORNO. NON PENSARE.\". Ora sai dove vanno, i moduli. Il pensiero, invece, resta."])
+	], "", ["* \"UN MODULO AL GIORNO TOGLIE IL PENSIERO\". Ora sai dove vanno, i moduli. Il pensiero, invece, resta."])
 	_examine(mondo, "GuardaAttesa", Vector2i(14, 3), [
 		"* \"RESTI IN LINEA!\". Il cartello è appeso proprio sopra l'altoparlante della musichetta.",
 		"* La musichetta è sempre la stessa. Dura quarantadue secondi. L'hai già contata tre volte.",

@@ -169,7 +169,11 @@ func _process(_delta: float) -> void:
 			var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
 			want = -camera_lift * t
 		if Ui.busy and player.facing != "up":
-			want += alza_nei_dialoghi
+			# non oltre il fondo della stanza: lo spostamento della camera non rispetta i suoi limiti
+			var cam := player.camera
+			var half := get_viewport_rect().size.y / (2.0 * cam.zoom.y)
+			var bottom := cam.get_screen_center_position().y - cam.offset.y + half
+			want += clampf(cam.limit_bottom - bottom, 0.0, alza_nei_dialoghi)
 		player.camera.offset.y = lerpf(player.camera.offset.y, want, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0

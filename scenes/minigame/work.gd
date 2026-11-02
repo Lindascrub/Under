@@ -638,7 +638,8 @@ func _hd_phone_pos(k: int) -> Vector2:
 
 
 func _hd_button(k: int) -> Rect2:
-	return Rect2(BOX.position.x + 16, BOX.position.y + 62 + k * 40, BOX.size.x - 32, 32)
+	# sotto la frase del cliente (due righe) e la sua barra del tempo
+	return Rect2(BOX.position.x + 16, BOX.position.y + 68 + k * 38, BOX.size.x - 32, 32)
 
 
 func _hd_pick_up(k: int) -> void:
@@ -1219,8 +1220,8 @@ func _draw_helpdesk(font: Font) -> void:
 	if time_left < HD_FINALE:
 		_draw_drin(font)
 	if hd_phase == "talk":
-		draw_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 24), "Il cliente:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8a8494"))
-		draw_multiline_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 42), "\"%s\"" % str(hd_call[0]), HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 32, 12, 2, Color.WHITE)
+		draw_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 20), "Il cliente:", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8a8494"))
+		draw_multiline_string(font, Vector2(BOX.position.x + 16, BOX.position.y + 36), "\"%s\"" % str(hd_call[0]), HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 32, 12, 2, Color.WHITE)
 		for k in 3:
 			var r := _hd_button(k)
 			var sel := k == hd_sel and not TouchControls.enabled
@@ -1229,7 +1230,7 @@ func _draw_helpdesk(font: Font) -> void:
 			draw_multiline_string(font, r.position + Vector2(8, 13), str(hd_call[1 + int(hd_order[k])]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 16, 10, 2, Color.BLACK if sel else Color.WHITE)
 		# il tempo per rispondere
 		var left := hd_t / maxf(3.5, 7.0 - d * 3.0)
-		draw_rect(Rect2(BOX.position.x + 16, BOX.position.y + 50, (BOX.size.x - 32) * clampf(left, 0, 1), 3), GREEN)
+		draw_rect(Rect2(BOX.position.x + 16, BOX.position.y + 59, (BOX.size.x - 32) * clampf(left, 0, 1), 3), GREEN)
 		return
 	for k in 3:
 		var p := _hd_phone_pos(k)

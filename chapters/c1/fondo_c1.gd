@@ -272,7 +272,7 @@ func _first_talk() -> void:
 		GameState.flags["fermo_smettere"] = true
 	else:
 		await Ui.say(["Perché so cosa c'è sotto i colori.", "Pedala una volta, e lo saprai anche tu."], who)
-	await Ui.say(["Ah. Quei due là, la piccola Bulbo e il vecchio Mina: parlaci. Qui sotto sono le uniche cose vere, a parte me.",
+	await Ui.say(["Ah. Quei due là, Bulbo e Mina: parlaci. Qui sotto sono le uniche cose vere, a parte me.",
 		"Le stelline fanno passare la notte, se vuoi. Ma la notte costa: chiedi agli interessi.",
 		"Vai. La festa non si tiene accesa da sola."], who)
 	GameState.flags["fermo_talked"] = true
