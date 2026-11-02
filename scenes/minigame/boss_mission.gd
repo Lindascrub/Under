@@ -1,6 +1,6 @@
 extends Control
 const B := preload("res://scripts/boss_missions.gd")
-const FONT := preload("res://fonts/Silkscreen-Regular.ttf")
+const FONT := preload("res://fonts/PixeloidSans-Bold.otf")
 const BG := Color("171e2a")
 const PAPER := Color("f3eddc")
 const INK := Color("302d3c")
