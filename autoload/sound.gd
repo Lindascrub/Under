@@ -157,6 +157,7 @@ const PLAYLISTS := {
 	"aiuto_nadir": ["hewillneverbetheapeescapesoundtrack"],
 	"aiuto": ["hewillneverbetheapeescapesoundtrack"],
 	# il resto
+	"titolo": ["frostylabratory"],
 	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
 	"notte": ["nighttownwaltz"],
 	"nives": ["lively_city"],

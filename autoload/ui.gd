@@ -210,7 +210,7 @@ func show_status() -> void:
 	var options: Array = []
 	for item in GameState.items:
 		options.append(item)
-	options.append("Audio")
+	options.append("Impostazioni")
 	options.append("Chiudi")
 	var prompt := "{rank}. {floor}, ore {clock}. Badge: %d. Energia %d/%d." % [
 		GameState.badges.size(), GameState.energy, GameState.MAX_ENERGY]
@@ -223,7 +223,7 @@ Missioni: " + ", ".join(missions) + "."
 Non hai oggetti."
 	var i: int = await choose(prompt, options, "Stato")
 	if i == GameState.items.size():
-		await audio_menu()
+		await settings_menu()
 		return
 	if i < GameState.items.size():
 		Sound.sfx("heal")
@@ -231,20 +231,49 @@ Non hai oggetti."
 "))
 
 
-## Il volume di musica ed effetti: ogni scelta abbassa di un gradino (dopo lo zero si ricomincia dal massimo).
-func audio_menu() -> void:
+## Le pagine che si aprono sopra a tutto: i comandi (tasti disegnati) e i crediti.
+const COMANDI := preload("res://scenes/comandi.tscn")
+const CREDITI := preload("res://scenes/crediti.tscn")
+## La voce delle Impostazioni (solo dalla schermata iniziale) per cancellare la memoria di Nives.
+const FORGET := "Dimentica le partite"
+
+
+## Le impostazioni: il volume di musica ed effetti (ogni scelta abbassa di un gradino, dopo lo zero si
+## ricomincia dal massimo) e lo schermo intero (solo sul computer).
+## Dalla schermata iniziale (from_title) anche "Dimentica le partite", se Nives si ricorda qualcosa.
+func settings_menu(from_title := false) -> void:
 	while true:
 		var m := Sound.volume("Music")
 		var s := Sound.volume("SFX")
-		var c: int = await choose("Volume (scegli per cambiarlo)", ["Musica: %s" % _vol_text(m), "Effetti: %s" % _vol_text(s), "Fatto"], "Audio")
-		match c:
-			0:
-				Sound.set_volume("Music", _next_vol(m))
-			1:
-				Sound.set_volume("SFX", _next_vol(s))
-				Sound.sfx("coin")
-			_:
-				return
+		var options: Array[String] = ["Musica: %s" % _vol_text(m), "Effetti: %s" % _vol_text(s)]
+		if Controls.can_fullscreen():
+			options.append("Schermo intero: %s" % ("sì" if Controls.is_fullscreen() else "no"))
+		if from_title and MemoriaNives.count() > 0:
+			options.append(FORGET)
+		options.append("Fatto")
+		var c: int = await choose("Impostazioni (scegli per cambiare)", options, "Impostazioni")
+		var picked := options[c]
+		if c == 0:
+			Sound.set_volume("Music", _next_vol(m))
+		elif c == 1:
+			Sound.set_volume("SFX", _next_vol(s))
+			Sound.sfx("coin")
+		elif picked.begins_with("Schermo intero"):
+			Controls.set_fullscreen(not Controls.is_fullscreen())
+		elif picked == FORGET:
+			await MemoriaNives.forget_dialog()
+		else:
+			return
+
+
+## Apre una pagina (COMANDI, CREDITI) e aspetta che si chiuda.
+func show_page(scene: PackedScene) -> void:
+	var page := scene.instantiate()
+	add_child(page)
+	busy = true
+	await page.chiuso
+	page.queue_free()
+	busy = false
 
 
 func _next_vol(v: float) -> float:

@@ -771,18 +771,20 @@ func _credits() -> void:
 		"CHEAP", "",
 		"Un gioco di Linda", "",
 		"Storia, personaggi e direzione", "Linda", "",
-		"Grafica dei personaggi e degli ambienti", "LimeZu — Modern Interiors, Modern Exteriors", "",
+		# grafica, musica, caratteri, effetti e motore: data/crediti.json (gli stessi del menu)
+		Crediti.testo(), "",
 		"Comparse", "LimeZu — Modern Interiors, versione RPG Maker", "",
-		"Carattere", "Pixeloid Sans — GGBotNet (SIL Open Font License)", "",
 		"Grafica personalizzata", "segnaposto, in attesa dei disegni veri", "",
-		"Motore", "Godot Engine", "",
 		"%s, da %s di debito." % [GameState.player_name, GameState.euros(GameState.START_DEBT)],
 		"Grazie per essere salito. E per esserti voltato.",
 	]
 	var roll := _label("\n".join(credits), Vector2(80, 380), Vector2(480, 640), 13, Color.WHITE)
 	roll.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	# alto quanto il testo (i crediti sono tanti): scorre finché l'ultima riga è uscita dallo schermo
+	var tall := maxf(640.0, roll.get_line_count() * (roll.get_line_height() + roll.get_theme_constant("line_spacing")))
+	roll.size.y = tall
 	var r := create_tween()
-	r.tween_property(roll, "position:y", -660.0, 24.0 if not fast else 0.05)
+	r.tween_property(roll, "position:y", -tall - 20.0, (24.0 + tall / 60.0) if not fast else 0.05)
 	await r.finished
 	Ui.cutscene = false
 	Ui.show_hud(true)

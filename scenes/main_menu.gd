@@ -20,6 +20,7 @@ var _locked := false
 func _ready() -> void:
 	Ui.show_hud(false)
 	Ui.cutscene = false
+	Sound.music("titolo")
 	# un vecchio salvataggio già finito: Nives se lo ricorda (una volta sola, vedi MemoriaNives)
 	MemoriaNives.import_legacy()
 	# Le persone del quartiere: le stesse che il giocatore incontrerà (ognuna a un passo diverso).
@@ -32,18 +33,14 @@ func _ready() -> void:
 
 func _fill_options() -> void:
 	if GameState.has_save():
-		_options.assign(["Continua", "Nuova partita", "Audio"])
+		_options.assign(["Continua", "Nuova partita", "Impostazioni", "Comandi", "Crediti", "Esci"])
 	else:
-		_options.assign(["Nuova partita", "Audio"])
-	# la voce per cancellare anche la memoria delle partite c'è solo se c'è qualcosa da cancellare
-	if MemoriaNives.count() > 0:
-		_options.append(FORGET)
-	_options.append("Esci")
+		_options.assign(["Nuova partita", "Impostazioni", "Comandi", "Crediti", "Esci"])
+	# i tasti servono solo a chi ha la tastiera
+	if TouchControls.enabled:
+		_options.erase("Comandi")
 	_sel = mini(_sel, _options.size() - 1)
 	_render()
-
-
-const FORGET := "Dimentica le partite"
 
 
 ## Prima di cominciare: come ti chiami? (Sul telefono si apre la tastiera.)
@@ -186,20 +183,6 @@ static func is_rude(t: String) -> bool:
 	return glued in RUDE_WORDS
 
 
-## Cancellare anche la memoria delle partite: una voce a parte, con due conferme. Il salvataggio resta.
-func _forget() -> void:
-	var n := MemoriaNives.count()
-	var c: int = await Ui.choose("Nives si ricorda %d %s. Vuoi che dimentichi tutte le partite concluse? Il salvataggio non si tocca." % [n, "finale" if n == 1 else "finali"],
-		["No, lascia stare", "Sì, dimentica"])
-	if c != 1:
-		return
-	c = await Ui.choose("Sicuro? Non si può tornare indietro.", ["No", "Sì, cancella la memoria"])
-	if c != 1:
-		return
-	MemoriaNives.forget()
-	await Ui.say(["* Fatto. La prossima volta, allo sportello, Nives non si ricorderà di te."])
-	_fill_options()
-
 ## Se non scrivi niente: la torre te lo fa notare, ogni volta un po' più stanca.
 const EMPTY_REPLIES: Array[String] = [
 	"Niente? Anche il silenzio è un nome. Ma non si può stampare su un badge.",
@@ -287,15 +270,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		if y >= 0 and i < _options.size():
 			_sel = i
 			_render()
+			Sound.sfx("select")
 			_choose(_options[_sel])
 		return
+	# gli stessi suoni delle scelte nei dialoghi
 	if event.is_action_pressed("move_up"):
 		_sel = posmod(_sel - 1, _options.size())
+		Sound.sfx("move")
 		_render()
 	elif event.is_action_pressed("move_down"):
 		_sel = posmod(_sel + 1, _options.size())
+		Sound.sfx("move")
 		_render()
 	elif event.is_action_pressed("confirm"):
+		Sound.sfx("select")
 		_choose(_options[_sel])
 
 
@@ -310,13 +298,17 @@ func _choose(option: String) -> void:
 			GameState.player_name = who
 			GameState.delete_save()
 			Router.goto(Router.ELEVATOR, "", INTRO)
-		"Audio":
-			await Ui.audio_menu()
+		"Impostazioni":
+			# dalla schermata iniziale c'è anche "Dimentica le partite" (se Nives si ricorda qualcosa)
+			await Ui.settings_menu(true)
+			_locked = false
+		"Comandi":
+			await Ui.show_page(Ui.COMANDI)
+			_locked = false
+		"Crediti":
+			await Ui.show_page(Ui.CREDITI)
 			_locked = false
 		"Continua":
 			Router.continue_game()
-		FORGET:
-			await _forget()
-			_locked = false
 		"Esci":
 			get_tree().quit()

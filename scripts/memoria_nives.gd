@@ -169,6 +169,20 @@ static func forget() -> void:
 	_write()
 
 
+## "Dimentica le partite" (Impostazioni della schermata iniziale): due conferme, poi forget(). Il salvataggio resta.
+static func forget_dialog() -> void:
+	var n := count()
+	var c: int = await Ui.choose("Nives si ricorda %d %s. Vuoi che dimentichi tutte le partite concluse? Il salvataggio non si tocca." % [n, "finale" if n == 1 else "finali"],
+		["No, lascia stare", "Sì, dimentica"])
+	if c != 1:
+		return
+	c = await Ui.choose("Sicuro? Non si può tornare indietro.", ["No", "Sì, cancella la memoria"])
+	if c != 1:
+		return
+	forget()
+	await Ui.say(["* Fatto. La prossima volta, allo sportello, Nives non si ricorderà di te."])
+
+
 # --- le scene già sentite -------------------------------------------------------------------------
 
 static func heard(key: String) -> bool:

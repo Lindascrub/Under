@@ -39,18 +39,18 @@ horizontal_alignment = 1
 [node name="Voci" type="Label" parent="."]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 160.0
+offset_top = 142.0
 offset_right = 640.0
-offset_bottom = 250.0
+offset_bottom = 278.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "> Nuova partita <\nAudio\nEsci"
+theme_override_font_sizes/font_size = 16
+text = "> Nuova partita <\nImpostazioni\nComandi\nCrediti\nEsci"
 horizontal_alignment = 1
 
 [node name="Persone" type="Node2D" parent="."]
 
 [node name="Persona0" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(176, 292)
+position = Vector2(176, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -58,7 +58,7 @@ script = ExtResource("2_char")
 sheet = "char_02"
 
 [node name="Persona1" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(224, 292)
+position = Vector2(224, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -66,7 +66,7 @@ script = ExtResource("2_char")
 sheet = "char_03"
 
 [node name="Persona2" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(272, 292)
+position = Vector2(272, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -74,7 +74,7 @@ script = ExtResource("2_char")
 sheet = "char_04"
 
 [node name="Persona3" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(320, 292)
+position = Vector2(320, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -82,7 +82,7 @@ script = ExtResource("2_char")
 sheet = "char_05"
 
 [node name="Persona4" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(368, 292)
+position = Vector2(368, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -90,7 +90,7 @@ script = ExtResource("2_char")
 sheet = "char_06"
 
 [node name="Persona5" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(416, 292)
+position = Vector2(416, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)
@@ -98,7 +98,7 @@ script = ExtResource("2_char")
 sheet = "char_07"
 
 [node name="Persona6" type="AnimatedSprite2D" parent="Persone"]
-position = Vector2(464, 292)
+position = Vector2(464, 330)
 scale = Vector2(2, 2)
 centered = false
 offset = Vector2(-8, -31)

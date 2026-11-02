@@ -1,0 +1,46 @@
+{
+  "_nota": "I crediti: la pagina Crediti del menu (colonna 1 a sinistra, 2 a destra) e i titoli di coda del finale.",
+  "sezioni": [
+    {
+      "titolo": "Grafica",
+      "colonna": 1,
+      "righe": [
+        "LimeZu (limezu.itch.io): Modern Interiors, Modern Exteriors, Character Generator",
+        "Emanuelle (emanuelledev.itch.io): Tiny Farm RPG",
+        "greatdocbrown (greatdocbrown.itch.io): Gamepad UI, i tasti dei Comandi"
+      ]
+    },
+    {
+      "titolo": "Caratteri",
+      "colonna": 1,
+      "righe": [
+        "Pixeloid Sans: GGBotNet (ggbot.net), SIL Open Font License",
+        "Silkscreen: The Silkscreen Project Authors, SIL Open Font License"
+      ]
+    },
+    {
+      "titolo": "Musica",
+      "colonna": 2,
+      "righe": [
+        "The Bishop (itsthebishop.itch.io): Free Loopable Music",
+        "HydroGene (hydrogene.itch.io): 28 High Quality 16-bit RPG Music",
+        "Abstraction (abstractionmusic.com): Music Loop Bundle",
+        "Dani Maccari: Jester's Distraction"
+      ]
+    },
+    {
+      "titolo": "Effetti sonori",
+      "colonna": 2,
+      "righe": [
+        "Fatti apposta per CHEAP"
+      ]
+    },
+    {
+      "titolo": "Motore",
+      "colonna": 2,
+      "righe": [
+        "Godot Engine (godotengine.org), licenza MIT"
+      ]
+    }
+  ]
+}
