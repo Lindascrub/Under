@@ -57,6 +57,8 @@ var bulb := "buona"
 var bulb_fix := 0
 var bulb_done := 0
 var bulb_t := 0.0
+## true quando la lampadina sfarfallava e l'hai appena avvitata
+var bulb_fixed := false
 # fili
 const WIRE_COLS := [Color("d23b3b"), Color("39b6ff"), Color("ffe14d"), Color("3ddc84")]
 var wire_right: Array[int] = []
@@ -239,7 +241,12 @@ func _start() -> void:
 func _new_bulb() -> void:
 	bulb = ["buona", "rotta", "fioca"].pick_random()
 	bulb_fix = 0
+	bulb_fixed = false
 	bulb_t = 0.0
+
+
+func _bulb_info() -> void:
+	_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses, _max_misses()]
 
 
 func _bulb_answer(ok: bool) -> void:
@@ -250,6 +257,7 @@ func _bulb_answer(ok: bool) -> void:
 		misses += 1
 		flash = 0.3
 		Sound.sfx("deny")
+	_bulb_info()
 	if bulb_done >= int(cfg.get("count", 10)):
 		_finish(true)
 	elif misses >= _max_misses():
@@ -583,7 +591,7 @@ func _process(delta: float) -> void:
 				bulb_t += delta
 				time_left -= delta
 				if type == "bulbs":
-					_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses, _max_misses()]
+					_bulb_info()
 					# "per_bulb": ogni lampadina ha i suoi secondi; se ci pensi troppo, è un errore
 					if cfg.has("per_bulb") and bulb_t > float(cfg["per_bulb"]) and time_left > 0.0:
 						_bulb_answer(false)
@@ -752,6 +760,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				Sound.sfx("move", 1.0 + bulb_fix * 0.2)
 				if bulb_fix >= int(cfg.get("fix", 2)):
 					bulb = "buona"
+					bulb_fixed = true
 			else:
 				_bulb_answer(false)
 	elif type == "wires":
@@ -926,6 +935,8 @@ func _draw_bulbs(font: Font) -> void:
 	Art.bulb(self, c, bulb, 3, lit)
 	if bulb == "fioca":
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/%d)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
+	elif bulb_fixed and phase == "play":
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), "Avvitata! Ora mettila nelle BUONE >", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, GREEN)
 
 
 # --- LE RATE MANCANTI (Olga) ------------------------------------------------------
