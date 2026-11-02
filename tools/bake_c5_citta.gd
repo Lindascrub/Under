@@ -104,8 +104,7 @@ func _torre() -> void:
 	_sprite(decori, "Torre", L + "buildings/cheap_tower.png", Rect2(), Vector2i(-5, 9))
 	var sign := _sprite(decori, "InsegnaEsterno", ART + "insegna_esterno.png", Rect2(), Vector2i(0, 7), 0, Vector2(0, 0))
 	sign.z_index = 2
-	var door := _sprite(decori, "PortaVetro", ART + "porta_vetro.png", Rect2(), Vector2i(2, 9))
-	door.z_index = 1
+	_sprite(decori, "PortaVetro", ART + "porta_vetro.png", Rect2(), Vector2i(2, 9))
 	_examine(mondo, "GuardaInsegna", Vector2i(1, 10), [], "_insegna_esterno")
 	_solid("Torre", Rect2i(0, 0, 14, 7))
 	_solid("TorreSinistra", Rect2i(0, 7, 2, 3))

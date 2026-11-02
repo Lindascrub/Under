@@ -1,46 +1,44 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://c0lct0pfqt0c2"]
 
-[ext_resource type="Script" path="res://chapters/c5/citta_c5.gd" id="1_anvy5"]
-[ext_resource type="TileSet" path="res://world/tilesets/citta.tres" id="2_h6op4"]
-[ext_resource type="Texture2D" path="res://art/c5/cielo.png" id="3_ucb5q"]
-[ext_resource type="Texture2D" path="res://assets/limezu/buildings/cheap_tower.png" id="4_1t5em"]
-[ext_resource type="Texture2D" path="res://art/c5/insegna_esterno.png" id="5_4dgay"]
-[ext_resource type="Texture2D" path="res://art/c5/porta_vetro.png" id="6_umeh6"]
-[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_yellow.png" id="7_ma1d4"]
-[ext_resource type="Texture2D" path="res://art/c5/insegna_casa_comune.png" id="8_mfi24"]
-[ext_resource type="Texture2D" path="res://art/c5/avviso_chiusura.png" id="9_qkokg"]
-[ext_resource type="Texture2D" path="res://art/c5/volantini.png" id="10_w6yv2"]
-[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_blue.png" id="11_1k6hv"]
-[ext_resource type="Texture2D" path="res://art/c5/insegna_comunicazioni.png" id="12_f16kl"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/billboard.png" id="13_5cqe0"]
-[ext_resource type="Texture2D" path="res://art/c5/cartellone_premium.png" id="14_dmu8u"]
-[ext_resource type="Texture2D" path="res://assets/limezu/market/shop_big.png" id="15_th4ur"]
-[ext_resource type="Texture2D" path="res://art/c5/vetrina_rotta.png" id="16_n7dbm"]
-[ext_resource type="Script" path="res://world/examine.gd" id="17_v0nlt"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/lamp.png" id="18_a7fcm"]
-[ext_resource type="Texture2D" path="res://art/c5/altoparlante.png" id="19_p474u"]
-[ext_resource type="Texture2D" path="res://art/c5/terminale_presentazioni.png" id="20_kei42"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/tree.png" id="21_k0hxi"]
-[ext_resource type="Script" path="res://world/npc_spot.gd" id="22_vebpn"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/tree_round.png" id="23_qwos7"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/bench.png" id="24_c0vvq"]
-[ext_resource type="Texture2D" path="res://assets/limezu/park/bush.png" id="25_lnq12"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/flowers.png" id="26_q6drs"]
-[ext_resource type="Texture2D" path="res://assets/limezu/park/fountain.png" id="27_jq72i"]
-[ext_resource type="Texture2D" path="res://art/c5/tabellone_bus.png" id="28_fb5ue"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/trashbin.png" id="29_xq0af"]
-[ext_resource type="Texture2D" path="res://assets/limezu/street/hydrant.png" id="30_fbj6j"]
-[ext_resource type="Script" path="res://world/room_feature.gd" id="31_ja042"]
-
+[ext_resource type="Script" uid="uid://du3dp60v5346w" path="res://chapters/c5/citta_c5.gd" id="1_anvy5"]
+[ext_resource type="TileSet" uid="uid://cr5vshwqb1qvs" path="res://world/tilesets/citta.tres" id="2_h6op4"]
+[ext_resource type="Texture2D" uid="uid://yff48hwqidoq" path="res://art/c5/cielo.png" id="3_ucb5q"]
+[ext_resource type="Texture2D" uid="uid://gd73ptruoul5" path="res://assets/limezu/buildings/cheap_tower.png" id="4_1t5em"]
+[ext_resource type="Texture2D" uid="uid://rt1j5ls1gjhj" path="res://art/c5/insegna_esterno.png" id="5_4dgay"]
+[ext_resource type="Texture2D" uid="uid://0jga8hecte01" path="res://art/c5/porta_vetro.png" id="6_umeh6"]
+[ext_resource type="Texture2D" uid="uid://dps1lveyyb58u" path="res://assets/limezu/buildings/condo_yellow.png" id="7_ma1d4"]
+[ext_resource type="Texture2D" uid="uid://dx057pd1hqj2r" path="res://art/c5/insegna_casa_comune.png" id="8_mfi24"]
+[ext_resource type="Texture2D" uid="uid://oeljyk7kv3w1" path="res://art/c5/avviso_chiusura.png" id="9_qkokg"]
+[ext_resource type="Texture2D" uid="uid://bu045v78tang4" path="res://art/c5/volantini.png" id="10_w6yv2"]
+[ext_resource type="Texture2D" uid="uid://v0518t6lh6qt" path="res://assets/limezu/buildings/condo_blue.png" id="11_1k6hv"]
+[ext_resource type="Texture2D" uid="uid://cjhxoca403xuh" path="res://art/c5/insegna_comunicazioni.png" id="12_f16kl"]
+[ext_resource type="Texture2D" uid="uid://c152ag66727bd" path="res://assets/limezu/street/billboard.png" id="13_5cqe0"]
+[ext_resource type="Texture2D" uid="uid://ccqs7ydt0oqso" path="res://art/c5/cartellone_premium.png" id="14_dmu8u"]
+[ext_resource type="Texture2D" uid="uid://cko0vesr3f0s7" path="res://assets/limezu/market/shop_big.png" id="15_th4ur"]
+[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="17_v0nlt"]
+[ext_resource type="Texture2D" uid="uid://cvyajq7xwt5s0" path="res://assets/limezu/street/lamp.png" id="18_a7fcm"]
+[ext_resource type="Texture2D" uid="uid://dqvceovk5q3hu" path="res://art/c5/altoparlante.png" id="19_p474u"]
+[ext_resource type="Texture2D" uid="uid://djcwx4jjw8v3t" path="res://art/c5/terminale_presentazioni.png" id="20_kei42"]
+[ext_resource type="Texture2D" uid="uid://c436n4y0tv4pd" path="res://assets/limezu/street/tree.png" id="21_k0hxi"]
+[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="22_vebpn"]
+[ext_resource type="Texture2D" uid="uid://hof7qd0seogt" path="res://assets/limezu/street/tree_round.png" id="23_qwos7"]
+[ext_resource type="Texture2D" uid="uid://dfxck18rgsq48" path="res://assets/limezu/street/bench.png" id="24_c0vvq"]
+[ext_resource type="Texture2D" uid="uid://dnjdklv3tyosl" path="res://assets/limezu/park/bush.png" id="25_lnq12"]
+[ext_resource type="Texture2D" uid="uid://c5i64k5s2x1nb" path="res://assets/limezu/street/flowers.png" id="26_q6drs"]
+[ext_resource type="Texture2D" uid="uid://ehkojorl1qje" path="res://assets/limezu/park/fountain.png" id="27_jq72i"]
+[ext_resource type="Texture2D" uid="uid://c0xrc2xvkaltx" path="res://art/c5/tabellone_bus.png" id="28_fb5ue"]
+[ext_resource type="Texture2D" uid="uid://c831b3wh6lguo" path="res://assets/limezu/street/trashbin.png" id="29_xq0af"]
+[ext_resource type="Texture2D" uid="uid://bok36qww60uud" path="res://assets/limezu/street/hydrant.png" id="30_fbj6j"]
 [ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
-[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
-[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="Texture2D" uid="uid://bdr6gpbxlwumd" path="res://art/c5/cartello_protesta.png" id="f3_cartello"]
+[ext_resource type="Texture2D" uid="uid://063u6a2pg36p" path="res://art/c5/cartone.png" id="f3_cartone"]
+[ext_resource type="Texture2D" uid="uid://bxk8sesax47ph" path="res://art/c5/panca_premium.png" id="f3_premium"]
+[ext_resource type="Texture2D" uid="uid://c4fdjxuvtjn3a" path="res://art/c5/vetrina_rotta.png" id="f3_vetrina"]
+[ext_resource type="Script" uid="uid://b8nexmesr57pf" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
-[ext_resource type="Texture2D" path="res://art/c5/vetrina_rotta.png" id="f3_vetrina"]
-[ext_resource type="Texture2D" path="res://art/c5/cartone.png" id="f3_cartone"]
-[ext_resource type="Texture2D" path="res://art/c5/cartello_protesta.png" id="f3_cartello"]
-[ext_resource type="Texture2D" path="res://art/c5/panca_premium.png" id="f3_premium"]
+[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vum5e"]
 size = Vector2(224, 112)
 
@@ -122,8 +120,8 @@ size = Vector2(28, 6)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1npvq"]
 size = Vector2(12, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5djhy"]
-size = Vector2(12, 6)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5djhy_Idrante"]
+size = Vector2(12, 4)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_runla"]
 size = Vector2(16, 336)
@@ -133,9 +131,6 @@ size = Vector2(16, 336)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jabii"]
 size = Vector2(672, 16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5djhy_Idrante"]
-size = Vector2(12, 4)
 
 [node name="Citta" type="Node2D" unique_id=857815144]
 script = ExtResource("1_anvy5")
@@ -169,7 +164,6 @@ centered = false
 offset = Vector2(0, -20)
 
 [node name="PortaVetro" type="Sprite2D" parent="Decori" unique_id=1296107705]
-z_index = 1
 position = Vector2(32, 160)
 texture = ExtResource("6_umeh6")
 centered = false
@@ -238,9 +232,15 @@ offset = Vector2(0, -144)
 modulate = Color(1, 1, 1, 0.7)
 z_index = 2
 position = Vector2(592, 158)
-texture = ExtResource("16_n7dbm")
+texture = ExtResource("f3_vetrina")
 centered = false
 offset = Vector2(0, -24)
+
+[node name="ScaleSu" parent="Decori" unique_id=734276343 instance=ExtResource("stairs_up_tscn")]
+position = Vector2(160, 144)
+target = "res://scenes/world/boss_office.tscn"
+spawn = "default"
+need = "cima"
 
 [node name="Mondo" type="Node2D" parent="." unique_id=152529317]
 y_sort_enabled = true
@@ -268,6 +268,7 @@ shape = SubResource("RectangleShape2D_if6ur")
 position = Vector2(48, 128)
 
 [node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/SopraPorta" unique_id=1378205504]
+z_index = -5
 shape = SubResource("RectangleShape2D_achod")
 
 [node name="TorreNives" type="StaticBody2D" parent="Mondo" unique_id=1346796427]
@@ -555,6 +556,17 @@ offset = Vector2(0, -32)
 position = Vector2(16, -3)
 shape = SubResource("RectangleShape2D_luvxt")
 
+[node name="InArrivo" type="Label" parent="Mondo/Tabellone" unique_id=1506141958]
+visible = false
+z_index = 30
+offset_left = -2.0
+offset_top = -44.0
+offset_right = 38.0
+offset_bottom = -36.0
+theme_override_colors/font_color = Color(1, 0.882353, 0.301961, 1)
+theme_override_font_sizes/font_size = 6
+text = "IN ARRIVO"
+
 [node name="GuardaTabellone" type="Node2D" parent="Mondo" unique_id=413373714]
 position = Vector2(360, 248)
 script = ExtResource("17_v0nlt")
@@ -582,6 +594,7 @@ offset = Vector2(0, -30)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Idrante" unique_id=475257094]
 position = Vector2(0, 2)
+
 [node name="@CollisionShape2D@48" type="CollisionShape2D" parent="Mondo/Idrante/Collisione" unique_id=1057146290]
 position = Vector2(8, -4)
 shape = SubResource("RectangleShape2D_5djhy_Idrante")
@@ -596,14 +609,8 @@ activity = "idle_left"
 position = Vector2(368, 160)
 job = "comunicazioni_citta"
 
-[node name="SportelloBadge" parent="Mondo" instance=ExtResource("booth_tscn")]
+[node name="SportelloBadge" parent="Mondo" unique_id=1008349278 instance=ExtResource("booth_tscn")]
 position = Vector2(64, 176)
-
-[node name="ScaleSu" parent="Decori" instance=ExtResource("stairs_up_tscn")]
-position = Vector2(160, 144)
-target = "res://scenes/world/boss_office.tscn"
-spawn = "default"
-need = "cima"
 
 [node name="Stellina" parent="Mondo" unique_id=242992583 instance=ExtResource("stellina_tscn")]
 position = Vector2(208, 256)
@@ -640,152 +647,138 @@ metadata/facing = "down"
 position = Vector2(280, 174)
 metadata/facing = "down"
 
-[node name="Inquadrature" type="Node2D" parent="."]
+[node name="Inquadrature" type="Node2D" parent="." unique_id=417206188]
 
-[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=2132504653]
 position = Vector2(336, 146)
 script = ExtResource("inq_script")
 zoom = 0.9524
 durata = 3.5
-durata_ritorno = 0.65
 
-[node name="Cielo" type="Marker2D" parent="Inquadrature"]
+[node name="Cielo" type="Marker2D" parent="Inquadrature" unique_id=354721662]
 position = Vector2(160, 64)
 script = ExtResource("inq_script")
-zoom = 2
-durata = 2
+zoom = 2.0
+durata = 2.0
 durata_ritorno = 1.2
 
-[node name="InArrivo" type="Label" parent="Mondo/Tabellone"]
-visible = false
-z_index = 30
-offset_left = -2.0
-offset_top = -44.0
-offset_right = 38.0
-offset_bottom = -36.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.882353, 0.301961, 1)
-theme_override_font_sizes/font_size = 6
-text = "IN ARRIVO"
+[node name="Posti" type="Node2D" parent="." unique_id=905951789]
 
-[node name="Posti" type="Node2D" parent="."]
-
-[node name="PostoGiornalista" type="Marker2D" parent="Posti"]
+[node name="PostoGiornalista" type="Marker2D" parent="Posti" unique_id=1499121284]
 position = Vector2(584, 190)
 
-[node name="PostoAda" type="Marker2D" parent="Posti"]
+[node name="PostoAda" type="Marker2D" parent="Posti" unique_id=940804549]
 position = Vector2(264, 254)
 
-[node name="PostoStudente" type="Marker2D" parent="Posti"]
+[node name="PostoStudente" type="Marker2D" parent="Posti" unique_id=451366147]
 position = Vector2(264, 254)
 
-[node name="PostoAdaRobot" type="Marker2D" parent="Posti"]
+[node name="PostoAdaRobot" type="Marker2D" parent="Posti" unique_id=412595956]
 position = Vector2(248, 190)
 
-[node name="PostoManifestante" type="Marker2D" parent="Posti"]
+[node name="PostoManifestante" type="Marker2D" parent="Posti" unique_id=338149318]
 position = Vector2(376, 318)
 
-[node name="PostoLeda" type="Marker2D" parent="Posti"]
+[node name="PostoLeda" type="Marker2D" parent="Posti" unique_id=602017106]
 position = Vector2(488, 270)
 
-[node name="PostoAmir" type="Marker2D" parent="Posti"]
+[node name="PostoAmir" type="Marker2D" parent="Posti" unique_id=1629089421]
 position = Vector2(520, 254)
 
-[node name="PostoOlga" type="Marker2D" parent="Posti"]
+[node name="PostoOlga" type="Marker2D" parent="Posti" unique_id=1913791341]
 position = Vector2(168, 302)
 
-[node name="PostoTeo" type="Marker2D" parent="Posti"]
+[node name="PostoTeo" type="Marker2D" parent="Posti" unique_id=1212150788]
 position = Vector2(184, 318)
 
-[node name="PostoAdaSoglia" type="Marker2D" parent="Posti"]
+[node name="PostoAdaSoglia" type="Marker2D" parent="Posti" unique_id=1465907019]
 position = Vector2(296, 190)
 
-[node name="PostoPendolare0" type="Marker2D" parent="Posti"]
+[node name="PostoPendolare0" type="Marker2D" parent="Posti" unique_id=1186415233]
 position = Vector2(424, 254)
 
-[node name="PostoPendolare1" type="Marker2D" parent="Posti"]
+[node name="PostoPendolare1" type="Marker2D" parent="Posti" unique_id=1933997905]
 position = Vector2(440, 254)
 
-[node name="PostoStudenteFolla" type="Marker2D" parent="Posti"]
+[node name="PostoStudenteFolla" type="Marker2D" parent="Posti" unique_id=1901479752]
 position = Vector2(232, 286)
 
-[node name="PostoLavoratore" type="Marker2D" parent="Posti"]
+[node name="PostoLavoratore" type="Marker2D" parent="Posti" unique_id=740658532]
 position = Vector2(344, 286)
 
-[node name="PostoPassante" type="Marker2D" parent="Posti"]
+[node name="PostoPassante" type="Marker2D" parent="Posti" unique_id=673295453]
 position = Vector2(456, 302)
 
-[node name="PostoAltroPassante" type="Marker2D" parent="Posti"]
+[node name="PostoAltroPassante" type="Marker2D" parent="Posti" unique_id=699721973]
 position = Vector2(472, 302)
 
-[node name="PostoCartello0" type="Marker2D" parent="Posti"]
+[node name="PostoCartello0" type="Marker2D" parent="Posti" unique_id=2090577475]
 position = Vector2(232, 318)
 
-[node name="PostoCartello1" type="Marker2D" parent="Posti"]
+[node name="PostoCartello1" type="Marker2D" parent="Posti" unique_id=1450068561]
 position = Vector2(328, 318)
 
-[node name="PostoCartello2" type="Marker2D" parent="Posti"]
+[node name="PostoCartello2" type="Marker2D" parent="Posti" unique_id=991107718]
 position = Vector2(440, 270)
 
-[node name="PostoPancaAda" type="Marker2D" parent="Posti"]
+[node name="PostoPancaAda" type="Marker2D" parent="Posti" unique_id=1188761684]
 position = Vector2(104, 286)
 
-[node name="PostoPancaRina" type="Marker2D" parent="Posti"]
+[node name="PostoPancaRina" type="Marker2D" parent="Posti" unique_id=303617070]
 position = Vector2(120, 286)
 
-[node name="PostoPancaNadir" type="Marker2D" parent="Posti"]
+[node name="PostoPancaNadir" type="Marker2D" parent="Posti" unique_id=2006304006]
 position = Vector2(136, 302)
 
-[node name="PostoAdaUscita" type="Marker2D" parent="Posti"]
+[node name="PostoAdaUscita" type="Marker2D" parent="Posti" unique_id=298778253]
 position = Vector2(264, 174)
 
-[node name="VetrinaRottaNuova" type="Sprite2D" parent="."]
+[node name="VetrinaRottaNuova" type="Sprite2D" parent="." unique_id=463087673]
 visible = false
 z_index = 2
 position = Vector2(530, 118)
 texture = ExtResource("f3_vetrina")
 centered = false
 
-[node name="Cartone" type="Sprite2D" parent="."]
+[node name="Cartone" type="Sprite2D" parent="." unique_id=2146145486]
 visible = false
 z_index = 3
 position = Vector2(530, 118)
 texture = ExtResource("f3_cartone")
 centered = false
 
-[node name="InsegnaEsito" type="Label" parent="."]
+[node name="InsegnaEsito" type="Label" parent="." unique_id=368387619]
 visible = false
 z_index = 30
 offset_left = 224.0
 offset_top = 68.0
 offset_right = 320.0
 offset_bottom = 78.0
-mouse_filter = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 6
 text = "ESITO DELL'ASSEMBLEA"
 horizontal_alignment = 1
 
-[node name="CartelliATerra" type="Node2D" parent="."]
+[node name="CartelliATerra" type="Node2D" parent="." unique_id=620709792]
 visible = false
 
-[node name="Cartello0" type="Sprite2D" parent="CartelliATerra"]
+[node name="Cartello0" type="Sprite2D" parent="CartelliATerra" unique_id=567947667]
 position = Vector2(248, 280)
 rotation = 1.4
 texture = ExtResource("f3_cartello")
 
-[node name="Cartello1" type="Sprite2D" parent="CartelliATerra"]
+[node name="Cartello1" type="Sprite2D" parent="CartelliATerra" unique_id=1529798732]
 position = Vector2(328, 296)
 rotation = 1.7
 texture = ExtResource("f3_cartello")
 
-[node name="Cartello2" type="Sprite2D" parent="CartelliATerra"]
+[node name="Cartello2" type="Sprite2D" parent="CartelliATerra" unique_id=514605931]
 position = Vector2(408, 280)
 rotation = 2.0
 texture = ExtResource("f3_cartello")
 
-[node name="CartelloPremium" type="Sprite2D" parent="."]
+[node name="CartelloPremium" type="Sprite2D" parent="." unique_id=1117678770]
 visible = false
 z_index = 30
 position = Vector2(120, 266)
