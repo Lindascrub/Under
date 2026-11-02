@@ -291,11 +291,12 @@ func _switchable() -> Array[CanvasItem]:
 				return true
 			cur = cur.get_parent()
 		return false
-	for layer_name in ["Pavimento", "Muri", "Decori", "Mondo"]:
+	# anche il bordo bianco delle stanze e i muretti della biglietteria: sono muri anche loro
+	for layer_name in ["Pavimento", "Muri", "Bordo", "MuriBiglietteria", "Decori", "Mondo"]:
 		var layer := get_node_or_null(layer_name)
 		if layer == null:
 			continue
-		var items: Array = [layer] if layer is TileMapLayer else layer.find_children("*", "CanvasItem", true, false)
+		var items: Array = [layer] if layer is TileMapLayer else [layer] + layer.find_children("*", "CanvasItem", true, false)
 		for n in items:
 			if n is CanvasItem and (n as CanvasItem).material == null and not skip.call(n):
 				out.append(n)

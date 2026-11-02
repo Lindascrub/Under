@@ -411,13 +411,15 @@ func _fade_office(animate: bool) -> void:
 	_office_mat.shader = preload("res://shaders/greyscale.gdshader")
 	_office_mat.set_shader_parameter("amount", 0.0 if animate else 1.0)
 	_office_mat.set_shader_parameter("darken", 0.12)
-	for parent_name in ["Pavimento", "Muri", "Mondo", "Decori"]:
+	# come al Fondo: si spegne quello che non ha già un colore suo. Le persone vere tengono il loro
+	# grigio (scripts/looks.gd), i robot i loro colori da poster; anche il bordo bianco diventa grigio.
+	for parent_name in ["Pavimento", "Muri", "Bordo", "Mondo", "Decori"]:
 		var parent := get_node_or_null(parent_name)
 		if not parent: continue
-		var nodes: Array = [parent] if parent is TileMapLayer else parent.find_children("*", "CanvasItem", true, false)
+		var nodes: Array = [parent] if parent is TileMapLayer else [parent] + parent.find_children("*", "CanvasItem", true, false)
 		for n in nodes:
 			if n == player or n.get_parent() == player or player.is_ancestor_of(n): continue
-			if n is CanvasItem and not n is Control:
+			if n is CanvasItem and not n is Control and (n as CanvasItem).material == null and not _is_robot_sprite(n):
 				n.material = _office_mat
 	for name_ in ["PosterSorridi", "PosterModulo", "PosterAttesa"]:
 		var poster := find_child(name_, true, false) as Node2D
@@ -428,6 +430,16 @@ func _fade_office(animate: bool) -> void:
 		var tw := create_tween()
 		tw.tween_method(func(v: float) -> void: _office_mat.set_shader_parameter("amount", v), 0.0, 1.0, 3.0)
 		await tw.finished
+
+
+## Lo sprite di un robot (o un pezzo suo): resta colorato come i poster.
+func _is_robot_sprite(n: Node) -> bool:
+	var cur := n
+	while cur and cur != self:
+		if cur is Npc and GameState.is_robot(str((cur as Npc).id)):
+			return true
+		cur = cur.get_parent()
+	return false
 
 
 ## Riserva gradini, pianerottolo e avvicinamento nel vecchio divisorio dell'archivio.
