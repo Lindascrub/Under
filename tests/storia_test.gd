@@ -455,7 +455,7 @@ func _test_riparazioni() -> void:
 
 ## Ogni scena finale si gioca davvero fino ai titoli di coda (le righe le controllano i test sopra).
 func _test_scene_finali() -> void:
-	for v: Array in [["A", "A1", [0, 5]], ["A", "A3", [5]], ["B", "B1", [0, 0, 5]], ["B", "B2", [0, 0, 5]], ["C", "C1", [5]], ["C", "C2", [5]], ["C", "C3", [5]]]:
+	for v: Array in [["A", "A1", [0, 5]], ["A", "A2", [5]], ["A", "A3", [5]], ["B", "B1", [0, 0, 5]], ["B", "B2", [0, 0, 5]], ["C", "C1", [5]], ["C", "C2", [5]], ["C", "C3", [5]]]:
 		_c6_reset()
 		var f := GameState.flags
 		f["fermo_talked"] = true
@@ -467,6 +467,11 @@ func _test_scene_finali() -> void:
 		c6["final_decision"]["confirmed"] = true
 		c6["final_decision"]["selected"] = v[0]
 		c6["final_decision"]["roles"] = {"conti": "teo", "servizi": "ada", "turni": "leda"} if v[1] != "C3" else {"conti": "teo"}
+		if v[1] == "A2":
+			# A2: le regole sono cambiate davvero (la stampante lo deve dire)
+			var st2: Dictionary = RULES_.new_state()
+			st2["debt_rule"] = "revisione"
+			c6["director_turn"]["state"] = st2
 		c6["outcome"] = {"family": v[0], "variant": v[1], "debt_status": "contestato" if v[1] == "B2" else ("annullato" if v[0] == "A" else "registrato"),
 			"governance_status": "", "engine": 2}
 		choose_queue = v[2]
