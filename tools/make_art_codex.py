@@ -210,7 +210,8 @@ def signs(name,size):
         centered(d,(4,15,w-4,h-2),lines[1:],fg,leading=1)
     elif name=='c6/timbro_annullato.png':
         d.rectangle((3,3,w-4,h-4),outline=CREAM)
-        tiny_type(d,(5,4,w-5,h-4),lines,fg,max_size=12)
+        # il font a pixel del gioco: la PixelifySans, così piccola, faceva la N come una H e usciva dal bordo
+        centered(d,(5,4,w-5,h-4),lines,fg,scale=1 if measure(lines[0],2)>w-10 else 2)
         for x,y in [(6,5),(w-9,6),(10,h-5),(w-16,h-6)]: d.point((x,y),fill=bg)
     else:
         tiny_type(d,box,lines,fg,max_size=12,leading=leading)
