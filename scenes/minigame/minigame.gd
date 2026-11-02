@@ -146,39 +146,21 @@ func _ready() -> void:
 	cfg = GameState.minigame
 	type = str(cfg.get("type", "timing"))
 	Ui.show_hud(false)
-	var bg := ColorRect.new()
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bg.color = Color.BLACK
-	bg.size = Vector2(640, 360)
-	bg.z_index = -10
-	add_child(bg)
-	_title = _label(Vector2(0, 40), 22, YELLOW)
+	# lo sfondo, il titolo e la riga sotto sono nodi di scenes/minigame/minigame.tscn: Titolo e Info,
+	# oppure TitoloPercorso e InfoPercorso (più in alto e più piccoli) per il gioco del percorso
+	var route := type == "route"
+	_title = $TitoloPercorso if route else $Titolo
+	_info = $InfoPercorso if route else $Info
+	for l: Label in [$Titolo, $Info, $TitoloPercorso, $InfoPercorso]:
+		l.visible = l == _title or l == _info
 	_title.text = str(cfg.get("title", "Dai una mano"))
-	if type == "route":
-		_title.position.y = 8
-		_title.add_theme_font_size_override("font_size", 18)
-	_info = _label(Vector2(0, 80), 16, Color.WHITE)
-	if type == "route":
-		_info.position.y = 38
-		_info.add_theme_font_size_override("font_size", 10)
+	_info.text = ""
 	# ogni persona che aiuti ha la sua canzone (campo "music"); le altre, una per tutte
 	Sound.music(str(cfg.get("music", "aiuto")))
 	if Ui.transitioning:
 		await Ui.faded_in
 	await Ui.say(cfg.get("intro", ["* Dai una mano."]))
 	_start()
-
-
-func _label(pos: Vector2, size: int, col: Color) -> Label:
-	var l := Label.new()
-	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	l.position = pos
-	l.size = Vector2(640, size + 10)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", col)
-	add_child(l)
-	return l
 
 
 func _start() -> void:

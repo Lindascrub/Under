@@ -152,15 +152,11 @@ func _ready() -> void:
 	Ui.show_hud(false)
 	# ogni turno ha la sua canzone (il furto del capo, quella del capo)
 	Sound.music(str(JOB_MUSIC.get(game, "lavoro")))
-	var bg := ColorRect.new()
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bg.color = Color("0b0a10")
-	bg.size = Vector2(640, 360)
-	bg.z_index = -10
-	add_child(bg)
-	_title = _label(Vector2(0, 22), 22, YELLOW)
+	# lo sfondo, il titolo e la riga sotto sono nodi di scenes/minigame/work.tscn (Sfondo, Titolo, Info)
+	_title = $Titolo
 	_title.text = str(cfg.get("name", "Il turno"))
-	_info = _label(Vector2(0, 58), 15, Color.WHITE)
+	_info = $Info
+	_info.text = ""
 	if Ui.transitioning:
 		await Ui.faded_in
 	await Ui.say(cfg.get("intro", ["* Si comincia."]))
@@ -177,17 +173,6 @@ func _ready() -> void:
 ## Da 0 (primo turno, piano -5) a 1: cresce con i turni fatti e con il piano.
 static func difficulty() -> float:
 	return clampf(GameState.hard_work * 0.07 + GameState.floor_index(GameState.floor_id) * 0.06, 0.0, 1.0)
-
-
-func _label(pos: Vector2, size: int, col: Color) -> Label:
-	var l := Label.new()
-	l.position = pos
-	l.size = Vector2(640, size + 10)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", col)
-	add_child(l)
-	return l
 
 
 func _rules() -> String:
