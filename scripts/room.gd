@@ -26,6 +26,9 @@ var cam_rect := Rect2()
 @export var camera_lift_riga := 10.0
 ## ...e arriva al massimo dopo queste righe.
 @export var camera_lift_righe := 4.0
+## Durante un dialogo la visuale scende di questi pixel del mondo (con lo zoom 2 a schermo sono il doppio):
+## tu e chi ti parla restate sopra le scelte, che si aprono in basso a destra. 0 = la camera non si muove.
+@export var alza_nei_dialoghi := 24
 ## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
 var music := "quartiere"
 var outdoor := false
@@ -158,9 +161,14 @@ func _process(_delta: float) -> void:
 				var f := (r.end.y - player.position.y) / r.size.y if z["up"] else (player.position.y - r.position.y) / r.size.y
 				shade = maxf(shade, clampf(f, 0.0, 1.0))
 		player.set_shade(shade)
-	if camera_lift > 0 and player and not player.camera.top_level:
-		var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
-		player.camera.offset.y = lerpf(player.camera.offset.y, -camera_lift * t, 0.1)
+	if (camera_lift > 0 or alza_nei_dialoghi > 0) and player and not player.camera.top_level:
+		var want := 0.0
+		if camera_lift > 0:
+			var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
+			want = -camera_lift * t
+		if Ui.busy:
+			want += alza_nei_dialoghi
+		player.camera.offset.y = lerpf(player.camera.offset.y, want, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
 
