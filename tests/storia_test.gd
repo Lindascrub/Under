@@ -19,6 +19,10 @@ func _check(cond: bool, what: String) -> void:
 func _run() -> void:
 	await _test_banca()
 	await _test_citta()
+	await _test_cima()
+	await _test_finali()
+	await _test_riparazioni()
+	await _test_scene_finali()
 	if _failures.is_empty():
 		print("STORIA TEST OK (%d controlli)" % _checks)
 	else:
@@ -224,3 +228,269 @@ func _test_citta() -> void:
 	f["c5_esito"] = "comunitaria"
 	m = await _c5_talk("ada")
 	_check(f.get("offerta_ada", false), "dopo l'assemblea Ada offre la stanza")
+
+
+func _test_cima() -> void:
+	var cima: GDScript = load("res://chapters/c6/cima_c6.gd")
+	# 6.02: le quattro versioni della richiesta
+	var casi := {"direzione": true, "a_mano": true, "archivio": false, "riepilogo": false}
+	for r: String in casi:
+		_c6_reset()
+		var f := GameState.flags
+		if r == "riepilogo":
+			f["c4_riepilogo"] = true
+		else:
+			f["c4_verifica"] = true
+			f["c5_richiesta"] = r
+		_check(Storia.richiesta() == r and cima.verification_done() == casi[r], "Cima: richiesta '%s' (verifica fatta: %s)" % [r, casi[r]])
+	GameState.flags["c4_verifica"] = true
+	GameState.flags["c5_richiesta"] = "archivio"
+	GameState.flags["c4_ricevuta_copia"] = true
+	_check(cima.verification_done(), "Cima: in archivio, ma con la copia di Teo la verifica è fatta")
+	_c6_reset()
+	GameState.flags["c4_verifica"] = true
+	_check(Storia.richiesta() == "direzione", "Cima: richiesta fatta in Banca ma centralino mai visto: è andata alla Direzione")
+	_c6_reset()
+	_check(Storia.richiesta() == "" and not cima.verification_done(), "Cima: vecchio salvataggio, nessuna richiesta inventata")
+
+	# la contestazione: una scelta separata, una volta sola, e solo prima della decisione finale
+	_c6_reset()
+	var m: Room = await _go(Router.CIMA, "desk")
+	m = await _c6_settle()
+	choose_queue = [1]
+	m = await _c6_call(m, "_contest_choice")
+	_check(not GameState.flags.get("c6_contestazione", false), "Cima: 'Non adesso' non contesta")
+	choose_queue = [0]
+	m = await _c6_call(m, "_contest_choice")
+	_check(GameState.flags.get("c6_contestazione", false) and GameState.flags.has("c6_contestazione_seq"), "Cima: contestazione registrata, col suo numero")
+	_check(FINALI_.facts()["contested"] and not FINALI_.facts()["kept_by_choice"], "Cima: i fatti del finale vedono la contestazione")
+	GameState.save_game(Router.CIMA)
+	GameState.new_game()
+	GameState.load_game()
+	_check(GameState.flags.get("c6_contestazione", false), "Cima: la contestazione resta dopo un caricamento")
+
+
+const FINALI_ := preload("res://chapters/c6/finali.gd")
+const ENDING := preload("res://chapters/c6/finale_c6.gd")
+const RULES_ := preload("res://chapters/c6/direzione_regole.gd")
+
+
+## Un finale di prova, senza scena: solo le funzioni che scelgono le righe.
+func _ending(family: String, variant: String, debt := "registrato") -> Node2D:
+	var e: Node2D = ENDING.new()
+	var c6: Dictionary = load("res://chapters/c6/cima_c6.gd").c6()
+	e.set("d", c6)
+	e.set("out", {"family": family, "variant": variant, "debt_status": debt})
+	e.set("sm", FINALI_.effective_summary(family, variant))
+	return e
+
+
+func _offer(id: String) -> void:
+	GameState.flags["met_" + id] = true
+	GameState.flags["offerta_" + id] = true
+	Storia.segna("offerta_" + id)
+
+
+func _test_finali() -> void:
+	var base := {"exploited": 0, "robots": 0, "bonds": 0, "betrayed": 0, "networks": 0, "evidence": 0, "power": false, "roles_filled": 0,
+		"policy": {"wages_up": false, "services_up": false, "maintenance_ok": true, "reserve_ok": true, "debt_rule": "conservare", "casa": ""},
+		"casa_open": false, "improved": false, "rule_changed": false}
+	var x: Dictionary = base.duplicate(true)
+	_check(FINALI_.decide("A", x)["variant"] == "A3", "A: conservare senza alternative aperte: A3")
+	x["kept_by_choice"] = true
+	_check(FINALI_.decide("A", x)["variant"] == "A1", "A: conservare scelto con un'altra regola aperta: A1")
+	x["power"] = true
+	_check(FINALI_.decide("A", x)["variant"] == "A1", "A: l'attribuzione del Capo da sola non sposta A1")
+	x = base.duplicate(true)
+	x["power"] = true
+	_check(FINALI_.decide("A", x)["variant"] == "A3", "A: l'attribuzione del Capo senza la scelta: A3")
+	x = base.duplicate(true)
+	x["bonds"] = 3
+	x["improved"] = true
+	x["rule_changed"] = true
+	x["kept_by_choice"] = true
+	_check(FINALI_.decide("A", x)["variant"] == "A2", "A: A2 viene prima di A1")
+	x = base.duplicate(true)
+	x["evidence"] = 3
+	_check(FINALI_.decide("B", x)["debt_status"] == "registrato" and FINALI_.decide("C", x)["debt_status"] == "registrato", "debito: le prove da sole non lo contestano")
+	x["contested"] = true
+	_check(FINALI_.decide("B", x)["debt_status"] == "contestato" and FINALI_.decide("A", x)["debt_status"] == "annullato", "debito: contestato solo con la contestazione, annullato solo in A")
+
+	# il vero ciclo 3 col salvataggio: debt_other_open passa per il gioco, non per il test
+	_c6_reset()
+	var c6: Dictionary = load("res://chapters/c6/cima_c6.gd").c6()
+	var st: Dictionary = RULES_.new_state()
+	st["debt_rule"] = "revisione"
+	st["debt_other_open"] = true
+	c6["director_turn"]["state"] = st
+	_check(FINALI_.effective_summary("B", "B1")["debt_rule"] == "conservare" and FINALI_.effective_summary("C", "C1")["debt_rule"] == "conservare",
+		"B e C1: la regola adottata ai cicli non vale")
+	_check(FINALI_.effective_summary("A", "A2")["debt_rule"] == "revisione" and FINALI_.effective_summary("C", "C2")["debt_rule"] == "revisione",
+		"A e C2: la regola adottata ai cicli vale")
+	_check(FINALI_.others_debts("B", "B2") == "registrati" and FINALI_.others_debts("C", "C2") == "revisione", "i debiti degli altri seguono la regola che vale")
+	var e := _ending("C", "C2", "in_revisione")
+	_check(e.call("debt_lines") == ["* Il tuo debito: IN REVISIONE.", "* I debiti degli altri: in revisione."], "C2: due righe di debito separate")
+	_check("In revisione" in str(ENDING.printer_line("revisione")) and "0,5%" in str(ENDING.printer_line("interessi")) \
+		and "bacheca" in str(ENDING.printer_line("alternative")) and "fascicolo dopo fascicolo" in str(ENDING.printer_line("conservare")), "la stampante segue la regola")
+	e.free()
+	e = _ending("B", "B1", "contestato")
+	_check(e.call("debt_lines") == ["* Il tuo debito: CONTESTATO.", "* I debiti degli altri: registrati, come prima."], "B: debito contestato, gli altri come prima")
+	e.free()
+	GameState.save_game(Router.FINALE)
+	GameState.new_game()
+	GameState.load_game()
+	_check(bool(FINALI_.turn_state().get("debt_other_open", false)), "la scelta consapevole del ciclo 3 resta dopo un caricamento")
+
+	# B: ogni pezzo dalla sua fonte (nota 2)
+	var b: Dictionary
+	_c6_reset(false)
+	e = _ending("B", "B1")
+	b = e.call("b_lines")
+	_check(b["alone"] and b["sender"] == "" and "Porta una sedia" in str(b["lines"]), "B: niente offerte né legami: la vicina e la sedia")
+	GameState.helped_ids.append("ada")
+	GameState.flags["met_ada"] = true
+	b = e.call("b_lines")
+	_check(not "ti ha trovato" in str(b["lines"]) and "posto letto" in str(b["lines"]) and b["sender"] == "ada", "B: legame senza offerta: niente casa inventata, il messaggio dal legame")
+	_c6_reset(false)
+	_offer("ada")
+	b = e.call("b_lines")
+	_check("ti ha trovato Ada" in str(b["lines"]) and "annuncio cerchiato" in str(b["lines"]) and b["sender"] == "ada", "B: solo casa")
+	_c6_reset(false)
+	_offer("nadir")
+	b = e.call("b_lines")
+	_check("posto letto" in str(b["lines"]) and "turno corto" in str(b["lines"]) and b["sender"] == "nadir", "B: solo lavoro")
+	_c6_reset(false)
+	_offer("rina")
+	_offer("leda")
+	b = e.call("b_lines")
+	_check("ti ha trovato Rina" in str(b["lines"]) and "ordini condivisi" in str(b["lines"]) and b["sender"] == "leda", "B: casa e lavoro da due persone, il messaggio dall'offerta più recente")
+	_c6_reset(false)
+	_offer("fermo")
+	b = e.call("b_lines")
+	_check(not "ti ha trovato" in str(b["lines"]), "B: Fermo non ancora liberato non offre la stanza")
+	GameState.freed.append("fermo")
+	b = e.call("b_lines")
+	_check("ti ha trovato Fermo" in str(b["lines"]) and b["sender"] == "fermo", "B: offerta da un liberato, pochi legami")
+	_c6_reset(false)
+	_offer("leda")
+	GameState.robots.append("leda")
+	b = e.call("b_lines")
+	_check(b["alone"], "B: un robot non offre lavoro")
+	_c6_reset(false)
+	GameState.flags["c4_riepilogo"] = true
+	b = e.call("b_lines")
+	_check("il riepilogo della Banca e un annuncio" in str(b["lines"]), "B1: sul tavolo il riepilogo della Banca")
+	e.free()
+	e = _ending("B", "B1", "contestato")
+	b = e.call("b_lines")
+	_check("CONTESTATO" in str(b["lines"]) and not "riepilogo" in str(b["lines"]), "B: la lettera sul frigo solo se contestato")
+	e.free()
+
+	# C: Fermo nella scena secondo la sua storia
+	_c6_reset(false)
+	_check(ENDING.fermo_state() == "", "C: Fermo mai conosciuto non compare")
+	GameState.flags["fermo_talked"] = true
+	_check(ENDING.fermo_state() == "umano", "C: Fermo alla cyclette")
+	GameState.freed.append("fermo")
+	_check(ENDING.fermo_state() == "libero", "C: Fermo liberato arriva da fuori")
+
+
+func _test_riparazioni() -> void:
+	# Fermo: torto, poi riparazione tornando da lui
+	_c6_reset(false)
+	var f := GameState.flags
+	f["fermo_talked"] = true
+	f["boss_fermo_extra"] = 5
+	Storia.segna("torto_fermo")
+	_check(Storia.torto("fermo") and not Storia.riparato("fermo"), "Fermo: il torto della pausa accorciata")
+	_check(Storia.reazione("fermo", false, false, false) == ["Ah. Pensavo fosse finito. Ancora cinque minuti."], "Fermo: senza aiuto né riparazione, la riga di prima")
+	GameState.helped_ids.append("fermo")
+	Storia.segna("aiuto_fermo")
+	_check(Storia.reazione("fermo", false, false, false) == ["Ah. Pensavo fosse finito. Ancora cinque minuti."], "Fermo: torto poi aiuto: il torto non si dimentica")
+	f["aiuto_fermo_seq"] = int(f["torto_fermo_seq"]) - 1
+	_check("tutte e due le cose" in str(Storia.reazione("fermo", false, false, false)), "Fermo: aiuto poi torto: si ricorda tutte e due")
+	_check(Storia.reazione("fermo", true, true, false) == ["Mi pagate di più per non fermarmi."], "Fermo: lo stipendio più alto da solo non ripara")
+	_check(Storia.reazione("fermo", true, true, true) == [], "Fermo: in C2 con i TURNI la riparazione è la scena")
+	var mins := GameState.minutes
+	choose_queue = [0]
+	_check(await Storia.offer_repair("fermo", "Fermo"), "Fermo: si può coprire il turno")
+	_check(Storia.riparato("fermo") and f.has("riparato_fermo_seq") and GameState.minutes != mins, "Fermo: riparato, col suo numero (e il tempo speso)")
+	_check(Storia.torto("fermo"), "la riparazione non cancella il torto")
+	_check(Storia.reazione("fermo", true, true, false) == ["Quindici minuti. Li conto io."], "Fermo: la riparazione si riconosce")
+	_check(BM.npc_lines("fermo") == ["Quindici minuti. Li conto io."], "Fermo: dopo la riparazione non ripete il torto")
+	_check(not await Storia.offer_repair("fermo", "Fermo"), "Fermo: una riparazione sola")
+
+	# Ercole: serve Tilde, e umana
+	f["boss_ercole_archived"] = true
+	f["met_ercole"] = true
+	_check(not await Storia.offer_repair("ercole", "Ercole"), "Ercole: senza Tilde la procedura non si apre")
+	f["met_tilde"] = true
+	choose_queue = [1]
+	_check(not await Storia.offer_repair("ercole", "Ercole") and not Storia.riparato("ercole"), "Ercole: 'Parla d'altro' non ripara")
+	f["riparazione_chiesta_ercole"] = -1
+	choose_queue = [0]
+	_check(await Storia.offer_repair("ercole", "Ercole") and Storia.riparato("ercole"), "Ercole: nuova procedura con il timbro di Tilde")
+	_check("si può aspettarla" in str(Storia.reazione("ercole", false, false, false)), "Ercole: la riparazione si riconosce")
+
+	# Olga e Rina: le riparazioni sono quelle della loro storia
+	f["boss_news_divisive"] = true
+	_check("Non ho detto di chiudere" in str(Storia.reazione("rina", false, false, false)), "Rina: il montaggio divisivo")
+	f["boss_news_rectified"] = true
+	_check("non con la Casa" in str(Storia.reazione("rina", false, false, false)), "Rina: la rettifica pubblica")
+	f["boss_olga_offer"] = {"visible": false, "total": 130000, "fee": 0, "months": 24}
+	_check(Storia.reazione("olga", false, false, false) == [], "Olga: inganno non corretto: nessuna riga inventata")
+	f["c4_olga_corretta"] = true
+	_check("tutte e due le proposte" in str(Storia.reazione("olga", false, false, false)), "Olga: proposta corretta")
+
+	# le riparazioni valgono in tutti i finali e restano dopo un caricamento
+	GameState.save_game(Router.FINALE)
+	GameState.new_game()
+	GameState.load_game()
+	_check(Storia.riparato("fermo") and Storia.riparato("ercole"), "le riparazioni restano dopo un caricamento")
+	for fv: Array in [["B", "B1"], ["C", "C1"], ["C", "C3"], ["A", "A3"]]:
+		var e := _ending(fv[0], fv[1])
+		_check(e.call("reaction_for", "fermo") == ["Quindici minuti. Li conto io."], "la riparazione di Fermo vale anche in %s" % fv[1])
+		e.free()
+
+
+## Ogni scena finale si gioca davvero fino ai titoli di coda (le righe le controllano i test sopra).
+func _test_scene_finali() -> void:
+	for v: Array in [["A", "A1", [0, 5]], ["A", "A3", [5]], ["B", "B1", [0, 0, 5]], ["B", "B2", [0, 0, 5]], ["C", "C1", [5]], ["C", "C2", [5]], ["C", "C3", [5]]]:
+		_c6_reset()
+		var f := GameState.flags
+		f["fermo_talked"] = true
+		f["boss_fermo_extra"] = 5
+		_offer("rina")
+		_offer("nadir")
+		f["c6_contestazione"] = v[1] == "B2"
+		var c6: Dictionary = load("res://chapters/c6/cima_c6.gd").c6()
+		c6["final_decision"]["confirmed"] = true
+		c6["final_decision"]["selected"] = v[0]
+		c6["final_decision"]["roles"] = {"conti": "teo", "servizi": "ada", "turni": "leda"} if v[1] != "C3" else {"conti": "teo"}
+		c6["outcome"] = {"family": v[0], "variant": v[1], "debt_status": "contestato" if v[1] == "B2" else ("annullato" if v[0] == "A" else "registrato"),
+			"governance_status": "", "engine": 2}
+		choose_queue = v[2]
+		choose_index = 0
+		Router.goto(Router.FINALE)
+		await _wait_scene(Router.FINALE)
+		await _wait_scene(Router.MENU, 180000)
+		await _idle()
+		_check(logic_c6()["completed"], "il finale %s arriva ai titoli di coda" % v[1])
+	# un salvataggio di prima: niente "engine", il finale si ricalcola (A1 non si inventa)
+	_c6_reset()
+	var c6b: Dictionary = load("res://chapters/c6/cima_c6.gd").c6()
+	c6b["final_decision"]["confirmed"] = true
+	c6b["final_decision"]["selected"] = "A"
+	c6b["outcome"] = {"family": "A", "variant": "A1", "debt_status": "annullato", "governance_status": ""}
+	c6b["epilogue"]["step"] = 7
+	choose_queue = [5]
+	choose_index = 0
+	Router.goto(Router.FINALE)
+	await _wait_scene(Router.FINALE)
+	await _wait_scene(Router.MENU, 180000)
+	await _idle()
+	_check(logic_c6()["outcome"]["variant"] == "A3" and logic_c6()["outcome"].get("engine", 0) == 2, "vecchio salvataggio: il finale si ricalcola, niente A1 inventato")
+
+
+func logic_c6() -> Dictionary:
+	return load("res://chapters/c6/cima_c6.gd").c6()

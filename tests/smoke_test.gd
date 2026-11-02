@@ -950,7 +950,7 @@ func _test_chapter6() -> void:
 	m.call("final_choice")
 	await _wait_scene(Router.FINALE)
 	c6 = logic.c6()
-	_check(c6["outcome"]["family"] == "A" and c6["outcome"]["variant"] == "A1" and c6["outcome"]["governance_status"] == "concentrata_totale", "A: sfruttamento, poca collaborazione: l'attico (A1)")
+	_check(c6["outcome"]["family"] == "A" and c6["outcome"]["variant"] == "A3" and c6["outcome"]["governance_status"] == "concentrata_totale", "A: sfruttamento, poca collaborazione, nessuna scelta di conservare: il telefono squilla ancora (A3)")
 	_check(GameState.debt == 0 and c6["debt_cancelled"] and int(c6["debt_before"]) == debt0 and GameState.money == 6000, "34: il debito personale annullato una volta, i soldi restano")
 	var dummy: Node2D = ending.new()
 	dummy.set("d", c6)
@@ -977,7 +977,7 @@ func _test_chapter6() -> void:
 		"policy": {"wages_up": false, "services_up": false, "maintenance_ok": true, "reserve_ok": true, "debt_rule": "conservare", "casa": ""},
 		"casa_open": false, "improved": false, "rule_changed": false}
 	var x: Dictionary = base.duplicate(true)
-	_check(fin.decide("A", x)["variant"] == "A1" and fin.decide("B", x)["variant"] == "B1" and fin.decide("C", x)["variant"] == "C3", "C: con poche relazioni: A1, B1, C3")
+	_check(fin.decide("A", x)["variant"] == "A3" and fin.decide("B", x)["variant"] == "B1" and fin.decide("C", x)["variant"] == "C3", "C: con poche relazioni: A3, B1, C3")
 	_check(fin.decide("", x)["family"] == "B" and fin.decide("Z", x)["variant"] == "B1", "32: una scelta non valida non lascia senza finale")
 	x["bonds"] = 3
 	x["improved"] = true
@@ -986,9 +986,11 @@ func _test_chapter6() -> void:
 	x["roles_filled"] = 2
 	_check(fin.decide("A", x)["variant"] == "A2" and fin.decide("B", x)["variant"] == "B2" and fin.decide("C", x)["variant"] == "C1", "B-E: miglioramenti e legami: A2, B2, C1 (risorse limitate)")
 	x["power"] = true
-	_check(fin.decide("A", x)["variant"] == "A1", "A: con l'attribuzione globale firmata non si cambia da dentro")
+	_check(fin.decide("A", x)["variant"] == "A3", "A: con l'attribuzione globale firmata non si cambia da dentro (A3, non A1)")
 	x["evidence"] = 2
-	_check(fin.decide("B", x)["debt_status"] == "contestato" and fin.decide("A", x)["debt_status"] == "annullato", "B: con le prove il debito si contesta")
+	_check(fin.decide("B", x)["debt_status"] == "registrato", "B: le prove da sole non contestano il debito")
+	x["contested"] = true
+	_check(fin.decide("B", x)["debt_status"] == "contestato" and fin.decide("A", x)["debt_status"] == "annullato", "B: con la contestazione alla Cima il debito è contestato")
 	var all_ok := true
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 6
