@@ -22,7 +22,7 @@ Il codice è tutto in `scripts/memoria_nives.gd` (`MemoriaNives`). Le scene lo c
 | Banca, scale, dopo la ricevuta | "Tienila." / "Servirà?" in ogni partita; dopo un finale, la domanda della rivelazione | `banca_c4.gd` `_nives_receipt` |
 | Finale, epilogo di Nives | dopo la prima partita conclusa: "Questa me la ricorderò." / "Anche se ricomincio?" / "Anche." | `finale_c6.gd` `nives_scene` → `epilogue` |
 | Finale, passo 8 (titoli di coda) | il finale si scrive nella memoria | `finale_c6.gd` `run` → `record` |
-| Menu | importa un vecchio salvataggio finito; voce "Dimentica le partite" | `main_menu.gd` |
+| Menu | importa un vecchio salvataggio finito; nelle Impostazioni della schermata iniziale, "Dimentica le partite" | `main_menu.gd`, `ui.gd` `settings_menu` → `forget_dialog` |
 
 ## Allo sportello: un ricordo per volta
 
@@ -90,7 +90,7 @@ Le regole:
 - Un vecchio salvataggio senza numero diventa `legacy` quando si carica. Se era già arrivato ai titoli di coda
   (`chapter_6.completed` con la variante), il menu lo importa una volta (solo se la memoria non esiste ancora).
   Se non era finito, non si inventa niente. L'ordine delle azioni di partite vecchie non si ricostruisce.
-- **Dimentica le partite** (menu, solo se c'è qualcosa da dimenticare): due conferme, poi la memoria è vuota.
+- **Dimentica le partite** (Impostazioni della schermata iniziale, solo se c'è qualcosa da dimenticare): due conferme, poi la memoria è vuota.
   Il salvataggio resta. Una partita già finita nel salvataggio non torna nella memoria, nemmeno rivedendone i titoli.
 - I test usano un file accanto al loro salvataggio (`<salvataggio>_memoria.json`): la memoria vera non si legge
   e non si tocca.

@@ -134,6 +134,7 @@ Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'
 | `aiuto_ada` | Minigiochi di Ada | He Will Never Be The Ape |
 | `aiuto_nadir` | Minigiochi di Nadir | He Will Never Be The Ape |
 | `aiuto` | Minigiochi d'aiuto della versione precedente | He Will Never Be The Ape |
+| `titolo` | Schermata iniziale | Frosty Laboratory |
 | `epilogo` | Epiloghi e titoli | Long Journey, Holy Sanctuary, Melancholic Bittersweet Groovy Cave Journey |
 | `notte` | La notte | NightTownWaltz |
 | `nives` | Nives | Lively City |

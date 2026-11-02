@@ -29,7 +29,15 @@ Tre strade, cioè tre sistemi economici: **capitalismo** (sfrutti e sali di LV),
 | Frecce / WASD | Muoversi |
 | Z / Invio / Spazio | Parlare, interagire, confermare |
 | X / Shift | Correre, saltare il testo |
-| C | Stato e oggetti (ore rimaste, energia, caffè di Nico) |
+| C | Stato e oggetti (ore rimaste, energia, caffè di Nico), e le Impostazioni |
+| F11 | Schermo intero (sul computer) |
+
+Le **Impostazioni** (dal menu iniziale o con C) cambiano il volume di musica ed effetti e lo schermo intero; dal
+menu iniziale c'è anche "Dimentica le partite" (la memoria di Nives). Si salvano in `user://impostazioni.cfg`.
+Nel menu iniziale ci sono anche i **Comandi** (i tasti disegnati; non sul telefono) e i **Crediti**.
+I tasti disegnati vengono dal pacchetto *gdb-gamepad-2* (cartella `ui` accanto al progetto) e non sono nel
+repository: `python tools/make_tasti.py "<cartella>/gdb-keyboard-2.png"` crea `assets/ui/tasti.png`.
+Senza, la pagina disegna dei tasti semplici con la scritta.
 
 ## Comandi touch (telefono)
 
@@ -70,6 +78,16 @@ I dialoghi delle persone sono in `data/npcs.json`, gli incarichi in `data/jobs.j
 
 ## Crediti
 
-- Grafica: [LimeZu](https://limezu.itch.io/) (Modern Interiors, Modern Exteriors).
-- Font: [Pixelify Sans](https://github.com/eifetx/Pixelify-Sans), licenza SIL Open Font License (`fonts/OFL.txt`).
-- Musica ed effetti sonori: generati da `tools/make_audio.py`.
+Gli stessi del gioco (voce **Crediti** del menu e titoli di coda), scritti in `data/crediti.json`.
+
+- Grafica: [LimeZu](https://limezu.itch.io/) (Modern Interiors, Modern Exteriors, Character Generator);
+  [Emanuelle](https://emanuelledev.itch.io/farm-rpg) (Tiny Farm RPG, i prodotti del mercato);
+  [greatdocbrown](https://greatdocbrown.itch.io/gamepad-ui) (Gamepad UI, i tasti della pagina Comandi).
+- Musica: [The Bishop](https://itsthebishop.itch.io/freeloopablemusic) (Free Loopable Music, CC0);
+  [HydroGene](https://hydrogene.itch.io/high-quality-16-bit-music) (28 High Quality 16-bit RPG Music);
+  [Abstraction](https://abstractionmusic.com/) ([Music Loop Bundle](https://tallbeard.itch.io/music-loop-bundle), CC0),
+  con *Jester's Distraction* di Dani Maccari.
+- Caratteri: [Pixeloid Sans](https://ggbot.net/fonts/) di GGBotNet (`fonts/OFL-Pixeloid.txt`) e
+  [Silkscreen](https://github.com/googlefonts/silkscreen) (`fonts/OFL-Silkscreen.txt`), licenza SIL Open Font License.
+- Effetti sonori (e le musiche di riserva): generati da `tools/make_audio.py`.
+- Motore: [Godot Engine](https://godotengine.org/), licenza MIT.

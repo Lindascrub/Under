@@ -109,6 +109,12 @@ Queste stanze sono scene vere: si aprono in Godot e si sistemano trascinando i n
   `margine_scelte`) e lo `spazio_dopo_ritratto`. Le scelte si allargano da sole secondo le frasi.
 - **La schermata del titolo** è `scenes/main_menu.tscn`: `Titolo`, `Sottotitolo`, `Voci`, `Persone`,
   `Crediti` e `SceltaNome` (nascosta: `Velo`, `Domanda`, `Campo`, `Ok`, `Risposta`).
+- **Le pagine Comandi e Crediti** (voci del menu iniziale) sono `scenes/comandi.tscn` e `scenes/crediti.tscn` (il testo dei crediti è in `data/crediti.json`). Comandi: `Velo`, `Riquadro`, `Titolo`,
+  `Riga1`...`Riga5` (in ognuna i tasti, nodi `Tasto`, e `Cosa` fanno) e `Indietro`. Di un `Tasto` si
+  cambiano `regione` (quale pezzo di `assets/ui/tasti.png`), `scritta` (se il foglio manca) e la grandezza.
+- **I manifesti sulla parete** (`world/wall_notice.gd`, per esempio `PosterModulo` al -4): in `righe` si
+  scrive il testo (vuoto = quello del tipo), in `carattere` la grandezza; se una riga non ci sta, il
+  carattere si rimpicciolisce da solo.
 - **I minigiochi**: in `scenes/minigame/work.tscn` (i turni) e `scenes/minigame/minigame.tscn` (gli aiuti)
   ci sono `Sfondo`, `Titolo` e `Info`; negli aiuti anche `TitoloPercorso` e `InfoPercorso` (quelli del
   gioco del percorso di Amir). Il gioco vero e proprio (la cassa, i telefoni, i fili...) è ancora

@@ -6,8 +6,9 @@ extends "res://tests/storia_test.gd"
 ##   Godot --path . res://tests/schermate_test.tscn -- --out=<cartella>            (PC)
 ##   Godot --path . res://tests/schermate_test.tscn -- --touch --size=1600x720 --out=<cartella>   (telefono 20:9)
 ## --size cambia la finestra da dentro il gioco: --resolution più grande dello schermo viene ridotta da Windows.
-## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives  (tocco: joystick e pulsanti mentre si cammina,
-## e lo schermo della Direzione col dito; con --touch. nives: la memoria di Nives e il nome)
+## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives,impostazioni  (tocco: joystick e pulsanti mentre si
+## cammina, e lo schermo della Direzione col dito; con --touch. nives: la memoria di Nives e il nome.
+## impostazioni: il menu, la pagina dei comandi, il manifesto dei moduli e la telefonata lunga del -4)
 
 const VIEW := Rect2(0, 0, 640, 360)
 
@@ -58,6 +59,9 @@ func _run() -> void:
 	if _want("nives"):
 		_section = "nives"
 		await _test_nives()
+	if _want("impostazioni"):
+		_section = "impostazioni"
+		await _test_impostazioni()
 	if _want("citta"):
 		print("SCHERMATE: in Città raggiunti camminando %d; non raggiunti: %s; OK non arriva: %s" % [_camminate, str(_non_raggiunti), str(_ok_non_arriva)])
 	if _min_row < 1000.0:
@@ -185,6 +189,111 @@ func _to_booth(m: Room) -> void:
 		m.player.call("face", "up")
 	for i in 30:
 		await get_tree().process_frame
+
+
+## Le impostazioni e due cose da vedere bene: il manifesto del -4 e la chiamata più lunga del call center.
+## Il pilota automatico dei dialoghi è fermo (set_process), così il menu resta aperto per la foto.
+## Non cambia niente: lo schermo intero e i volumi veri restano come sono.
+func _test_impostazioni() -> void:
+	Router.goto(Router.MENU)
+	await _wait_scene(Router.MENU)
+	await _idle()
+	await _still("titolo")
+	_check(Sound.get("_music_name") == "titolo", "nella schermata iniziale non c'è la musica del titolo")
+	set_process(false)
+	Ui.settings_menu()
+	await _still("menu")
+	_check_ui()
+	var opts: Array = Ui.get("_options")
+	_check(not opts.is_empty() and str(opts[-1]) == "Fatto", "le impostazioni finiscono con Fatto: %s" % str(opts))
+	Ui.emit_signal("_chosen", opts.size() - 1)
+	await get_tree().process_frame
+	for nome: String in ["Comandi", "Crediti"]:
+		Ui.show_page(Ui.COMANDI if nome == "Comandi" else Ui.CREDITI)
+		await _still(nome)
+		var page := Ui.get_node_or_null(nome)
+		_check(page != null, "la pagina %s non si apre" % nome)
+		if page:
+			for l: Label in page.find_children("*", "Label", true, false):
+				_check(l.get_line_count() * l.get_line_height() <= l.size.y + 2, "%s: la scritta \"%s\" non sta nel suo spazio" % [nome, l.text.left(30)])
+			page.emit_signal("chiuso")
+		await get_tree().process_frame
+	_check(not Ui.busy, "dopo i comandi il gioco resta bloccato")
+	# lo schermo intero si accende e si spegne (senza salvarlo nelle impostazioni vere)
+	_check(InputMap.has_action("fullscreen"), "manca il tasto F11 per lo schermo intero")
+	var was := Controls.is_fullscreen()
+	Controls._apply_fullscreen(true)
+	await _idle()
+	_check(Controls.is_fullscreen(), "lo schermo intero non si accende")
+	Controls._apply_fullscreen(was)
+	await _idle()
+	_check(Controls.is_fullscreen() == was, "lo schermo intero non si spegne")
+	set_process(true)
+
+	_section = "impostazioni_manifesto"
+	_legacy_new_game()
+	var m: Room = await _go(Router.SOTTOUFFICIO)
+	await _idle()
+	var poster := m.find_child("PosterModulo", true, false) as Node2D
+	m.player.global_position = poster.global_position + Vector2(36, 18)
+	m.player.call("face", "up")
+	await _still("manifesto")
+	# l'addetta che esce dallo sportello: il banco resta davanti a lei
+	var booth := m.find_child("SportelloBadge", true, false)
+	if booth:
+		booth.call("walk_to", (booth as Node2D).to_global(Vector2(72, -18)))
+		for k in 3:
+			for i in 9:
+				await get_tree().process_frame
+			_shot("addetta_cammina_%d" % k)
+		await _idle()
+		await booth.call("go_inside")
+		await _still("addetta_tornata")
+
+	# un dialogo in fondo alla stanza: la camera scende un po', ma non oltre il pavimento
+	_section = "impostazioni_dialogo_in_fondo"
+	GameState.flags["c1_arrivo"] = true
+	m = await _go(Router.FONDO)
+	await _idle()
+	var cam := m.player.camera
+	m.player.global_position.y = cam.limit_bottom - 20
+	m.player.call("face", "down")
+	for i in 60:
+		await get_tree().process_frame
+	_check(m.player.global_position.y > cam.limit_bottom - 48, "il giocatore non è arrivato in fondo alla stanza")
+	set_process(false)
+	Ui.say(["...Oh. Un'altra persona."], "Fermo")
+	await _still("fermo")
+	var half := get_viewport().get_visible_rect().size.y / (2.0 * cam.zoom.y)
+	var below := cam.get_screen_center_position().y + half - cam.limit_bottom
+	_check(below <= 1.0, "nel dialogo la camera va oltre il fondo della stanza di %.0f px" % below)
+	Ui.emit_signal("_advance")
+	set_process(true)
+	await _idle()
+
+	_section = "impostazioni_telefonata"
+	set_process(false)
+	GameState.minigame = {"kind": "work", "game": "helpdesk", "name": "Prova", "pay": 100,
+		"intro": ["* Prova."], "return": Router.FONDO}
+	Router.goto(Router.WORK)
+	await _wait_scene(Router.WORK)
+	var w := get_tree().current_scene
+	for i in 600:
+		if w.get("phase") == "play":
+			break
+		if Ui.busy and i % 3 == 0:
+			_tap("confirm")
+		await get_tree().process_frame
+	var calls: Array = w.get("CALLS")
+	w.set("hd_call", calls[-1])
+	w.set("hd_order", [0, 2, 1])
+	w.set("hd_t", 60.0)
+	w.set("time_left", 8.0)
+	w.set("hd_phase", "talk")
+	await _still("chiamata_lunga")
+	w.set("time_left", 0.0)
+	set_process(true)
+	await _idle()
 
 
 func _still(what: String) -> void:
