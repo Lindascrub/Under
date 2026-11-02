@@ -1455,7 +1455,7 @@ metadata/facing = "down"
 [node name="Inquadrature" type="Node2D" parent="."]
 
 [node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
-position = Vector2(280, 112)
+position = Vector2(190, 112)
 script = ExtResource("inq_script")
 zoom = 1.875
 durata = 3.5

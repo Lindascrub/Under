@@ -130,7 +130,7 @@ func face(dir: String) -> void:
 
 ## Cerca la cosa più vicina davanti al giocatore (gruppo "interactable", metodo hotspot()).
 func _find_target() -> Node:
-	var probe := global_position + Vector2(0, -6) + (FACING_VECTORS[facing] as Vector2) * 12.0
+	var probe := global_position + Vector2(0, -6) + (FACING_VECTORS[facing] as Vector2) * 6.0
 	var best: Node = null
 	var best_d := 16.0
 	for n in get_tree().get_nodes_in_group("interactable"):

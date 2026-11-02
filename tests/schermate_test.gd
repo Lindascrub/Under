@@ -6,9 +6,10 @@ extends "res://tests/storia_test.gd"
 ##   Godot --path . res://tests/schermate_test.tscn -- --out=<cartella>            (PC)
 ##   Godot --path . res://tests/schermate_test.tscn -- --touch --size=1600x720 --out=<cartella>   (telefono 20:9)
 ## --size cambia la finestra da dentro il gioco: --resolution più grande dello schermo viene ridotta da Windows.
-## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives,impostazioni  (tocco: joystick e pulsanti mentre si
+## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives,impostazioni,fondo,mercato  (tocco: joystick e pulsanti mentre si
 ## cammina, e lo schermo della Direzione col dito; con --touch. nives: la memoria di Nives e il nome.
-## impostazioni: il menu, la pagina dei comandi, il manifesto dei moduli e la telefonata lunga del -4)
+## impostazioni: il menu, la pagina dei comandi, il manifesto dei moduli e la telefonata lunga del -4;
+## fondo: il Fondo grigio e lo sguardo indietro; mercato: la strada buona giocata coi tasti, fino alla Banca)
 
 const VIEW := Rect2(0, 0, 640, 360)
 
@@ -62,6 +63,12 @@ func _run() -> void:
 	if _want("impostazioni"):
 		_section = "impostazioni"
 		await _test_impostazioni()
+	if _want("fondo"):
+		_section = "fondo"
+		await _test_fondo_grigio()
+	if _want("mercato"):
+		_section = "mercato"
+		await _test_mercato_buono()
 	if _want("citta"):
 		print("SCHERMATE: in Città raggiunti camminando %d; non raggiunti: %s; OK non arriva: %s" % [_camminate, str(_non_raggiunti), str(_ok_non_arriva)])
 	if _min_row < 1000.0:
@@ -302,6 +309,179 @@ func _still(what: String) -> void:
 	_shot(what)
 
 
+## Il Fondo dopo la rivelazione: anche la biglietteria è grigia (Nives no), e lo sguardo indietro
+## inquadra solo la festa, senza la stanza dei ticket.
+func _test_fondo_grigio() -> void:
+	GameState.flags["c1_arrivo"] = true
+	GameState.flags["c1_rivelazione"] = true
+	var m: Room = await _go(Router.FONDO)
+	await _idle()
+	var booth := m.find_child("SportelloBadge", true, false)
+	m.player.global_position = (booth as Node2D).global_position + Vector2(40, 40)
+	await _still("biglietteria_grigia")
+	_check(booth.get_node("Parete").material != null, "la biglietteria del Fondo dovrebbe diventare grigia")
+	_check(booth.get_node("Addetta").material == null, "Nives non dovrebbe diventare grigia")
+	for id in ["fermo", "mina", "bulbo"]:
+		GameState.flags["svelato_" + id] = true
+	GameState.flags["c1_sbarrato"] = false
+	m.call("look_back", m.player, "Prova.", "CAPITOLO 2", "IL SOTTOUFFICIO", Router.SOTTOUFFICIO, "from_below", [])
+	await get_tree().create_timer(3.8).timeout
+	set_process(false)
+	_shot("sguardo_indietro")
+	var cam := m.player.camera
+	var right := cam.get_screen_center_position().x + get_viewport().get_visible_rect().size.x / (2.0 * cam.zoom.x)
+	_check(right <= 368.0, "lo sguardo indietro mostra la stanza dei ticket (bordo destro %.0f)" % right)
+	set_process(true)
+	await _wait_scene(Router.SOTTOUFFICIO)
+	await _idle()
+
+
+## true: i minigiochi si giocano coi tasti, come una persona (non si vincono da soli)
+var _gioca_davvero := false
+
+
+## Il Mercato dalla strada buona, senza lavorare: si cammina fino a Leda e ad Amir, si giocano davvero
+## SCATOLE E SCAFFALI e L'ULTIMA CONSEGNA, Nives regala il badge, si salgono le scale.
+func _test_mercato_buono() -> void:
+	GameState.new_game()
+	GameState.badges.assign(["-4", "-3"])
+	GameState.minutes = GameState.DAY_START
+	_gioca_davvero = true
+	var m: Room = await _go(Router.MERCATO, "from_below")
+	await _idle()
+	await _still("arrivo")
+	# Leda: "Hai bisogno di aiuto?", poi "Dai una mano"
+	choose_queue = [1, 0]
+	m = await _parla(m, "leda")
+	await _gioca_inventario()
+	m = await _torna(Router.MERCATO)
+	_check(GameState.flags.get("c3_leda_inventario", false), "mercato: l'inventario di Leda giocato davvero non è riuscito")
+	# Amir: "Dai una mano"
+	choose_queue = [0]
+	m = await _parla(m, "amir")
+	await _gioca_consegne()
+	m = await _torna(Router.MERCATO)
+	_check(GameState.flags.get("c3_amir_bonus", false), "mercato: le consegne giocate davvero non hanno dato il bonus")
+	# Amir racconta il sogno
+	m = await _parla(m, "amir")
+	# Nives: la prima volta saluta, la seconda il badge cade dal cassetto ("Raccoglilo")
+	await _to_booth(m)
+	m.player.call("face", "up")
+	await _ok()
+	choose_queue = [0]
+	await _to_booth(m)
+	m.player.call("face", "up")
+	await _ok()
+	_check(GameState.has_badge("-2") and str(GameState.flags.get("c3_badge", "")) == "regalo", "mercato: Nives non ha regalato il badge")
+	_check(int(GameState.flags.get("c3_turni", 0)) == 0, "mercato: nella strada buona non si dovrebbe lavorare")
+	await _still("col_badge")
+	# le scale: si sale tenendo premuto su
+	var st := m.find_child("ScaleSu", true, false) as Node2D
+	# _walk si ferma 16 px a sinistra del punto: così arriva proprio sotto il primo gradino
+	var step := st.get_node("PrimoGradino") as Node2D
+	await _walk(m, step.global_position + Vector2(16, 20))
+	# in mezzo al tornello: un passo a destra o a sinistra, con le frecce
+	var mid := step.global_position.x + 16.0
+	var k := 0
+	while absf(m.player.global_position.x - mid) > 1.5 and k < 120:
+		_press("move_right", m.player.global_position.x < mid)
+		_press("move_left", m.player.global_position.x > mid)
+		await get_tree().physics_frame
+		k += 1
+	_press("move_right", false)
+	_press("move_left", false)
+	_press("move_up", true)
+	var n := 0
+	while _scene_path() == Router.MERCATO and n < 8000:
+		await get_tree().process_frame
+		n += 1
+		_press("move_up", not (Ui.busy or Ui.cutscene or Ui.transitioning))
+	_press("move_up", false)
+	if _scene_path() == Router.MERCATO:
+		_shot("bloccato_alle_scale")
+		_fail("mercato: salendo le scale non si arriva alla Banca (giocatore a %s)" % str(m.player.global_position))
+		_gioca_davvero = false
+		return
+	await _wait_scene(Router.BANCA, 60000)
+	await _idle()
+	await _still("banca")
+	_gioca_davvero = false
+
+
+## Cammina fino alla persona e preme OK, come nel gioco.
+func _parla(m: Room, id: String) -> Room:
+	await _walk_to_target(m, "", [], id)
+	await _ok()
+	return get_tree().current_scene as Room
+
+
+func _ok() -> void:
+	_tap("confirm")
+	await get_tree().process_frame
+	await _idle()
+	for i in 20:
+		await get_tree().process_frame
+
+
+func _torna(path: String) -> Room:
+	await _wait_scene(path, 60000)
+	await _idle()
+	return get_tree().current_scene as Room
+
+
+func _in_gioco() -> Node:
+	await _wait_scene(Router.MINIGAME, 60000)
+	var g := get_tree().current_scene
+	while g.get("phase") != "play" or Ui.busy:
+		await get_tree().process_frame
+	return g
+
+
+## SCATOLE E SCAFFALI: legge il prodotto e lo porta sul suo scaffale con le frecce.
+func _gioca_inventario() -> void:
+	var g := await _in_gioco()
+	_shot("scatole_inizio")
+	var guard := 0
+	while g.get("phase") == "play" and guard < 80:
+		guard += 1
+		var q: Array = g.get("inv_queue")
+		if q.is_empty():
+			break
+		var want := int((q[0] as Array)[1])
+		while int(g.get("inv_sel")) != want:
+			_tap("move_right")
+			await get_tree().create_timer(0.12).timeout
+		await get_tree().create_timer(0.2).timeout
+		_tap("confirm")
+		await get_tree().create_timer(0.25).timeout
+		if guard == 4:
+			_shot("scatole_meta")
+	_check(int(g.get("misses")) == 0, "scatole e scaffali: errori %d" % int(g.get("misses")))
+
+
+## L'ULTIMA CONSEGNA: le strade sicure, senza cantiere (si arriva giusti col tempo).
+func _gioca_consegne() -> void:
+	var g := await _in_gioco()
+	_shot("consegne_inizio")
+	# mattina: magazzino, Scala B, Piazza, Via dei Fiori. Pomeriggio: magazzino, Scuola, Via Roma, Ospedale
+	for tappa: Array in [[2, 5, 4], [2, 5, 6]]:
+		for dest: int in tappa:
+			while float(g.get("rt_k")) < 1.0:
+				await get_tree().process_frame
+			var nb: Array = g.call("_rt_neighbors", int(g.get("rt_at")))
+			var want := nb.find(dest)
+			while int(g.get("rt_sel")) != want:
+				_tap("move_right")
+				await get_tree().create_timer(0.12).timeout
+			await get_tree().create_timer(0.2).timeout
+			_tap("confirm")
+			await get_tree().create_timer(0.3).timeout
+		_shot("consegne_fine_giro")
+	while g.get("phase") == "play":
+		await get_tree().process_frame
+	_check(int(g.get("rt_total")) == 6, "l'ultima consegna: pacchi %d su 6" % int(g.get("rt_total")))
+
+
 ## La Presidente, la prima volta, con le quattro richieste (arrivata, a mano, archiviata, nessuna).
 func _test_presidente() -> void:
 	for r: String in ["direzione", "a_mano", "archivio", "riepilogo"]:
@@ -351,6 +531,8 @@ func _process(delta: float) -> void:
 			_shot(_label_for_ui())
 			_check_ui()
 	elif scene and scene.scene_file_path == Router.FINALE and _finale_label(scene):
+		return
+	elif _gioca_davvero and scene and scene.scene_file_path == Router.MINIGAME:
 		return
 	super(delta)
 	if scene and scene.scene_file_path == Router.FINALE:

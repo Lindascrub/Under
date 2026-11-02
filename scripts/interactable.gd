@@ -8,7 +8,7 @@ var action: Callable
 @export var approach := Vector2.ZERO
 ## Area visibile relativa al nodo: permette di toccare anche il fianco di un mobile.
 @export var interaction_bounds := Rect2()
-@export var reach := 14.0
+@export var reach := 8.0
 @export var facing_required := ""
 
 

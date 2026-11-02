@@ -280,13 +280,15 @@ func _first_talk() -> void:
 
 # --- la rivelazione: i colori li fai tu ------------------------------------------
 
-## Le cose della festa che si spengono: tutto tranne le cose finte (la cyclette, lo sportello),
-## Fermo (già grigio) e il giocatore.
+## Le cose della festa che si spengono: tutto tranne le cose finte (la cyclette),
+## Fermo (già grigio), l'addetta dei badge e il giocatore. La biglietteria si spegne anche lei.
 func _switchable() -> Array[CanvasItem]:
 	var out: Array[CanvasItem] = []
 	var skip := func(n: Node) -> bool:
 		var cur := n
 		while cur and cur != self:
+			if cur is BadgeBoothScript:
+				return n == cur.get("clerk")
 			if cur == player or cur.has_meta("finto") or str(cur.name) in ["CycletteDinamo", "Fermo"]:
 				return true
 			cur = cur.get_parent()

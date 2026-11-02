@@ -414,6 +414,8 @@ func _inv_place(k: int) -> void:
 		inv_msg = ""
 		Sound.sfx("coin", 1.1 + inv_done * 0.04)
 		if inv_queue.is_empty():
+			# il contatore in alto si aggiorna solo mentre si gioca: l'ultimo prodotto lo scrive qui
+			_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done, misses, int(cfg.get("misses", 3))]
 			_finish(true)
 	else:
 		misses += 1

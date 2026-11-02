@@ -220,6 +220,8 @@ func _stamp(who: String) -> void:
 	Sound.sfx("stamp")
 	await Ui.say(["* TUM. Il timbro scende sul B-4, al centro, un po' storto.",
 		"Ecco fatto! Il B-4 lo tengo io: deve restare agli atti. Lei vada pure allo sportello dei badge."], who)
+	# se hai già aiutato tutti, Nives arriva subito col badge (senza aspettare di rientrare nel piano)
+	await _floor_gift()
 
 
 ## Lo sportello dei badge vende il badge del Mercato solo col B-4 timbrato.
