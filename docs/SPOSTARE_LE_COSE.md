@@ -98,6 +98,20 @@ Queste stanze sono scene vere: si aprono in Godot e si sistemano trascinando i n
   e in quante righe arriva in cima). Il Fondo ha anche `scossa_forza`, `scossa_colpo` e `scossa_durata`
   (quando crolla l'ascensore); il Sottoufficio `camera_spazio_sopra`.
 
+## L'interfaccia
+
+- **Il riquadro dei dialoghi e l'HUD** sono la scena `autoload/ui.tscn`: `Hud` (la riga in alto),
+  `TurnoDiOggi`, `Riquadro` (con `Nome`, `Ritratto`, `Testo`), `Scelte` (con `Righe`), `Buio` (le
+  dissolvenze) e `Narrazione` (il testo sul nero). Nell'Inspector della radice: `velocita_scrittura`,
+  i colori della riga del turno, dove stanno le scelte (`angolo_scelte`, `altezza_riga_scelte`,
+  `margine_scelte`) e lo `spazio_dopo_ritratto`. Le scelte si allargano da sole secondo le frasi.
+- **La schermata del titolo** è `scenes/main_menu.tscn`: `Titolo`, `Sottotitolo`, `Voci`, `Persone`,
+  `Crediti` e `SceltaNome` (nascosta: `Velo`, `Domanda`, `Campo`, `Ok`, `Risposta`).
+- **I minigiochi**: in `scenes/minigame/work.tscn` (i turni) e `scenes/minigame/minigame.tscn` (gli aiuti)
+  ci sono `Sfondo`, `Titolo` e `Info`; negli aiuti anche `TitoloPercorso` e `InfoPercorso` (quelli del
+  gioco del percorso di Amir). Il gioco vero e proprio (la cassa, i telefoni, i fili...) è ancora
+  disegnato dallo script.
+
 Griglia consigliata: nel menu della vista 2D, *Snap* attivo con passo 16x16 (una casella).
 
 ## Cose da sapere
