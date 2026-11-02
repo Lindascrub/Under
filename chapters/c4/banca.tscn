@@ -8146,39 +8146,39 @@ position = Vector2(1.5, -3.5)
 shape = SubResource("RectangleShape2D_mobile_9x7")
 
 [node name="SedutoAttesa0" type="AnimatedSprite2D" parent="Mondo" unique_id=1711575145]
-z_index = 1
 position = Vector2(258, 251)
 sprite_frames = SubResource("SpriteFrames_p06lg")
-animation = &"idle_down"
+animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
 sheet = "rpg_vx1_6"
+anim = "idle_up"
 nudge = Vector2(0, 3)
 
 [node name="SedutoAttesa1" type="AnimatedSprite2D" parent="Mondo" unique_id=1381905710]
-z_index = 1
 position = Vector2(365, 251)
 sprite_frames = SubResource("SpriteFrames_882de")
-animation = &"idle_down"
+animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
 sheet = "rpg_vx1_7"
+anim = "idle_up"
 nudge = Vector2(0, 3)
 
 [node name="SedutoAttesa2" type="AnimatedSprite2D" parent="Mondo" unique_id=589818652]
-z_index = 1
 position = Vector2(426, 251)
 sprite_frames = SubResource("SpriteFrames_iyeh5")
-animation = &"idle_down"
+animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
 sheet = "rpg_vx1_8"
+anim = "idle_up"
 nudge = Vector2(0, 3)
 
 [node name="SedutoSala0" type="AnimatedSprite2D" parent="Mondo" unique_id=970445931]
