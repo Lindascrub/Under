@@ -88,6 +88,7 @@ func _advance() -> void:
 
 func run() -> void:
 	if d["completed"]:
+		MemoriaNives.record(out, sm)
 		await _credits()
 		return
 	while _step() <= 8:
@@ -105,6 +106,8 @@ func run() -> void:
 				d["completed"] = true
 				d["epilogue"]["completed"] = true
 				GameState.save_game(SELF)
+				# arrivati ai titoli di coda: adesso, e solo adesso, Nives se lo ricorda
+				MemoriaNives.record(out, sm)
 				await _credits()
 				return
 		_advance()
@@ -709,6 +712,8 @@ func nives_scene() -> void:
 		_:
 			await Ui.say(["* Nives è al banco dei badge. Come sempre. Quasi."])
 	await Ui.say(["Sai…", "Per anni ho pensato che il mio lavoro fosse aprire le porte.", "Poi ho cominciato a chiedermi perché fossero chiuse."], NIVES)
+	# dalla seconda partita conclusa in poi
+	await MemoriaNives.epilogue(out)
 	(d["epilogue"]["seen_character_ids"] as Array).append("nives")
 	_clear()
 

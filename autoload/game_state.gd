@@ -157,6 +157,8 @@ func new_game() -> void:
 	helped_today.clear()
 	flags.clear()
 	flags["boss_missions_version"] = 2
+	# il numero della partita (per la memoria di Nives): lo dà il menu con "Nuova partita"
+	flags["run_id"] = ""
 	minigame.clear()
 	quests.clear()
 	freed.clear()
@@ -885,6 +887,9 @@ func load_game() -> Dictionary:
 	helped_today.assign(d.get("helped_today", []))
 	worked_today = bool(d.get("worked_today", false))
 	flags = d.get("flags", {})
+	# un salvataggio di prima della memoria di Nives: è una partita sola, sempre la stessa
+	if not flags.has("run_id"):
+		flags["run_id"] = MemoriaNives.LEGACY
 	quests = d.get("quests", {})
 	freed.assign(d.get("freed", []))
 	motives_known.assign(d.get("motives_known", []))

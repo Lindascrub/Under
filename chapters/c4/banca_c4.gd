@@ -587,6 +587,7 @@ func gift_allowed() -> bool:
 
 func _badge_machine() -> void:
 	var cost := GameState.badge_cost(BADGE)
+	await MemoriaNives.at_booth(NIVES)
 	if GameState.has_badge(BADGE):
 		await _nives_remember()
 		return
@@ -715,6 +716,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Sound.music(music)
 	Sound.music_pitch(0.85, 2.0)
 	await _farewell()
+	await _nives_receipt()
 	Ui.cutscene = false
 
 
@@ -772,11 +774,27 @@ func _farewell() -> void:
 			"* Olga, dalla sedia d'attesa, alza il numerino come per salutare. Poi guarda di nuovo il tabellone.",
 			"* Nives, in cima alla prima rampa:"])
 		await Ui.say(["Ricevute. Le colleziono anche io. Nessuna risposta, finora. Ma la carta è bella."], NIVES, BADGE_CLERK)
+		_nives_on_stairs = true
 	if Storia.olga_proposta_chiara():
 		if Storia.olga_conviene():
 			await Ui.say(["L'ho letta tutta. Mi conviene. La firmo dopo averla riletta una volta da sola."], "Olga")
 		else:
 			await Ui.say(["L'ho letta tutta. Non mi conviene. Ma ho potuto dirlo."], "Olga")
+
+
+## Dopo la ricevuta, Nives (docs/NIVES_MEMORIA.md): "Tienila." In ogni partita. Dalla partita dopo un finale
+## si può anche chiederle perché parla come se fosse già successo tutto (se lo salti, torna in Città).
+var _nives_on_stairs := false
+
+
+func _nives_receipt() -> void:
+	if not _nives_on_stairs:
+		await Ui.say(["* Nives, in cima alla prima rampa, guarda la ricevuta che hai in mano."])
+	await MemoriaNives.bank_receipt()
+	if MemoriaNives.can_reveal():
+		var c: int = await Ui.choose("", [MemoriaNives.REVEAL_ASK, "Salgo."], NIVES)
+		if c == 0:
+			await MemoriaNives.revelation()
 
 
 func _farewell_deceived() -> void:

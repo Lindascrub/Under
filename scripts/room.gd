@@ -28,6 +28,8 @@ var cam_rect := Rect2()
 @export var camera_lift_righe := 4.0
 ## Durante un dialogo la visuale scende di questi pixel del mondo (con lo zoom 2 a schermo sono il doppio):
 ## tu e chi ti parla restate sopra le scelte, che si aprono in basso a destra. 0 = la camera non si muove.
+## Se guardi in su (uno sportello, chi sta sopra di te) la camera resta ferma: scendendo, chi ti parla
+## finirebbe sotto la barra in alto.
 @export var alza_nei_dialoghi := 24
 ## Musica della stanza (vedi Sound.music) e se è all'aperto (la luce cambia con l'ora).
 var music := "quartiere"
@@ -166,7 +168,7 @@ func _process(_delta: float) -> void:
 		if camera_lift > 0:
 			var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
 			want = -camera_lift * t
-		if Ui.busy:
+		if Ui.busy and player.facing != "up":
 			want += alza_nei_dialoghi
 		player.camera.offset.y = lerpf(player.camera.offset.y, want, 0.1)
 	if _grey_rect and player:
@@ -1109,19 +1111,33 @@ func _badge_machine() -> void:
 		return
 	var cost := GameState.badge_cost(need)
 	var who := "Addetta ai badge"
+	# la memoria di Nives (scripts/memoria_nives.gd): al Fondo, dopo un finale, "Oh. Sei tornato.";
+	# negli altri incontri, al massimo un ricordo per volta. Solo battute: prezzi e badge non cambiano.
+	var price_said := false
+	if MemoriaNives.needs_return_scene() and not GameState.has_badge(need):
+		price_said = await MemoriaNives.return_scene(who)
+	else:
+		await MemoriaNives.at_booth(who)
 	if GameState.has_badge(need):
 		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
 		return
 	# la stanza può chiedere qualcosa in più prima del badge (al -4: il Modulo B-4)
 	if not await badge_allowed(need):
 		return
+	var first_fondo := false
 	if GameState.flags.get("clerk_friend", false):
 		await Ui.say(["Ciao, {name}! Sono io, Nives. Cioè: una Nives. Ma quella che ti conosce."], who, BADGE_CLERK)
 	elif not GameState.flags.get("badge_clerk_intro", false):
 		GameState.flags["badge_clerk_intro"] = true
+		first_fondo = GameState.floor_id == "-5"
 		await Ui.say(["Sportello badge. Senza badge il tornello non ti fa salire le scale.",
 			"Sì, ci sono io su ogni piano. Siamo una per piano. Siamo tutte uguali. Non chiedere."], who, BADGE_CLERK)
-	await Ui.say(["Il badge del %s costa %s. Va tutto a scalare dal tuo debito." % [GameState.floor_name(need), GameState.euros(cost)]], who, BADGE_CLERK)
+	if first_fondo:
+		# la prima volta al Fondo il prezzo lo dice così (Fermo ha già spiegato che è una rata del debito)
+		if not price_said:
+			await MemoriaNives.fondo_price(who)
+	else:
+		await Ui.say(["Il badge del %s costa %s. Va tutto a scalare dal tuo debito." % [GameState.floor_name(need), GameState.euros(cost)]], who, BADGE_CLERK)
 	var c: int = await Ui.choose("Comprare il badge? Hai %s." % GameState.euros(GameState.money), ["Compra (%s)" % GameState.euros(cost), "Non ora"], who)
 	if c != 0:
 		return

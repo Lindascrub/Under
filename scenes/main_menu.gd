@@ -20,16 +20,30 @@ var _locked := false
 func _ready() -> void:
 	Ui.show_hud(false)
 	Ui.cutscene = false
+	# un vecchio salvataggio già finito: Nives se lo ricorda (una volta sola, vedi MemoriaNives)
+	MemoriaNives.import_legacy()
 	# Le persone del quartiere: le stesse che il giocatore incontrerà (ognuna a un passo diverso).
 	var people := $Persone.get_children()
 	for i in people.size():
 		(people[i] as AnimatedSprite2D).frame = i % 6
 
+	_fill_options()
+
+
+func _fill_options() -> void:
 	if GameState.has_save():
-		_options.assign(["Continua", "Nuova partita", "Audio", "Esci"])
+		_options.assign(["Continua", "Nuova partita", "Audio"])
 	else:
-		_options.assign(["Nuova partita", "Audio", "Esci"])
+		_options.assign(["Nuova partita", "Audio"])
+	# la voce per cancellare anche la memoria delle partite c'è solo se c'è qualcosa da cancellare
+	if MemoriaNives.count() > 0:
+		_options.append(FORGET)
+	_options.append("Esci")
+	_sel = mini(_sel, _options.size() - 1)
 	_render()
+
+
+const FORGET := "Dimentica le partite"
 
 
 ## Prima di cominciare: come ti chiami? (Sul telefono si apre la tastiera.)
@@ -44,8 +58,18 @@ func _ask_name() -> String:
 	var done := [false]
 	edit.text_submitted.connect(func(_t: String) -> void: done[0] = true)
 	ok.pressed.connect(func() -> void: done[0] = true)
-	edit.text_changed.connect(func(_t: String) -> void: ok.text = "Comincia")
+	edit.text_changed.connect(func(t: String) -> void:
+		ok.text = "Comincia"
+		# solo lettere (anche accentate), spazi e apostrofi: numeri e simboli spariscono appena li scrivi
+		var clean := clean_name(t)
+		if clean != t:
+			var col := edit.caret_column - (t.length() - clean.length())
+			edit.text = clean
+			edit.caret_column = clampi(col, 0, clean.length())
+			reply.text = NO_DIGITS if _digits(t) > 0 else NO_SIGNS
+			Sound.sfx("deny"))
 	var empty := 0
+	var rude := 0
 	var pending := ""
 	var who := ""
 	while true:
@@ -71,6 +95,15 @@ func _ask_name() -> String:
 			edit.grab_focus()
 			continue
 		var key := who.to_lower()
+		if is_rude(key):
+			reply.text = RUDE_REPLIES[rude % RUDE_REPLIES.size()]
+			rude += 1
+			Sound.sfx("deny")
+			edit.text = ""
+			edit.grab_focus()
+			pending = ""
+			ok.text = "Comincia"
+			continue
 		if BLOCKED_NAMES.has(key):
 			reply.text = BLOCKED_NAMES[key]
 			Sound.sfx("deny")
@@ -94,6 +127,78 @@ func _ask_name() -> String:
 
 ## Solo per i test: un nome già scritto.
 var name_override := ""
+
+## Quando scrivi un numero o un simbolo: sparisce, e la torre lo dice.
+const NO_DIGITS := "Solo lettere. I numeri, qui, li scrive la banca."
+const NO_SIGNS := "Niente simboli. Su un badge ci sta un nome, non una password."
+## Le parolacce: la torre non le stampa, e ogni volta risponde un po' diversamente.
+const RUDE_REPLIES: Array[String] = [
+	"Questo sul badge non lo stampiamo. Gli interessi sì, ma questo no.",
+	"La Torre ha sentito. Fa finta di no. Scrivi un nome.",
+	"Le parolacce qui sono riservate a chi legge l'estratto conto.",
+	"Il modulo arrossisce. Riprova con un nome da persona.",
+]
+## Pezzi di parola vietati ovunque nel nome (lettere attaccate, senza spazi né accenti).
+const RUDE_PARTS: Array[String] = [
+	"cazz", "merd", "stronz", "fancul", "vaffa", "puttan", "mignott", "zoccol", "coglion", "minchi",
+	"bastard", "fottut", "fottit", "porcodio", "diocane", "dioporco", "porcamadonna", "ricchion",
+	"culatton", "froci", "fuck", "shit", "bitch", "cunt", "nigg", "whore", "sborr",
+]
+## Parole vietate solo intere (dentro altri nomi sono innocue: "Pasculli", "Figari", "Troiani", "Negroni").
+const RUDE_WORDS: Array[String] = ["culo", "figa", "fica", "pirla", "ass", "dick", "cock", "tette", "pene", "ano", "troia", "negro", "negra"]
+
+
+## Toglie tutto quello che non è una lettera, uno spazio o un apostrofo.
+static func clean_name(t: String) -> String:
+	var out := ""
+	for ch in t:
+		if ch == " " or ch == "'" or ch == "’" or ch.to_upper() != ch.to_lower():
+			out += ch
+	return out
+
+
+static func _digits(t: String) -> int:
+	var n := 0
+	for ch in t:
+		if ch >= "0" and ch <= "9":
+			n += 1
+	return n
+
+
+static func _plain(t: String) -> String:
+	t = t.to_lower()
+	for pair: Array in [["àáâä", "a"], ["èéêë", "e"], ["ìíîï", "i"], ["òóôö", "o"], ["ùúûü", "u"]]:
+		for ch in str(pair[0]):
+			t = t.replace(ch, str(pair[1]))
+	return t
+
+
+## Una parolaccia, anche scritta con spazi o apostrofi in mezzo.
+static func is_rude(t: String) -> bool:
+	var p := _plain(t).replace("’", "'")
+	var glued := p.replace(" ", "").replace("'", "")
+	for part in RUDE_PARTS:
+		if part in glued:
+			return true
+	for w in p.replace("'", " ").split(" ", false):
+		if w in RUDE_WORDS:
+			return true
+	return glued in RUDE_WORDS
+
+
+## Cancellare anche la memoria delle partite: una voce a parte, con due conferme. Il salvataggio resta.
+func _forget() -> void:
+	var n := MemoriaNives.count()
+	var c: int = await Ui.choose("Nives si ricorda %d %s. Vuoi che dimentichi tutte le partite concluse? Il salvataggio non si tocca." % [n, "finale" if n == 1 else "finali"],
+		["No, lascia stare", "Sì, dimentica"])
+	if c != 1:
+		return
+	c = await Ui.choose("Sicuro? Non si può tornare indietro.", ["No", "Sì, cancella la memoria"])
+	if c != 1:
+		return
+	MemoriaNives.forget()
+	await Ui.say(["* Fatto. La prossima volta, allo sportello, Nives non si ricorderà di te."])
+	_fill_options()
 
 ## Se non scrivi niente: la torre te lo fa notare, ogni volta un po' più stanca.
 const EMPTY_REPLIES: Array[String] = [
@@ -200,6 +305,8 @@ func _choose(option: String) -> void:
 		"Nuova partita":
 			var who := await _ask_name()
 			GameState.new_game()
+			# una partita nuova ha un numero nuovo: la memoria di Nives resta, e sa che questa è un'altra
+			GameState.flags["run_id"] = MemoriaNives.new_run_id()
 			GameState.player_name = who
 			GameState.delete_save()
 			Router.goto(Router.ELEVATOR, "", INTRO)
@@ -208,5 +315,8 @@ func _choose(option: String) -> void:
 			_locked = false
 		"Continua":
 			Router.continue_game()
+		FORGET:
+			await _forget()
+			_locked = false
 		"Esci":
 			get_tree().quit()

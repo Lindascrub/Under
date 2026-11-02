@@ -1180,6 +1180,7 @@ static func gift_allowed() -> bool:
 
 func _badge_machine() -> void:
 	var cost := GameState.badge_cost(BADGE)
+	await MemoriaNives.at_booth(NIVES)
 	if GameState.has_badge(BADGE):
 		await Ui.say(["La scala è lì. In cima c'è la Direzione. Buona salita."], NIVES, BADGE_CLERK)
 		return
