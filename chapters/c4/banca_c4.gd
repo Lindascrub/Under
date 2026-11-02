@@ -13,8 +13,6 @@ const VOICE := "Voce CHEAP"
 const BADGE := "0"
 ## Il Capitolo 5 (La Città) lo sta facendo qualcun altro: finché la scena non c'è, si sale all'Ufficio.
 const CITY := "res://chapters/c5/citta.tscn"
-## Il pannello della rivelazione del primo gradino.
-const REVELATION := "res://chapters/c4/rivelazione_banca.tscn"
 const ROBOT_ANTENNA := "res://world/antenna_robot.tscn"
 const ROBOT_STAMP := "res://chapters/c4/timbro_robot.tscn"
 
@@ -179,6 +177,7 @@ func _olga_complaint() -> void:
 		return
 	GameState.flags["c4_olga_contestazione"] = true
 	GameState.flags["c4_olga_giorno"] = GameState.day
+	Storia.segna("c4_olga_contestazione")
 	Sound.sfx("stamp")
 	await Ui.say(["* Scrivete la lettera insieme. Olga detta, tu scrivi. Le date sono giuste, le cifre tornano.",
 		"* Olga la infila nella fessura RECLAMI. La fessura fa un rumore soddisfatto."])
@@ -281,6 +280,13 @@ func _archivio() -> void:
 ## Dopo un paio di turni allo sportello si può scegliere il turno veloce: stessa paga base, niente
 ## minigioco, nessuna pratica letta. Così non serve ripetere venti volte lo stesso gioco.
 func _station(j: Dictionary) -> void:
+	# la proposta a Olga con le condizioni nascoste si può ritirare qui, allo sportello
+	if Storia.olga_torto_aperto() and not _f("c4_rivelazione"):
+		var w: int = await Ui.choose("La proposta per Olga è partita con le condizioni solo nella copia interna.",
+			["Ritira la proposta e mandala completa", "Vai al turno"])
+		if w == 0:
+			await _withdraw_offer()
+			return
 	var quick: Dictionary = GameState.bank.get("rapido", {})
 	if GameState.worked_today or int(GameState.flags.get("c4_turni", 0)) < int(quick.get("dopo", 2)):
 		await super(j)
@@ -291,6 +297,16 @@ func _station(j: Dictionary) -> void:
 		start_job(j)
 	elif c == 1:
 		await quick_turn()
+
+
+## Ritirare la proposta nascosta: ne parte una con tutte le condizioni. Il premio resta (il Capo
+## non accetta restituzioni) e il torto non sparisce: Olga se lo ricorda (vedi _farewell).
+func _withdraw_offer() -> void:
+	GameState.flags["c4_olga_corretta"] = true
+	Storia.segna("c4_olga_corretta")
+	Sound.sfx("stamp")
+	await Ui.say(["Proposta ritirata. Nuova proposta con tutte le condizioni inviata alla titolare.",
+		"Il premio non è restituibile. Il Capo non accetta restituzioni."], TERMINAL)
 
 
 func quick_turn() -> void:
@@ -524,15 +540,14 @@ func _anomaly() -> void:
 		Sound.sfx("blip", 1.6)
 		await get_tree().create_timer(0.45).timeout
 	await Ui.say(["Contratto originale non disponibile.", "Data di apertura: precedente alla registrazione del titolare.",
-		"Causale: OBBLIGO DI ESISTENZA."], TERMINAL)
+		"Causale: riservata alla Direzione."], TERMINAL)
 	await get_tree().create_timer(1.0).timeout
 	await Ui.say(["Grazie per aver scelto CHEAP.", "Ricorda: ogni debito è un'opportunità per dimostrare il tuo valore."], TERMINAL)
 	# Teo, se è ancora una persona e lo hai aiutato, sa leggere quel codice
 	if _f("c4_teo_aiutato") and not GameState.is_robot("teo") and not _f("c4_teo_codice"):
 		GameState.flags["c4_teo_codice"] = true
 		await Ui.say(["* Teo si è avvicinato. Guarda lo schermo da sopra la tua spalla."])
-		await Ui.say(["Questo numero non dovrebbe essere qui.", "È un codice usato per le pratiche interne.",
-			"Non dovrebbe appartenere a una persona."], "Teo")
+		await Ui.say(["Questo è un codice delle pratiche interne. Non l'ho mai visto sul conto di un cliente."], "Teo")
 		await Ui.choose("", ["Cosa significa?"], "Teo")
 		await Ui.say(["Non lo so.", "Ma forse stai cercando di ripagare qualcosa che non hai mai chiesto."], "Teo")
 
@@ -632,15 +647,12 @@ func _nives_remember() -> void:
 	await Ui.say(["Lassù ci sono le finestre.", "Io non le vedo da quattro piani.", "Se ne vedi una, guardala anche per me."], NIVES, BADGE_CLERK)
 
 
-# --- 4.12 la rivelazione del primo gradino ------------------------------------------------------------
+# --- 4.12 le scale: il lettore di badge, la verifica o il riepilogo, i saluti ---------------------------
 
-func revelation_lines() -> Array:
-	var origin := int(GameState.bank.get("conto", {}).get("debito_originario", GameState.START_DEBT))
-	return ["DATA DI APERTURA DEL DEBITO: NON DISPONIBILE.", "CONTRATTO FIRMATO: NESSUNO TROVATO.",
-		"IMPORTO ORIGINARIO ASSEGNATO: %s." % GameState.euros(origin), "STATO DEL DEBITO: ATTIVO.",
-		"RICERCA DOCUMENTO DI CONSENSO...", "NESSUN DOCUMENTO TROVATO."]
-
-
+## Ai piedi delle scale c'è il lettore "USCITA CLIENTI — VERIFICA POSIZIONE" (docs/STORIA_BANCA_CIMA.md, 3b).
+## Qui si scopre che il contratto non c'è (c4_anomalia, anche senza il terminale della sala: conta una
+## volta sola) e si sceglie: una richiesta di verifica alla Direzione (c4_verifica) o solo il riepilogo
+## (c4_riepilogo). Poi i saluti di Olga e Teo (_farewell).
 func on_stairs_step(p: Player, _need: String) -> void:
 	if _f("c4_rivelazione"):
 		return
@@ -650,25 +662,113 @@ func on_stairs_step(p: Player, _need: String) -> void:
 		GameState.flags["c4_badge"] = "altro"
 	Ui.cutscene = true
 	p.position.y += 4
+	await Ui.say(["* Ai piedi delle scale, un lettore di badge: USCITA CLIENTI — VERIFICA POSIZIONE.",
+		"* Appoggi il badge."])
 	Sound.music_pitch(0.5, 1.2)
 	await get_tree().create_timer(1.2).timeout
 	Sound.music("")
 	await get_tree().create_timer(0.5).timeout
-	# il pannello è la scena chapters/c4/rivelazione_banca.tscn (posizioni, colori e tempi si cambiano lì)
-	var panel := load(REVELATION).instantiate() as PannelloRighe
-	add_child(panel)
-	await panel.appari()
-	var lines := revelation_lines()
-	var marked: Array = []
-	for i in lines.size():
-		if str(lines[i]).begins_with("NESSUN"):
-			marked.append(i)
-	await panel.scrivi(lines, marked)
+	var seen := _f("c4_anomalia")
+	GameState.flags["c4_anomalia"] = true
+	if not seen:
+		await Ui.say(["Verifica posizione in corso.", "Debito attivo: {debt}.", "Ricerca del contratto originale..."], TERMINAL)
+		for i in 3:
+			Sound.sfx("blip", 1.6)
+			await get_tree().create_timer(0.45).timeout
+		await Ui.say(["Contratto originale: nessun documento trovato."], TERMINAL)
+	else:
+		await Ui.say(["Bentornato. La ricerca del contratto originale risulta già effettuata."], TERMINAL)
+		await Ui.choose("", ["Lo so. Non c'era."])
+		await Ui.say(["Confermiamo."], TERMINAL)
+	await Ui.choose("", ["Allora perché devo pagare?"])
+	await Ui.say(["Questa filiale è autorizzata a riscuotere. Non a modificare l'origine dell'obbligazione."], TERMINAL)
+	await Ui.choose("", ["E chi la modifica?"])
+	await Ui.say(["La Direzione."], TERMINAL)
+	var c: int = await Ui.choose("Al lettore di badge.", ["Chiedo una verifica.", "Ritiro la ricevuta e salgo."], TERMINAL)
+	if c == 0:
+		GameState.flags["c4_verifica"] = true
+		Storia.segna("c4_verifica")
+		await Ui.say(["Richiesta inoltrata alla Direzione."], TERMINAL)
+		Sound.sfx("blip", 1.2)
+		await Ui.say(["* La stampante fa uscire una ricevuta: RICHIESTA DI VERIFICA — DESTINATARIO: DIREZIONE, ULTIMO PIANO."])
+		await Ui.choose("", ["Nel frattempo?"])
+		await Ui.say(["Gli interessi continuano a maturare."], TERMINAL)
+	else:
+		GameState.flags["c4_riepilogo"] = true
+		await Ui.say(["Riepilogo della posizione."], TERMINAL)
+		Sound.sfx("blip", 1.2)
+		await Ui.say(["* Esce un foglio: DEBITO ATTIVO: {debt}. CONTRATTO ORIGINALE: NON TROVATO.",
+			"* In fondo, piccolo: \"Per informazioni sull'origine: Direzione, ultimo piano.\""])
+		await Ui.say(["Nessuna richiesta registrata. Buona salita."], TERMINAL)
 	await Ui.say(["Non preoccuparti.", "Non è necessario capire un debito per pagarlo.", "È necessario soltanto continuare."], VOICE)
-	await panel.scompari()
+	if c == 0:
+		await Ui.say(["* L'indirizzo è stampato. Mancano solo i piani in mezzo."])
+	else:
+		await Ui.say(["* Sul foglio c'è un indirizzo. Nessuno ti ha chiesto se volevi usarlo."])
 	Sound.music(music)
 	Sound.music_pitch(0.85, 2.0)
+	await _farewell()
 	Ui.cutscene = false
+
+
+## I saluti (3c). Con le condizioni nascoste nella proposta a Olga, al posto del saluto c'è lei.
+func _farewell() -> void:
+	if Storia.olga_ingannata():
+		await _farewell_deceived()
+		return
+	var teo_ok := _f("c4_teo_aiutato") and not GameState.is_robot("teo")
+	if _f("c4_olga_contestazione") and teo_ok:
+		GameState.flags["c4_ricevuta_copia"] = true
+		await Ui.say(["* Teo arriva di corsa con il quaderno."])
+		await Ui.say(["Dammi la ricevuta un secondo."], "Teo")
+		await Ui.say(["* Mette sotto la carta carbone e ricalca. Nell'angolo disegna un supereroe piccolissimo con una borsetta."])
+		await Ui.say(["Una la tieni tu. Una la tengo io, nel cassetto dei fumetti. Lì non la cerca nessuno."], "Teo")
+		await Ui.say(["* Olga si alza dalla sedia d'attesa con il suo numerino."])
+		await Ui.say(["Chiedi sempre la copia. E leggila due volte.",
+			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello col biscotto. Me lo merito anche io."], "Olga")
+	else:
+		await Ui.say(["* Metti la ricevuta in tasca, vicino al badge. Pesa più del badge.",
+			"* Olga, dalla sedia d'attesa, alza il numerino come per salutare. Poi guarda di nuovo il tabellone.",
+			"* Nives, in cima alla prima rampa:"])
+		await Ui.say(["Ricevute. Le colleziono anche io. Nessuna risposta, finora. Ma la carta è bella."], NIVES, BADGE_CLERK)
+	if Storia.olga_proposta_chiara():
+		if Storia.olga_conviene():
+			await Ui.say(["L'ho letta tutta. Mi conviene. La firmo dopo averla riletta una volta da sola."], "Olga")
+		else:
+			await Ui.say(["L'ho letta tutta. Non mi conviene. Ma ho potuto dirlo."], "Olga")
+
+
+func _farewell_deceived() -> void:
+	var who := "Olga"
+	await Ui.say(["* La ricevuta esce piegata a metà. \"Gli interessi continuano a maturare\" è sul retro.",
+		"* Olga è dietro di te, con la proposta che le hai portato. Piegata a metà nello stesso modo."])
+	await Ui.say(["Io avevo chiesto solo di leggere il contratto."], who)
+	await Ui.say(["* Apre il foglio. Le condizioni erano sul retro, scritte piccole."])
+	await Ui.say(["Non ho firmato. Ma mi ero fidata di te."], who)
+	# l'ordine viene dal contatore: se un vecchio salvataggio non lo sa, nessuna delle due righe
+	match Storia.ordine("c4_olga_contestazione", "c4_olga_proposta"):
+		-1:
+			await Ui.say(["Il reclamo me l'hai fatto scrivere tu. Questo foglio piegato me l'hai portato tu. Me le ricordo tutte e due."], who)
+		1:
+			await Ui.say(["Prima il foglio piegato. Poi il reclamo. Il reclamo mi è servito. Il foglio non lo dimentico."], who)
+	var fixed := _f("c4_olga_corretta")
+	var c: int = await Ui.choose("Olga ha il foglio aperto.",
+		["L'ho già ritirata." if fixed else "La ritiro. Adesso.", "Avevi ragione a leggerla.", "Non è la stessa cosa.", "..."], who)
+	match c:
+		0:
+			if not fixed:
+				await _withdraw_offer()
+			await Ui.say(["L'ho vista. Adesso la proposta è giusta. Te lo riconosco.", "Per fidarmi di nuovo serve più di un foglio."], who)
+		1:
+			GameState.flags["c4_olga_ammesso"] = true
+			await Ui.say(["Lo so. Mi fa piacere che lo sappia anche tu."], who)
+		2:
+			await Ui.say(["No. Io il foglio l'ho girato."], who)
+		_:
+			await Ui.say(["* Olga ripiega il foglio e torna a sedersi."])
+	if _f("c4_teo_aiutato") and not GameState.is_robot("teo"):
+		GameState.flags["c4_ricevuta_copia"] = true
+		await Ui.say(["Te la copio lo stesso. Anche a lei ho fatto una copia. Completa."], "Teo")
 
 
 # --- 4.13 lo sguardo indietro ------------------------------------------------------------------------
@@ -687,12 +787,18 @@ func on_stairs_top(p: Player) -> bool:
 	return true
 
 
-## La frase finale. Priorità fissa: Teo robot > Olga e Teo aiutati > anomalia del debito > generale.
+## La frase finale (docs/STORIA_BANCA_CIMA.md, 3d e nota 3). Priorità fissa: Teo robot > richiesta di
+## verifica inoltrata > Olga e Teo aiutati > anomalia del debito > generale. Con la proposta a Olga
+## nascosta e non corretta la riga degli aiuti non vale; corretta, la riga lo dice.
 ## La stanza, invece, mostra tutto quello che è vero (vedi _dress_for_look_back).
 func look_back_line() -> String:
 	if GameState.is_robot("teo"):
 		return "La Banca aveva guadagnato un impiegato perfetto. Nessuno aveva chiesto cosa avesse perso."
-	if _f("c4_olga_contestazione") and _f("c4_teo_aiutato"):
+	if _f("c4_verifica"):
+		return "Avevi una richiesta in viaggio, un indirizzo e nessuna risposta. Era già più di prima."
+	if _f("c4_olga_contestazione") and _f("c4_teo_aiutato") and not Storia.olga_torto_aperto():
+		if Storia.olga_ingannata():
+			return "Non avevi cancellato i debiti. Avevi aiutato qualcuno, e avevi riaperto il foglio che le avevi piegato."
 		return "Non avevi cancellato i debiti. Avevi aiutato qualcuno a non affrontarli da solo."
 	if _f("c4_anomalia"):
 		return "Per la prima volta, non eri sicuro di dovere davvero ciò che ti chiedevano."
@@ -764,7 +870,11 @@ func _write_outcome() -> void:
 			"offer_accepted": f.get("c4_capo_firmato", false)},
 		"debt": {"account_inspected": f.get("c4_conto", false), "anomaly_discovered": f.get("c4_anomalia", false),
 			"original_contract_missing": f.get("c4_anomalia", false) or f.get("c4_rivelazione", false),
-			"teo_code_explained": f.get("c4_teo_codice", false)},
+			"teo_code_explained": f.get("c4_teo_codice", false),
+			"verification_requested": f.get("c4_verifica", false), "summary_only": f.get("c4_riepilogo", false),
+			"receipt_copied_by_teo": f.get("c4_ricevuta_copia", false)},
+		"olga_offer": {"made": not Storia.proposta_olga().is_empty(), "hidden": Storia.olga_ingannata(),
+			"corrected": f.get("c4_olga_corretta", false), "admitted": f.get("c4_olga_ammesso", false)},
 		"secret_scene_seen": f.get("c4_segreta", false),
 		"exit": {"badge_obtained": GameState.has_badge(BADGE), "badge_source": str(f.get("c4_badge", "")),
 			"stairs_revelation_seen": f.get("c4_rivelazione", false), "lookback_seen": true},

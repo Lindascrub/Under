@@ -183,6 +183,7 @@ static func apply_consequence(floor: String, r: Dictionary) -> void:
  if floor == "-2":
   GameState.flags["boss_olga_offer"] = r.duplicate(true)
   GameState.flags["boss_olga_offer_day"] = GameState.day
+  Storia.segna("c4_olga_proposta")
  if floor == "0":
   GameState.flags["boss_news_divisive"] = int(r.get("cuts", 0)) > 0
   GameState.flags["boss_news_rectified"] = false
