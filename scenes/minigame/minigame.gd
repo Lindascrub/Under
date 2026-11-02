@@ -3,6 +3,8 @@ extends Node2D
 const Art := preload("res://scripts/minigame_art.gd")
 ## Minigiochi "a sorpresa": partono quando dai una mano a qualcuno. Config in GameState.minigame:
 ##   type "timing":   premi Z quando il segno è nella zona verde (riparare, accordare, salire le scale)
+##                    con "zones": 2 le fasce sono due e si accendono a turno (ogni "swap" secondi):
+##                    vale solo quella accesa, l'altra è un errore (Ercole: TIENI SVEGLIO ERCOLE)
 ##   type "collect":  muovi il cuore e raccogli tutto prima che scada il tempo (foglie, croccantini)
 ##   type "sequence": ricorda e ripeti la sequenza di frecce (pratiche, post-it, curriculum)
 ##   type "bulbs":    smista le lampadine: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla
@@ -39,6 +41,9 @@ var marker := 0.0
 var marker_dir := 1.0
 var marker_speed := 0.7
 var zone := Vector2(0.4, 0.55)
+## con "zones": 2, la seconda fascia (spenta finché non tocca a lei); x < 0 = non c'è
+var zone_off := Vector2(-1, -1)
+var swap_t := 0.0
 var hits := 0
 var misses := 0
 var flash := 0.0
@@ -518,8 +523,28 @@ func _rt_end() -> void:
 
 func _new_zone() -> void:
 	var w := maxf(0.1, 0.2 - hits * 0.025)
+	if int(cfg.get("zones", 1)) >= 2:
+		# due fasce lontane fra loro, una nella metà sinistra e una nella destra
+		var a := randf_range(0.04, 0.48 - w)
+		var b := randf_range(0.52, 0.96 - w)
+		zone = Vector2(a, a + w)
+		zone_off = Vector2(b, b + w)
+		if randf() < 0.5:
+			_swap_zones()
+		swap_t = _swap_time()
+		return
 	var a := randf_range(0.05, 0.95 - w)
 	zone = Vector2(a, a + w)
+
+
+func _swap_time() -> float:
+	return maxf(0.6, float(cfg.get("swap", 1.4)) - hits * 0.15)
+
+
+func _swap_zones() -> void:
+	var z := zone
+	zone = zone_off
+	zone_off = z
 
 
 func _next_round() -> void:
@@ -544,6 +569,12 @@ func _process(delta: float) -> void:
 	match phase:
 		"play":
 			if type == "timing":
+				if zone_off.x >= 0.0:
+					swap_t -= delta
+					if swap_t <= 0.0:
+						_swap_zones()
+						swap_t = _swap_time()
+						Sound.sfx("blip", 1.4)
 				marker += marker_dir * marker_speed * delta
 				if marker > 1.0 or marker < 0.0:
 					marker = clampf(marker, 0.0, 1.0)
@@ -834,6 +865,9 @@ func _draw() -> void:
 		"timing":
 			var bar := Rect2(BOX.position.x + 20, BOX.get_center().y - 10, BOX.size.x - 40, 20)
 			Art.panel(self, bar.grow(3), Color("46566b"), Color("94a7b9"))
+			if zone_off.x >= 0.0:
+				# la fascia spenta: si vede dove sarà, ma adesso non vale
+				draw_rect(Rect2(bar.position.x + bar.size.x * zone_off.x, bar.position.y, bar.size.x * (zone_off.y - zone_off.x), bar.size.y), GREEN.darkened(0.65))
 			draw_rect(Rect2(bar.position.x + bar.size.x * zone.x, bar.position.y, bar.size.x * (zone.y - zone.x), bar.size.y), GREEN)
 			var mx := bar.position.x + bar.size.x * marker
 			draw_rect(Rect2(mx - 2, bar.position.y - 8, 4, bar.size.y + 16), Color.WHITE)

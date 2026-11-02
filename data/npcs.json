@@ -2100,8 +2100,10 @@
         "title": "Tieni sveglio Ercole",
         "intro": [
           "* Ogni volta che Ercole chiude gli occhi, dagli una gomitata.",
-          "* Premi {ok} quando il segno è nel verde."
+          "* Le fasce verdi sono due e si accendono a turno: premi {ok} quando il segno è in quella ACCESA."
         ],
+        "zones": 2,
+        "swap": 1.4,
         "hits": 4,
         "reward": 10
       }
