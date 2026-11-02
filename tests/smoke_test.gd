@@ -1070,7 +1070,8 @@ func _test_chapter5() -> void:
 	_check(GameState.flags.get("c5_rina", false) and GameState.flags.get("c5_rina_ascoltata", false), "Rina: 'Non toccare quella', poi le sue preoccupazioni")
 	# 18-19: Nadir, il tabellone, IL PERCORSO POSSIBILE (sbagliare e riprovare)
 	GameState.minutes = GameState.DAY_START
-	choose_queue = [0, 2, 3, 0]
+	# le domande compaiono una alla volta: il lavoro, perché non lo cambia, poi il merlo e il percorso
+	choose_queue = [0, 1, 2, 3, 0]
 	minigame_result = "fail"
 	m = await _c5_talk("nadir")
 	_check(GameState.flags.get("c5_nadir", false) and GameState.flags.get("c5_tabellone", false) and GameState.flags.get("c5_nadir_lavoro", false) and GameState.flags.get("c5_nadir_uccelli", false), "Nadir: il tabellone che fa retromarcia, il lavoro, il merlo")

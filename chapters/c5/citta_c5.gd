@@ -220,15 +220,23 @@ func _nadir_first() -> void:
 	await Ui.say(["Sai cosa mi piace dei trasporti pubblici?", "Che ti insegnano la pazienza.", "Ho già un dottorato."], who)
 
 
+## Le domande arrivano una alla volta: la prossima compare quando hai fatto quella prima
+## (il lavoro, poi perché non lo cambia, poi cosa guarda e il percorso).
 func _nadir_menu() -> void:
 	var who := "Nadir"
 	while true:
-		var opts: Array = ["E il lavoro?", "Perché non cambi lavoro?", "Cosa stai guardando?"]
-		var acts: Array = ["lavoro", "cambiare", "uccelli"]
-		if not _f("c5_nadir_percorso"):
-			opts.append("Ti do una mano col percorso")
-			acts.append("percorso")
-		elif _f("c5_ada") and not _f("c5_nadir_rete"):
+		var opts: Array = ["E il lavoro?"]
+		var acts: Array = ["lavoro"]
+		if _f("c5_nadir_lavoro"):
+			opts.append("Perché non cambi lavoro?")
+			acts.append("cambiare")
+		if _f("c5_nadir_cambiare") or _f("c5_nadir_uccelli") or _f("c5_nadir_percorso"):
+			opts.append("Cosa stai guardando?")
+			acts.append("uccelli")
+			if not _f("c5_nadir_percorso"):
+				opts.append("Ti do una mano col percorso")
+				acts.append("percorso")
+		if _f("c5_nadir_percorso") and _f("c5_ada") and not _f("c5_nadir_rete"):
 			opts.append("E se i pendolari si organizzassero?")
 			acts.append("rete")
 		opts.append("Ciao")
@@ -241,6 +249,7 @@ func _nadir_menu() -> void:
 					"Quando torno a casa, a volte non ricordo neanche come si chiama la mia strada."], who)
 			"cambiare":
 				GameState.flags["c5_nadir_lavoro"] = true
+				GameState.flags["c5_nadir_cambiare"] = true
 				await Ui.say(["Ci sto provando.", "Ma le offerte che trovo sono ancora più lontane."], who)
 			"uccelli":
 				GameState.flags["c5_nadir_uccelli"] = true
