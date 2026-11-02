@@ -5,73 +5,80 @@
     "paga": 1600
   },
   "chiusura_giorni": 3,
-  "stanze": {
-    "stanze": [
-      {
-        "id": "studio",
-        "nome": "STUDIO",
-        "serve": "tavolo",
-        "max": 3,
-        "desc": "Per studiare serve almeno un tavolo."
-      },
-      {
-        "id": "laboratorio",
-        "nome": "LABORATORIO",
-        "serve": "scaffale",
-        "max": 3,
-        "desc": "Gli attrezzi vanno su uno scaffale, o spariscono."
-      },
-      {
-        "id": "incontri",
-        "nome": "INCONTRI",
-        "serve": "sedie",
-        "max": 3,
-        "desc": "Per incontrarsi bisogna potersi sedere."
-      }
+  "volantini": {
+    "obiettivo": 8,
+    "tempo": 45,
+    "zona": 44,
+    "ogni": [
+      0.8,
+      1.5
     ],
-    "pezzi": [
-      {
-        "tipo": "tavolo",
-        "nome": "Tavolo"
-      },
-      {
-        "tipo": "tavolo",
-        "nome": "Tavolo zoppo"
-      },
-      {
-        "tipo": "scaffale",
-        "nome": "Scaffale"
-      },
-      {
-        "tipo": "scaffale",
-        "nome": "Libreria"
-      },
-      {
-        "tipo": "sedie",
-        "nome": "Sedie spaiate"
-      },
-      {
-        "tipo": "sedie",
-        "nome": "Divano"
-      }
+    "velocita": [
+      45,
+      65
     ],
-    "effetti": {
-      "studio": {
-        "tavolo": "Lo studio ha posto per dodici persone. Il silenzio è compreso.",
-        "scaffale": "Nello studio, i libri a portata di mano. Nessuno deve alzarsi.",
-        "sedie": "Nello studio si può anche ripassare in gruppo. A bassa voce. Più o meno."
+    "accelera": 0.012,
+    "comparse": [
+      "char_02",
+      "char_03",
+      "char_05",
+      "char_06",
+      "char_07",
+      "char_08",
+      "char_09",
+      "char_10",
+      "char_11",
+      "char_12",
+      "char_15",
+      "char_16",
+      "char_17"
+    ],
+    "tipi": [
+      {
+        "id": "curioso",
+        "peso": 5,
+        "segno": "?",
+        "colore": "ffe14d",
+        "giusto": true,
+        "frase": "Lo prende. Lo legge camminando, poi torna indietro a chiederne un altro per la sorella."
       },
-      "laboratorio": {
-        "tavolo": "Il laboratorio ha un banco da lavoro: si ripara una sedia al giorno.",
-        "scaffale": "Il laboratorio diventa un magazzino ordinato. Gli attrezzi si prestano.",
-        "sedie": "Nel laboratorio si può fare un corso. Il primo: aggiustare le sedie."
+      {
+        "id": "fretta",
+        "peso": 2,
+        "segno": "!!",
+        "colore": "ff9a5a",
+        "velocita": [
+          110,
+          140
+        ],
+        "frase": "Non si ferma nemmeno. Il volantino vola via, sotto una macchina."
       },
-      "incontri": {
-        "tavolo": "Nella sala incontri si può mangiare insieme. Ognuno porta qualcosa.",
-        "scaffale": "Nella sala incontri c'è la biblioteca degli oggetti: si presta tutto.",
-        "sedie": "La sala incontri tiene un'assemblea intera. Seduta."
+      {
+        "id": "telefono",
+        "peso": 2,
+        "segno": "...",
+        "colore": "9fd0ff",
+        "velocita": [
+          35,
+          50
+        ],
+        "frase": "Lo prende senza guardarti e lo butta nel primo cestino. Continua a dire \"sì, sì\" al telefono."
+      },
+      {
+        "id": "guardia",
+        "peso": 1,
+        "segno": "CHEAP",
+        "colore": "ff7a6a",
+        "fogli": [
+          "char_12"
+        ],
+        "velocita": [
+          30,
+          40
+        ],
+        "frase": "VOLANTINAGGIO NON AUTORIZZATO. La guardia te lo prende e lo piega in quattro."
       }
-    }
+    ]
   },
   "smistamento": {
     "destinazioni": [

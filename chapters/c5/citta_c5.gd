@@ -1128,7 +1128,7 @@ static func outcome(support: String) -> Dictionary:
 		esito = "riconversione"
 	var lines: Array = []
 	lines.append("* Sul tavolo: " + ("i conti veri, letti ad alta voce." if info else "nessun conto. Solo la lettera di CHEAP, e le cifre di CHEAP."))
-	lines.append("* Le stanze: " + ("già organizzate, sei mobili al posto giusto." if org else "ancora da sistemare. Nessuno sa dove si studia e dove ci si incontra."))
+	lines.append("* Le stanze: " + ("studio, laboratorio, incontri. Mezza piazza ha il volantino in tasca." if org else "le ha divise Ada, ma fuori non lo sa nessuno. Nessuno sa dove si studia e dove ci si incontra."))
 	lines.append("* Chi si offre: " + (", ".join(res) + "." if not res.is_empty() else "tante mani alzate, poche disponibili il martedì."))
 	match esito:
 		"comunitaria":

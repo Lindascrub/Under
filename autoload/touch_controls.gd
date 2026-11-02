@@ -78,7 +78,7 @@ func _process(_delta: float) -> void:
 		stick = scene.get("phase") == "dodge"
 		buttons = false
 	elif path == "res://scenes/minigame/minigame.tscn":
-		stick = scene.get("phase") in ["play", "show"] and scene.get("type") != "timing"
+		stick = scene.get("phase") in ["play", "show"] and scene.get("type") not in ["timing", "volantini"]
 		buttons = false
 	if stick != show_stick or buttons != show_buttons:
 		show_stick = stick

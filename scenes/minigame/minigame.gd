@@ -15,7 +15,8 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
 ##                    (Olga: LE RATE MANCANTI; dati in data/bank.json)
 ##   type "pratiche": per ogni pratica, quale problema c'è (Teo: LA PRATICA IMPOSSIBILE)
-##   type "stanze":   sei pezzi d'arredo in tre stanze, ognuna col suo bisogno (Ada: UNA STANZA PER TUTTI)
+##   type "volantini": in piazza passa la gente; dai il volantino a chi ti guarda, non a chi ha fretta,
+##                    è al telefono o è una guardia CHEAP (Ada: VOLANTINAGGIO). Dati in data/city.json
 ##   type "coincidenze": il tabellone delle partenze; una corsa alla volta, che parta da dove sei e
 ##                    dopo che sei arrivato, fino al lavoro in tempo e nel budget (Nadir: L'ORARIO DELLE
 ##                    COINCIDENZE). Dati in data/city.json, "coincidenze"
@@ -135,11 +136,12 @@ var rate_msg := ""
 var pr_i := 0
 var pr_sel := 0
 var pr_msg := ""
-# UNA STANZA PER TUTTI (Ada): st_where[i] = in che stanza sta il pezzo i (-1 = ancora da sistemare)
-var st_where: Array = []
-var st_sel := -1
-var st_focus := 0
-var st_msg := ""
+# VOLANTINAGGIO (Ada): chi passa (CharSprite figli del minigioco), quanti volantini presi, fra quanto arriva il prossimo
+var vl_walkers: Array[CharSprite] = []
+var vl_given := 0
+var vl_next := 0.0
+var vl_t := 0.0
+var vl_msg := ""
 # L'ORARIO DELLE COINCIDENZE (Nadir): le corse prese, dove sei, che ore sono, quanto hai speso
 var cz_path: Array = []
 var cz_at := 0
@@ -229,11 +231,13 @@ func _start() -> void:
 		"pratiche":
 			pr_i = 0
 			pr_msg = ""
-		"stanze":
-			st_where = []
-			for i in _st_pieces().size():
-				st_where.append(-1)
-			st_msg = "Tocca un pezzo, poi la stanza dove metterlo." if TouchControls.enabled else "FRECCE scegli, %s prendi e metti." % GameState.fmt("{ok}")
+		"volantini":
+			vl_given = 0
+			vl_t = 0.0
+			vl_next = 0.3
+			time_left = float(_vl_data().get("tempo", 45))
+			vl_msg = "Tocca quando chi ti guarda è davanti ad Ada." if TouchControls.enabled else "%s quando chi ti guarda è davanti ad Ada." % GameState.fmt("{ok}")
+			_vl_ada()
 		"coincidenze":
 			_cz_restart()
 			cz_msg = "Tocca le corse, una dopo l'altra, da casa di Nadir al lavoro." if TouchControls.enabled else "FRECCE scegli la corsa, %s la prendi." % GameState.fmt("{ok}")
@@ -323,6 +327,8 @@ func touch_scheme() -> String:
 			return "dirs"
 		"bulbs":
 			return "swipe"
+		"volantini":
+			return "tap"
 	return "point"
 
 
@@ -344,12 +350,6 @@ func touch_point(pos: Vector2, step: int) -> void:
 					rate_sel = i
 					_rate_row_pick(i)
 					return
-		return
-	if type == "stanze" and step == 0:
-		for t in _st_targets():
-			if (t[1] as Rect2).has_point(pos):
-				_st_act(t[0])
-				return
 		return
 	if type == "coincidenze" and step == 0:
 		for t in _cz_targets():
@@ -609,8 +609,8 @@ func _process(delta: float) -> void:
 					_info.text = "Trova la commissione ripetuta   Errori: %d" % misses
 			elif type == "pratiche":
 				_info.text = "Pratica %d/%d   Errori: %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
-			elif type == "stanze":
-				_info.text = "Pezzi sistemati: %d/%d   Errori: %d/3" % [st_where.size() - st_where.count(-1), st_where.size(), misses]
+			elif type == "volantini":
+				_vl_step(delta)
 			elif type == "coincidenze":
 				_info.text = "Ore %s   Spesa: %d €   Errori: %d/3" % [_clock(cz_now), _cz_cost(), misses]
 			elif type == "inventory":
@@ -668,7 +668,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
 		return
 	# sul PC i giochi "a dito" si fanno anche col mouse
-	if type in ["inventory", "route", "rate", "pratiche", "stanze", "coincidenze"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
+	if type in ["inventory", "route", "rate", "pratiche", "coincidenze"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
 			and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
 		touch_point((event as InputEventMouseButton).position, 0)
 		return
@@ -698,26 +698,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				_rate_row_pick(rate_sel)
 		return
-	if type == "stanze" or type == "coincidenze":
-		var targets := _st_targets() if type == "stanze" else _cz_targets()
+	if type == "volantini":
+		if event.is_action_pressed("confirm"):
+			_vl_give()
+		return
+	if type == "coincidenze":
+		var targets := _cz_targets()
 		var d := 0
 		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up"):
 			d = -1
 		elif event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
 			d = 1
 		if d != 0:
-			if type == "stanze":
-				st_focus = posmod(st_focus + d, targets.size())
-			else:
-				cz_focus = posmod(cz_focus + d, targets.size())
+			cz_focus = posmod(cz_focus + d, targets.size())
 			Sound.sfx("move")
 		elif event.is_action_pressed("confirm") and not targets.is_empty():
-			var f := st_focus if type == "stanze" else cz_focus
-			var t: Array = targets[clampi(f, 0, targets.size() - 1)]
-			if type == "stanze":
-				_st_act(t[0])
-			else:
-				_cz_act(t[0])
+			var t: Array = targets[clampi(cz_focus, 0, targets.size() - 1)]
+			_cz_act(t[0])
 		return
 	if type == "pratiche":
 		if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
@@ -858,7 +855,7 @@ func _finish(success: bool, partial := false) -> void:
 
 func _draw() -> void:
 	var font := Assets.font()
-	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "stanze", "coincidenze"] else BOX))
+	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze"] else BOX))
 	if type == "route":
 		Art.backdrop(self)
 		Art.panel(self, frame, Color("202b35"), Color("829caa"))
@@ -870,8 +867,8 @@ func _draw() -> void:
 			_draw_rate(font)
 		"pratiche":
 			_draw_pratiche(font)
-		"stanze":
-			_draw_stanze(font)
+		"volantini":
+			_draw_volantini(font)
 		"coincidenze":
 			_draw_coincidenze(font)
 		"timing":
@@ -1077,148 +1074,160 @@ func _draw_rate(font: Font) -> void:
 
 # --- LA PRATICA IMPOSSIBILE (Teo) ------------------------------------------------------
 
-# --- UNA STANZA PER TUTTI (Ada) ----------------------------------------------------------
+# --- VOLANTINAGGIO (Ada) ---------------------------------------------------------------
+# La gente passa da destra a sinistra sul marciapiede; Ada sta in mezzo. Chi ti guarda (?) prende il
+# volantino; chi ha fretta (!), chi è al telefono e la guardia CHEAP no: darlo a loro è un errore.
+# Tutti i numeri (quanti, quanto tempo, quanto vanno veloci, chi passa) sono in data/city.json, "volantini".
 
-func _st_rooms() -> Array:
-	return GameState.city.get("stanze", {}).get("stanze", [])
-
-
-func _st_pieces() -> Array:
-	return GameState.city.get("stanze", {}).get("pezzi", [])
-
-
-func _st_room(r: int) -> Rect2:
-	return Rect2(BIG.position.x + 10 + r * 184, BIG.position.y + 8, 172, 118)
+func _vl_data() -> Dictionary:
+	return GameState.city.get("volantini", {})
 
 
-## Il posto del pezzo i: nel vassoio in basso, o dentro la sua stanza (uno sotto l'altro).
-func _st_piece(i: int) -> Rect2:
-	var r := int(st_where[i])
-	if r < 0:
-		return Rect2(BIG.position.x + 10 + i * 78, BIG.position.y + 140, 72, 40)
-	var k := 0
-	for j in i:
-		if int(st_where[j]) == r:
-			k += 1
-	var room := _st_room(r)
-	return Rect2(room.position.x + 8, room.position.y + 46 + k * 23, room.size.x - 16, 20)
+## La riga dove camminano i piedi, e il pezzo di marciapiede davanti ad Ada.
+func _vl_feet_y() -> float:
+	return BIG.position.y + 176
 
 
-func _st_done_button() -> Rect2:
-	return Rect2(BIG.end.x - 130, BIG.end.y - 46, 120, 36)
+func _vl_zone() -> Rect2:
+	var w := float(_vl_data().get("zona", 44))
+	return Rect2(BIG.get_center().x - w / 2.0, _vl_feet_y() - 70, w, 82)
 
 
-## Cosa si può toccare, in ordine (anche per le frecce): i pezzi, le stanze, FATTO.
-func _st_targets() -> Array:
-	var out: Array = []
-	for i in st_where.size():
-		out.append(["p%d" % i, _st_piece(i)])
-	for r in _st_rooms().size():
-		out.append(["r%d" % r, _st_room(r)])
-	out.append(["done", _st_done_button()])
-	return out
+func _vl_ada() -> void:
+	var ada := CharSprite.new()
+	ada.name = "Ada"
+	ada.sheet = str(GameState.npc_data("ada").get("sheet", "cheap_ada"))
+	ada.anim = "idle_down"
+	ada.scale = Vector2(2, 2)
+	ada.position = Vector2(BIG.get_center().x, _vl_feet_y() - 56)
+	add_child(ada)
 
 
-func _st_act(what: String) -> void:
+func _vl_kind_line(kind: String) -> Dictionary:
+	for k: Dictionary in _vl_data().get("tipi", []):
+		if str(k.get("id", "")) == kind:
+			return k
+	return {}
+
+
+## Fa passare qualcuno. Senza `kind` lo sceglie a caso coi pesi dei dati.
+func _vl_spawn(kind := "", x := -1.0) -> CharSprite:
+	var kinds: Array = _vl_data().get("tipi", [])
+	if kind == "":
+		var tot := 0.0
+		for k: Dictionary in kinds:
+			tot += float(k.get("peso", 1))
+		var r := randf() * tot
+		for k: Dictionary in kinds:
+			r -= float(k.get("peso", 1))
+			if r <= 0.0:
+				kind = str(k["id"])
+				break
+	var info := _vl_kind_line(kind)
+	var w := CharSprite.new()
+	var sheets: Array = info.get("fogli", _vl_data().get("comparse", ["char_02"]))
+	w.sheet = str(sheets.pick_random())
+	w.anim = str(info.get("anim", "walk_left"))
+	w.scale = Vector2(2, 2)
+	w.position = Vector2(BIG.end.x - 24 if x < 0.0 else x, _vl_feet_y())
+	w.set_meta("kind", kind)
+	var sp: Array = info.get("velocita", _vl_data().get("velocita", [40, 60]))
+	w.set_meta("speed", randf_range(float(sp[0]), float(sp[1])) * (1.0 + vl_t * float(_vl_data().get("accelera", 0.01))))
+	var mark := Label.new()
+	mark.text = str(info.get("segno", ""))
+	mark.add_theme_font_override("font", Assets.font())
+	mark.add_theme_font_size_override("font_size", 8)
+	mark.add_theme_color_override("font_color", Color(str(info.get("colore", "ffe14d"))))
+	mark.add_theme_color_override("font_outline_color", Color("1a1420"))
+	mark.add_theme_constant_override("outline_size", 3)
+	mark.position = Vector2(-12, -46)
+	mark.size = Vector2(24, 10)
+	mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	w.add_child(mark)
+	add_child(w)
+	vl_walkers.append(w)
+	return w
+
+
+func _vl_clear() -> void:
+	for w in vl_walkers:
+		w.queue_free()
+	vl_walkers.clear()
+
+
+func _vl_step(delta: float) -> void:
+	vl_t += delta
+	time_left -= delta
+	vl_next -= delta
+	if vl_next <= 0.0:
+		var gap: Array = _vl_data().get("ogni", [0.9, 1.6])
+		vl_next = randf_range(float(gap[0]), float(gap[1]))
+		_vl_spawn()
+	for w in vl_walkers.duplicate():
+		w.position.x -= float(w.get_meta("speed")) * delta
+		if w.position.x < BIG.position.x + 20:
+			vl_walkers.erase(w)
+			w.queue_free()
+	_info.text = "Tempo: %d   Volantini presi: %d/%d   Errori: %d/3" % [int(ceil(time_left)), vl_given, int(_vl_data().get("obiettivo", 8)), misses]
+	if time_left <= 0.0:
+		_finish(false)
+
+
+## Il volantino va a chi è davanti ad Ada (il più vicino). Se non c'è nessuno, non succede niente.
+func _vl_give() -> void:
 	if phase != "play":
 		return
-	if what == "done":
-		_st_check()
-	elif what.begins_with("p"):
-		var i := int(what.substr(1))
-		if int(st_where[i]) >= 0:
-			# un pezzo già in una stanza torna nel vassoio
-			st_where[i] = -1
-			st_sel = i
-		else:
-			st_sel = -1 if st_sel == i else i
-		Sound.sfx("select")
-	elif what.begins_with("r") and st_sel >= 0:
-		var r := int(what.substr(1))
-		var room: Dictionary = _st_rooms()[r]
-		if st_where.count(r) >= int(room.get("max", 3)):
-			st_msg = "Nella stanza %s non c'è più posto." % str(room["nome"]).to_lower()
-			Sound.sfx("deny")
-			return
-		st_where[st_sel] = r
-		st_sel = -1
-		st_msg = ""
-		Sound.sfx("clunk", 1.2)
-
-
-## Va bene ogni distribuzione in cui tutte le stanze si possono usare. Nessuna è "quella giusta".
-func _st_check() -> void:
-	if st_where.has(-1):
-		st_msg = "Restano dei pezzi da sistemare."
-		Sound.sfx("deny")
+	var zone := _vl_zone()
+	var best: CharSprite = null
+	for w in vl_walkers:
+		if not w.has_meta("done") and zone.has_point(w.position - Vector2(0, 8)) and (best == null or absf(w.position.x - zone.get_center().x) < absf(best.position.x - zone.get_center().x)):
+			best = w
+	if best == null:
+		vl_msg = "Davanti ad Ada non c'è nessuno."
+		Sound.sfx("move")
 		return
-	var pieces := _st_pieces()
-	for r in _st_rooms().size():
-		var room: Dictionary = _st_rooms()[r]
-		var ok := false
-		for i in pieces.size():
-			ok = ok or (int(st_where[i]) == r and pieces[i]["tipo"] == room["serve"])
-		if not ok:
-			misses += 1
-			flash = 0.3
-			st_msg = str(room["desc"])
-			Sound.sfx("deny")
-			if misses >= 3:
-				_finish(false)
-			return
-	# com'è diventata la Casa: una riga per ogni pezzo in più
-	var fx: Dictionary = GameState.city.get("stanze", {}).get("effetti", {})
-	var extra: Array = []
-	var counts := [0, 0, 0]
-	for r in _st_rooms().size():
-		var room: Dictionary = _st_rooms()[r]
-		var used_need := false
-		for i in pieces.size():
-			if int(st_where[i]) != r:
-				continue
-			counts[r] += 1
-			if pieces[i]["tipo"] == room["serve"] and not used_need:
-				used_need = true
-				continue
-			extra.append("* " + str(fx.get(room["id"], {}).get(pieces[i]["tipo"], "")))
-	GameState.flags["c5_stanze"] = counts
-	cfg["_extra"] = extra
-	Sound.sfx("stamp")
-	_finish(true)
-
-
-func _draw_stanze(font: Font) -> void:
-	draw_rect(BIG.grow(-4), Color("26302a"))
-	var pieces := _st_pieces()
-	# durante l'introduzione i pezzi non sono ancora sul vassoio
-	if st_where.size() != pieces.size():
+	best.set_meta("done", true)
+	var info := _vl_kind_line(str(best.get_meta("kind")))
+	vl_msg = str(info.get("frase", ""))
+	var mark := best.get_child(0) as Label
+	if bool(info.get("giusto", false)):
+		vl_given += 1
+		mark.text = "OK"
+		mark.add_theme_color_override("font_color", Color("8fe08f"))
+		Sound.sfx("blip", 1.3)
+		if vl_given >= int(_vl_data().get("obiettivo", 8)):
+			GameState.flags["c5_volantini"] = vl_given
+			cfg["_extra"] = ["* %d volantini in mano a gente che li ha letti. Uno è già attaccato in bacheca." % vl_given]
+			Sound.sfx("stamp")
+			_finish(true)
 		return
-	var targets := _st_targets()
-	var focus := "" if TouchControls.enabled or targets.is_empty() else str(targets[clampi(st_focus, 0, targets.size() - 1)][0])
-	for r in _st_rooms().size():
-		var room: Dictionary = _st_rooms()[r]
-		var rr := _st_room(r)
-		Art.panel(self, rr, Color("3a4a3e"), Color("8fae96"))
-		draw_rect(rr, YELLOW if focus == "r%d" % r else Color("8fae96"), false, 2.0)
-		draw_string(font, rr.position + Vector2(0, 16), str(room["nome"]), HORIZONTAL_ALIGNMENT_CENTER, rr.size.x, 11, Color.WHITE)
-		draw_string(font, rr.position + Vector2(0, 32), "serve: %s   (%d/%d)" % [str(room["serve"]), st_where.count(r), int(room.get("max", 3))],
-			HORIZONTAL_ALIGNMENT_CENTER, rr.size.x, 8, Color("c6e1d1"))
-	for i in pieces.size():
-		var pr := _st_piece(i)
-		var col := Color("e8dcc0") if i != st_sel else YELLOW
-		Art.paper(self, pr, col)
-		draw_rect(pr, YELLOW if focus == "p%d" % i else Color("5a4a36"), false, 2.0)
-		var p: Dictionary = pieces[i]
-		if int(st_where[i]) < 0:
-			Art.furniture(self, Rect2(pr.position + Vector2(4, 3), Vector2(pr.size.x - 8, 20)), str(p["tipo"]))
-			draw_string(font, pr.position + Vector2(0, 34), str(p["nome"]), HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, 8, Color("2a2018"))
-		else:
-			Art.furniture(self, Rect2(pr.position + Vector2(3, 2), Vector2(20, 16)), str(p["tipo"]))
-			draw_string(font, pr.position + Vector2(26, 14), "%s (%s)" % [str(p["nome"]), str(p["tipo"])], HORIZONTAL_ALIGNMENT_LEFT, pr.size.x - 30, 8, Color("2a2018"))
-	var b := _st_done_button()
-	PracticeCard.button(self, b, "FATTO", Color("2a8a4a"), font, focus == "done")
-	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 24), st_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 160, 9,
-		Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+	mark.text = "X"
+	mark.add_theme_color_override("font_color", Color("ff7a6a"))
+	misses += 1
+	flash = 0.3
+	Sound.sfx("deny")
+	if misses >= 3:
+		_finish(false)
+
+
+func _draw_volantini(font: Font) -> void:
+	var r := BIG.grow(-4)
+	var feet := _vl_feet_y()
+	# la facciata della Casa Comune, il marciapiede, la strada
+	draw_rect(Rect2(r.position, Vector2(r.size.x, feet - 70 - r.position.y)), Color("6a5a4e"))
+	for k in 6:
+		var win := Rect2(r.position.x + 30 + k * 90, r.position.y + 14, 40, 26)
+		draw_rect(win, Color("9fc4d6"))
+		draw_rect(win, Color("3a2e2a"), false, 2.0)
+	draw_rect(Rect2(r.position.x, feet - 70, r.size.x, 82), Color("b9b0a4"))
+	for k in int(r.size.x / 32.0) + 1:
+		draw_line(Vector2(r.position.x + k * 32, feet - 70), Vector2(r.position.x + k * 32, feet + 12), Color("a39a8e"), 1.0)
+	draw_rect(Rect2(r.position.x, feet + 12, r.size.x, r.end.y - feet - 12), Color("4a4a52"))
+	var zone := _vl_zone()
+	draw_rect(zone, Color(1, 0.88, 0.3, 0.22))
+	draw_rect(zone, YELLOW, false, 1.0)
+	draw_string(font, Vector2(r.position.x + 10, r.end.y - 8), vl_msg, HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 9,
+		Color("ffb0b0") if flash > 0.0 else Color("f0eadc"))
 
 
 # --- IL PERCORSO POSSIBILE (Nadir) -------------------------------------------------------

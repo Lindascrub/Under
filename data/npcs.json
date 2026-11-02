@@ -2531,7 +2531,8 @@
         "title": "Le rate mancanti",
         "intro": [
           "* Sei documenti sparsi sul tavolino della sala d'attesa.",
-          "* Prima mettili in ordine di data, dal più vecchio.", "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Tocca la riga di troppo."
+          "* Prima mettili in ordine di data, dal più vecchio.",
+          "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Tocca la riga di troppo."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2657,30 +2658,29 @@
       ]
     ],
     "helped": [
-      "Domani avremo un posto dove sederci. Che frase tristissima. La stampo su una maglietta."
+      "Il volantino in bacheca è storto. Lo lascio così: sembra più vero."
     ],
     "emote": "dots",
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Ada deve riorganizzare la Casa Comune: tre stanze, sei mobili, ognuno con un'opinione.",
+      "ask": "Ada ha già diviso la Casa Comune in tre stanze: studio, laboratorio, incontri. Ma fuori non lo sa nessuno.",
       "yes": [
-        "Non abbiamo risolto il problema della chiusura.",
-        "Ma almeno domani avremo un posto dove sederci.",
-        "Che frase tristissima.",
-        "Dovrei stamparla su una maglietta."
+        "Otto persone sanno che esistiamo.",
+        "Una ha chiesto se c'è il wifi. C'è. Più o meno.",
+        "Domani ne vengono due. Che è il doppio di uno."
       ],
       "lose": [
-        "Così qualcuno resta in piedi. Di solito sono io.",
-        "Riproviamo? I mobili non hanno fretta. La chiusura sì."
+        "La gente ha fretta. Anch'io avrei fretta, se avessi un posto dove andare.",
+        "Riproviamo? I volantini non scadono. La chiusura sì."
       ],
       "minigame": {
         "music": "aiuto_ada",
-        "type": "stanze",
-        "title": "Una stanza per tutti",
+        "type": "volantini",
+        "title": "Volantinaggio",
         "intro": [
-          "* Tre stanze: Studio, Laboratorio, Incontri. Sei mobili da sistemare.",
-          "* Tocca un mobile, poi la stanza dove metterlo. Ogni stanza ha un bisogno: non c'è una risposta giusta sola."
+          "* In piazza, davanti alla Casa Comune. Ada ha un pacco di volantini: STUDIO, LABORATORIO, INCONTRI. TUTTO GRATIS. ANCORA PER POCO.",
+          "* Dai il volantino a chi ti guarda (?). Non a chi ha fretta (!!), non a chi è al telefono (...), e mai alla guardia CHEAP."
         ],
         "reward": 0,
         "fixed_reward": true,
