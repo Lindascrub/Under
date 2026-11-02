@@ -71,7 +71,13 @@ func talk_ada(_npc_node: Npc) -> bool:
 		await _ada_first()
 	elif _f("c5_assemblea"):
 		await Ui.say([_ada_after_assembly()], "Ada")
+		await _ada_room_offer()
 		return true
+	# chi ha visto la Banca sente la stessa parola: una quota per i servizi della Torre
+	if _f("c4_anomalia") and not _f("c5_ada_quota"):
+		GameState.flags["c5_ada_quota"] = true
+		await Ui.say(["Anche la Casa paga una quota. Per i servizi della Torre. Ho chiesto chi l'ha decisa.",
+			"Mi hanno detto: è sempre stata così."], "Ada")
 	await _ada_menu()
 	return true
 
@@ -127,6 +133,16 @@ func _ada_after_assembly() -> String:
 			return "Ho fatto domanda per la borsa di studio. Per entrare dove studiavo già. Che frase tristissima. Un'altra maglietta."
 		_:
 			return "Abbiamo tempo. Non molto. Abbastanza per sbagliare con calma."
+
+
+## L'offerta di Ada (offerta_ada): dopo l'assemblea, se le stanze le avete sistemate insieme e la
+## Casa non è diventata il centro CHEAP. Una volta sola.
+func _ada_room_offer() -> void:
+	if _f("offerta_ada") or not _f("c5_ada_stanze") or str(GameState.flags.get("c5_esito", "")) == "riconversione":
+		return
+	GameState.flags["offerta_ada"] = true
+	Storia.segna("offerta_ada")
+	await Ui.say(["Una delle stanze resta vuota la notte. Se un giorno ti serve, chiedi. Si paga con un turno di pulizie."], "Ada")
 
 
 ## Ada robot nella Casa Comune: risponde alle domande come un volantino.
@@ -245,8 +261,10 @@ func _bilanci() -> void:
 	var c: int = await Ui.choose("Il rapporto dei bilanci.", ["Leggi le note", "Basta così"])
 	if c != 0:
 		return
+	GameState.flags["c5_nota_riscuotere"] = true
 	var lines: Array = ["* MANUTENZIONE: il tetto, gli impianti, le finestre. Un costo vero: l'edificio ha quarant'anni e li dimostra.",
 		"* CANONE SERVIZI CHEAP: era %s. Con il contratto nuovo è %s. Stesso servizio, prezzo nuovo." % [GameState.euros(old_fee), GameState.euros(fee)],
+		"* Nota: \"Documento di variazione: non disponibile. Ente autorizzato a riscuotere.\"",
 		"* ONERI AMMINISTRATIVI: pratiche, procedure, gestione. Fra le voci: \"PRATICA 7-B, PROCEDURA B-4, SPESE DI GIACENZA\"."]
 	if _f("c4_teo_copia") and not GameState.is_robot("teo"):
 		GameState.flags["c5_fonte_teo"] = true
