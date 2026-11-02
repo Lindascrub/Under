@@ -662,8 +662,15 @@ func on_stairs_step(p: Player, _need: String) -> void:
 		GameState.flags["c4_badge"] = "altro"
 	Ui.cutscene = true
 	p.position.y += 4
-	await Ui.say(["* Ai piedi delle scale, un lettore di badge: USCITA CLIENTI — VERIFICA POSIZIONE.",
-		"* Appoggi il badge."])
+	await Ui.say(["* Ai piedi delle scale, un lettore di badge: USCITA CLIENTI — VERIFICA POSIZIONE."])
+	# il lettore è il nodo Decori/LettoreBadge (si sposta nell'editor): appoggiando il badge si accende
+	var reader := get_node_or_null("Decori/LettoreBadge") as CanvasItem
+	if reader:
+		Sound.sfx("blip", 1.4)
+		var tw := create_tween().set_loops(3)
+		tw.tween_property(reader, "modulate", Color(0.6, 1.6, 0.7), 0.12)
+		tw.tween_property(reader, "modulate", Color.WHITE, 0.12)
+	await Ui.say(["* Appoggi il badge. Il lettore fa bip."])
 	Sound.music_pitch(0.5, 1.2)
 	await get_tree().create_timer(1.2).timeout
 	Sound.music("")
@@ -712,6 +719,38 @@ func on_stairs_step(p: Player, _need: String) -> void:
 
 
 ## I saluti (3c). Con le condizioni nascoste nella proposta a Olga, al posto del saluto c'è lei.
+## Chi viene a salutare sulle scale ci arriva davvero: entra da Punti/ArrivoSaluti (pavimento libero,
+## niente muri in mezzo) e cammina fino al suo punto (Punti/Saluto*), in `time` secondi. Parla quando è arrivata.
+## Se la persona non è nella stanza, resta solo il racconto.
+func _come_to_stairs(id: String, point: String, time: float) -> void:
+	# se la persona c'è due volte (Teo allo sportello e il suo posto vuoto), si muove quella che si vede
+	var n := _npc(id)
+	for o in get_tree().get_nodes_in_group("npc"):
+		if o is Npc and (o as Npc).id == id and (o as Npc).is_visible_in_tree():
+			n = o
+			break
+	var to := get_node_or_null(point) as Node2D
+	var from := get_node_or_null("Punti/ArrivoSaluti") as Node2D
+	if n == null or to == null or from == null or GameState.is_robot(id):
+		return
+	n.set_physics_process(false)
+	if n.is_visible_in_tree():
+		create_tween().tween_property(n, "modulate:a", 0.0, 0.25)
+		await get_tree().create_timer(0.25).timeout
+	n.show()
+	n.global_position = from.global_position
+	n.modulate.a = 0.0
+	create_tween().tween_property(n, "modulate:a", 1.0, time * 0.4)
+	var d := to.global_position - n.global_position
+	var dir := ("right" if d.x > 0 else "left") if absf(d.x) > absf(d.y) else ("down" if d.y > 0 else "up")
+	(n.get_node("Sprite") as AnimatedSprite2D).play("walk_" + dir)
+	create_tween().tween_property(n, "global_position", to.global_position, time)
+	await get_tree().create_timer(time).timeout
+	if is_instance_valid(n):
+		n.global_position = to.global_position
+		n.face("up")
+
+
 func _farewell() -> void:
 	if Storia.olga_ingannata():
 		await _farewell_deceived()
@@ -719,10 +758,12 @@ func _farewell() -> void:
 	var teo_ok := _f("c4_teo_aiutato") and not GameState.is_robot("teo")
 	if _f("c4_olga_contestazione") and teo_ok:
 		GameState.flags["c4_ricevuta_copia"] = true
+		await _come_to_stairs("teo", "Punti/SalutoTeo", 0.8)
 		await Ui.say(["* Teo arriva di corsa con il quaderno."])
 		await Ui.say(["Dammi la ricevuta un secondo."], "Teo")
 		await Ui.say(["* Mette sotto la carta carbone e ricalca. Nell'angolo disegna un supereroe piccolissimo con una borsetta."])
 		await Ui.say(["Una la tieni tu. Una la tengo io, nel cassetto dei fumetti. Lì non la cerca nessuno."], "Teo")
+		await _come_to_stairs("olga", "Punti/SalutoOlga", 1.6)
 		await Ui.say(["* Olga si alza dalla sedia d'attesa con il suo numerino."])
 		await Ui.say(["Chiedi sempre la copia. E leggila due volte.",
 			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello col biscotto. Me lo merito anche io."], "Olga")
@@ -740,6 +781,7 @@ func _farewell() -> void:
 
 func _farewell_deceived() -> void:
 	var who := "Olga"
+	await _come_to_stairs("olga", "Punti/SalutoOlga", 1.2)
 	await Ui.say(["* La ricevuta esce piegata a metà. \"Gli interessi continuano a maturare\" è sul retro.",
 		"* Olga è dietro di te, con la proposta che le hai portato. Piegata a metà nello stesso modo."])
 	await Ui.say(["Io avevo chiesto solo di leggere il contratto."], who)

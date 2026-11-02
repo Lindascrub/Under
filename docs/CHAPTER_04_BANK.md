@@ -119,9 +119,12 @@ RICERCA DOCUMENTO DI CONSENSO... / NESSUN DOCUMENTO TROVATO. Poi la Voce CHEAP: 
 capire un debito per pagarlo. È necessario soltanto continuare."
 
 **4.12b Le scale, nella storia approvata** (`docs/STORIA_BANCA_CIMA.md`, sezione 3). Prima del display, il
-lettore di badge (raccontato, non è un nodo). Il gradino imposta `c4_anomalia`; l'introduzione cambia se il
+lettore di badge: è il nodo `Decori/LettoreBadge` sul vetro a destra del tornello, e quando appoggi il badge
+lampeggia verde con un bip. Il gradino imposta `c4_anomalia`; l'introduzione cambia se il
 terminale del conto è stato consultato. Poi una scelta: **chiedere una verifica** (`c4_verifica`, col suo numero
 d'ordine) oppure tenere **solo il riepilogo** (`c4_riepilogo`). Poi i saluti (`_farewell`):
+- chi saluta arriva davvero sotto le scale: compare in `Punti/ArrivoSaluti` e cammina fino a `Punti/SalutoTeo` /
+  `Punti/SalutoOlga` (spostali nell'editor), poi parla;
 - chi ha aiutato tutti riceve da Teo una copia della richiesta (`c4_ricevuta_copia`); a metà strada, la riga di Nives;
 - se la proposta del Capo a Olga era **chiara**, Olga dice se le conviene o no (`Storia.olga_conviene`, i costi
   attuali in `data/bank.json`, `proposta_olga`);

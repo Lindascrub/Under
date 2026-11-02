@@ -6931,6 +6931,11 @@ position = Vector2(560, 53)
 target = "res://scenes/world/office.tscn"
 need = "0"
 
+[node name="LettoreBadge" type="Sprite2D" parent="Decori"]
+position = Vector2(601, 44)
+texture = ExtResource("22_pj7jm")
+metadata/prop_talk_skip = true
+
 [node name="ScaleGiu" parent="Decori" unique_id=559404362 instance=ExtResource("stairs_down_tscn")]
 position = Vector2(208, 240)
 target = "res://chapters/c3/mercato.tscn"
@@ -8228,5 +8233,14 @@ durata_ritorno = 0.65
 
 [node name="UscitaOlga" type="Marker2D" parent="Punti"]
 position = Vector2(184, 190)
+
+[node name="ArrivoSaluti" type="Marker2D" parent="Punti"]
+position = Vector2(470, 150)
+
+[node name="SalutoTeo" type="Marker2D" parent="Punti"]
+position = Vector2(596, 80)
+
+[node name="SalutoOlga" type="Marker2D" parent="Punti"]
+position = Vector2(552, 84)
 
 [editable path="Mondo/PostoSportello"]
