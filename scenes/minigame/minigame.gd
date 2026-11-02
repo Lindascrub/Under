@@ -925,7 +925,7 @@ func _draw_bulbs(font: Font) -> void:
 	var lit := bulb == "buona" or (bulb == "fioca" and int(bulb_t * 9) % 3 != 0)
 	Art.bulb(self, c, bulb, 3, lit)
 	if bulb == "fioca":
-		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/2)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/2)") % bulb_fix, HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/%d)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
 
 
 # --- LE RATE MANCANTI (Olga) ------------------------------------------------------
