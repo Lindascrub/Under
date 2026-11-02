@@ -55,6 +55,8 @@ func _run() -> void:
 	if _want("tocco"):
 		_section = "tocco"
 		await _test_tocco()
+	if _want("citta"):
+		print("SCHERMATE: in Città raggiunti camminando %d; non raggiunti: %s; OK non arriva: %s" % [_camminate, str(_non_raggiunti), str(_ok_non_arriva)])
 	if _min_row < 1000.0:
 		print("SCHERMATE: riga di scelta più bassa %.0f px su 360 (su un telefono 1080p: %.0f px veri)" % [_min_row, _min_row * 3.0])
 	print("SCHERMATE: %d immagini in %s" % [_n, ProjectSettings.globalize_path(_out)])
@@ -208,6 +210,137 @@ func _check_ui() -> void:
 		var dlg: Panel = Ui.get("_box")
 		if r.intersects(Rect2(dlg.position, dlg.size)):
 			_problemi.append("%s #%d: le scelte coprono il riquadro del testo" % [_section, _n])
+
+
+# --- Città: prima di ogni dialogo il giocatore ci arriva camminando, coi tasti di movimento -----------
+
+const CHI := {"_rina_window": "rina", "_nadir_after": "nadir", "_leda": "leda", "_amir": "amir"}
+var _camminate := 0
+var _non_raggiunti: Array[String] = []
+var _ok_non_arriva: Array[String] = []
+
+
+func _c5_call(m: Room, method: String, args: Array = []) -> Room:
+	if _section.begins_with("citta"):
+		# Leda e Amir sono in piazza solo il giorno della protesta (citta_c5._visitors): come nel gioco
+		var id: String = CHI.get(method, "")
+		if id != "" and _target_of(m, method, args, "") is Marker2D:
+			GameState.flags["c5_protesta"] = true
+			m = await _go(Router.CITY, "from_below")
+		await _walk_to_target(m, method, args)
+	return await super(m, method, args)
+
+
+func _c5_talk(id: String) -> Room:
+	if _section.begins_with("citta"):
+		await _walk_to_target(get_tree().current_scene as Room, "", [], id)
+	return await super(id)
+
+
+## Chi o cosa c'è dietro al dialogo: la persona, il posto di lavoro o l'oggetto con quel metodo.
+func _target_of(m: Room, method: String, args: Array, id: String) -> Node2D:
+	if id == "":
+		id = CHI.get(method, "")
+	if id != "":
+		for n in get_tree().get_nodes_in_group("npc"):
+			if n.get("id") == id and (n as Node2D).is_visible_in_tree():
+				return n
+		var people: Variant = m.get("people")
+		if people is Dictionary and (people as Dictionary).has(id.capitalize()):
+			return people[id.capitalize()]
+		return m.get_node_or_null("Posti/Posto" + id.capitalize()) as Node2D
+	for n in m.find_children("*", "Node2D", true, false):
+		if method == "_station" and args.size() > 0 and n.get("job") != null and str(n.get("job")) == str((args[0] as Dictionary).get("id", "")):
+			return n
+		if n.get("method") != null and str(n.get("method")) == method:
+			return n
+	return null
+
+
+func _walk_to_target(m: Room, method: String, args: Array, id := "") -> void:
+	var t := _target_of(m, method, args, id)
+	var what := id if id != "" else method
+	if t == null or m.player == null:
+		_non_raggiunti.append(what + " (non trovato)")
+		return
+	if not await _walk(m, t.global_position):
+		_non_raggiunti.append(what)
+		return
+	_camminate += 1
+	# da dove sei, il tasto OK raggiungerebbe proprio lei? (come nel gioco: Player._find_target)
+	var hit: Node = m.player.call("_find_target")
+	# i posti di lavoro e gli oggetti diventano un Interactable con la stessa azione: vale quella
+	var act: Variant = hit.get("action") if hit != null else null
+	if act is Callable and (act as Callable).get_method() in [method, "use_station"]:
+		return
+	# un'azione scritta come lambda: vale se il punto toccato è proprio sopra la cosa giusta
+	if hit is Node2D and (hit as Node2D).global_position.distance_to(t.global_position) <= 20.0:
+		return
+	if hit != t and not (hit != null and t.is_ancestor_of(hit)) and not (hit != null and hit.is_ancestor_of(t)) \
+			and not (t.has_meta("spot") and hit == t.get_meta("spot")):
+		_ok_non_arriva.append("%s (OK prende %s a %.0f px)" % [what, hit.name if hit else "niente", (hit as Node2D).global_position.distance_to(t.global_position) if hit is Node2D else -1.0])
+
+
+## Cammina fino a vicino a `goal`: percorso su una griglia di 8 px (le caselle libere le dice la fisica),
+## poi i tasti di movimento premuti davvero, punto per punto.
+func _walk(m: Room, goal: Vector2) -> bool:
+	var p := m.player
+	var shape := p.get_node("Collisione") as CollisionShape2D
+	var q := PhysicsShapeQueryParameters2D.new()
+	q.shape = shape.shape
+	q.exclude = [p.get_rid()]
+	q.collision_mask = p.collision_mask
+	var space := p.get_world_2d().direct_space_state
+	var c := 8.0
+	var region := Rect2(p.global_position, Vector2.ZERO).expand(goal).grow(160)
+	var grid := AStarGrid2D.new()
+	grid.region = Rect2i(Vector2i((region.position / c).floor()), Vector2i((region.size / c).ceil()) + Vector2i.ONE)
+	grid.cell_size = Vector2(c, c)
+	grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	grid.update()
+	for x in range(grid.region.position.x, grid.region.end.x):
+		for y in range(grid.region.position.y, grid.region.end.y):
+			q.transform = Transform2D(0, Vector2(x, y) * c + shape.position)
+			if not space.intersect_shape(q, 1).is_empty():
+				grid.set_point_solid(Vector2i(x, y))
+	var from := Vector2i((p.global_position / c).round())
+	grid.set_point_solid(from, false)
+	# arrivo: a fianco della persona (16 px), così non la copri; poi sotto, poi più lontano
+	var best := Vector2i(-99999, -99999)
+	var gcell := Vector2i((goal / c).round())
+	for off: Vector2i in [Vector2i(-2, 0), Vector2i(2, 0), Vector2i(0, 2), Vector2i(-2, 1), Vector2i(2, 1),
+			Vector2i(0, 3), Vector2i(-3, 0), Vector2i(3, 0), Vector2i(0, -2), Vector2i(0, 4), Vector2i(-4, 0), Vector2i(4, 0)]:
+		var cc := gcell + off
+		if grid.is_in_boundsv(cc) and not grid.is_point_solid(cc) and not grid.get_id_path(from, cc).is_empty():
+			best = cc
+			break
+	if best.x == -99999:
+		return false
+	for wp: Vector2i in grid.get_id_path(from, best):
+		var target := Vector2(wp) * c
+		var n := 0
+		while p.global_position.distance_to(target) > 2.0 and n < 90:
+			var d := target - p.global_position
+			_press("move_right", d.x > 1.0)
+			_press("move_left", d.x < -1.0)
+			_press("move_down", d.y > 1.0)
+			_press("move_up", d.y < -1.0)
+			await get_tree().physics_frame
+			n += 1
+	for a: String in ["move_right", "move_left", "move_down", "move_up"]:
+		Input.action_release(a)
+	var look := goal - p.global_position
+	p.call("face", ("right" if look.x > 0 else "left") if absf(look.x) > absf(look.y) else ("down" if look.y > 0 else "up"))
+	for i in 20:
+		await get_tree().process_frame
+	return p.global_position.distance_to(goal) < 56.0
+
+
+func _press(a: String, on: bool) -> void:
+	if on:
+		Input.action_press(a)
+	else:
+		Input.action_release(a)
 
 
 ## Come nel gioco: il giocatore è sul primo gradino quando parte la scena delle scale.
