@@ -1,5 +1,6 @@
 extends Control
-## Schermata del titolo.
+## Schermata del titolo (scenes/main_menu.tscn): Titolo, Sottotitolo, Voci (il menu), Persone, Crediti,
+## e SceltaNome (Velo, Domanda, Campo, Ok, Risposta), nascosta finché non scegli "Nuova partita".
 
 const INTRO := [
 	"Tuo padre se n'è andato in silenzio, come faceva tutto.",
@@ -7,40 +8,22 @@ const INTRO := [
 	"La lettera della banca diceva solo:\n\"Si presenti alla Torre CHEAP. Piano -5.\"",
 ]
 
+## Dopo tre nomi vuoti, quanti secondi resta la risposta prima di chiamarti "Tu".
+@export var attesa_nome_vuoto := 2.2
+
 var _options: Array[String] = []
 var _sel := 0
-var _list: Label
+@onready var _list: Label = $Voci
 var _locked := false
 
 
 func _ready() -> void:
 	Ui.show_hud(false)
 	Ui.cutscene = false
-	var bg := ColorRect.new()
-	bg.color = Color("0b0a10")
-	bg.size = Vector2(640, 360)
-	add_child(bg)
-
-	var title := _label("CHEAP", 64, Color.WHITE)
-	title.position = Vector2(0, 36)
-	var sub := _label("quanto costa diventare ricchi?", 16, Color("8a8494"))
-	sub.position = Vector2(0, 116)
-
-	_list = _label("", 18, Color.WHITE)
-	_list.position = Vector2(0, 160)
-
-	# Le persone del quartiere: le stesse che il giocatore incontrerà.
-	for i in 7:
-		var s := AnimatedSprite2D.new()
-		s.sprite_frames = Assets.character("char_%02d" % (i + 2))
-		s.scale = Vector2(2, 2)
-		s.position = Vector2(176 + i * 48, 292)
-		s.play("idle_down")
-		s.frame = i % 6
-		add_child(s)
-
-	var credits := _label("Grafica: LimeZu (limezu.itch.io)", 11, Color("5c5666"))
-	credits.position = Vector2(0, 338)
+	# Le persone del quartiere: le stesse che il giocatore incontrerà (ognuna a un passo diverso).
+	var people := $Persone.get_children()
+	for i in people.size():
+		(people[i] as AnimatedSprite2D).frame = i % 6
 
 	if GameState.has_save():
 		_options.assign(["Continua", "Nuova partita", "Audio", "Esci"])
@@ -51,32 +34,13 @@ func _ready() -> void:
 
 ## Prima di cominciare: come ti chiami? (Sul telefono si apre la tastiera.)
 func _ask_name() -> String:
-	var shade := ColorRect.new()
-	shade.color = Color(0, 0, 0, 0.96)
-	shade.size = Vector2(640, 360)
-	add_child(shade)
-	var q := _label("Come ti chiami?", 22, Color.WHITE)
-	q.position = Vector2(0, 110)
-	var edit := LineEdit.new()
-	edit.max_length = 12
-	edit.placeholder_text = "il tuo nome"
-	edit.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	edit.add_theme_font_size_override("font_size", 20)
-	edit.position = Vector2(220, 150)
-	edit.size = Vector2(200, 36)
-	add_child(edit)
-	var ok := Button.new()
-	ok.text = "Comincia"
-	ok.add_theme_font_size_override("font_size", 18)
-	ok.position = Vector2(260, 200)
-	ok.size = Vector2(120, 34)
-	add_child(ok)
+	var screen := $SceltaNome as Control
+	var edit := $SceltaNome/Campo as LineEdit
+	var ok := $SceltaNome/Ok as Button
+	var reply := $SceltaNome/Risposta as Label
+	screen.visible = true
 	edit.grab_focus()
 	# sotto, la torre risponde (come in Undertale: il nome non è mai solo un nome)
-	var reply := _label("", 14, Color("c8c0d0"))
-	reply.position = Vector2(20, 246)
-	reply.size = Vector2(600, 60)
-	reply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var done := [false]
 	edit.text_submitted.connect(func(_t: String) -> void: done[0] = true)
 	ok.pressed.connect(func() -> void: done[0] = true)
@@ -98,7 +62,7 @@ func _ask_name() -> String:
 			if empty >= EMPTY_REPLIES.size():
 				reply.text = "Va bene. Ti chiameremo \"Tu\". Come tutti quelli che non hanno tempo per un nome."
 				Sound.sfx("deny", 0.7)
-				await get_tree().create_timer(2.2).timeout
+				await get_tree().create_timer(attesa_nome_vuoto).timeout
 				who = "Tu"
 				break
 			reply.text = EMPTY_REPLIES[empty]
@@ -124,8 +88,7 @@ func _ask_name() -> String:
 			edit.grab_focus()
 			continue
 		break
-	for n in [shade, q, edit, ok, reply]:
-		n.queue_free()
+	screen.visible = false
 	return who
 
 
@@ -203,23 +166,11 @@ const SPECIAL_NAMES := {
 }
 
 
-func _label(text: String, size: int, color: Color) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.size = Vector2(640, size + 12)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", color)
-	add_child(l)
-	return l
-
-
 func _render() -> void:
 	var lines: Array[String] = []
 	for i in _options.size():
 		lines.append(("> %s <" if i == _sel else "%s") % _options[i])
 	_list.text = "\n".join(lines)
-	_list.size = Vector2(640, 30 * _options.size())
 
 
 func _unhandled_input(event: InputEvent) -> void:
