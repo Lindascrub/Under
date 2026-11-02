@@ -1336,7 +1336,7 @@ func _draw_coincidenze(font: Font) -> void:
 	var d := _cz_data()
 	draw_string(font, BIG.position + Vector2(14, 18), "PARTENZE   ·   Nadir è a %s alle %s   ·   si entra alle %s   ·   %d € al giorno" % [
 		_cz_stop_name(cz_at), _clock(cz_now), str(d.get("entrata", "8:00")), int(d.get("budget", 6))], HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 28, 9, YELLOW)
-	var cols := [0, 40, 130, 250, 370, 420, 460]
+	var cols := [0, 40, 130, 230, 330, 375, 405]
 	var head := ["PARTE", "LINEA", "DA", "A", "ARRIVA", "€", "NOTE"]
 	for k in head.size():
 		draw_string(font, BIG.position + Vector2(14 + cols[k], 36), head[k], HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("7f93a3"))
@@ -1354,9 +1354,9 @@ func _draw_coincidenze(font: Font) -> void:
 		var col := YELLOW if taken else (Color("f2ead8") if here else Color("8a98a4"))
 		var stato := str(c.get("stato", ""))
 		var vals := [str(c["parte"]), str(c["linea"]), _cz_stop_name(int(c["da"])), _cz_stop_name(int(c["a"])), str(c["arriva"]),
-			str(c.get("euro", 0)), "SOPPRESSA" if stato == "soppressa" else ("SOLO BADGE" if stato == "badge" else str(c.get("nota", "")))]
+			str(int(c.get("euro", 0))), "SOPPRESSA" if stato == "soppressa" else ("SOLO BADGE" if stato == "badge" else str(c.get("nota", "")))]
 		for i in vals.size():
-			var w := (cols[i + 1] - cols[i] - 4) if i + 1 < cols.size() else BIG.size.x - 34 - cols[i]
+			var w: float = (cols[i + 1] - cols[i] - 4) if i + 1 < cols.size() else BIG.size.x - 34 - cols[i]
 			draw_string(font, Vector2(r.position.x + 4 + cols[i], r.position.y + 12), vals[i], HORIZONTAL_ALIGNMENT_LEFT, w, 8,
 				Color("ff7a6a") if (i == 6 and stato != "") else col)
 	PracticeCard.button(self, _cz_reset_button(), "RICOMINCIA", Color("4a5a6a"), font, focus == "reset", 11)

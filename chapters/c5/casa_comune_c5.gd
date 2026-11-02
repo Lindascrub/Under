@@ -13,11 +13,16 @@ extends EditorRoom
 
 const CITY_LOGIC := preload("res://chapters/c5/citta_c5.gd")
 const ANTENNA := "res://art/c4/antenna_robot.png"
-const EXIT := Rect2i(3, 11, 2, 1)
+
+## Quanto la telecamera scende sotto il pavimento, per vedere la porta d'ingresso nel muro in basso.
+@export var vista_sotto := 16.0
 
 
 func setup() -> void:
-	add_exit(EXIT, Router.CITY, "from_casa")
+	# si esce dalla porta d'ingresso (Decori/PortaIngresso): basta spostarla nell'editor
+	var ingresso := get_node("Decori/PortaIngresso") as Sprite2D
+	add_exit(Rect2i(Vector2i(floori(ingresso.position.x / T), floori((ingresso.position.y - 17.0) / T)), Vector2i.ONE), Router.CITY, "from_casa")
+	cam_rect = cam_rect.grow_individual(0, 0, 0, vista_sotto)
 	if _f("c5_protesta"):
 		var door := find_child("PortaArchivio", true, false)
 		if door:
