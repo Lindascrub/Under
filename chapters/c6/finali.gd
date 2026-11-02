@@ -22,8 +22,8 @@ const ROLES := {
 	"servizi": {"name": "I SERVIZI", "fit": ["ada", "leda", "rina", "mina"]},
 	"turni": {"name": "I TURNI", "fit": ["nadir", "amir", "fermo", "ercole", "bulbo"]},
 }
-const FAMILY_NAMES := {"A": "IL PADRONE", "B": "UN ALTRO DOMANI", "C": "NESSUNO SALE DA SOLO"}
-const VARIANT_NAMES := {"A1": "L'ATTICO", "A2": "IL DIRIGENTE CHE CAMBIA LE COSE", "B1": "LA PARTENZA",
+const FAMILY_NAMES := {"A": "PRENDERE LA DIREZIONE", "B": "IL TEMPO CHE RESTA", "C": "NESSUNO SALE DA SOLO"}
+const VARIANT_NAMES := {"A1": "ADESSO CHIAMI TU", "A2": "IL DIRIGENTE CHE CAMBIA LE COSE", "A3": "IL TELEFONO SQUILLA ANCORA", "B1": "LA PARTENZA",
 	"B2": "LE PICCOLE ORE", "C1": "LA PICCOLA COMUNITÀ", "C2": "LA TRASFORMAZIONE DELLA TORRE", "C3": "IL PROGETTO INCOMPLETO"}
 
 
@@ -90,6 +90,9 @@ static func facts() -> Dictionary:
 		"casa_open": RULES.casa_open(str(sm["casa"])),
 		"improved": bool(sm["wages_up"]) or bool(sm["services_up"]),
 		"rule_changed": str(sm["debt_rule"]) != "conservare" and str(sm["debt_rule"]) != "",
+		# A1: "Conserva" scelto mentre un'altra regola era aperta. Un vecchio salvataggio non lo sa: non vale.
+		"kept_by_choice": str(sm["debt_rule"]) == "conservare" and bool(st.get("debt_other_open", false)),
+		"contested": _f("c6_contestazione"),
 	}
 
 
@@ -99,7 +102,9 @@ static func variant_rules() -> Dictionary:
 		"A": [
 			["A2", "stipendi o servizi migliorati, almeno 2 legami, una regola dei debiti cambiata, attribuzione globale rifiutata",
 				func(x: Dictionary) -> bool: return x["improved"] and x["bonds"] >= 2 and x["rule_changed"] and not x["power"]],
-			["A1", "altrimenti", func(_x: Dictionary) -> bool: return true],
+			["A1", "al ciclo 3 \"Conserva il sistema dei debiti\" scelto mentre almeno un'altra regola era aperta",
+				func(x: Dictionary) -> bool: return x.get("kept_by_choice", false)],
+			["A3", "altrimenti", func(_x: Dictionary) -> bool: return true],
 		],
 		"B": [
 			["B2", "almeno 2 legami (persone a cui tornare, un tempo da riprendersi)",
@@ -130,14 +135,76 @@ static func decide(selected: String, x := {}) -> Dictionary:
 	return {"family": family, "variant": variant, "debt_status": debt_status(family, x), "governance_status": governance(family, variant, x)}
 
 
-## Cosa succede al debito personale. Solo A lo annulla (una volta); B lo contesta se ci sono prove.
+## Il TUO debito (docs/STORIA_BANCA_CIMA.md, sezione 5). Solo A lo annulla; in C2 è in revisione se la
+## revisione è stata adottata. Altrimenti è "contestato" solo con la contestazione fatta alla Cima
+## (c6_contestazione): la richiesta di verifica, da sola, non basta.
 static func debt_status(family: String, x: Dictionary) -> String:
-	match family:
-		"A":
-			return "annullato"
-		"B":
-			return "contestato" if x["evidence"] >= 2 else "registrato"
-	return "in_revisione" if x["policy"]["debt_rule"] == "revisione" else ("contestato" if x["evidence"] >= 2 else "registrato")
+	if family == "A":
+		return "annullato"
+	if family == "C" and _c2(x) and str(x["policy"]["debt_rule"]) == "revisione":
+		return "in_revisione"
+	return "contestato" if x.get("contested", false) else "registrato"
+
+
+static func _c2(x: Dictionary) -> bool:
+	return (variant_rules()["C"][0][2] as Callable).call(x)
+
+
+## Le decisioni dei tre cicli diventano vere solo in A (le adotti tu) e in C2 (il governo condiviso).
+## Negli altri finali vale la distribuzione della Presidente e la regola dei debiti di prima.
+static func in_force(family: String, variant: String) -> bool:
+	return family == "A" or variant == "C2"
+
+
+## Il riassunto che i finali mostrano: quello dei cicli se è in vigore, se no quello di prima
+## (stipendi 40, servizi 20, manutenzione 25, riserve 15; debiti conservati; la Casa Comune
+## com'è uscita dal capitolo 5).
+static func effective_summary(family: String, variant: String) -> Dictionary:
+	if in_force(family, variant):
+		return RULES.summary(turn_state())
+	var sm := RULES.summary(RULES.new_state())
+	sm["casa"] = RULES.casa_after("niente")
+	sm["debt_rule"] = "conservare"
+	return sm
+
+
+## I debiti degli altri: "registrati", "interessi" (allo 0,5%), "revisione" o "alternative".
+static func others_debts(family: String, variant: String) -> String:
+	var rule := str(effective_summary(family, variant)["debt_rule"])
+	return "registrati" if rule in ["conservare", ""] else rule
+
+
+# --- il finale B: ogni pezzo dalla sua fonte (docs/STORIA_BANCA_CIMA.md, sezione 6 e nota 2) ----------
+
+const HOME_OFFERS := ["ada", "rina", "fermo"]
+const WORK_OFFERS := ["nadir", "leda", "amir"]
+
+
+## Le offerte sentite davvero (flag offerta_<id>), dalla più recente. Un liberato offre solo da libero.
+static func offers(ids: Array) -> Array:
+	var out: Array = []
+	for id: String in ids:
+		if _f("offerta_" + id) and not GameState.is_robot(id) and (id != "fermo" or id in GameState.freed):
+			out.append(id)
+	out.sort_custom(func(a: String, b: String) -> bool: return int(GameState.flags.get("offerta_%s_seq" % a, 0)) > int(GameState.flags.get("offerta_%s_seq" % b, 0)))
+	return out
+
+
+## Chi manda "Ci sei stasera?": il legame più recente, poi chi ha fatto un'offerta, poi "" (la vicina).
+static func evening_sender() -> String:
+	var b := bonds()
+	if not b.is_empty():
+		b.sort_custom(func(a: String, c: String) -> bool: return _bond_order(a) > _bond_order(c))
+		return b[0]
+	var o := offers(HOME_OFFERS + WORK_OFFERS)
+	return o[0] if not o.is_empty() else ""
+
+
+## Quando è nato il legame: il numero del contatore se c'è, se no l'ordine degli aiuti (salvataggi vecchi).
+static func _bond_order(id: String) -> int:
+	if GameState.flags.has("aiuto_%s_seq" % id):
+		return 1000 + int(GameState.flags["aiuto_%s_seq" % id])
+	return GameState.helped_ids.find(id)
 
 
 static func governance(family: String, variant: String, x: Dictionary) -> String:

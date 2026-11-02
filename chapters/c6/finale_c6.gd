@@ -49,7 +49,12 @@ func _ready() -> void:
 		Router.goto(CIMA, "desk")
 		return
 	out = d["outcome"]
-	sm = RULES.summary(FINALI.turn_state())
+	# un salvataggio fatto prima delle regole nuove: il finale si ricalcola con quello che il salvataggio sa
+	if not out.has("engine"):
+		out = FINALI.decide(str(d["final_decision"].get("selected", out.get("family", "B"))))
+		out["engine"] = 2
+		d["outcome"] = out
+	sm = FINALI.effective_summary(str(out.get("family", "")), str(out.get("variant", "")))
 	Ui.cutscene = true
 	Ui.show_hud(false)
 	layer = CanvasLayer.new()
@@ -178,6 +183,8 @@ func _fade_title(top: String, title: String) -> void:
 
 
 # --- passo 0: il finale ------------------------------------------------------------------------------
+# Le scene seguono docs/STORIA_BANCA_CIMA.md, sezioni 5 e 6. Cosa vale davvero nella Torre lo dice
+# FINALI.effective_summary(): le decisioni dei cicli solo in A e C2, altrimenti le regole di prima.
 
 func family_scene() -> void:
 	var fam := str(out.get("family", "B"))
@@ -197,18 +204,36 @@ func family_scene() -> void:
 			await Ui.say(["* La Presidente timbra il documento.", "* DEBITO PERSONALE: 0 €."])
 			await Ui.say(["SEI LIBERO!"], VOICE)
 			await Ui.say(["Mi raccomando.", "La macchina del caffè funziona soltanto se la colpisci due volte."], PRES)
-			pres.queue_free()
-			Sound.sfx("door")
-			await Ui.say(["* La Presidente lascia l'ufficio. Non si volta."])
-			if var_ == "A2":
-				_actor("char_13", 420, true, false, "idle_left")
-				await Ui.say(["* Più tardi entra Nives. Ha un badge in mano, per abitudine."])
-				await Ui.say(["Posso chiederti una cosa?", "Quando non ci sarai più…", "Chi deciderà al posto tuo?"], NIVES)
-			else:
-				await Ui.say(["IL TUO TEMPO È ORA COMPLETAMENTE TUO!"], VOICE)
-				await Ui.say(["HAI 137 DECISIONI IN ATTESA."], VOICE)
-				Sound.sfx("drring")
-				await Ui.say(["* Il telefono squilla."])
+			match var_:
+				"A2":
+					pres.queue_free()
+					Sound.sfx("door")
+					await Ui.say(["* La Presidente lascia l'ufficio. Non si volta."])
+					await Ui.say([printer_line(str(sm["debt_rule"]))] + debt_lines())
+					_actor("char_13", 420, true, false, "idle_left")
+					await Ui.say(["* Più tardi entra Nives. Ha un badge in mano, per abitudine."])
+					await Ui.say(["Posso chiederti una cosa?", "Quando non ci sarai più…", "Chi deciderà al posto tuo?"], NIVES)
+				"A1":
+					await Ui.say(["* L'ufficio. Il tuo debito: annullato. Il timbro ANNULLATO è sulla scrivania, usato una volta.",
+						"* La Presidente esce con una scatola."])
+					await Ui.say(["Le chiavi del salottino. I cuscini sono ancora nella plastica."], PRES)
+					pres.queue_free()
+					Sound.sfx("blip", 0.6)
+					await Ui.say(["* Vrrr. La stampante butta fuori un fascicolo. OBBLIGO DI ESISTENZA. Un nome nuovo. 7.000.000.000 €.",
+						"* Il telefono ha un solo tasto: FONDO. Lo premi.",
+						"* Dall'altra parte qualcuno respira forte, come chi ha appena pedalato.", "* \"...Pronto?\""])
+					await Ui.choose("", ["È tutto molto semplice!"])
+					await Ui.say(["* Nero."])
+				_:
+					pres.queue_free()
+					var a3: Array = ["* L'ufficio. Il tuo debito: annullato. " + printer_line(str(sm["debt_rule"])).trim_prefix("* ")]
+					if bool(d["boss"]["global_credit_accepted"]):
+						a3.append("* Sui registri del lavoro della Torre c'è il tuo nome. Su tutti.")
+					a3.append("* Sei solo alla scrivania. La Presidente ha lasciato le chiavi del salottino. I cuscini sono ancora nella plastica.")
+					await Ui.say(a3)
+					Sound.sfx("drring")
+					await Ui.say(["* Il telefono suona. Tasto FONDO.", "* Rispondi. \"Pronto?\" Dall'altra parte qualcuno parla a lungo.",
+						"* Non dici \"È tutto molto semplice\". Non dici niente. Prendi una penna.", "* Nero."])
 		"B":
 			await Ui.say(["Davvero non vuoi restare?"], PRES)
 			await Ui.choose("Cosa rispondi?", ["Ho già lavorato abbastanza.", "Voglio fare qualcos'altro.", "Non voglio decidere per tutti."], PRES)
@@ -218,43 +243,18 @@ func family_scene() -> void:
 			_actor(PLAYER_SHEET, 300, false, false, "idle_right")
 			await Ui.say(["* La stazione. Un binario, un tabellone che per una volta non dice PREMIUM."])
 			await Ui.say(_departure_lines())
-			if var_ == "B2":
-				var c: int = await Ui.choose("COSA VUOI FARE DOMANI?", ["Dormire fino a tardi.", _visit_option(), "Quella cosa che volevo fare prima di salire."])
-				await Ui.say([["* Domani dormi. Fino a tardi. Nessuno ti chiama.", _visit_line(), "* Domani ricominci da quella cosa. Piano. Senza un badge."][c]])
+			await _b_scene()
 		_:
 			await Ui.say(["Quindi…", "Vorresti che le persone che lavorano qui decidessero anche come funziona il posto?", "Interessante.",
 				"Le riunioni saranno terribili."], PRES)
 			await Ui.say(_roles_lines())
 			match var_:
 				"C2":
-					_clear()
-					_floor_strip(Color("3a2450"))
-					var t := TextureRect.new()
-					t.texture = load(ART + "tavoli_condivisi.png")
-					t.position = Vector2(272, 150)
-					t.scale = Vector2(2, 2)
-					stage.add_child(t)
-					await Ui.say(["* Nel corso dei mesi la vecchia scrivania viene smontata. Al suo posto, tavoli condivisi."])
-					_actor("char_13", 200, true)
-					await Ui.say(["Quindi adesso chi firma?"], NIVES)
-					if FINALI.bonded("teo") and not GameState.is_robot("teo"):
-						_actor(_sheet("teo"), 440, true, false, "idle_down", "teo")
-						await Ui.say(["Dipende da cosa dobbiamo firmare."], "Teo")
-					else:
-						await Ui.say(["* Qualcuno, dal fondo: \"Dipende da cosa dobbiamo firmare.\""])
-					await Ui.say(["Sapevo che sarebbe diventato complicato."], NIVES)
+					await _c2_scene()
 				"C3":
-					await Ui.say(["* L'assemblea si fa. Nell'ufficio enorme, per una volta, le sedie non bastano.",
-						"* Si parla per ore. Non si raggiunge un accordo generale."])
-					await Ui.say(["Non avete deciso."], PRES)
-					_actor("char_13", 200, true)
-					await Ui.say(["Non ancora."], NIVES)
+					await _c3_scene()
 				_:
-					await Ui.say(["* Nasce un progetto: piccolo, indipendente, in un piano che nessuno usava. La Torre continua a funzionare, lì accanto.",
-						"* Chi entra, decide. Chi decide, poi pulisce."])
-					if FINALI.met("leda") and not GameState.is_robot("leda"):
-						_actor(_sheet("leda"), 440, true, false, "idle_down", "leda")
-						await Ui.say(["Non saprei.", "Però oggi qualcuno mi ha aiutato a chiudere il negozio."], "Leda")
+					await _c1_scene()
 	await _final_line(final_line(var_))
 
 
@@ -289,16 +289,40 @@ func _final_line(line: String) -> void:
 	await tw2.finished
 
 
-## B: cosa ti porti alla stazione (soldi, prove, persone vere) e cosa succede al debito.
+# --- la stampante e i due debiti (sezione 5) ---------------------------------------------------------
+
+## La stampante segue la regola che vale davvero.
+static func printer_line(rule: String) -> String:
+	match rule:
+		"interessi":
+			return "* La stampante: vrrr regolare. Sui fascicoli: \"interessi 0,5%\"."
+		"revisione":
+			return "* La stampante è ferma. Un cartello: \"In revisione\". La pila non cresce."
+		"alternative":
+			return "* La stampante: vrrr regolare. Accanto, una bacheca con le reti vere."
+	return "* La stampante: vrrr regolare, fascicolo dopo fascicolo."
+
+
+## Il tuo debito e quello degli altri: due righe separate, in tutti i finali.
+func debt_lines() -> Array:
+	var mine: String = {"annullato": "ANNULLATO", "in_revisione": "IN REVISIONE", "contestato": "CONTESTATO"}.get(str(out.get("debt_status", "")), "REGISTRATO")
+	var others: String = {"interessi": "registrati, con gli interessi allo 0,5%", "revisione": "in revisione"}.get(
+		FINALI.others_debts(str(out.get("family", "")), str(out.get("variant", ""))), "registrati, come prima")
+	return ["* Il tuo debito: %s." % mine, "* I debiti degli altri: %s." % others]
+
+
+# --- B: IL TEMPO CHE RESTA (ogni pezzo dalla sua fonte) ------------------------------------------------
+
+const WORK_TEXT := {"nadir": "del turno corto alla zona industriale", "leda": "degli ordini condivisi", "amir": "delle consegne"}
+
+
+## B: cosa ti porti alla stazione e cosa succede al debito (contestato solo con la contestazione alla Cima).
 func _departure_lines() -> Array:
 	var lines: Array = ["* In tasca: %s." % GameState.euros(GameState.money)]
-	var ev := RULES.evidence()
 	if str(out.get("debt_status", "")) == "contestato":
-		lines.append("* Nella borsa: " + ", ".join(ev) + ".")
-		lines.append("* All'ufficio reclami della stazione c'è un modulo: CONTESTAZIONE DI QUOTA NON FIRMATA. Lo compili con le prove.")
-		lines.append("* La pratica è aperta. Il debito resta, sospeso fino alla risposta. Per la prima volta, la risposta la deve qualcun altro.")
+		lines.append("* Nella borsa, la contestazione registrata dalla Presidente. Il debito resta, sospeso fino alla risposta.")
 	else:
-		lines.append("* Il debito viene con te: %s. Senza prove da allegare, non c'è niente da contestare. Per ora." % GameState.euros(GameState.debt))
+		lines.append("* Il debito viene con te: %s." % GameState.euros(GameState.debt))
 	var b := FINALI.bonds()
 	if not b.is_empty():
 		var names: Array = []
@@ -308,15 +332,63 @@ func _departure_lines() -> Array:
 	return lines
 
 
-func _visit_option() -> String:
-	var b := FINALI.bonds()
-	return "Passare da %s." % _name(b[0]) if not b.is_empty() else "Passare dalla Casa Comune."
+## Il foglio della Banca, se c'è: il riepilogo o la ricevuta della richiesta (un vecchio salvataggio: niente).
+static func bank_paper() -> String:
+	if GameState.flags.get("c4_riepilogo", false):
+		return "il riepilogo della Banca"
+	if GameState.flags.get("c4_verifica", false):
+		return "la ricevuta della Banca"
+	return ""
 
 
-func _visit_line() -> String:
-	var b := FINALI.bonds()
-	return "* Domani passi da %s. Senza un motivo. È il motivo." % _name(b[0]) if not b.is_empty() else "* Domani passi dalla Casa Comune. Senza un motivo."
+## Le righe del finale B (anche per i test): casa, frigo, calendario, chi scrive. Niente casa o lavoro
+## senza il dialogo che li ha offerti; se manca, il suo ripiego.
+func b_lines() -> Dictionary:
+	var homes := FINALI.offers(FINALI.HOME_OFFERS)
+	var works := FINALI.offers(FINALI.WORK_OFFERS)
+	var sender := FINALI.evening_sender()
+	var contested := str(out.get("debt_status", "")) == "contestato"
+	var paper := bank_paper()
+	var lines: Array = []
+	if homes.is_empty() and works.is_empty() and FINALI.bonds().is_empty():
+		lines.append("* Una stanza in affitto, per un mese. La valigia è ancora mezza piena.")
+		if contested:
+			lines.append("* Sul frigo: \"Debito: CONTESTATO. Pratica in attesa.\"")
+		lines.append("* Sul tavolo: " + (paper + " e un annuncio cerchiato." if paper != "" and not contested else "un annuncio cerchiato."))
+		lines.append("* Sotto la porta qualcuno ha infilato un volantino: \"Stasera cena di chi è appena arrivato. Porta una sedia.\"")
+		return {"lines": lines, "sender": "", "alone": true, "home": "", "work": ""}
+	lines.append("* Sei mesi dopo. Una cucina piccola, " + ("nella stanza che ti ha trovato %s." % _name(homes[0]) if not homes.is_empty() \
+		else "in un posto letto in affitto, per un mese.") + " Dalla finestra si vede la Torre, ancora accesa.")
+	if contested:
+		lines.append("* Sul frigo: \"Debito: CONTESTATO. Pratica in attesa.\"")
+	elif paper != "":
+		lines.append("* In un cassetto, %s." % paper)
+	if not works.is_empty():
+		lines.append("* Il calendario: i giorni del lavoro %s sono cerchiati. Gli altri sono vuoti. Vuoti apposta." % WORK_TEXT[works[0]])
+	else:
+		lines.append("* Sul calendario, un annuncio cerchiato, ancora senza risposta.")
+	return {"lines": lines, "sender": sender, "alone": false, "home": homes[0] if not homes.is_empty() else "",
+		"work": works[0] if not works.is_empty() else ""}
 
+
+func _b_scene() -> void:
+	var b := b_lines()
+	_clear()
+	_floor_strip(Color("3a3226"))
+	_actor(PLAYER_SHEET, 300, false, false, "idle_down")
+	await Ui.say(b["lines"])
+	var sender := str(b["sender"])
+	if sender != "":
+		await Ui.say(["* Il telefono vibra. %s:" % _name(sender)])
+		await Ui.say(["Ci sei stasera?"], _name(sender))
+	else:
+		await Ui.say(["* Sul pianerottolo, una vicina che non conosci:"])
+		await Ui.say(["Ci sei stasera?"], "Una vicina")
+	await Ui.choose("", ["Sì."])
+	await Ui.say(["* Non sai ancora se resterai. Prendi la sedia."] if bool(b["alone"]) else ["* Prendi le chiavi."])
+
+
+# --- C: NESSUNO SALE DA SOLO -------------------------------------------------------------------------
 
 func _roles_lines() -> Array:
 	var roles: Dictionary = d["final_decision"].get("roles", {})
@@ -329,6 +401,123 @@ func _roles_lines() -> Array:
 	elif int(FINALI.turn_state().get("centralized", 0)) >= 2:
 		lines.append("* Due bilanci sono passati con la tua firma unica. I rappresentanti chiedono che la prima decisione condivisa sia restituire il loro diritto di intervenire.")
 	return lines
+
+
+func _role(r: String) -> String:
+	return str(d["final_decision"].get("roles", {}).get(r, ""))
+
+
+## Le decisioni del tavolo in C2 (sezione 5): stipendi, servizi, Casa Comune. Solo quelle che si vedono.
+func policy_lines() -> Array:
+	var out_: Array = []
+	if sm["wages_cover"]:
+		out_.append("prezzi coperti")
+	elif sm["wages_up"]:
+		out_.append("metà dei prezzi coperti")
+	if sm["services_up"]:
+		out_.append("servizi allargati")
+	elif sm["services_paid"]:
+		out_.append("servizi a pagamento")
+	out_.append("Casa Comune " + ("aperta" if RULES.casa_open(str(sm["casa"])) else ("riconvertita" if str(sm["casa"]).begins_with("riconvertita") else "chiusa")))
+	return out_
+
+
+## Fermo nella scena: "umano" (alla cyclette), "robot", "libero", o "" se non l'hai conosciuto.
+static func fermo_state() -> String:
+	if not FINALI.met("fermo"):
+		return ""
+	if GameState.is_robot("fermo"):
+		return "robot"
+	if "fermo" in GameState.freed:
+		return "libero"
+	return "umano"
+
+
+func _c2_scene() -> void:
+	_clear()
+	_floor_strip(Color("231e2a"))
+	var turni := _role("turni")
+	var fermo := fermo_state()
+	var lines: Array = []
+	if turni == "fermo":
+		lines.append("* Il Fondo. Sopra la cyclette, l'orologio segna la fine del turno. Arriva il cambio, puntuale: è sul foglio dei TURNI di Fermo.")
+	else:
+		lines.append("* Il Fondo. Sopra la cyclette, l'orologio segna la fine del turno. Arriva %s, puntuale." % _name(turni))
+	await Ui.say(lines)
+	if turni != "fermo":
+		await Ui.say(["Tocca a me."], _name(turni))
+	match fermo:
+		"umano":
+			await Ui.say(["* Fermo scende dalla cyclette. Le gambe tremano un po'. Sale."])
+		"robot":
+			await Ui.say(["* Chi pedalava scende. Sulla cyclette accanto, Fermo continua a pedalare. Ha l'antenna."])
+		"libero":
+			await Ui.say(["* Chi pedalava scende. Fermo è venuto da fuori a vedere il cambio."])
+		_:
+			await Ui.say(["* Chi pedalava scende. Le gambe tremano un po'."])
+	_clear()
+	_floor_strip(Color("3a2450"))
+	var t := TextureRect.new()
+	t.texture = load(ART + "tavoli_condivisi.png")
+	t.position = Vector2(272, 150)
+	t.scale = Vector2(2, 2)
+	stage.add_child(t)
+	var c: Array = ["* I tavoli condivisi. %s ha il quaderno. %s sposta le sedie." % [_name(_role("conti")), _name(_role("servizi"))],
+		"* Su un foglio: le decisioni del tavolo. " + ", ".join(policy_lines()) + "."]
+	if int(FINALI.turn_state().get("backlog", 0)) >= RULES.BREAKDOWN_AT:
+		c.append("* Sul muro: \"Caldaia: mancano…\". Sotto, alcuni nomi a matita.")
+	c.append("* Il tuo fascicolo è sul tavolo. " + debt_lines()[0].trim_prefix("* "))
+	if fermo == "umano":
+		c.append("* Una sedia vuota. Fermo ci si siede.")
+	await Ui.say(c)
+	if fermo == "umano":
+		await Ui.say(["È la prima volta che mi siedo prima che faccia buio."], "Fermo")
+
+
+func _c1_scene() -> void:
+	var where := "alla Casa Comune" if str(GameState.flags.get("c5_esito", "")) == "comunitaria" else "nella bottega di Rina"
+	var nets := RULES.networks()
+	var roles: Array = []
+	for r: String in ["conti", "servizi", "turni"]:
+		roles.append("%s: %s" % [FINALI.ROLES[r]["name"], _name(_role(r)) if _role(r) != "" else "?"])
+	await Ui.say(["* La festa c'è, %s. Non ci sono tutti." % where,
+		"* Su un foglio: quello che la comunità fa davvero. " + (", ".join(nets) + "." if not nets.is_empty() else "Per ora, il foglio stesso."),
+		"* I ruoli: " + ", ".join(roles) + "."])
+	match fermo_state():
+		"umano":
+			await Ui.say(["* Al Fondo, la dinamo gira ancora. Qualcuno scende con un piatto per Fermo."])
+			await Ui.say(["Mangio pedalando. Ma oggi qualcuno è sceso."], "Fermo")
+			await Ui.say(["* Il piatto torna su vuoto."])
+		"robot":
+			await Ui.say(["* Al Fondo, la dinamo gira ancora. Qualcuno scende con un piatto per Fermo."])
+			await Ui.say(["MANGIARE NON È PREVISTO DAL TURNO."], "Fermo")
+		"libero":
+			await Ui.say(["* Al Fondo, la cyclette la pedala un'altra persona."])
+			await Ui.say(["Sono venuto da fuori. Mi hanno detto che c'erano le sedie."], "Fermo")
+		_:
+			await Ui.say(["* Al Fondo, la dinamo gira ancora."])
+
+
+func _c3_scene() -> void:
+	var names: Array = []
+	for r: String in ["conti", "servizi", "turni"]:
+		if _role(r) != "":
+			names.append(_name(_role(r)))
+	await Ui.say(["* Una stanza con sei sedie. Ne avete portate due.",
+		"* Sul foglio dei ruoli: CONTI, SERVIZI, TURNI. " + (", ".join(names) + ", il resto è vuoto." if not names.is_empty() else "Il resto è vuoto."),
+		"* Il tuo fascicolo è ancora nella borsa. " + debt_lines()[0].trim_prefix("* ")])
+	var who := NIVES
+	var b := FINALI.bonds()
+	if not b.is_empty():
+		who = _name(b[0])
+	else:
+		for id: String in GameState.freed:
+			if FINALI.met(id):
+				who = _name(id)
+				await Ui.say(["* %s è venuto da fuori." % who])
+				break
+	await Ui.say(["Domani ne portiamo un'altra."], who)
+	await Ui.say(["* Sistemate le due sedie una davanti all'altra. Per ora basta per parlare."])
 
 
 # --- passi 1-5: sei mesi dopo, piano per piano -------------------------------------------------------
@@ -351,6 +540,9 @@ func epilogue_segment(i: int) -> void:
 		Sound.music("epilogo")
 		await _fade_title("", "SEI MESI DOPO")
 	await _tower_to(int(seg[1]))
+	if i == 0:
+		# la Torre vista dall'alto: la stampante e i due debiti
+		await Ui.say([printer_line(str(sm["debt_rule"]))] + debt_lines())
 	_floor_strip(seg[3])
 	_label(str(seg[0]), Vector2(0, 16), Vector2(640, 24), 14, GOLD)
 	var ids: Array = []
@@ -367,6 +559,9 @@ func epilogue_segment(i: int) -> void:
 		for id: String in ids:
 			if id in d["epilogue"]["seen_character_ids"]:
 				continue
+			var r := reaction_for(id)
+			if not r.is_empty():
+				await Ui.say(r, _name(id))
 			var e := epilogue_for(id)
 			await Ui.say(e["lines"], str(e.get("speaker", "")))
 			(d["epilogue"]["seen_character_ids"] as Array).append(id)
@@ -403,6 +598,13 @@ static func _floor_fallback(title: String) -> String:
 		"IL SOTTOUFFICIO":
 			return "* Al -4 i moduli continuano. Nessuno ti ricorda: non ti eri fermato a farti ricordare."
 	return "* Al Fondo la festa continua. Ci sono persone che non hai mai guardato. Pedalano."
+
+
+## Prima dell'epilogo, il ricordo di un torto (e di un aiuto o di una riparazione), se c'è.
+func reaction_for(id: String) -> Array:
+	var fam := str(out.get("family", ""))
+	var var_ := str(out.get("variant", ""))
+	return Storia.reazione(id, FINALI.in_force(fam, var_), bool(sm["wages_up"]), var_ == "C2" and _role("turni") != "")
 
 
 ## L'epilogo di una persona: righe coerenti col suo stato (robot, liberata, aiutata) e con le scelte finali.
@@ -565,6 +767,8 @@ func _credits() -> void:
 		"Un gioco di Linda", "",
 		"Storia, personaggi e direzione", "Linda", "",
 		"Grafica dei personaggi e degli ambienti", "LimeZu — Modern Interiors, Modern Exteriors", "",
+		"Comparse", "LimeZu — Modern Interiors, versione RPG Maker", "",
+		"Carattere", "Pixeloid Sans — GGBotNet (SIL Open Font License)", "",
 		"Grafica personalizzata", "segnaposto, in attesa dei disegni veri", "",
 		"Motore", "Godot Engine", "",
 		"%s, da %s di debito." % [GameState.player_name, GameState.euros(GameState.START_DEBT)],
