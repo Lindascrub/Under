@@ -273,5 +273,10 @@
   "conto": {
     "debito_originario": 7000000000,
     "_nota": "Il debito mostrato al terminale è sempre GameState.debt: qui c'è solo l'importo assegnato all'origine."
+  },
+  "proposta_olga": {
+    "_nota": "UN PICCOLO AIUTO (missione del Capo): quello che Olga paga adesso per gli stessi 1.200 €. Se la proposta chiara costa in tutto al massimo costo_attuale e ha una commissione non più alta di commissione_attuale, a Olga conviene (vedi scripts/storia.gd).",
+    "costo_attuale": 1320,
+    "commissione_attuale": 35
   }
 }
