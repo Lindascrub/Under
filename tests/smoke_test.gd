@@ -549,9 +549,13 @@ func _test_chapter4() -> void:
 	m = await _c4_call(m, "_badge_machine")
 	_check(GameState.badges.count("0") == 1, "nessun badge due volte")
 	# 26-28: la rivelazione, lo sguardo indietro, il riepilogo e il capitolo dopo
+	choose_queue = []
 	await m.call("on_stairs_step", m.player, "0")
-	_check(GameState.flags.get("c4_rivelazione", false) and "NESSUN DOCUMENTO TROVATO." in m.call("revelation_lines"), "sul primo gradino la rivelazione")
-	_check(m.call("look_back_line") == "Non avevi cancellato i debiti. Avevi aiutato qualcuno a non affrontarli da solo.", "tutti e due aiutati: la frase dell'aiuto")
+	_check(GameState.flags.get("c4_rivelazione", false) and GameState.flags.get("c4_verifica", false) and GameState.flags.get("c4_ricevuta_copia", false), "alle scale la verifica, e Teo copia la ricevuta")
+	_check(m.call("look_back_line") == "Avevi una richiesta in viaggio, un indirizzo e nessuna risposta. Era già più di prima.", "con la richiesta inoltrata, la frase della richiesta")
+	GameState.flags.erase("c4_verifica")
+	_check(m.call("look_back_line") == "Non avevi cancellato i debiti. Avevi aiutato qualcuno a non affrontarli da solo.", "tutti e due aiutati (senza richiesta): la frase dell'aiuto")
+	GameState.flags["c4_verifica"] = true
 	var next: String = m.call("next_scene")
 	_check(m.call("on_stairs_top", m.player), "in cima alle scale lo sguardo indietro")
 	var out: Dictionary = GameState.flags.get("chapter_4", {})
