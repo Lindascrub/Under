@@ -173,6 +173,11 @@ static func finish_market() -> Dictionary:
  return commit("-3", {"hidden": hidden, "reward": hidden * 500, "labels": labels})
 
 static func apply_consequence(floor: String, r: Dictionary) -> void:
+ # il torto fatto, col suo numero nell'ordine delle azioni (Storia.segna): le reazioni lo confrontano con gli aiuti
+ if floor == "-5" and (int(r.get("extra", 0)) > 0 or int(r.get("intensity", 2)) == 3): Storia.segna("torto_fermo")
+ if floor == "-4" and bool(r.get("ercole_closed", false)): Storia.segna("torto_ercole")
+ if floor == "-3" and int(r.get("hidden", 0)) > 0: Storia.segna("torto_leda")
+ if floor == "0" and int(r.get("cuts", 0)) > 0: Storia.segna("torto_rina")
  if floor == "-5":
   GameState.flags["boss_fermo_extra"] = int(r.get("extra", 0))
   GameState.flags["boss_fermo_intensity"] = int(r.get("intensity", 2))
@@ -231,6 +236,8 @@ static func result_lines(floor: String) -> Array:
  return lines
 
 static func npc_lines(id: String) -> Array:
+ # riparato: lo dice lui (il torto non sparisce, ma la riga adesso è quella)
+ if id in ["fermo", "ercole", "leda"] and Storia.torto(id) and Storia.riparato(id): return Storia.reazione(id, false, false, false)
  if id == "olga" and str(state("-2").get("status")) == "done":
   var r: Dictionary = state("-2").get("result", {})
   if GameState.day > int(GameState.flags.get("boss_olga_offer_day", GameState.day)):

@@ -282,6 +282,9 @@ func interact() -> void:
 	if not consequence.is_empty() and not GameState.flags.get(consequence_key, false):
 		GameState.flags[consequence_key] = true
 		await Ui.say(consequence, who)
+	# un torto della missione del Capo si può riparare tornando da chi l'ha subito (scripts/storia.gd)
+	if await Storia.offer_repair(id, who):
+		return
 	if await Quests.handle_npc(self):
 		return
 	# la stanza può avere qualcosa di speciale da far dire a questa persona (talk_<id>)

@@ -384,6 +384,8 @@ func help(id: String, kind: String, cost: int) -> bool:
 		helped_today.append(id)
 	if id not in helped_ids:
 		helped_ids.append(id)
+		# il primo aiuto a questa persona: il suo numero nell'ordine delle azioni (per le reazioni)
+		Storia.segna("aiuto_" + id)
 	changed.emit()
 	return true
 

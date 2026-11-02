@@ -294,6 +294,11 @@ func _free() -> void:
 	var lines: Array = ["* " + str(m.get("free_ask", "Gli proponi di smettere."))]
 	lines.append_array(m.get("free_lines", []))
 	lines.append("* %s ha smesso di lavorare. Da domani lo troverai fuori dal sistema." % cfg.get("name", ""))
+	if id == "fermo":
+		# chi viene liberato lascia un recapito (offerta_fermo: la casa del finale B)
+		GameState.flags["offerta_fermo"] = true
+		Storia.segna("offerta_fermo")
+		lines.append("* Prima di andare, Fermo si volta: \"Fuori ho trovato una stanza con due letti. Uno è per le gambe. Se esci, cercami.\"")
 	lines.append("* Ora rinuncia a uno stipendio. Se il sistema non crolla, resterà nei guai. Anche per te.")
 	_say(lines, _end_battle)
 
