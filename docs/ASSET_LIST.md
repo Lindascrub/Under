@@ -202,6 +202,7 @@ fontana, lampione, la fermata del bus e i terreni del tileset `world/tilesets/ci
 | `quaderno.png` | 10x8 | Il quaderno di fumetti di Teo, sulla scrivania | dall'alto, appoggiato | allo sguardo indietro dondola (fatto dal codice, rotazione) | `banca.tscn`, `Mondo/Quaderno` (31,13, spostato di 3,-14); esame `_quaderno` |
 | `lettera.png` | 8x6 | La risposta alla contestazione, in mano a Olga | dall'alto, piccola | nessuna | `chapters/c4/banca_c4.gd`, `_dress_for_look_back` (figlia di Olga, +6,-14) |
 | `timbro.png` | 8x10 | Il timbro di Teo robot | 3/4 frontale | il codice lo fa battere su e giù (0,25 s giù, 0,08 s su, pausa 0,4 s); l'arte può aggiungere 2 frame | `banca_c4.gd`, `_robot_teo` (figlio di Teo, +12,-16) |
+| `serranda.png` | 16x32 | La serranda che chiude il passaggio tra l'atrio e la stanza delle scale, dopo i saluti | di fronte, piatta (lamelle orizzontali) | il codice la srotola dall'alto (0,6 s) e scuote la telecamera; l'arte può tenerla ferma | `world/serranda.tscn` (nodo Telo), messa in `chapters/c4/banca.tscn` come `Mondo/Serranda` |
 | `antenna_robot.png` | 8x10 | Antenna sulla testa di Teo robot: il robot si riconosce **anche senza colori** | frontale | consigliata: lucina che lampeggia (2 frame) | `banca_c4.gd`, `_robot_teo` (figlio di Teo, 0,-27) |
 
 Dal foglio LimeZu `generic.png` (acquistato, non segnaposto): tappeto rosso `Rect2(48,354,32,28)`,

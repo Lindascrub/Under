@@ -3,5 +3,5 @@
 [ext_resource type="Texture2D" path="res://art/c4/lettera.png" id="1_lettera"]
 
 [node name="Lettera" type="Sprite2D"]
-position = Vector2(6, -14)
+position = Vector2(7, -9)
 texture = ExtResource("1_lettera")

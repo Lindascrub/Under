@@ -69,6 +69,7 @@
 [ext_resource type="Script" uid="uid://e5xvd76qibjb" path="res://world/number_display.gd" id="Script_numero_servito"]
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="PackedScene" path="res://world/serranda.tscn" id="serranda_tscn"]
 [ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
@@ -8205,6 +8206,37 @@ sheet = "rpg_vx2_2"
 anim = "idle_up"
 nudge = Vector2(0, 4)
 
+[node name="Serranda" parent="Mondo" instance=ExtResource("serranda_tscn")]
+position = Vector2(448, 64)
+
+[node name="ScenaSegreta" type="Node2D" parent="Mondo"]
+y_sort_enabled = true
+
+[node name="SedutoTeo" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta"]
+position = Vector2(26, 90)
+centered = false
+offset = Vector2(-8, -38)
+script = ExtResource("9_b8kf0")
+sheet = "cheap_teo"
+anim = "idle_down"
+nudge = Vector2(0, -7)
+person = "teo"
+grey = true
+
+[node name="SedutaOlga" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta"]
+position = Vector2(42, 90)
+centered = false
+offset = Vector2(-8, -38)
+script = ExtResource("9_b8kf0")
+sheet = "cheap_olga"
+anim = "idle_down"
+nudge = Vector2(0, -7)
+person = "olga"
+grey = true
+
+[node name="Guarda" type="Marker2D" parent="Mondo/ScenaSegreta"]
+position = Vector2(34, 98)
+
 [node name="Arrivi" type="Node2D" parent="." unique_id=1858085897]
 
 [node name="default" type="Marker2D" parent="Arrivi" unique_id=96462484]
@@ -8229,6 +8261,22 @@ zoom = 1.3235
 durata = 3.5
 durata_ritorno = 0.65
 
+[node name="SalutoTeo" type="Marker2D" parent="Inquadrature"]
+position = Vector2(488, 200)
+script = ExtResource("inq_script")
+zoom = 2.5
+durata = 0.6
+durata_ritorno = 0.6
+velocita_inseguimento = 5.0
+
+[node name="SalutoOlga" type="Marker2D" parent="Inquadrature"]
+position = Vector2(136, 110)
+script = ExtResource("inq_script")
+zoom = 2.5
+durata = 0.8
+durata_ritorno = 0.6
+velocita_inseguimento = 5.0
+
 [node name="Punti" type="Node2D" parent="."]
 
 [node name="UscitaOlga" type="Marker2D" parent="Punti"]
@@ -8242,5 +8290,11 @@ position = Vector2(596, 80)
 
 [node name="SalutoOlga" type="Marker2D" parent="Punti"]
 position = Vector2(552, 84)
+
+[node name="DietroTeo" type="Marker2D" parent="Punti"]
+position = Vector2(424, 76)
+
+[node name="DietroOlga" type="Marker2D" parent="Punti"]
+position = Vector2(410, 90)
 
 [editable path="Mondo/PostoSportello"]

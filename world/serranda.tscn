@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://world/serranda.gd" id="1_serr"]
+[ext_resource type="Texture2D" path="res://art/c4/serranda.png" id="2_serr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_muro"]
+size = Vector2(16, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_avviso"]
+size = Vector2(12, 32)
+
+[node name="Serranda" type="Node2D"]
+script = ExtResource("1_serr")
+
+[node name="Telo" type="Sprite2D" parent="."]
+texture = ExtResource("2_serr")
+centered = false
+
+[node name="Muro" type="StaticBody2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="Muro"]
+position = Vector2(8, 16)
+shape = SubResource("RectangleShape2D_muro")
+disabled = true
+
+[node name="Avviso" type="Area2D" parent="."]
+
+[node name="Forma" type="CollisionShape2D" parent="Avviso"]
+position = Vector2(22, 16)
+shape = SubResource("RectangleShape2D_avviso")

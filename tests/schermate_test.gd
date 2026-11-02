@@ -6,7 +6,7 @@ extends "res://tests/storia_test.gd"
 ##   Godot --path . res://tests/schermate_test.tscn -- --out=<cartella>            (PC)
 ##   Godot --path . res://tests/schermate_test.tscn -- --touch --size=1600x720 --out=<cartella>   (telefono 20:9)
 ## --size cambia la finestra da dentro il gioco: --resolution più grande dello schermo viene ridotta da Windows.
-## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives,impostazioni,fondo,mercato  (tocco: joystick e pulsanti mentre si
+## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives,impostazioni,fondo,mercato,serranda  (tocco: joystick e pulsanti mentre si
 ## cammina, e lo schermo della Direzione col dito; con --touch. nives: la memoria di Nives e il nome.
 ## impostazioni: il menu, la pagina dei comandi, il manifesto dei moduli e la telefonata lunga del -4;
 ## fondo: il Fondo grigio e lo sguardo indietro; mercato: la strada buona giocata coi tasti, fino alla Banca)
@@ -69,6 +69,9 @@ func _run() -> void:
 	if _want("mercato"):
 		_section = "mercato"
 		await _test_mercato_buono()
+	if _want("serranda"):
+		_section = "serranda"
+		await _test_serranda()
 	if _want("citta"):
 		print("SCHERMATE: in Città raggiunti camminando %d; non raggiunti: %s; OK non arriva: %s" % [_camminate, str(_non_raggiunti), str(_ok_non_arriva)])
 	if _min_row < 1000.0:
@@ -333,6 +336,62 @@ func _test_fondo_grigio() -> void:
 	_check(right <= 368.0, "lo sguardo indietro mostra la stanza dei ticket (bordo destro %.0f)" % right)
 	set_process(true)
 	await _wait_scene(Router.SOTTOUFFICIO)
+	await _idle()
+
+
+## Banca: Olga e Teo sul divano (la scena segreta), poi la serranda che chiude la strada dopo i saluti.
+func _test_serranda() -> void:
+	for k in ["c4_arrivo", "c4_olga_contestazione", "c4_teo_aiutato"]:
+		GameState.flags[k] = true
+	var m: Room = await _go(Router.BANCA, "from_below")
+	await _idle()
+	var sc := m.find_child("ScenaSegreta", true, false) as Node2D
+	_check(sc != null, "la scena segreta dovrebbe esserci")
+	if sc:
+		m.player.global_position = (sc.get_node("Guarda") as Node2D).global_position + Vector2(0, 6)
+		m.player.facing = "up"
+		await _still("segreta_divano")
+	# i saluti sulle scale: Teo e Olga arrivano a piedi dai loro posti (la telecamera li segue),
+	# poi tornano nell'atrio e la serranda scende
+	GameState.flags["c4_segreta"] = true
+	m = await _go(Router.BANCA, "from_below")
+	await _idle()
+	var step := m.find_child("PrimoGradino", true, false) as Node2D
+	m.player.global_position = step.global_position + Vector2(16, 14)
+	m.player.facing = "up"
+	choose_queue = [0, 0, 0, 1, 1]
+	m.call("on_stairs_step", m.player, "")
+	var t := 0.0
+	var walking := 0
+	while (Ui.cutscene or Ui.busy) and t < 150.0:
+		await get_tree().create_timer(0.5).timeout
+		t += 0.5
+		if not Ui.busy and m.get("_clerk_camera_actor") != null:
+			walking += 1
+			if walking % 3 == 1:
+				_shot("saluti_cammina")
+	_check(walking > 0, "Teo e Olga dovrebbero arrivare a piedi, con la telecamera su di loro")
+	var serr := m.find_child("Serranda", true, false) as Serranda
+	_check(serr != null and serr.chiusa, "finiti i saluti la serranda dovrebbe chiudersi")
+	_shot("dopo_i_saluti")
+	m = await _go(Router.BANCA, "from_below")
+	await _idle()
+	serr = m.find_child("Serranda", true, false) as Serranda
+	_check(serr != null and serr.chiusa, "dopo i saluti la serranda dovrebbe restare chiusa")
+	if serr == null:
+		return
+	m.player.global_position = serr.global_position + Vector2(40, 24)
+	await _still("serranda_chiusa")
+	# ci vai contro: non passi, e la frase
+	var k := 0
+	while not Ui.busy and k < 240:
+		_press("move_left", true)
+		await get_tree().physics_frame
+		k += 1
+	_press("move_left", false)
+	_check(m.player.global_position.x >= serr.global_position.x + 8.0, "la serranda chiusa non si attraversa (x %.0f)" % m.player.global_position.x)
+	_check(Ui.busy, "contro la serranda dovrebbe arrivare la frase")
+	_shot("serranda_frase")
 	await _idle()
 
 

@@ -33,6 +33,16 @@ func setup() -> void:
 		_robot_teo()
 	if _secret_ready():
 		_secret_setup()
+	else:
+		var sc := world.get_node_or_null("ScenaSegreta")
+		if sc:
+			sc.get_parent().remove_child(sc)
+			sc.queue_free()
+	# dopo i saluti la strada indietro è chiusa: si può solo salire
+	if _f("c4_rivelazione") and not _f("c4_fine"):
+		var serranda := world.get_node_or_null("Serranda") as Serranda
+		if serranda:
+			serranda.chiudi(false)
 
 
 func enter() -> void:
@@ -716,41 +726,120 @@ func on_stairs_step(p: Player, _need: String) -> void:
 	Sound.music(music)
 	Sound.music_pitch(0.85, 2.0)
 	await _farewell()
+	await _close_behind()
 	await _nives_receipt()
 	Ui.cutscene = false
 
 
+## Finiti i saluti, Teo e Olga tornano a piedi nell'atrio (Punti/Dietro*) e la serranda (Mondo/Serranda)
+## scende sul passaggio: dalla stanza delle scale non si torna più indietro.
+func _close_behind() -> void:
+	var going := [0]
+	for pair in [["teo", "Punti/DietroTeo"], ["olga", "Punti/DietroOlga"]]:
+		var n := _visible_npc(pair[0])
+		var to := get_node_or_null(pair[1]) as Node2D
+		var stairs := get_node_or_null("Punti/Saluto" + str(pair[0]).capitalize()) as Node2D
+		# torna indietro solo chi è venuto a salutare
+		if n == null or to == null or stairs == null or n.global_position.distance_to(stairs.global_position) > 4.0:
+			continue
+		going[0] += 1
+		_walk_back(n, to.global_position, going)
+	var k := 0
+	while going[0] > 0 and k < 900:
+		await get_tree().process_frame
+		k += 1
+	var serranda := world.get_node_or_null("Serranda") as Serranda
+	if serranda == null:
+		return
+	await serranda.chiudi()
+	await Ui.say(["* Una serranda scende sul passaggio. SBAM.", "* Davanti a te restano solo le scale."])
+
+
+func _walk_back(n: Npc, goal: Vector2, going: Array) -> void:
+	await _walk_npc(n, goal, saluto_velocita_ritorno)
+	if is_instance_valid(n):
+		n.face("right")
+	going[0] -= 1
+
+
 ## I saluti (3c). Con le condizioni nascoste nella proposta a Olga, al posto del saluto c'è lei.
-## Chi viene a salutare sulle scale ci arriva davvero: entra da Punti/ArrivoSaluti (pavimento libero,
-## niente muri in mezzo) e cammina fino al suo punto (Punti/Saluto*), in `time` secondi. Parla quando è arrivata.
-## Se la persona non è nella stanza, resta solo il racconto.
-func _come_to_stairs(id: String, point: String, time: float) -> void:
-	# se la persona c'è due volte (Teo allo sportello e il suo posto vuoto), si muove quella che si vede
-	var n := _npc(id)
-	for o in get_tree().get_nodes_in_group("npc"):
-		if o is Npc and (o as Npc).id == id and (o as Npc).is_visible_in_tree():
-			n = o
-			break
+## Chi viene a salutare sulle scale ci arriva a piedi dal suo posto, girando intorno a muri e mobili,
+## a `speed` pixel al secondo, fino al suo punto (Punti/Saluto*). La telecamera va su di lui
+## (Inquadrature/Saluto<Nome>: dove, quanto zoom, quanto in fretta lo segue), lo segue e poi torna da te.
+## Se la persona non si vede (Teo allo sportello), entra da Punti/ArrivoSaluti. Parla quando è arrivata.
+func _come_to_stairs(id: String, point: String, speed: float) -> void:
+	var n := _visible_npc(id)
 	var to := get_node_or_null(point) as Node2D
-	var from := get_node_or_null("Punti/ArrivoSaluti") as Node2D
-	if n == null or to == null or from == null or GameState.is_robot(id):
+	if n == null or to == null or GameState.is_robot(id):
 		return
 	n.set_physics_process(false)
-	if n.is_visible_in_tree():
-		create_tween().tween_property(n, "modulate:a", 0.0, 0.25)
-		await get_tree().create_timer(0.25).timeout
-	n.show()
-	n.global_position = from.global_position
-	n.modulate.a = 0.0
-	create_tween().tween_property(n, "modulate:a", 1.0, time * 0.4)
-	var d := to.global_position - n.global_position
-	var dir := ("right" if d.x > 0 else "left") if absf(d.x) > absf(d.y) else ("down" if d.y > 0 else "up")
-	(n.get_node("Sprite") as AnimatedSprite2D).play("walk_" + dir)
-	create_tween().tween_property(n, "global_position", to.global_position, time)
-	await get_tree().create_timer(time).timeout
-	if is_instance_valid(n):
-		n.global_position = to.global_position
-		n.face("up")
+	if not n.is_visible_in_tree():
+		# seduto sul divano della scena segreta: si alza da lì; se no entra da Punti/ArrivoSaluti
+		var from := get_node_or_null("Punti/ArrivoSaluti") as Node2D
+		var sofa := world.get_node_or_null("ScenaSegreta")
+		if sofa:
+			for c in sofa.get_children():
+				if c is CharSprite and (c as CharSprite).person == id:
+					from = c
+		if from == null:
+			return
+		n.global_position = from.global_position
+		if from is CharSprite:
+			from.queue_free()
+		n.show()
+		n.process_mode = Node.PROCESS_MODE_INHERIT
+	var frame := get_node_or_null("Inquadrature/Saluto" + id.capitalize()) as Inquadratura
+	var shot := {}
+	if frame:
+		var at := frame.global_position
+		_clerk_camera_offset = at - n.global_position
+		if _clerk_camera_offset.length() > 48.0:
+			# non è al suo posto: la ripresa va su di lui, con la stessa altezza
+			_clerk_camera_offset = Vector2(0, -16)
+			frame.global_position = n.global_position + _clerk_camera_offset
+		shot = await FocusShot.begin(self, frame)
+		frame.global_position = at
+		_clerk_camera_actor = n
+		_clerk_camera_speed = frame.velocita_inseguimento
+	# tu (e chi è vicino) lo guardi passare
+	_watch_actor(n)
+	await _walk_npc(n, to.global_position, speed)
+	_watched = null
+	_clerk_camera_actor = null
+	if is_instance_valid(n) and is_instance_valid(player):
+		var d := player.global_position - n.global_position
+		n.face(("right" if d.x > 0 else "left") if absf(d.x) > absf(d.y) else ("down" if d.y > 0 else "up"))
+	if not shot.is_empty():
+		await FocusShot.restore(self, shot)
+
+
+## Se la persona c'è due volte (Teo allo sportello e il suo posto vuoto), quella che si vede.
+func _visible_npc(id: String) -> Npc:
+	for o in get_tree().get_nodes_in_group("npc"):
+		if o is Npc and (o as Npc).id == id and (o as Npc).is_visible_in_tree():
+			return o
+	return _npc(id)
+
+
+## Cammina fino a `goal` lungo la strada libera (Room.walk_path), un tratto dritto alla volta.
+func _walk_npc(n: Npc, goal: Vector2, speed: float) -> void:
+	var ex: Array[RID] = [n.get_rid()]
+	var points := walk_path(n.global_position, goal, ex)
+	points.append(goal)
+	var spr := n.get_node("Sprite") as AnimatedSprite2D
+	var dir := "down"
+	for p in points:
+		var d := p - n.global_position
+		if d.length() < 0.5:
+			continue
+		dir = ("right" if d.x > 0 else "left") if absf(d.x) > absf(d.y) else ("down" if d.y > 0 else "up")
+		spr.play("walk_" + dir)
+		var tw := create_tween()
+		tw.tween_property(n, "global_position", p, d.length() / speed)
+		await tw.finished
+		if not is_instance_valid(n):
+			return
+	spr.play("idle_" + dir)
 
 
 func _farewell() -> void:
@@ -760,12 +849,12 @@ func _farewell() -> void:
 	var teo_ok := _f("c4_teo_aiutato") and not GameState.is_robot("teo")
 	if _f("c4_olga_contestazione") and teo_ok:
 		GameState.flags["c4_ricevuta_copia"] = true
-		await _come_to_stairs("teo", "Punti/SalutoTeo", 0.8)
+		await _come_to_stairs("teo", "Punti/SalutoTeo", saluto_velocita_teo)
 		await Ui.say(["* Teo arriva di corsa con il quaderno."])
 		await Ui.say(["Dammi la ricevuta un secondo."], "Teo")
 		await Ui.say(["* Mette sotto la carta carbone e ricalca. Nell'angolo disegna un supereroe piccolissimo con una borsetta."])
 		await Ui.say(["Una la tieni tu. Una la tengo io, nel cassetto dei fumetti. Lì non la cerca nessuno."], "Teo")
-		await _come_to_stairs("olga", "Punti/SalutoOlga", 1.6)
+		await _come_to_stairs("olga", "Punti/SalutoOlga", saluto_velocita_olga)
 		await Ui.say(["* Olga si alza dalla sedia d'attesa con il suo numerino."])
 		await Ui.say(["Chiedi sempre la copia. E leggila due volte.",
 			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello col biscotto. Me lo merito anche io."], "Olga")
@@ -799,7 +888,7 @@ func _nives_receipt() -> void:
 
 func _farewell_deceived() -> void:
 	var who := "Olga"
-	await _come_to_stairs("olga", "Punti/SalutoOlga", 1.2)
+	await _come_to_stairs("olga", "Punti/SalutoOlga", saluto_velocita_olga)
 	await Ui.say(["* La ricevuta esce piegata a metà. \"Gli interessi continuano a maturare\" è sul retro.",
 		"* Olga è dietro di te, con la proposta che le hai portato. Piegata a metà nello stesso modo."])
 	await Ui.say(["Io avevo chiesto solo di leggere il contratto."], who)
@@ -866,10 +955,15 @@ func look_back_line() -> String:
 
 
 ## Nello sguardo indietro la fila avanza di `fila_passo` pixel in `fila_durata` secondi,
-## e Olga va verso Punti/UscitaOlga in `olga_uscita_durata` secondi.
+## e Olga va verso Punti/UscitaOlga (vedi olga_uscita_velocita).
 @export var fila_passo := 6.0
 @export var fila_durata := 6.0
-@export var olga_uscita_durata := 5.0
+## Olga che esce con la sua lettera, nello sguardo indietro: pixel al secondo.
+@export var olga_uscita_velocita := 32.0
+## Teo arriva di corsa alle scale, Olga col suo passo; poi tornano indietro insieme (pixel al secondo).
+@export var saluto_velocita_teo := 90.0
+@export var saluto_velocita_olga := 55.0
+@export var saluto_velocita_ritorno := 60.0
 
 
 func _dress_for_look_back() -> void:
@@ -899,11 +993,10 @@ func _dress_for_look_back() -> void:
 		# esce con la sua lettera
 		olga.add_child(load("res://chapters/c4/lettera_olga.tscn").instantiate())
 		olga.set_physics_process(false)
-		var tw := olga.create_tween()
-		# verso la porta della sala d'attesa (il nodo Punti/UscitaOlga della scena)
+		# verso la porta della sala d'attesa (il nodo Punti/UscitaOlga della scena), girando intorno ai mobili
 		var door := get_node_or_null("Punti/UscitaOlga") as Node2D
 		if door:
-			tw.tween_property(olga, "position", door.position, olga_uscita_durata)
+			_walk_npc(olga, door.global_position, olga_uscita_velocita)
 	if _f("c4_anomalia"):
 		# un terminale continua a cercare il contratto
 		var term := find_child("TerminaleConto", true, false) as Node2D
@@ -948,7 +1041,8 @@ func _secret_ready() -> bool:
 		and _f("c4_olga_contestazione") and _f("c4_teo_aiutato")
 
 
-## Olga lascia la sala d'attesa e va a guardare il quaderno di Teo, alla sua scrivania.
+## Olga e Teo si siedono insieme su un divano della sala d'attesa, col quaderno (Mondo/ScenaSegreta:
+## le due persone sedute e Guarda, il punto dove premi OK; si spostano nell'editor).
 func _secret_setup() -> void:
 	for id in ["olga", "teo"]:
 		var n := _npc(id)
@@ -957,28 +1051,21 @@ func _secret_setup() -> void:
 			n.process_mode = Node.PROCESS_MODE_DISABLED
 			n.remove_from_group("interactable")
 			n.collision_layer = 0
-	var seats := [["SedutoTeo", str(GameState.npc_data("teo").get("sheet")), "sit_right", Vector2i(30, 13)], ["InPiediOlga", str(GameState.npc_data("olga").get("sheet", "char_09")), "idle_left", Vector2i(32, 13)]]
-	for s: Array in seats:
-		var c := CharSprite.new()
-		c.name = s[0]
-		c.sheet = s[1]
-		c.person = "teo" if str(s[0]).ends_with("Teo") else "olga"
-		c.anim = s[2]
-		c.grey = true
-		c.position = cell_feet(s[3])
-		if str(s[2]).begins_with("sit"):
-			c.nudge = Vector2(0, -8)
-		world.add_child(c)
-		block(Rect2i(s[3], Vector2i.ONE))
-	add_spot(cell_center(Vector2i(31, 14)), _secret)
+	var sc := world.get_node_or_null("ScenaSegreta")
+	if sc == null:
+		return
+	for c in sc.get_children():
+		if c is CharSprite:
+			(c as CharSprite).sheet = str(GameState.npc_data((c as CharSprite).person).get("sheet", (c as CharSprite).sheet))
+	add_spot((sc.get_node("Guarda") as Node2D).global_position, _secret)
 
 
 func _secret() -> void:
 	if _f("c4_segreta"):
-		await Ui.say(["* Olga e Teo sono chini sul quaderno. Il supereroe ha una borsetta, adesso. Gli sta bene."])
+		await Ui.say(["* Olga e Teo, sul divano, sono chini sul quaderno. Il supereroe ha una borsetta, adesso. Gli sta bene."])
 		return
 	GameState.flags["c4_segreta"] = true
-	await Ui.say(["* Olga si è spostata alla scrivania di Teo. Guarda il quaderno di fumetti, con gli occhiali sulla punta del naso."])
+	await Ui.say(["* Olga e Teo sono seduti vicini su un divano della sala d'attesa. Lei guarda il quaderno di fumetti, con gli occhiali sulla punta del naso."])
 	await Ui.say(["Ma questo omino con il mantello chi sarebbe?"], "Olga")
 	await Ui.say(["Un supereroe."], "Teo")
 	await Ui.say(["E cosa fa?"], "Olga")

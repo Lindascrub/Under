@@ -44,6 +44,19 @@ def placeholder(name, w, h, fill, text="", text_fill=(255, 255, 255, 255), size=
     print("art/c4/" + name, im.size)
 
 
+def shutter(name, w, h):
+    """La serranda: lamelle grigie orizzontali, una maniglia in basso."""
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle((0, 0, w - 1, h - 1), fill=(130, 134, 142, 255), outline=EDGE)
+    for y in range(3, h - 1, 3):
+        d.line((1, y, w - 2, y), fill=(92, 96, 106, 255))
+    d.rectangle((w // 2 - 3, h - 4, w // 2 + 2, h - 3), fill=EDGE)
+    os.makedirs(OUT, exist_ok=True)
+    if save_asset(im, os.path.join(OUT, name)):
+        print("art/c4/" + name, im.size)
+
+
 if __name__ == "__main__":
     GOLD = (214, 170, 60, 255)
     RED = (150, 30, 40, 255)
@@ -59,3 +72,4 @@ if __name__ == "__main__":
     placeholder("lettera.png", 8, 6, (245, 245, 235, 255))
     placeholder("timbro.png", 8, 10, (190, 40, 40, 255))
     placeholder("antenna_robot.png", 8, 10, (150, 200, 230, 255))
+    shutter("serranda.png", 16, 32)

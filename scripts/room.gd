@@ -1249,3 +1249,40 @@ func _clerk_path(start: Vector2) -> Array[Vector2]:
 	for i in cells.size():
 		if i == 0 or i == cells.size()-1 or (cells[i]-cells[i-1]).normalized() != (cells[i+1]-cells[i]).normalized(): path.append(cells[i])
 	return path
+
+
+## La strada a piedi da `start` a `goal`, girando intorno a muri e mobili (griglia da 8 px).
+## `exclude`: i corpi da non contare come ostacoli (chi cammina). Ritorna solo le curve; l'ultimo punto
+## è il più vicino a `goal` che si riesce a raggiungere.
+func walk_path(start: Vector2, goal: Vector2, exclude: Array[RID] = []) -> Array[Vector2]:
+	const GRID := 8
+	var from := Vector2i(start / GRID)
+	var queue: Array[Vector2i] = [from]
+	var parents := {from: from}
+	var found := from
+	var closest := INF
+	var shape := RectangleShape2D.new(); shape.size = Vector2(9, 5)
+	var query := PhysicsShapeQueryParameters2D.new(); query.shape = shape; query.collision_mask = 1
+	query.exclude = exclude
+	var cursor := 0
+	while cursor < queue.size():
+		var cell := queue[cursor]; cursor += 1
+		var distance := (Vector2(cell * GRID) + Vector2(4, 4)).distance_to(goal)
+		if distance < closest:
+			closest = distance; found = cell
+		if distance <= 6.0: break
+		for direction: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			var next := cell + direction
+			if parents.has(next) or next.x < 0 or next.y < 0 or next.x >= map_size.x * 2 or next.y >= map_size.y * 2: continue
+			query.transform = Transform2D(0, Vector2(next * GRID) + Vector2(4, 1))
+			if not get_world_2d().direct_space_state.intersect_shape(query).is_empty(): continue
+			parents[next] = cell; queue.append(next)
+	var cells: Array[Vector2] = []
+	while found != from:
+		cells.append(Vector2(found * GRID) + Vector2(4, 4)); found = parents[found]
+	cells.reverse()
+	var path: Array[Vector2] = []
+	for i in cells.size():
+		if i == cells.size() - 1 or (i > 0 and (cells[i] - cells[i - 1]).normalized() != (cells[i + 1] - cells[i]).normalized()):
+			path.append(cells[i])
+	return path

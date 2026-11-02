@@ -532,7 +532,7 @@ func _test_chapter4() -> void:
 	_check(GameState.debt == debt0 - GameState.MIN_PAYMENT and GameState.money == money0 - GameState.MIN_PAYMENT, "'Voglio soltanto pagarlo': la rata scala il debito")
 	# 23: la scena segreta (Olga e il quaderno di Teo), una volta sola, senza premi
 	m = await _go(Router.BANCA, "from_below")
-	_check(m.find_child("SedutoTeo", true, false) != null, "Olga dovrebbe essere alla scrivania di Teo")
+	_check(m.find_child("SedutoTeo", true, false) != null, "Olga e Teo dovrebbero essere sul divano")
 	money0 = GameState.money
 	m = await _c4_call(m, "_secret")
 	_check(GameState.flags.get("c4_segreta", false) and GameState.money == money0, "la scena segreta si vede, senza premi")
