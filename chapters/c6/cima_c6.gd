@@ -267,6 +267,7 @@ func _president_first() -> void:
 	Ui.cutscene = true
 	await Ui.say(["* Una stanza enorme, quasi vuota. Una signora anziana, grigia, con una giacca semplice.",
 		"* Sta cercando di aprire una bustina di zucchero."])
+	await _request_answer()
 	Sound.sfx("strap")
 	await Ui.say(["* STRAP.", "* Lo zucchero cade sul pavimento lucidato."])
 	await Ui.say(["Accidenti.", "Oh.", "Sei già qui.", "Pensavo ci volesse più tempo."], PRES)
@@ -290,6 +291,51 @@ func _president_first() -> void:
 	await _origin()
 	await _offer()
 	Ui.cutscene = false
+
+
+## 6.02 La richiesta di verifica partita dalla Banca (Storia.richiesta()): arrivata (anche a mano),
+## finita in archivio (con la copia di Teo la mette sopra), o solo il riepilogo. Un vecchio salvataggio
+## senza nessuna delle due non ha niente da dire.
+func _request_answer() -> void:
+	match Storia.richiesta():
+		"direzione", "a_mano":
+			if Storia.richiesta() == "a_mano":
+				await Ui.say(["* Le appoggi sulla scrivania la richiesta che hai portato su a mano. È ancora piegata come in tasca."])
+			await Ui.say(["Richiesta di verifica. È arrivata.", "La Direzione sono io. Non mi immaginavi così."], PRES)
+		"archivio":
+			await Ui.say(["La tua richiesta è arrivata in archivio. Da lì di solito non risale."], PRES)
+			if _f("c4_ricevuta_copia"):
+				await Ui.say(["* Le mostri la copia, con il supereroe nell'angolo."])
+				await Ui.say(["Una copia. Firmata da un supereroe. Va bene: la metto sopra."], PRES)
+		"riepilogo":
+			await Ui.say(["Hai un riepilogo, non una richiesta. Sei salito lo stesso."], PRES)
+
+
+## La verifica è fatta se la richiesta è arrivata (o se la copia di Teo l'ha rimessa sopra).
+static func verification_done() -> bool:
+	return Storia.richiesta_arrivata() or (Storia.richiesta() == "archivio" and _f("c4_ricevuta_copia"))
+
+
+## Verifica e contestazione sono due cose diverse: la contestazione (c6_contestazione) non annulla niente,
+## ma resta scritta. Si può fare qui o dopo, da "Il debito, ancora.", fino alla decisione finale.
+func _verification() -> void:
+	if verification_done():
+		await Ui.say(["La verifica è fatta. Per il regolamento, la registrazione è valida."], PRES)
+	else:
+		await Ui.say(["Non hai chiesto una verifica. Te la faccio qui, gratis. Valida."], PRES)
+	await _contest_choice()
+
+
+func _contest_choice() -> void:
+	if _f("c6_contestazione") or bool(c6()["final_decision"]["confirmed"]):
+		return
+	var c: int = await Ui.choose("La tua registrazione.", ["Contesto la registrazione.", "Non adesso."], PRES)
+	if c != 0:
+		return
+	GameState.flags["c6_contestazione"] = true
+	Storia.segna("c6_contestazione")
+	Sound.sfx("stamp", 0.9)
+	await Ui.say(["Registro la contestazione. Non annulla niente. Ma adesso c'è scritto che non sei d'accordo."], PRES)
 
 
 ## 6.03 Il fascicolo: tre sezioni da toccare. L'importo originario non è il debito di adesso.
@@ -339,6 +385,11 @@ func _origin() -> void:
 		await Ui.say(["Quando la Torre è stata costruita, bisognava trovare un modo per farla funzionare.",
 			"Servivano energia, amministrazione, merci, crediti, manutenzione.",
 			"Ogni nuovo abitante veniva registrato come beneficiario di tutto questo.", "E gli veniva assegnata una quota."], PRES)
+	Sound.sfx("blip", 0.6)
+	await Ui.say(["* Dietro la Presidente, una stampante. Vrrr. Esce un fascicolo."])
+	await Ui.say(["Adesso non serve più un Consiglio. Ogni nuovo abitante viene registrato, e la stampante gli assegna la sua quota. Da sola."], PRES)
+	Sound.sfx("blip", 0.6)
+	await Ui.say(["* Vrrr. Un altro."])
 	var asked: Array = []
 	while asked.size() < 3:
 		var opts: Array = ["Ma non l'ho mai accettata.", "Chi ha deciso la cifra?", "Quindi non devo niente?", "Basta così."]
@@ -357,6 +408,7 @@ func _origin() -> void:
 				await Ui.say(["Secondo il regolamento della Torre, sì.", "Se mi chiedi se sia giusto…",
 					"Questa è una decisione che il regolamento non sa prendere."], PRES)
 	d["president"]["origin_explained"] = true
+	await _verification()
 
 
 ## 6.04 L'offerta: presentata adesso, decisa alla fine. Il debito non si tocca ancora.
@@ -411,6 +463,7 @@ func _president_menu() -> void:
 			else:
 				await Ui.say(["Sette miliardi assegnati. %s adesso." % GameState.euros(GameState.debt),
 					"La differenza l'hai pagata tu, o l'hanno fatta gli interessi. Il timbro, intanto, è nel cassetto."], PRES)
+				await _contest_choice()
 		2:
 			await Ui.say(["Ho cominciato ad aprire bustine di zucchero e a sbagliare.", "Quando sbagli le cose piccole, è ora di lasciare quelle grandi.",
 				"Oppure di cambiare zucchero."], PRES)
@@ -494,6 +547,12 @@ func start_cycle() -> void:
 	if n == 1:
 		await Ui.say(["È tutto molto semplice."], PRES)
 		await Ui.say(["* La frase del Capo. Detta con la stessa voce, quasi."])
+	if n == 2 and not _f("c6_capo_cicli"):
+		# il Capo durante i cicli: una volta, prima del secondo
+		GameState.flags["c6_capo_cicli"] = true
+		Sound.sfx("alarm", 0.7)
+		await Ui.say(["* Il telefono sulla scrivania vibra. Il Capo."])
+		await Ui.say(["Togli cinque dai servizi. Mettili in riserva. La tua pratica la chiudiamo noi. Timbro e via."], BOSS)
 	GameState.save_game(scene_file_path, player.global_position)
 	GameState.minigame = {"cycle": n}
 	Router.goto(DIREZIONE)
@@ -792,6 +851,7 @@ func commit(sel: String) -> void:
 	if d["final_decision"]["confirmed"]:
 		return
 	var out := FINALI.decide(sel)
+	out["engine"] = 2
 	d["final_decision"]["selected"] = sel
 	d["final_decision"]["confirmed"] = true
 	d["outcome"] = out

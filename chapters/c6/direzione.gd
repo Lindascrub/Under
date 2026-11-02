@@ -383,6 +383,8 @@ func _finish() -> void:
 		lines.append("La Casa Comune: " + _casa_text(str(st["casa"])))
 	elif chose_phase == "debiti":
 		st["debt_rule"] = choice_id
+		# per il finale A1: "Conserva" scelto mentre almeno un'altra regola era aperta (una scelta, non un obbligo)
+		st["debt_other_open"] = options.any(func(o: Array) -> bool: return str(o[0]) != "conservare" and str(o[o.size() - 1]) == "")
 		lines.append("La regola dei debiti: " + _debt_text(choice_id))
 	var dt := _dt()
 	dt["state"] = st
