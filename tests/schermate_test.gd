@@ -6,8 +6,8 @@ extends "res://tests/storia_test.gd"
 ##   Godot --path . res://tests/schermate_test.tscn -- --out=<cartella>            (PC)
 ##   Godot --path . res://tests/schermate_test.tscn -- --touch --size=1600x720 --out=<cartella>   (telefono 20:9)
 ## --size cambia la finestra da dentro il gioco: --resolution più grande dello schermo viene ridotta da Windows.
-## Opzionale: --solo=banca,citta,presidente,finali,tocco  (tocco: joystick e pulsanti mentre si cammina,
-## e lo schermo della Direzione col dito; con --touch)
+## Opzionale: --solo=banca,citta,presidente,finali,tocco,nives  (tocco: joystick e pulsanti mentre si cammina,
+## e lo schermo della Direzione col dito; con --touch. nives: la memoria di Nives e il nome)
 
 const VIEW := Rect2(0, 0, 640, 360)
 
@@ -55,6 +55,9 @@ func _run() -> void:
 	if _want("tocco"):
 		_section = "tocco"
 		await _test_tocco()
+	if _want("nives"):
+		_section = "nives"
+		await _test_nives()
 	if _want("citta"):
 		print("SCHERMATE: in Città raggiunti camminando %d; non raggiunti: %s; OK non arriva: %s" % [_camminate, str(_non_raggiunti), str(_ok_non_arriva)])
 	if _min_row < 1000.0:
@@ -88,6 +91,100 @@ func _test_tocco() -> void:
 	await _wait_scene(Router.DIREZIONE)
 	await _idle()
 	await _still("direzione")
+
+
+## La memoria di Nives (con una memoria di prova, accanto al salvataggio dei test): il primo ritorno al Fondo,
+## la rivelazione della Banca, i due ricordi al Mercato; poi il nome con numeri e una parolaccia.
+func _test_nives() -> void:
+	_nives_memory([["A1", "solidale"], ["C2", "solidale"]])
+	_section = "nives_ritorno"
+	_legacy_new_game()
+	GameState.flags["run_id"] = MemoriaNives.new_run_id()
+	GameState.flags["c1_arrivo"] = true
+	var m: Room = await _go(Router.FONDO)
+	await _to_booth(m)
+	choose_queue = [0, 0, 0, 1]
+	await m.call("_badge_machine")
+	await _idle()
+	_section = "nives_due_ricordi"
+	_legacy_new_game()
+	GameState.flags["run_id"] = MemoriaNives.new_run_id()
+	GameState.badges.assign(["-4", "-3"])
+	for f: String in ["c3_arrivo", "c3_nives", "nives_mem_ritorno", "nives_mem_ricordo"]:
+		GameState.flags[f] = true
+	m = await _go(Router.MERCATO, "from_below")
+	await _to_booth(m)
+	choose_queue = [0, 0, 0, 1]
+	await m.call("_badge_machine")
+	await _idle()
+	_section = "nives_rivelazione"
+	_nives_memory([["B1"]])
+	m = await _bank(["c4_olga", "c4_teo"])
+	GameState.flags["run_id"] = MemoriaNives.new_run_id()
+	GameState.flags["met_olga"] = true
+	GameState.flags["met_teo"] = true
+	m = await _stairs(m, [0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
+	_section = "nives_nome"
+	Router.goto(Router.MENU)
+	await _wait_scene(Router.MENU)
+	await _idle()
+	var menu := get_tree().current_scene
+	menu.call("_ask_name")
+	await _still("nome_vuoto")
+	var edit := menu.get_node("SceltaNome/Campo") as LineEdit
+	edit.grab_focus()
+	for ch in "Lia7":
+		await _press_char(ch)
+	await _still("nome_numero")
+	_check(edit.text == "Lia", "nome: il 7 scritto dalla tastiera sparisce")
+	await _press_char("#")
+	await _still("nome_simbolo")
+	_check(edit.text == "Lia", "nome: il simbolo scritto dalla tastiera sparisce")
+	edit.text = "Stronzo"
+	edit.text_submitted.emit(edit.text)
+	await _still("nome_parolaccia")
+	menu.set("name_override", "Lia")
+	await _still("nome_fine")
+	_nives_memory([])
+
+
+## Un tasto premuto davvero (come dalla tastiera del telefono o del PC).
+func _press_char(ch: String) -> void:
+	var e := InputEventKey.new()
+	e.pressed = true
+	e.unicode = ch.unicode_at(0)
+	Input.parse_input_event(e)
+	await get_tree().process_frame
+	var up := e.duplicate() as InputEventKey
+	up.pressed = false
+	Input.parse_input_event(up)
+	await get_tree().process_frame
+
+
+func _nives_memory(list: Array) -> void:
+	var d := {"version": 1, "endings": [], "heard": [], "cleared_runs": []}
+	var i := 0
+	for v: Array in list:
+		i += 1
+		(d["endings"] as Array).append({"run": "vecchia-%d" % i, "family": str(v[0]).left(1), "variant": v[0], "past": v[1] if v.size() > 1 else ""})
+	var f := FileAccess.open(MemoriaNives.path(), FileAccess.WRITE)
+	f.store_string(JSON.stringify(d))
+	f.close()
+	MemoriaNives._from = ""
+
+
+## Il giocatore cammina fino allo sportello dei badge (come per parlarci).
+func _to_booth(m: Room) -> void:
+	var spot := m.find_child("SportelloBadgeInterazione", true, false) as Node2D
+	if spot == null:
+		_fail("%s: lo sportello dei badge non c'è" % _section)
+		return
+	if not await _walk(m, spot.global_position + Vector2(0, 10)):
+		# davanti allo sportello, dove si sta per parlarci (la strada la decide il gioco, non il test)
+		m.player.global_position = spot.global_position + Vector2(0, 12)
+		m.player.call("face", "up")
+	for i in 30:
+		await get_tree().process_frame
 
 
 func _still(what: String) -> void:
