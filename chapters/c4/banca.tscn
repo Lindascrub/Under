@@ -7111,7 +7111,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -31)
 script = ExtResource("9_b8kf0")
-sheet = "char_13"
+sheet = "rpg_vx1_1"
 anim = "idle_up"
 grey = true
 
@@ -7137,7 +7137,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -31)
 script = ExtResource("9_b8kf0")
-sheet = "char_18"
+sheet = "rpg_vx1_2"
 anim = "idle_up"
 grey = true
 
@@ -7163,7 +7163,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -31)
 script = ExtResource("9_b8kf0")
-sheet = "char_20"
+sheet = "rpg_vx1_3"
 anim = "idle_up"
 grey = true
 
@@ -7189,7 +7189,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -31)
 script = ExtResource("9_b8kf0")
-sheet = "char_05"
+sheet = "rpg_vx1_4"
 anim = "idle_up"
 grey = true
 
@@ -7662,7 +7662,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -31)
 script = ExtResource("9_b8kf0")
-sheet = "char_11"
+sheet = "rpg_vx1_5"
 
 [node name="Bancone2" type="Node2D" parent="Mondo" unique_id=1997955705]
 position = Vector2(102, -1)
@@ -8149,7 +8149,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
-sheet = "char_03"
+sheet = "rpg_vx1_6"
 nudge = Vector2(0, 3)
 
 [node name="SedutoAttesa1" type="AnimatedSprite2D" parent="Mondo" unique_id=1381905710]
@@ -8161,7 +8161,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
-sheet = "char_07"
+sheet = "rpg_vx1_7"
 nudge = Vector2(0, 3)
 
 [node name="SedutoAttesa2" type="AnimatedSprite2D" parent="Mondo" unique_id=589818652]
@@ -8173,7 +8173,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
 script = ExtResource("9_b8kf0")
-sheet = "char_14"
+sheet = "rpg_vx1_8"
 nudge = Vector2(0, 3)
 
 [node name="SedutoSala0" type="AnimatedSprite2D" parent="Mondo" unique_id=970445931]
@@ -8184,7 +8184,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -27)
 script = ExtResource("9_b8kf0")
-sheet = "char_12"
+sheet = "rpg_vx2_1"
 anim = "idle_up"
 nudge = Vector2(0, 4)
 
@@ -8196,7 +8196,7 @@ frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -27)
 script = ExtResource("9_b8kf0")
-sheet = "char_09"
+sheet = "rpg_vx2_2"
 anim = "idle_up"
 nudge = Vector2(0, 4)
 

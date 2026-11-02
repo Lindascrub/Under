@@ -779,7 +779,7 @@ shape = SubResource("RectangleShape2D_lalta")
 
 [node name="Cliente0" parent="Mondo" unique_id=2033517770 instance=ExtResource("comparsa_tscn")]
 position = Vector2(184, 126)
-sheet = "char_15"
+sheet = "rpg_vx2_8"
 look = "left"
 lines = PackedStringArray("Ho comprato tre cose che non mi servono. Ma erano al 50%!", "Lo scontrino è più lungo di me. Lo tengo come ricordo.", "Il carrello cigola. Lo prendo come un complimento.")
 
@@ -799,7 +799,7 @@ position = Vector2(64, 0)
 
 [node name="Cliente1" parent="Mondo" unique_id=232408115 instance=ExtResource("comparsa_tscn")]
 position = Vector2(200, 94)
-sheet = "char_16"
+sheet = "rpg_vx3_1"
 lines = PackedStringArray("Mi scusi, sa dov\'è il reparto Felicità? Sulla mappa c\'è, ma è in esaurimento.", "Il latte costa quanto un\'ora di cassa. Lo guardo e basta. Guardare è ancora gratis. Credo.")
 
 [node name="Giro" type="Node2D" parent="Mondo/Cliente1"]
@@ -815,7 +815,7 @@ position = Vector2(64, 0)
 
 [node name="Cliente2" parent="Mondo" unique_id=1697630145 instance=ExtResource("comparsa_tscn")]
 position = Vector2(264, 222)
-sheet = "char_19"
+sheet = "rpg_vx3_2"
 look = "down"
 lines = PackedStringArray("Le mele hanno il codice a barre sulla buccia. Così si sa subito quanto costa morderle.", "Prendo una banana. Una. Il resto lo guardo.")
 
