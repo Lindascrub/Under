@@ -309,7 +309,7 @@ func _still(what: String) -> void:
 	_shot(what)
 
 
-## Il Fondo dopo la rivelazione: anche la biglietteria è grigia (Nives no), e lo sguardo indietro
+## Il Fondo dopo la rivelazione: anche la biglietteria e Nives sono grigie, e lo sguardo indietro
 ## inquadra solo la festa, senza la stanza dei ticket.
 func _test_fondo_grigio() -> void:
 	GameState.flags["c1_arrivo"] = true
@@ -320,7 +320,7 @@ func _test_fondo_grigio() -> void:
 	m.player.global_position = (booth as Node2D).global_position + Vector2(40, 40)
 	await _still("biglietteria_grigia")
 	_check(booth.get_node("Parete").material != null, "la biglietteria del Fondo dovrebbe diventare grigia")
-	_check(booth.get_node("Addetta").material == null, "Nives non dovrebbe diventare grigia")
+	_check(booth.get_node("Addetta").material != null, "anche Nives dovrebbe diventare grigia")
 	for id in ["fermo", "mina", "bulbo"]:
 		GameState.flags["svelato_" + id] = true
 	GameState.flags["c1_sbarrato"] = false
