@@ -1080,9 +1080,9 @@ func _test_chapter5() -> void:
 	choose_queue = [3, 0]
 	m = await _c5_talk("nadir")
 	_check(GameState.flags.get("c5_nadir_percorso", false) and "nadir" in GameState.helped_ids, "percorso trovato: Nadir aiutato")
-	# la matematica del percorso: il compromesso è l'unico valido
-	var pc: Dictionary = city["percorso"]
-	_check(int(pc["entrata"]) - int(pc["partenza"]) == 80 and int(pc["budget"]) == 6, "il percorso: 80 minuti e 6 €")
+	# gli orari delle coincidenze: da casa alle 6:40, si entra alle 8:00, 6 €
+	var cz: Dictionary = city["coincidenze"]
+	_check(int(cz["partenza"]) == 400 and str(cz["entrata"]) == "8:00" and int(cz["budget"]) == 6, "le coincidenze: 6:40, 8:00 e 6 €")
 	# 16-17: Ada, UNA STANZA PER TUTTI, la lettera
 	m = await _go(Router.CASA_COMUNE, "default")
 	_check(_npc("ada") != null and m.find_child("PortaArchivio", true, false) != null, "nella Casa Comune c'è Ada, e l'archivio è chiuso")

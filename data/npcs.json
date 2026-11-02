@@ -2735,23 +2735,23 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Nadir ha una mappa dei trasporti e un turno alle otto. Le due cose non si parlano.",
+      "ask": "Nadir ha un tabellone degli orari e un turno alle otto. Le due cose non si parlano.",
       "yes": [
-        "Quindi posso risparmiare quattro euro.",
-        "Perdendo quaranta minuti.",
-        "Questa città è bravissima con gli scambi."
+        "Bus 12 e poi il 30, con lo stesso biglietto. Due euro.",
+        "Arrivo alle sette e cinquantotto. Due minuti di margine.",
+        "Per me è quasi una vacanza."
       ],
       "lose": [
         "Così arrivo tardi, o povero. Di solito tutte e due.",
-        "Riproviamo. La mappa non scappa. Gli autobus sì."
+        "Riproviamo. Il tabellone non scappa. Gli autobus sì."
       ],
       "minigame": {
         "music": "aiuto_nadir",
-        "type": "percorso",
-        "title": "Il percorso possibile",
+        "type": "coincidenze",
+        "title": "L'orario delle coincidenze",
         "intro": [
-          "* La mappa dei trasporti. Nadir parte alle 6:40, il lavoro comincia alle 8:00. In tasca ha 6 €.",
-          "* Tocca le tratte una dopo l'altra, da CASA DI NADIR alla ZONA INDUSTRIALE. Guarda costo, tempo e coincidenze."
+          "* Il tabellone delle partenze. Nadir esce di casa alle 6:40, il lavoro comincia alle 8:00. In tasca ha 6 €.",
+          "* Scegli le corse una dopo l'altra: devono partire da dove si trova Nadir, dopo che è arrivato. Per cambiare servono 3 minuti."
         ],
         "reward": 0,
         "fixed_reward": true,

@@ -234,7 +234,7 @@ func _nadir_menu() -> void:
 			opts.append("Cosa stai guardando?")
 			acts.append("uccelli")
 			if not _f("c5_nadir_percorso"):
-				opts.append("Ti do una mano col percorso")
+				opts.append("Ti aiuto con gli orari")
 				acts.append("percorso")
 		if _f("c5_nadir_percorso") and _f("c5_ada") and not _f("c5_nadir_rete"):
 			opts.append("E se i pendolari si organizzassero?")

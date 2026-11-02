@@ -73,86 +73,6 @@
       }
     }
   },
-  "percorso": {
-    "partenza": 400,
-    "entrata": 480,
-    "budget": 6,
-    "fermate": [
-      {
-        "nome": "CASA DI NADIR",
-        "pos": [
-          70,
-          120
-        ]
-      },
-      {
-        "nome": "FERMATA PIAZZA",
-        "pos": [
-          250,
-          70
-        ]
-      },
-      {
-        "nome": "STAZIONE",
-        "pos": [
-          250,
-          200
-        ]
-      },
-      {
-        "nome": "ZONA INDUSTRIALE",
-        "pos": [
-          460,
-          130
-        ]
-      }
-    ],
-    "tratte": [
-      {
-        "da": 0,
-        "a": 1,
-        "nome": "Bus 12",
-        "euro": 2,
-        "min": 55
-      },
-      {
-        "da": 1,
-        "a": 3,
-        "nome": "Bus 30 (stesso biglietto)",
-        "euro": 0,
-        "min": 55
-      },
-      {
-        "da": 0,
-        "a": 2,
-        "nome": "Bus 4",
-        "euro": 2,
-        "min": 20
-      },
-      {
-        "da": 2,
-        "a": 3,
-        "nome": "Treno (+10 min di coincidenza)",
-        "euro": 4,
-        "min": 50
-      },
-      {
-        "da": 2,
-        "a": 3,
-        "nome": "Navetta CHEAP Premium",
-        "euro": 8,
-        "min": 20,
-        "curva": 1
-      },
-      {
-        "da": 1,
-        "a": 2,
-        "nome": "A piedi",
-        "euro": 0,
-        "min": 25
-      }
-    ]
-  },
   "smistamento": {
     "destinazioni": [
       "CASA COMUNE",
@@ -237,5 +157,95 @@
     "canone_vecchio": 7000,
     "oneri": 11000,
     "entrate": 28000
+  },
+  "coincidenze": {
+    "partenza": 400,
+    "entrata": "8:00",
+    "budget": 6,
+    "cambio": 3,
+    "fermate": [
+      "CASA",
+      "PIAZZA",
+      "STAZIONE",
+      "ZONA IND."
+    ],
+    "corse": [
+      {
+        "parte": "6:42",
+        "linea": "Bus 4",
+        "da": 0,
+        "a": 2,
+        "arriva": "7:02",
+        "euro": 2
+      },
+      {
+        "parte": "6:45",
+        "linea": "Bus 12",
+        "da": 0,
+        "a": 1,
+        "arriva": "7:10",
+        "euro": 2
+      },
+      {
+        "parte": "6:50",
+        "linea": "Bus 12",
+        "da": 0,
+        "a": 1,
+        "arriva": "7:15",
+        "euro": 2,
+        "stato": "soppressa"
+      },
+      {
+        "parte": "7:04",
+        "linea": "Treno R",
+        "da": 2,
+        "a": 3,
+        "arriva": "7:40",
+        "euro": 4
+      },
+      {
+        "parte": "7:12",
+        "linea": "Navetta CHEAP",
+        "da": 2,
+        "a": 3,
+        "arriva": "7:35",
+        "euro": 0,
+        "stato": "badge"
+      },
+      {
+        "parte": "7:15",
+        "linea": "Bus 30",
+        "da": 1,
+        "a": 3,
+        "arriva": "7:58",
+        "euro": 0,
+        "nota": "biglietto del 12"
+      },
+      {
+        "parte": "7:20",
+        "linea": "Express",
+        "da": 1,
+        "a": 3,
+        "arriva": "7:45",
+        "euro": 5
+      },
+      {
+        "parte": "7:34",
+        "linea": "Treno R",
+        "da": 2,
+        "a": 3,
+        "arriva": "8:10",
+        "euro": 4
+      },
+      {
+        "parte": "7:40",
+        "linea": "Bus 30",
+        "da": 1,
+        "a": 3,
+        "arriva": "8:23",
+        "euro": 0,
+        "nota": "biglietto del 12"
+      }
+    ]
   }
 }

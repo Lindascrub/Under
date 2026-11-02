@@ -385,19 +385,22 @@ func _run() -> void:
 	await _tap_at((m.call("_st_done_button") as Rect2).get_center())
 	_check(str(m.get("phase")) != "play" and GameState.flags.has("c5_stanze"), "tre stanze che funzionano: il minigioco finisce")
 
-	# --- Nadir, IL PERCORSO POSSIBILE: tratta dopo tratta; lento, caro, poi il compromesso
-	m = await _help("percorso")
-	await _tap_at((m.call("_pc_label", 4) as Rect2).get_center())
-	_check((m.get("pc_path") as Array).is_empty(), "da casa la navetta non parte")
-	for e in [0, 1]:
-		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
-	_check(int(m.get("misses")) == 1 and (m.get("pc_path") as Array).is_empty(), "il percorso economico arriva tardi: si riparte")
-	for e in [2, 4]:
-		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
-	_check(int(m.get("misses")) == 2 and str(m.get("phase")) == "play", "il percorso veloce costa troppo")
-	for e in [2, 3]:
-		await _tap_at((m.call("_pc_label", e) as Rect2).get_center())
-	_check(str(m.get("phase")) != "play" and GameState.flags.get("c5_nadir_tratta", []) == [2, 3], "il compromesso (bus 4 + treno): Nadir arriva")
+	# --- Nadir, L'ORARIO DELLE COINCIDENZE: una corsa alla volta; soppressa, coincidenza persa, troppo cara, poi quella giusta
+	m = await _help("coincidenze")
+	var row := func(k: int) -> Vector2: return (m.call("_cz_row", k) as Rect2).get_center()
+	await _tap_at(row.call(5))
+	_check((m.get("cz_path") as Array).is_empty() and int(m.get("misses")) == 0, "da casa il Bus 30 non parte (e non è un errore)")
+	await _tap_at(row.call(2))
+	_check((m.get("cz_path") as Array).is_empty() and int(m.get("misses")) == 0, "la corsa soppressa non si prende")
+	for k in [0, 3]:
+		await _tap_at(row.call(k))
+	_check(int(m.get("misses")) == 1 and (m.get("cz_path") as Array).is_empty(), "il treno delle 7:04 parte mentre Nadir scende dal Bus 4: si riparte")
+	for k in [1, 6]:
+		await _tap_at(row.call(k))
+	_check(int(m.get("misses")) == 2 and str(m.get("phase")) == "play", "il Bus 12 più l'Express costa troppo")
+	for k in [1, 5]:
+		await _tap_at(row.call(k))
+	_check(str(m.get("phase")) != "play" and GameState.flags.get("c5_nadir_corse", []) == [1, 5], "Bus 12 e Bus 30 con lo stesso biglietto: Nadir arriva alle 7:58")
 
 	# --- il centralino della Città: destinazioni; poi le discrepanze (VERIFICA, CONFERMA)
 	w = await _work("smistamento", {"job": {"pay": 1600, "pay_max": 2000, "duration": 45}})
