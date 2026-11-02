@@ -118,6 +118,10 @@ ricalcolato all'apertura del Finale con quello che il salvataggio sa. Il Finale 
 la frase finale dipende dalla variante, gli epiloghi dallo stato delle singole persone,
 il sogno dalla famiglia (`dream_line(dream, family)`).
 
+Quando il Finale arriva ai titoli di coda, la variante si scrive anche nella memoria di Nives
+(`MemoriaNives.record`, docs/NIVES_MEMORIA.md), che vive fuori dal salvataggio. La memoria non entra mai in
+`facts()` né in `decide()`: i finali si decidono uguali con o senza ricordi.
+
 ## 7. Come si cambia
 
 Modificare `variant_rules()` in `finali.gd` (testo e condizione stanno insieme) e aggiornare questa pagina.

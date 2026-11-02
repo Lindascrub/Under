@@ -57,6 +57,13 @@ Godot_v4.6.3-stable_win64_console.exe --headless --path . res://tests/smoke_test
 
 Alla fine stampa `SMOKE TEST OK` oppure l'elenco dei problemi.
 
+La memoria di Nives (i finali delle partite concluse, [docs/NIVES_MEMORIA.md](docs/NIVES_MEMORIA.md)) ha un test suo,
+che usa una memoria di prova e non tocca quella vera:
+
+```powershell
+Godot_v4.6.3-stable_win64_console.exe --headless --path . res://tests/nives_memoria_test.tscn
+```
+
 ## Modificare i testi
 
 I dialoghi delle persone sono in `data/npcs.json`, gli incarichi in `data/jobs.json`. Si possono cambiare senza toccare il codice. Quando esporti il gioco, aggiungi `*.json` ai "filtri per esportare file non-risorsa" nelle impostazioni di esportazione.

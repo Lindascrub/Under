@@ -96,7 +96,8 @@ Queste stanze sono scene vere: si aprono in Godot e si sistemano trascinando i n
 - Nell'Inspector della radice di ogni piano: `camera_lift` (di quanti pixel sale la visuale verso il
   muro in alto: lo usa il Sottoufficio), `camera_lift_riga`/`camera_lift_righe` (da che riga comincia a salire
   e in quante righe arriva in cima), `alza_nei_dialoghi` (di quanti pixel del mondo scende la visuale durante
-  un dialogo, così tu e chi ti parla restate sopra le scelte; 24 = 48 px a schermo; 0 = ferma). Il Fondo ha anche `scossa_forza`, `scossa_colpo` e `scossa_durata`
+  un dialogo, così tu e chi ti parla restate sopra le scelte; 24 = 48 px a schermo; 0 = ferma; se guardi in su,
+  come allo sportello dei badge, resta ferma lo stesso, se no chi ti parla finisce sotto la barra in alto). Il Fondo ha anche `scossa_forza`, `scossa_colpo` e `scossa_durata`
   (quando crolla l'ascensore); il Sottoufficio `camera_spazio_sopra`.
 
 ## L'interfaccia

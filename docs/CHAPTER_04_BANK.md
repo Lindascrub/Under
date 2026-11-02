@@ -126,6 +126,8 @@ d'ordine) oppure tenere **solo il riepilogo** (`c4_riepilogo`). Poi i saluti (`_
 - chi saluta arriva davvero sotto le scale: compare in `Punti/ArrivoSaluti` e cammina fino a `Punti/SalutoTeo` /
   `Punti/SalutoOlga` (spostali nell'editor), poi parla;
 - chi ha aiutato tutti riceve da Teo una copia della richiesta (`c4_ricevuta_copia`); a metà strada, la riga di Nives;
+- dopo i saluti, sempre, Nives: "Tienila." / "Servirà?" (`_nives_receipt`). Dalla partita dopo un finale si può
+  chiederle "Perché mi parli come se tutto fosse già successo?" (docs/NIVES_MEMORIA.md);
 - se la proposta del Capo a Olga era **chiara**, Olga dice se le conviene o no (`Storia.olga_conviene`, i costi
   attuali in `data/bank.json`, `proposta_olga`);
 - se era **nascosta** (`_farewell_deceived`): una riga che dipende dall'ordine fra contestazione e proposta, poi

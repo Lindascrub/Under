@@ -23,6 +23,8 @@ Poi fai il tuo primo turno e scopri che quei colori li accendi tu, con la tua fa
 | **Mina** | Vecchio elettricista, scherza su tutto. Accanto ha i cavi aggrovigliati. | **Fili**: collega i fili dello stesso colore, come in Among Us |
 
 Nives, l'addetta ai badge, è colorata (fa parte del sistema): si presenta solo se aiuti tutti.
+La prima volta allo sportello dice il prezzo così: "Cinquecento euro." / "Per una porta?" / "Per quella dopo."
+Dopo un finale, alla partita nuova, ti riconosce: "Oh. Sei tornato." (docs/NIVES_MEMORIA.md).
 
 ## La storia, passo per passo
 
