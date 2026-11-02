@@ -258,6 +258,10 @@ func _nadir_menu() -> void:
 ## Dopo IL PERCORSO POSSIBILE: se conosci Ada, l'idea di organizzarsi fra pendolari.
 func _nadir_after() -> void:
 	GameState.flags["c5_nadir_dopo"] = true
+	if not _f("offerta_nadir"):
+		GameState.flags["offerta_nadir"] = true
+		Storia.segna("offerta_nadir")
+		await Ui.say(["Alla zona industriale cercano gente per il turno corto. Con la tratta che hai trovato, ci arrivi anche tu. Sei euro esatti."], "Nadir")
 	if _f("c5_ada") and not _f("c5_nadir_rete"):
 		var c: int = await Ui.choose("Hai un'idea.", ["E se i pendolari si organizzassero?", "Niente"], "Nadir")
 		if c == 0:
@@ -350,6 +354,9 @@ func _rina_window() -> void:
 	await Ui.say(["* Raccogliete i cocci con una scopa e una paletta. Rina misura, tu tieni. Un cartone, del nastro, un pennarello.",
 		"* Sul cartone Rina scrive: APERTO LO STESSO."])
 	await Ui.say(["Grazie.", "Non ti chiedo da che parte stai. Mi hai tenuto il cartone. Per oggi basta."], who)
+	GameState.flags["offerta_rina"] = true
+	Storia.segna("offerta_rina")
+	await Ui.say(["Dietro la bottega c'è una brandina. Non è comoda. È mia, quindi è gratis."], who)
 
 
 func _rina_after_assembly() -> String:
@@ -397,6 +404,9 @@ func _show_node(nm: String) -> CanvasItem:
 # --- 5.08 il TURNO: Comunicazioni (dal terzo turno, lo smistamento rapido) ------------------------
 
 func _station(j: Dictionary) -> void:
+	if GameState.flags.get("c4_verifica", false) and str(GameState.flags.get("c5_richiesta", "")) == "":
+		await _request_switchboard()
+		return
 	var quick: Dictionary = GameState.city.get("rapido", {})
 	if GameState.worked_today or int(GameState.flags.get("c5_turni", 0)) < int(quick.get("dopo", 2)):
 		await super(j)
@@ -407,6 +417,25 @@ func _station(j: Dictionary) -> void:
 		start_job(j)
 	elif c == 1:
 		await quick_turn()
+
+
+## La richiesta di verifica partita dalla Banca passa dal centralino, una volta sola, con la
+## destinazione proposta dal sistema: ARCHIVIO. Dove va lo decidi tu (c5_richiesta, vedi Storia.richiesta()).
+func _request_switchboard() -> void:
+	Sound.sfx("blip", 1.4)
+	await Ui.say(["* Sul pannello del centralino lampeggia una pratica che conosci: RICHIESTA DI VERIFICA — {name}.",
+		"* DESTINAZIONE PROPOSTA DAL SISTEMA: ARCHIVIO."])
+	var c: int = await Ui.choose("La tua richiesta.", ["CONFERMA", "VERIFICA", "SEGNALA"])
+	GameState.flags["c5_richiesta"] = ["archivio", "direzione", "a_mano"][c]
+	Storia.segna("c5_richiesta")
+	match c:
+		0:
+			await Ui.say(["* CONFERMA. La richiesta scivola nella colonna ARCHIVIO."])
+		1:
+			await Ui.say(["* VERIFICA. La destinazione diventa: DIREZIONE. Il pannello ci pensa un secondo, poi la lascia salire."])
+		_:
+			await Ui.say(["* SEGNALA. La richiesta si ferma e resta a te. La stampi e la pieghi in tasca, vicino al badge.",
+				"* La porterai su a mano."])
 
 
 ## Il TURNO RAPIDO: le richieste arrivano già smistate. Stessa paga base, nessuna discrepanza vista.
@@ -697,7 +726,7 @@ func _crash() -> void:
 	await get_tree().create_timer(0.8).timeout
 	await Ui.say(["* CRASH.", "* La vetrina della bottega di Rina va in pezzi. Non hai visto chi è stato. Da qui, nessuno l'ha visto bene."])
 	await Ui.say(["No.", "No, no, no.", "L'avevo appena riparata."], "Rina")
-	_add_person("Giornalista", "char_07", "idle_left", _giornalista)
+	_add_person("Giornalista", "rpg_vx3_3", "idle_left", _giornalista)
 	await Ui.say(["* Arriva qualcuno con un taccuino e un microfono che ha visto giorni migliori."])
 	await Ui.say(["Possiamo avere una dichiarazione?"], "Giornalista")
 	await Ui.say(["* (Puoi parlare con Rina, con chi manifesta, con il giornalista. Nell'ordine che vuoi. E poi c'è l'assemblea: %s la sta organizzando.)" % organizer()])
@@ -806,29 +835,29 @@ func _dress_protest() -> void:
 	if org == "Ada":
 		_add_person("Ada", str(GameState.npc_data("ada").get("sheet")), "idle_down", _organizer_talk)
 	else:
-		_add_person("Studente", "char_09", "idle_down", _organizer_talk)
+		_add_person("Studente", "rpg_vx3_4", "idle_down", _organizer_talk)
 		var ada := _add_person("AdaRobot", str(GameState.npc_data("ada").get("sheet")), "idle_down", _robot_ada_square, false)
 		_antenna(ada)
 	var crowd := [
-		["StudenteFolla", "char_20", "Sono qui perché chiudono il posto dove studio.", "Studente"],
-		["Lavoratore", "char_15", "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Lavoratore"],
-		["Passante", "char_11", "Io volevo soltanto comprare del pane.", "Passante"],
-		["AltroPassante", "char_12", "Hai trovato quello economico? No? Allora sei dei nostri.", "Altro passante"],
+		["StudenteFolla", "rpg_vx3_5", "Sono qui perché chiudono il posto dove studio.", "Studente"],
+		["Lavoratore", "rpg_vx3_6", "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Lavoratore"],
+		["Passante", "rpg_vx3_7", "Io volevo soltanto comprare del pane.", "Passante"],
+		["AltroPassante", "rpg_vx3_8", "Hai trovato quello economico? No? Allora sei dei nostri.", "Altro passante"],
 	]
 	for p: Array in crowd:
 		var line: String = p[2]
 		var who: String = p[3]
 		_add_person(p[0], p[1], "idle_up", func() -> void: await Ui.say([line], who))
-	var m := _add_person("Manifestante", "char_06", "idle_up", _manifestante)
+	var m := _add_person("Manifestante", "rpg_abby", "idle_up", _manifestante)
 	_sign_on(m, SIGNS[3])
-	var holders := [["Cartello0", "char_05"], ["Cartello1", "char_10"], ["Cartello2", "char_08"]]
+	var holders := [["Cartello0", "rpg_bob"], ["Cartello1", "rpg_dan"], ["Cartello2", "rpg_jenny"]]
 	for i in holders.size():
 		var h: Array = holders[i]
 		var text: String = SIGNS[i]
 		var c := _add_person(h[0], h[1], "idle_up", func() -> void: await Ui.say(["* Il cartello dice: " + text]))
 		_sign_on(c, text)
 	if _f("c5_vetrina"):
-		_add_person("Giornalista", "char_07", "idle_left", _giornalista)
+		_add_person("Giornalista", "rpg_vx3_3", "idle_left", _giornalista)
 
 
 ## Ada robot in piazza: volantini CHEAP. Si può parlarle, ma risponde il volantino.
@@ -890,6 +919,10 @@ func _leda() -> void:
 		GameState.flags["c5_leda_collabora"] = true
 		await Ui.say(["Carta, lampadine, sedie usate. Comprate insieme costano meno. Non è beneficenza: è aritmetica.",
 			"Lo dico all'assemblea. Se mi ascoltano, bene. Se no, lo dico più forte."], who)
+		if not GameState.is_robot("leda"):
+			GameState.flags["offerta_leda"] = true
+			Storia.segna("offerta_leda")
+			await Ui.say(["Gli ordini condivisi hanno bisogno di qualcuno che li porti. Paga poco, ma all'ora giusta."], who)
 
 
 func _amir() -> void:
@@ -901,6 +934,10 @@ func _amir() -> void:
 		await Ui.say(["Il carrello della Casa Comune fa il giro alle cinque. Si ferma anche da Rina. Rina offre il caffè. Il caffè è il pagamento."], who)
 		return
 	await Ui.say(["Consegno pacchi tutto il giorno. Pacchi CHEAP. Mai uno per qualcuno che conosco."], who)
+	if not _f("offerta_amir"):
+		GameState.flags["offerta_amir"] = true
+		Storia.segna("offerta_amir")
+		await Ui.say(["Se esci, il giro delle consegne fuori lo conosco io. Ti porto con me il primo giorno."], who)
 	var c: int = await Ui.choose("Amir ha un carrello e un'ora libera.", ["Potresti organizzare le consegne della Casa Comune?", "Non ora"], who)
 	if c == 0:
 		GameState.flags["c5_amir_consegne"] = true
@@ -915,8 +952,7 @@ func _olga() -> void:
 		return
 	GameState.flags["c5_olga_racconto"] = true
 	if _f("c4_olga_risposta"):
-		await Ui.say(["Alla Banca mi hanno restituito trentacinque euro. E chiesto scusa. Per iscritto.",
-			"Ci è voluta una lettera giusta, con le date giuste. Ditelo all'assemblea: le date sono un'arma."], who)
+		await Ui.say(["La mia risposta è arrivata perché l'avevo chiesta per iscritto. Le cose scritte due volte pesano di più."], who)
 	elif _f("c4_olga_contestazione"):
 		await Ui.say(["Ho fatto una contestazione, alla Banca. Sto ancora aspettando la risposta.",
 			"Però l'ho fatta. Leggete due volte ogni commissione. A volte c'è davvero due volte."], who)
@@ -935,6 +971,9 @@ func _teo() -> void:
 		await Ui.say(["Manutenzione: è un costo vero. I tetti non si riparano col pensiero positivo.",
 			"Il canone CHEAP, invece, è triplicato con il contratto nuovo. Lo stesso servizio, a un prezzo nuovo.",
 			"E gli oneri amministrativi: pratiche ferme che costano mentre stanno ferme. Le conosco. Le timbravo."], who)
+		if _f("c5_nota_riscuotere"):
+			await Ui.say(["* Gli leggi anche la nota: \"Ente autorizzato a riscuotere.\""])
+			await Ui.say(["È la stessa frase della Banca. Anche le virgole."], who)
 		return
 	if _f("c5_teo_legge"):
 		await Ui.say(["Ho disegnato l'assemblea. Tutti hanno la cravatta lunga. Anche i bambini. È un fumetto realistico."], who)
@@ -1290,8 +1329,8 @@ func _dress_for_look_back() -> void:
 		_add_person("AdaSoglia", str(GameState.npc_data("ada").get("sheet")), "idle_down", func() -> void: pass)
 	# Nadir alla fermata: da solo, o con altri pendolari se la rete è partita
 	if _f("c5_nadir_rete"):
-		_add_person("Pendolare0", "char_15", "idle_left", func() -> void: pass)
-		_add_person("Pendolare1", "char_11", "idle_left", func() -> void: pass)
+		_add_person("Pendolare0", "rpg_vx3_6", "idle_left", func() -> void: pass)
+		_add_person("Pendolare1", "rpg_vx3_7", "idle_left", func() -> void: pass)
 	# la manifestazione senza assemblea: cartelli rimasti a terra
 	if _f("c5_protesta") and not _f("c5_assemblea"):
 		_show_node("CartelliATerra")
@@ -1331,6 +1370,8 @@ func _write_outcome() -> void:
 		"report": {"basic_read": f.get("c5_rapporto", false), "hidden_document_found": f.get("c5_documento", false),
 			"prior_chapters_connected": connected},
 		"secret_scene_seen": f.get("c5_segreta", false),
+		"verification_request": Storia.richiesta(),
+		"offers": ["ada", "rina", "nadir", "leda", "amir"].filter(func(id: String) -> bool: return _f("offerta_" + id)),
 		"exit": {"badge_obtained": GameState.has_badge(BADGE), "badge_source": f.get("c5_badge", null),
 			"revelation_seen": f.get("c5_rivelazione", false), "lookback_seen": true},
 	}
