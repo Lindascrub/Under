@@ -174,6 +174,20 @@ come quello comprato.
 | E — saldo zero | si entra con 0 € | come A: 5 turni, niente blocchi (**testato**: il test A parte da 0 €) |
 | F — condizioni pregresse | Amir/Teo umani o robot, Leda, Olga | gli ospiti compaiono solo se conosciuti; Amir/Teo robot hanno righe e antenna loro (**testato** in parte: ospiti presenti/assenti e Amir robot; Teo robot e "nessuna liberazione precedente" verificati solo leggendo il codice) |
 
+## Dalla storia approvata (Banca → Cima)
+
+Vedi `docs/STORIA_BANCA_CIMA.md`, sezione 4.
+- **La richiesta al centralino.** Se in Banca hai chiesto una verifica (`c4_verifica`), il primo turno al centralino
+  la mostra una volta (`_request_switchboard`): CONFERMA → `c5_richiesta = "archivio"`, VERIFICA → `"direzione"`,
+  SEGNALA → `"a_mano"` (la porti tu alla Presidente). Se il centralino non c'è mai stato, vale `"direzione"`.
+- **Le offerte** (per il finale B): Nadir dopo il percorso (`offerta_nadir`), Rina dopo la vetrina (`offerta_rina`),
+  Leda collaborando (`offerta_leda`), Amir al primo dialogo da persona (`offerta_amir`), Ada dopo l'assemblea se ha
+  le stanze e la Casa non è riconvertita (`offerta_ada`). Ognuna ha il suo numero d'ordine. Un robot non offre.
+- **Ada e la quota** (`c5_ada_quota`, solo con `c4_anomalia`); **la nota nei bilanci** "autorizzato a riscuotere"
+  (`c5_nota_riscuotere`), che Teo riconosce ("È la stessa frase della Banca. Anche le virgole.").
+- Olga in piazza ha una riga nuova se la contestazione ha avuto risposta.
+- Il riepilogo `chapter_5` aggiunge `verification_request` e `offers`. Test: `tests/storia_test.tscn`, `_test_citta`.
+
 ## Flag e persistenza
 
 Durante il capitolo si usano flag `c5_*` in `GameState.flags` (salvati con le stelline come tutto il resto).

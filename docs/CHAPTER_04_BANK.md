@@ -118,11 +118,25 @@ NESSUNO TROVATO. / IMPORTO ORIGINARIO ASSEGNATO: 7.000.000.000 €. / STATO DEL 
 RICERCA DOCUMENTO DI CONSENSO... / NESSUN DOCUMENTO TROVATO. Poi la Voce CHEAP: "Non preoccuparti. Non è necessario
 capire un debito per pagarlo. È necessario soltanto continuare."
 
-**4.13 Lo sguardo indietro.** Una frase sola, con priorità fissa:
+**4.12b Le scale, nella storia approvata** (`docs/STORIA_BANCA_CIMA.md`, sezione 3). Prima del display, il
+lettore di badge (raccontato, non è un nodo). Il gradino imposta `c4_anomalia`; l'introduzione cambia se il
+terminale del conto è stato consultato. Poi una scelta: **chiedere una verifica** (`c4_verifica`, col suo numero
+d'ordine) oppure tenere **solo il riepilogo** (`c4_riepilogo`). Poi i saluti (`_farewell`):
+- chi ha aiutato tutti riceve da Teo una copia della richiesta (`c4_ricevuta_copia`); a metà strada, la riga di Nives;
+- se la proposta del Capo a Olga era **chiara**, Olga dice se le conviene o no (`Storia.olga_conviene`, i costi
+  attuali in `data/bank.json`, `proposta_olga`);
+- se era **nascosta** (`_farewell_deceived`): una riga che dipende dall'ordine fra contestazione e proposta, poi
+  La ritiro / L'ho già ritirata / Avevi ragione (`c4_olga_ammesso`) / Non è la stessa cosa / "...".
+  "La ritiro" scrive `c4_olga_corretta`. Si può ritirarla anche prima, allo sportello ("Ritira la proposta e
+  mandala completa", `_withdraw_offer`). Al terminale del conto la causale è ora "riservata alla Direzione".
+
+**4.13 Lo sguardo indietro.** Una frase sola, con priorità fissa (`look_back_line`):
 1. Teo robot → "La Banca aveva guadagnato un impiegato perfetto. Nessuno aveva chiesto cosa avesse perso."
-2. Olga (contestazione) e Teo aiutati → "Non avevi cancellato i debiti. Avevi aiutato qualcuno a non affrontarli da solo."
-3. Anomalia scoperta → "Per la prima volta, non eri sicuro di dovere davvero ciò che ti chiedevano."
-4. Altrimenti → "Avevi attraversato la Banca. La Banca sarebbe rimasta."
+2. Richiesta di verifica → "Avevi una richiesta in viaggio, un indirizzo e nessuna risposta. Era già più di prima."
+3. Olga (contestazione) e Teo aiutati, **senza inganno aperto** → "Non avevi cancellato i debiti. Avevi aiutato qualcuno
+   a non affrontarli da solo." Se l'inganno è stato corretto: "…Avevi aiutato qualcuno, e avevi riaperto il foglio che le avevi piegato."
+4. Anomalia scoperta → "Per la prima volta, non eri sicuro di dovere davvero ciò che ti chiedevano."
+5. Altrimenti → "Avevi attraversato la Banca. La Banca sarebbe rimasta."
 
 La stanza invece mostra tutto quello che è vero: la fila che avanza piano, Teo robot che timbra o Teo che disegna,
 Olga che esce con la lettera, il terminale che continua a cercare il contratto. Poi
@@ -152,6 +166,9 @@ Durante il capitolo (`GameState.flags`, tutti assenti nei salvataggi vecchi = `f
 | `c4_conto`, `c4_anomalia`, `c4_teo_codice` | conto consultato; anomalia scoperta; Teo ha letto il codice |
 | `c4_nives`, `c4_nives_debito`, `c4_nives_ricorda`, `c4_badge` | Nives; la domanda sul debito; le finestre; `"regalo"`/`"comprato"`/`"altro"` |
 | `c4_rivelazione`, `c4_fine`, `c4_segreta` | il primo gradino; lo sguardo indietro; la scena segreta |
+| `c4_verifica`, `c4_riepilogo`, `c4_ricevuta_copia` | richiesta di verifica chiesta sulle scale; solo il riepilogo; la copia di Teo |
+| `c4_olga_proposta`, `c4_olga_corretta`, `c4_olga_ammesso` | proposta del Capo a Olga fatta (col numero d'ordine); ritirata e corretta; "Avevi ragione a leggerla" |
+| `<azione>_seq`, `seq` | il numero d'ordine di un'azione (`Storia.segna`), dallo stesso contatore per tutto il gioco |
 
 Alla fine (in cima alle scale) il riepilogo per i capitoli dopo, coi nomi della specifica:
 
@@ -171,6 +188,8 @@ flags["chapter_4"] = {
 Invarianti (controllate dai test): `credit_stolen` ⇒ `robotized` e niente badge regalato; il premio del capo una volta
 sola; `complaint_submitted` ⇒ `duplicate_fee_found`; la scena segreta mai con Teo robot.
 Il Capitolo 5 legge anche `GameState.is_robot("teo")`.
+Il riepilogo ha anche `debt.verification_requested`, `debt.summary_only`, `debt.receipt_copied_by_teo` e il blocco
+`olga_offer` (proposta, chiara o nascosta, corretta). Test: `tests/storia_test.tscn`, `_test_banca` (31 controlli).
 
 ## L'economia
 

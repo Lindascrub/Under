@@ -217,7 +217,7 @@ Al loro posto ci sono tre **tendenze**, che non si vedono mai durante il gioco e
 - **Solidarietà** (la libertà collettiva): una comunità che deve trovare cibo, case, servizi e decidere insieme. Può funzionare, restare fragile o fallire.
 
 **Come sono fatti davvero (capitolo 6):** la scelta al tavolo della Cima decide la famiglia
-(A IL PADRONE, B UN ALTRO DOMANI, C NESSUNO SALE DA SOLO); la variante (A1/A2, B1/B2, C1/C2/C3) dipende da fatti
+(A PRENDERE LA DIREZIONE, B IL TEMPO CHE RESTA, C NESSUNO SALE DA SOLO); la variante (A1/A2/A3, B1/B2, C1/C2/C3) dipende da fatti
 contati: legami, reti, prove, il bilancio dei tre cicli, l'attribuzione del Capo. Una funzione sola,
 `chapters/c6/finali.gd`, `decide()`. Condizioni esatte: [ENDING_SYSTEM](ENDING_SYSTEM.md).
 Poi gli epiloghi "sei mesi dopo" piano per piano (solo le persone conosciute, Nives per ultima), il sogno,

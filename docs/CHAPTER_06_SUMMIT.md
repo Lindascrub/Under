@@ -72,6 +72,17 @@ Lo spazio vuoto è voluto: è il posto più ricco della Torre, e non c'è quasi 
 
 Specchi, ritratti, archivio, caffè, la dinamo e il salottino sono facoltativi e non danno niente.
 
+Dalla storia approvata (`docs/STORIA_BANCA_CIMA.md`, sezioni 4-5 e caso 1):
+- **6.02, prima di STRAP** (`_request_answer`): la richiesta della Banca arriva alla Presidente (`"direzione"`),
+  arriva consegnata a mano (`"a_mano"`, una riga in più), resta in archivio (`"archivio"`; con la copia di Teo
+  la Presidente "la mette sopra"), oppure c'è solo il riepilogo.
+- **Verifica e contestazione** sono due cose separate. `verification_done()`: richiesta arrivata, oppure archivio
+  con la copia. Dopo l'origine (6.04) la Presidente fa la verifica (se manca: "Te la faccio qui, gratis") e chiede
+  se contesti la registrazione (`c6_contestazione`, col numero d'ordine). Si può contestare anche dopo, da
+  "Il debito, ancora.", fino alla scelta finale. La contestazione non annulla niente.
+- **La stampante** nell'origine, e il Capo che commenta prima del ciclo 2 (`c6_capo_cicli`).
+- Al ciclo 3 `direzione.gd` salva `debt_other_open`: se "Conserva" è stato scelto mentre un'altra regola era aperta (finale A1).
+
 Dalla revisione della storia (vedi `docs/COHERENCE.md`):
 - i tre cicli sono presentati come **una prova**: valgono per la prova, diventano tuoi solo se resti;
 - prima del primo ciclo la Presidente dice "È tutto molto semplice." (la frase del Capo), dopo "Be'. Sulla carta.";
@@ -153,8 +164,8 @@ Accettare non cambia la famiglia del finale, ma chiude A2 e C2 e rende il potere
 
 Al tavolo, quando i tre cicli sono fatti, il Capo è passato e hai sentito almeno una persona:
 
-- **A — Prendi il posto della Presidente** (IL PADRONE)
-- **B — Rifiuta, e vai via** (UN ALTRO DOMANI)
+- **A — Prendi il posto della Presidente** (PRENDERE LA DIREZIONE)
+- **B — Rifiuta, e vai via** (IL TEMPO CHE RESTA)
 - **C — Proponi di decidere insieme** (NESSUNO SALE DA SOLO): si affidano tre ruoli (CONTI, SERVIZI, TURNI)
   alle persone con cui hai un legame; un ruolo può restare vuoto.
 - **Non ancora.**
@@ -165,8 +176,14 @@ definitiva: si salva con la stanza FINALE e rientrando si va direttamente lì.
 ## Famiglie e varianti
 
 Le condizioni esatte stanno in `docs/ENDING_SYSTEM.md` e nel codice (`finali.gd`, `variant_rules()`).
-In breve: A1 L'ATTICO / A2 IL DIRIGENTE CHE CAMBIA LE COSE; B1 LA PARTENZA / B2 LE PICCOLE ORE;
+In breve (ordine di A: A2 → A1 → A3): A1 ADESSO CHIAMI TU / A2 IL DIRIGENTE CHE CAMBIA LE COSE /
+A3 IL TELEFONO SQUILLA ANCORA; B1 LA PARTENZA / B2 LE PICCOLE ORE;
 C1 LA PICCOLA COMUNITÀ / C2 LA TRASFORMAZIONE DELLA TORRE / C3 IL PROGETTO INCOMPLETO.
+
+Le scene seguono `docs/STORIA_BANCA_CIMA.md`, sezione 6: A1 (la stampante, il tasto FONDO, "È tutto molto semplice!"),
+A3 (il telefono, la penna; il nome su tutti i registri se l'attribuzione è stata accettata); B con la stazione e poi la
+cucina (`b_lines()`: casa, lavoro, frigo, "Ci sei stasera?" ognuno dalla sua fonte); C2 con il cambio di turno al Fondo,
+C1 con la festa, C3 con le due sedie. Fermo compare secondo la sua storia (`fermo_state()`: umano, robot, liberato).
 
 ## Epiloghi "sei mesi dopo"
 
@@ -174,15 +191,17 @@ Struttura del Finale (`finale_c6.gd`, `epilogue.step`):
 
 | Passo | Cosa |
 |---|---|
-| 0 | La scena della famiglia (A: l'attico / B: la partenza / C: i tavoli condivisi) e la sua frase |
-| 1-5 | La Torre dall'alto in basso: Banca (-2), Mercato (-3), Sottoufficio (-4), Fondo (-5), Città (0). Per ogni piano solo le persone **conosciute**; se non ne hai conosciuta nessuna, una riga di fallback sul piano |
+| 0 | La scena della variante (sezione 6 della storia) e la sua frase |
+| 1-5 | La Torre dall'alto in basso: Banca (-2), Mercato (-3), Sottoufficio (-4), Fondo (-5), Città (0). Alla prima discesa: la riga della stampante e le **due righe del debito** (il tuo, quelli degli altri). Per ogni piano solo le persone **conosciute**, ognuna con la sua reazione (`reaction_for`) se le hai fatto un torto; se non ne hai conosciuta nessuna, una riga di fallback sul piano |
 | 6 | Nives, sempre per ultima |
 | 7 | Il sogno |
 | 8 | CHEAP / Quanto costa una vita? / FINE, i titoli, poi il menu |
 
 Ogni epilogo personale è coerente con lo stato: un robot resta robot (frasi aziendali, sorriso), chi hai
-aiutato e poi sfruttato lo ricorda, la Casa Comune è come l'ha lasciata il ciclo 2, i ruoli del finale C
-compaiono sulle persone che li hanno. Il finale salva dopo ogni passo e riprende da lì.
+aiutato e poi sfruttato lo ricorda, i ruoli del finale C compaiono sulle persone che li hanno.
+Quello che vale nella Torre lo dice `FINALI.effective_summary()`: le decisioni dei cicli **solo in A e in C2**;
+negli altri finali le regole di prima (e la Casa Comune com'è uscita dal capitolo 5).
+Il finale salva dopo ogni passo e riprende da lì; un `outcome` senza `engine` (salvataggio vecchio) si ricalcola.
 
 ## Flag (`GameState.flags["chapter_6"]`)
 
@@ -195,7 +214,7 @@ director_turn   cycle_1_completed, cycle_2_completed, cycle_3_completed, consult
 boss            final_call_seen, global_credit_offer_resolved, global_credit_accepted
 panorama        locations_seen[]
 final_decision  selected, confirmed, roles{conti, servizi, turni}
-outcome         family, variant, debt_status, governance_status
+outcome         family, variant, debt_status, governance_status, engine
 epilogue        started, seen_character_ids[], completed, step
 dream           selected, final_scene_seen
 debt_cancelled, debt_before, coffee
@@ -203,7 +222,8 @@ debt_cancelled, debt_before, coffee
 
 `director_turn.state` è lo stato del bilancio (`direzione_regole.new_state()`): riserve, arretrato,
 minimo degli stipendi, servizi allargati, ciclo, registro dei cicli, Casa, regola dei debiti.
-Fuori da `chapter_6`: `c6_contratto_letto` (la prova, letta da `evidence()`).
+Fuori da `chapter_6`: `c6_contratto_letto` (la prova, letta da `evidence()`), `c6_contestazione` (+ `_seq`),
+`c6_capo_cicli`. In `director_turn.state`: `debt_other_open`.
 
 ## Persistenza
 
@@ -223,15 +243,20 @@ regole del bilancio (validità, minimo stipendi, bolletta pagata dai servizi, gu
 servizi allargati); arrivo, ascensore una volta sola, specchi; Presidente, fascicolo, origine, offerta senza
 annullamento anticipato; i tre cicli con lo stato condiviso; consultazioni (robot, impiegata, niente ripetizioni);
 nessuno stipendio personale; il Capo una volta sola, attribuzione rifiutata e accettata; la finestra senza premi;
-"Ci ripenso" prima della conferma; percorso C → C2 con i ruoli e il debito in revisione; percorso A → A1 con
+"Ci ripenso" prima della conferma; percorso C → C2 con i ruoli e il debito in revisione; percorso A → A3 con
 potere, debito annullato una volta sola, robot che restano robot; varianti logiche; 1200 combinazioni casuali
 sempre valide; salvataggio con campi mancanti (percorso I); opzioni dei debiti chiuse; ripresa del finale dal passo 7.
+
+`tests/storia_test.tscn` (`_test_cima`, `_test_finali`, `_test_riparazioni`, `_test_scene_finali`): le quattro
+versioni della richiesta, verifica e contestazione (anche dopo un caricamento), A1/A2/A3, lo stato del debito,
+cosa vale in ogni finale, le combinazioni del finale B (nota 2), Fermo nelle scene C, torti/riparazioni/reazioni,
+e **ogni variante giocata dalla scena vera fino ai titoli** (A1, A3, B1, B2, C1, C2, C3) più un salvataggio vecchio.
 
 `tests/touch_test.gd`: lo schermo della Direzione col dito (più a 100 non aggiunge, togliere e dare,
 minimo stipendi, CONFERMA rifiutata a 90, CONFERMA a 100).
 
 Verificati **solo leggendo il codice**: alcune combinazioni di epiloghi con robot specifici (es. Teo robot
-alla Banca), le varianti B1/B2 e C1/C3 percorse dalla scena vera (le condizioni sono testate sulla funzione).
+alla Banca). Le scene finali girano fino in fondo nei test, ma **non sono state guardate a schermo**.
 **Non è stato fatto un test manuale su telefono.**
 
 ## Asset mancanti
