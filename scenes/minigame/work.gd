@@ -397,6 +397,7 @@ func _process(delta: float) -> void:
 						# non hai risposto in tempo: riattaccano
 						mistakes += 1
 						hd_last = "Ha riattaccato."
+						_error("HA RIATTACCATO!")
 						_flash(RED)
 						Sound.sfx("deny")
 						_hd_next()
@@ -644,6 +645,7 @@ func _hd_pick_up(k: int) -> void:
 	if k != hd_phone:
 		mistakes += 1
 		hd_last = "Telefono sbagliato. Quello squillava ancora."
+		_error("TELEFONO SBAGLIATO!")
 		_flash(RED)
 		Sound.sfx("deny")
 		return
@@ -674,6 +676,8 @@ func _hd_answer(k: int) -> void:
 		_:
 			mistakes += 1
 			hd_last = "Sgarbata. Ti richiameranno. Per un richiamo."
+			# l'errore si deve vedere, come negli altri turni (anche nel finale, sotto i DRIN)
+			_error("SGARBATO! +1 ERRORE")
 			_flash(RED)
 			Sound.sfx("deny")
 	hd_done += 1
