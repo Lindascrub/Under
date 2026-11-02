@@ -1,15 +1,27 @@
 extends CanvasLayer
 ## Interfaccia globale: HUD, box dei dialoghi, scelte, dissolvenze e testo narrato.
 ## Uso tipico:  await Ui.say(["Ciao!"], "Nico")   /   var i: int = await Ui.choose("Sì o no?", ["Sì", "No"])
+## È la scena autoload/ui.tscn: Hud, TurnoDiOggi, Riquadro (Nome, Ritratto, Testo), Scelte (Righe),
+## Buio (le dissolvenze) e Narrazione. Posizioni, font e colori si cambiano lì.
 
 signal faded_in
 signal _advance
 signal _chosen(index: int)
 
-const TYPE_SPEED := 45.0
-const COL_TEXT := Color.WHITE
-const COL_NAME := Color("ffe14d")
-const COL_DIM := Color("8a8494")
+## Lettere al secondo quando il testo si scrive.
+@export var velocita_scrittura := 45.0
+## Il ritratto del Capo (arcobaleno).
+@export var materiale_capo: Material
+## La riga "Turno di oggi" sotto l'HUD: i colori per da fare, fatto, e la Cima.
+@export var colore_turno_da_fare := Color("ffb03a")
+@export var colore_turno_fatto := Color("3ddc84")
+@export var colore_turno_cima := Color("ffe14d")
+## Le scelte: l'angolo in basso a destra del riquadro, quanto è alta ogni riga e i margini.
+@export var angolo_scelte := Vector2(624, 252)
+@export var altezza_riga_scelte := 23.0
+@export var margine_scelte := Vector2(28, 14)
+## Quanto spazio resta fra il ritratto e il testo.
+@export var spazio_dopo_ritratto := 10.0
 
 ## Vero mentre un dialogo o una scelta è aperta.
 var busy := false
@@ -18,18 +30,23 @@ var transitioning := false
 ## Vero durante le scene scriptate (finali): il giocatore non si muove.
 var cutscene := false
 
-var _hud: Label
-var _box: Panel
-var _name: Label
-var _text: Label
-var _choice_box: Panel
-var _choice_label: Label
-var _fade: ColorRect
-var _narr: Label
-var _time_bar: Control
-var _portrait: TextureRect
-var _portrait_tex: AtlasTexture
-var _boss_mat := ShaderMaterial.new()
+@onready var _hud: Label = $Hud
+@onready var _box: Panel = $Riquadro
+@onready var _name: Label = $Riquadro/Nome
+@onready var _text: Label = $Riquadro/Testo
+@onready var _choice_box: Panel = $Scelte
+@onready var _choice_label: Label = $Scelte/Righe
+@onready var _fade: ColorRect = $Buio
+@onready var _narr: Label = $Narrazione
+@onready var _time_bar: Label = $TurnoDiOggi
+@onready var _portrait: TextureRect = $Riquadro/Ritratto
+@onready var _portrait_tex: AtlasTexture = _portrait.texture as AtlasTexture
+## Dove stanno nome e testo senza ritratto (presi dalla scena).
+@onready var _text_x := _text.position.x
+@onready var _text_w := _text.size.x
+@onready var _name_x := _name.position.x
+## Il fotogramma del ritratto a bocca chiusa (la regione dell'AtlasTexture nella scena).
+@onready var _portrait_x := _portrait_tex.region.position.x
 var _talk_t := 0.0
 ## Ritratti extra per chi non è in npcs.json.
 const EXTRA_PORTRAITS := {
@@ -48,9 +65,6 @@ var _last_blip := 0
 
 
 func _ready() -> void:
-	layer = 10
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	_build()
 	GameState.changed.connect(_refresh_hud)
 	_refresh_hud()
 	show_hud(false)
@@ -67,8 +81,7 @@ func show_hud(visible_: bool) -> void:
 
 
 ## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).
-func _draw_time_bar() -> void:
-	var font := Assets.font()
+func _update_time_bar() -> void:
 	# alla Cima non c'è un lavoro pagato: c'è il TURNO di Direzione, tre cicli alla scrivania della Presidente
 	if GameState.floor_id == "cima" and GameState.flags.has("chapter_6"):
 		var dt: Dictionary = (GameState.flags["chapter_6"] as Dictionary).get("director_turn", {})
@@ -76,116 +89,14 @@ func _draw_time_bar() -> void:
 		for i in range(1, 4):
 			if dt.get("cycle_%d_completed" % i, false):
 				done += 1
-		var t := "TURNO di Direzione: %d cicli su 3 (la scrivania della Presidente)." % done if done < 3 else "TURNO di Direzione: fatto. Resta da decidere."
-		_time_bar.draw_string(font, Vector2(0, 8), t, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("ffe14d"))
-		return
-	if GameState.worked_today:
-		_time_bar.draw_string(font, Vector2(0, 8), "Turno di oggi: fatto. Per il prossimo, fai passare la notte a una stellina.", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3ddc84"))
+		_time_bar.text = "TURNO di Direzione: %d cicli su 3 (la scrivania della Presidente)." % done if done < 3 else "TURNO di Direzione: fatto. Resta da decidere."
+		_time_bar.add_theme_color_override("font_color", colore_turno_cima)
+	elif GameState.worked_today:
+		_time_bar.text = "Turno di oggi: fatto. Per il prossimo, fai passare la notte a una stellina."
+		_time_bar.add_theme_color_override("font_color", colore_turno_fatto)
 	else:
-		_time_bar.draw_string(font, Vector2(0, 8), "Turno di oggi: da fare (cerca la scritta TURNO).", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("ffb03a"))
-	return
-	@warning_ignore("unreachable_code")
-	var w := 7.0
-	var now := GameState.minutes / 60.0
-	var work_left := 0.0 if GameState.worked_today else 10.0
-	var own := GameState.own_hours()
-	var future_i := 0
-	for h in 24:
-		var col: Color
-		if h < 7:
-			col = Color("2b3a6b")
-		elif h + 1 <= now:
-			col = Color("3a3644")
-		else:
-			if future_i < int(work_left):
-				col = Color("c06a2a")
-			elif future_i >= int(work_left) + int(own):
-				col = Color("5c5666")
-			else:
-				col = Color("3ddc84")
-			future_i += 1
-		_time_bar.draw_rect(Rect2(h * w, 0, w - 1, 6), col)
-	_time_bar.draw_rect(Rect2(clampf(now, 0, 24) * w - 1, -2, 2, 10), Color.WHITE)
-	_time_bar.draw_string(font, Vector2(24 * w + 6, 7), "Tempo tuo: %d h" % int(own), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("3ddc84"))
-
-
-# --- costruzione ------------------------------------------------------------
-
-func _panel_style() -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color.BLACK
-	s.border_color = Color.WHITE
-	s.set_border_width_all(3)
-	return s
-
-
-func _make_label(size: int, color := COL_TEXT) -> Label:
-	var l := Label.new()
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", color)
-	return l
-
-
-func _build() -> void:
-	_hud = _make_label(11)
-	_hud.position = Vector2(8, 6)
-	_hud.add_theme_constant_override("outline_size", 5)
-	_hud.add_theme_color_override("font_outline_color", Color.BLACK)
-	add_child(_hud)
-	_time_bar = Control.new()
-	_time_bar.position = Vector2(8, 24)
-	_time_bar.size = Vector2(300, 12)
-	_time_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_time_bar.draw.connect(_draw_time_bar)
-	add_child(_time_bar)
-
-	_box = Panel.new()
-	_box.add_theme_stylebox_override("panel", _panel_style())
-	_box.position = Vector2(16, 258)
-	_box.size = Vector2(608, 90)
-	add_child(_box)
-	_name = _make_label(11, COL_NAME)
-	_name.position = Vector2(14, 6)
-	_box.add_child(_name)
-	_portrait_tex = AtlasTexture.new()
-	_portrait = TextureRect.new()
-	_portrait.texture = _portrait_tex
-	_portrait.position = Vector2(12, 21)
-	_portrait.size = Vector2(48, 48)
-	_portrait.stretch_mode = TextureRect.STRETCH_SCALE
-	_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_boss_mat.shader = preload("res://shaders/rainbow.gdshader")
-	_box.add_child(_portrait)
-	_text = _make_label(12)
-	_text.position = Vector2(14, 24)
-	_text.size = Vector2(580, 62)
-	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_box.add_child(_text)
-	_box.visible = false
-
-	_choice_box = Panel.new()
-	_choice_box.add_theme_stylebox_override("panel", _panel_style())
-	add_child(_choice_box)
-	_choice_label = _make_label(12)
-	_choice_label.position = Vector2(12, 8)
-	_choice_box.add_child(_choice_label)
-	_choice_box.visible = false
-
-	_fade = ColorRect.new()
-	_fade.color = Color(0, 0, 0, 0)
-	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_fade.position = Vector2.ZERO
-	_fade.size = Vector2(640, 360)
-	add_child(_fade)
-
-	_narr = _make_label(14)
-	_narr.position = Vector2(60, 40)
-	_narr.size = Vector2(520, 280)
-	_narr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_narr.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_narr.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_narr.visible = false
-	add_child(_narr)
+		_time_bar.text = "Turno di oggi: da fare (cerca la scritta TURNO)."
+		_time_bar.add_theme_color_override("font_color", colore_turno_da_fare)
 
 
 func _refresh_hud() -> void:
@@ -194,8 +105,7 @@ func _refresh_hud() -> void:
 		GameState.euros_short(GameState.debt), GameState.euros(GameState.money),
 		GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
 	]
-	if _time_bar:
-		_time_bar.queue_redraw()
+	_update_time_bar()
 
 
 # --- dialoghi ---------------------------------------------------------------
@@ -212,13 +122,15 @@ func _show_portrait(speaker: String, sheet: String) -> void:
 					break
 	var has := sheet != ""
 	_portrait.visible = has
-	_portrait.material = _boss_mat if speaker == "Il capo" else null
+	_portrait.material = materiale_capo if speaker == "Il capo" else null
 	if has:
 		_portrait_tex.atlas = Assets.tex("characters/%s.png" % sheet, Vector2i(896, 656))
-		_portrait_tex.region = Rect2(18 * 16, 41, 16, 16)
-	_name.position.x = 70.0 if has else 14.0
-	_text.position.x = 70.0 if has else 14.0
-	_text.size.x = 524.0 if has else 580.0
+		_portrait_tex.region.position.x = _portrait_x
+	# con il ritratto, nome e testo si spostano a destra del ritratto
+	var shift := (_portrait.position.x + _portrait.size.x + spazio_dopo_ritratto - _text_x) if has else 0.0
+	_name.position.x = _name_x + shift
+	_text.position.x = _text_x + shift
+	_text.size.x = _text_w - shift
 
 
 func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
@@ -365,19 +277,19 @@ func _render_choices() -> void:
 	var font := _choice_label.get_theme_font("font")
 	for l in lines:
 		w = maxf(w, font.get_string_size(l, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x)
-	_choice_box.size = Vector2(w + 28, _options.size() * 23 + 14)
-	_choice_box.position = Vector2(624 - _choice_box.size.x, 252 - _choice_box.size.y)
+	_choice_box.size = Vector2(w + margine_scelte.x, _options.size() * altezza_riga_scelte + margine_scelte.y)
+	_choice_box.position = angolo_scelte - _choice_box.size
 
 
 func _process(delta: float) -> void:
 	if not _typing or _label == null:
 		return
-	_typed += delta * TYPE_SPEED
+	_typed += delta * velocita_scrittura
 	_label.visible_characters = int(_typed)
 	if _portrait.visible and _label == _text:
 		_talk_t += delta
 		# "bocca" che si muove: alterna due fotogrammi mentre il testo scorre
-		_portrait_tex.region.position.x = (18 + (int(_talk_t * 8.0) % 2) * 2) * 16
+		_portrait_tex.region.position.x = _portrait_x + (int(_talk_t * 8.0) % 2) * 32
 	if int(_typed) - _last_blip >= 2:
 		_last_blip = int(_typed)
 		var ch := _label.text.substr(clampi(_last_blip - 1, 0, _label.text.length() - 1), 1)
@@ -386,7 +298,7 @@ func _process(delta: float) -> void:
 	if int(_typed) >= _label.get_total_character_count():
 		_label.visible_characters = -1
 		_typing = false
-		_portrait_tex.region.position.x = 18 * 16
+		_portrait_tex.region.position.x = _portrait_x
 
 
 ## Tocchi sullo schermo: un tocco sul dialogo lo fa avanzare, un tocco su una scelta la seleziona.
@@ -404,7 +316,7 @@ func _touch(event: InputEventScreenTouch) -> bool:
 	if _mode == "choose":
 		var r := Rect2(_choice_box.position, _choice_box.size)
 		if r.has_point(event.position):
-			var i := clampi(int((event.position.y - r.position.y - 8.0) / 23.0), 0, _options.size() - 1)
+			var i := clampi(int((event.position.y - r.position.y - _choice_label.position.y) / altezza_riga_scelte), 0, _options.size() - 1)
 			_sel = i
 			_render_choices()
 			Sound.sfx("select")

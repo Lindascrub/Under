@@ -20,7 +20,7 @@ config/icon="res://art/icon.png"
 
 Controls="*res://autoload/controls.gd"
 GameState="*res://autoload/game_state.gd"
-Ui="*res://autoload/ui.gd"
+Ui="*res://autoload/ui.tscn"
 Router="*res://autoload/router.gd"
 Sound="*res://autoload/sound.gd"
 TouchControls="*res://autoload/touch_controls.gd"
