@@ -261,6 +261,24 @@ func _render() -> void:
 	_list.text = "\n".join(lines)
 
 
+## Sul telefono il dito non arriva da solo ai pulsanti (il tocco non fa da mouse, vedi project.godot):
+## nella scelta del nome, toccare Ok lo preme e toccare il campo riapre la tastiera.
+func _input(event: InputEvent) -> void:
+	var screen := $SceltaNome as Control
+	if not screen.visible or not (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed):
+		return
+	var at := (event as InputEventScreenTouch).position
+	var ok := $SceltaNome/Ok as Button
+	var edit := $SceltaNome/Campo as LineEdit
+	if ok.get_global_rect().has_point(at):
+		get_viewport().set_input_as_handled()
+		ok.pressed.emit()
+	elif edit.get_global_rect().has_point(at):
+		get_viewport().set_input_as_handled()
+		edit.grab_focus()
+		DisplayServer.virtual_keyboard_show(edit.text)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if _locked or Ui.blocks_input():
 		return

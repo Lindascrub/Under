@@ -12,6 +12,7 @@ script = ExtResource("1")
 layout_mode = 0
 offset_right = 640.0
 offset_bottom = 360.0
+mouse_filter = 2
 color = Color(0.0431373, 0.0392157, 0.0627451, 1)
 
 [node name="Titolo" type="Label" parent="."]
