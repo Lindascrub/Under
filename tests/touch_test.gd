@@ -9,6 +9,8 @@ var _frame := 0
 var choose_index := 0
 ## true: i turni finiscono da soli appena iniziano (per i pezzi di storia)
 var auto_work := false
+## true: le scelte si fanno col dito, nessuno preme OK al posto del test
+var manual_choice := false
 
 
 func _ready() -> void:
@@ -27,7 +29,7 @@ func _process(_delta: float) -> void:
 	if auto_work and scene and scene.scene_file_path == Router.WORK and not Ui.transitioning and scene.get("phase") == "play":
 		scene.set("score", scene.get("target"))
 		scene.set("time_left", 0.0)
-	elif Ui.busy and _frame % 3 == 0:
+	elif Ui.busy and not manual_choice and _frame % 3 == 0:
 		if Ui.get("_mode") == "choose":
 			Ui.set("_sel", choose_index)
 		var down := InputEventAction.new()
@@ -140,6 +142,19 @@ func _help(type: String) -> Node:
 
 func _run() -> void:
 	GameState.new_game()
+
+	# --- le scelte: toccare la terza riga sceglie la terza voce (non quella sopra)
+	manual_choice = true
+	var picked := [-1]
+	(func() -> void: picked[0] = await Ui.choose("Prova", ["Uno", "Due", "Tre"])).call()
+	await _frames(5)
+	var riquadro := Ui.get("_choice_box") as Control
+	var righe := Ui.get("_choice_label") as Label
+	var alta := righe.get_line_height() + righe.get_theme_constant("line_spacing")
+	await _tap_at(riquadro.position + righe.position + Vector2(20, alta * 2.5))
+	await _frames(5)
+	_check(picked[0] == 2, "toccando la terza riga dovrebbe uscire la terza voce (è uscita %d)" % picked[0])
+	manual_choice = false
 
 	# --- pedalare: tocchi alternati a sinistra e a destra
 	var w := await _work("pedal")

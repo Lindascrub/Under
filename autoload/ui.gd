@@ -343,7 +343,9 @@ func _touch(event: InputEventScreenTouch) -> bool:
 	if _mode == "choose":
 		var r := Rect2(_choice_box.position, _choice_box.size)
 		if r.has_point(event.position):
-			var i := clampi(int((event.position.y - r.position.y - _choice_label.position.y) / altezza_riga_scelte), 0, _options.size() - 1)
+			# l'altezza vera di una riga scritta, non quella del riquadro: se no le voci in basso sbagliano
+			var riga := _choice_label.get_line_height() + _choice_label.get_theme_constant("line_spacing")
+			var i := clampi(int((event.position.y - r.position.y - _choice_label.position.y) / riga), 0, _options.size() - 1)
 			_sel = i
 			_render_choices()
 			Sound.sfx("select")
