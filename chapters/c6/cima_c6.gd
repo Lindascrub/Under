@@ -266,6 +266,15 @@ func talk_president() -> void:
 	var d := c6()
 	if not d["president"]["met"]:
 		await _president_first()
+	elif not d["president"]["offer_received"]:
+		# la prima conversazione si è interrotta (gioco chiuso, salvataggio ricaricato): riprende da dove era
+		Ui.cutscene = true
+		if not d["president"]["debt_contract_read"]:
+			await read_contract()
+		if not d["president"]["origin_explained"]:
+			await _origin()
+		await _offer()
+		Ui.cutscene = false
 	elif final_ready():
 		await final_choice()
 	elif cycles_done() == 3 and not d["boss"]["final_call_seen"]:
