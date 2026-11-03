@@ -17,3 +17,11 @@ build/
 
 # Python
 __pycache__/
+
+# copie di sicurezza e report dei test: restano solo sul computer
+/backup/
+/scene_backup/
+/reports/
+/assets/farm_rpg/
+/assets/ui/
+/Conference_Hall_Singles_60.png*

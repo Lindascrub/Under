@@ -1,6 +1,0 @@
-Spring Crops.png, dal pacchetto locale fornito dall'utente:
-Farm RPG FREE 16x16 - Tiny Asset Pack / Objects / Spring Crops.png
-
-Il foglio originale è copiato senza modifiche. Il gioco usa AtlasTexture da 16x16:
-fragola (128,16), cipollotto (128,48), patata (128,80), cipolla (128,112).
-Sono i prodotti raccolti, non le fasi di crescita, i sacchetti o le animazioni di raccolta.
