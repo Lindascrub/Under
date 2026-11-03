@@ -24,7 +24,7 @@ const SIGNS := ["VOGLIAMO UN POSTO PER STUDIARE.", "IL TEMPO NON SI RECUPERA.",
 var people: Dictionary = {}
 
 
-## Dove porta la porta di vetro: giù, alla Banca.
+## La porta di vetro: giù c'è la Banca, ma è sbarrata (non si torna indietro).
 func build() -> void:
 	outdoor = true
 	super()
@@ -33,7 +33,11 @@ func build() -> void:
 
 
 func setup() -> void:
-	add_exit(TOWER_DOOR, Router.BANCA, "from_above")
+	# dalla Città non si torna giù in Banca: la porta di vetro resta sbarrata
+	block(TOWER_DOOR)
+	add_spot(Vector2(TOWER_DOOR.position * T) + Vector2(TOWER_DOOR.size * T) / 2.0, func() -> void:
+		Sound.sfx("deny")
+		await Ui.say(["* La porta di vetro della Banca è sbarrata. Da qui non si torna giù."]))
 	add_exit(CASA_DOOR, Router.CASA_COMUNE, "default")
 	# Nadir è partito con l'autobus: torna in piazza per la manifestazione e l'assemblea
 	if _f("c5_nadir_partito") and not _f("c5_protesta"):
@@ -938,11 +942,18 @@ func _robot_ada_square() -> void:
 
 
 func robot_talk_ada(_n: Npc) -> bool:
-	var c: int = await Ui.choose("Ada.", ["Com'è la libreria?", "Cosa volevi studiare?", "(Prendi un volantino)"], "Ada")
-	match c:
-		0:
+	# le domande già fatte non tornano: finite quelle, risponde solo il volantino
+	var asks := GameState.domande_nuove([["ada_robot_libreria", "Com'è la libreria?"], ["ada_robot_studio", "Cosa volevi studiare?"]])
+	var c := asks.size()
+	if not asks.is_empty():
+		c = await Ui.choose("Ada.", asks.map(func(q: Array) -> String: return q[1]) + ["(Prendi un volantino)"], "Ada")
+	var key := str(asks[c][0]) if c < asks.size() else ""
+	if key != "":
+		GameState.segna_chiesto(key)
+	match key:
+		"ada_robot_libreria":
 			await Ui.say(["ARREDAMENTO NON OTTIMIZZATO."], "Ada")
-		1:
+		"ada_robot_studio":
 			await Ui.say(["DOMANDA NON PREVISTA."], "Ada")
 		_:
 			await Ui.say([GameState.robot_line("ada")], "Ada")
@@ -1269,9 +1280,12 @@ func _badge_machine() -> void:
 		await _gift()
 		return
 	while true:
+		# "Cosa c'è in cima?" si chiede una volta sola
+		var asks := GameState.domande_nuove([["c5_nives_cima", "Cosa c'è in cima?"]])
 		var c: int = await Ui.choose("Il badge della Cima: %s. Hai %s." % [GameState.euros(cost), GameState.euros(GameState.money)],
-			["Compra (%s)" % GameState.euros(cost), "Cosa c'è in cima?", "Non ora"], NIVES)
-		if c == 1:
+			["Compra (%s)" % GameState.euros(cost)] + asks.map(func(q: Array) -> String: return q[1]) + ["Non ora"], NIVES)
+		if c == 1 and not asks.is_empty():
+			GameState.segna_chiesto("c5_nives_cima")
 			await Ui.say(["La Direzione.", "La Presidenza.", "Una vista meravigliosa.", "Dicono."], NIVES, BADGE_CLERK)
 			continue
 		if c != 0:

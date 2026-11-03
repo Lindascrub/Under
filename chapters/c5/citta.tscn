@@ -107,6 +107,11 @@
 [ext_resource type="PackedScene" path="res://world/strisce.tscn" id="strisce_tscn"]
 [ext_resource type="Script" path="res://world/traffico.gd" id="traffico_gd"]
 
+[ext_resource type="Texture2D" path="res://assets/limezu/street/bench.png" id="tex_dx_bench"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/tree_round.png" id="tex_dx_tree_round"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/flowers.png" id="tex_dx_flowers"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/trashbin.png" id="tex_dx_trashbin"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/bush.png" id="tex_dx_bush"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lin1"]
 size = Vector2(94, 190)
 
@@ -294,7 +299,7 @@ size = Vector2(8, 5)
 size = Vector2(28, 13)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arypb"]
-size = Vector2(26, 10)
+size = Vector2(26, 13)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ynjc2"]
 size = Vector2(60, 13)
@@ -334,6 +339,24 @@ size = Vector2(48, 42)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4578w"]
 size = Vector2(15, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_palazzo"]
+size = Vector2(110, 286)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_albero"]
+size = Vector2(28, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_fontana"]
+size = Vector2(28, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_panchina"]
+size = Vector2(28, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_lampione"]
+size = Vector2(6, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dx_cestino"]
+size = Vector2(12, 6)
 
 [node name="Citta" type="Node2D" unique_id=857815144]
 script = ExtResource("1_anvy5")
@@ -1065,6 +1088,15 @@ texture = ExtResource("91_igwup")
 [node name="ModernExteriorsSinglesSandPlayground3" type="Sprite2D" parent="Terra" unique_id=231244617]
 position = Vector2(89, 290)
 texture = ExtResource("94_wmx6y")
+
+[node name="PalazzoDestra" type="Sprite2D" parent="Decori"]
+position = Vector2(944, 12)
+texture = ExtResource("13_en4mk")
+
+[node name="Collisione" type="StaticBody2D" parent="Decori/PalazzoDestra"]
+
+[node name="Forma" type="CollisionShape2D" parent="Decori/PalazzoDestra/Collisione"]
+shape = SubResource("RectangleShape2D_dx_palazzo")
 
 [node name="Mondo" type="Node2D" parent="." unique_id=152529317]
 y_sort_enabled = true
@@ -1814,10 +1846,9 @@ offset = Vector2(-16, -74)
 metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4" unique_id=161749096]
-position = Vector2(0, 6)
 
 [node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4/Collisione" unique_id=121474293]
-position = Vector2(0, -5)
+position = Vector2(0, -6.5)
 shape = SubResource("RectangleShape2D_arypb")
 
 [node name="ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1" type="Sprite2D" parent="Mondo" unique_id=1169987076]
@@ -1988,6 +2019,159 @@ position = Vector2(1120, 228)
 
 [node name="Porta" type="Marker2D" parent="Mondo/PartenzaNadir" unique_id=1392970027]
 position = Vector2(424, 236)
+
+[node name="ParcoDestra" type="Node2D" parent="Mondo"]
+y_sort_enabled = true
+
+[node name="LampioneAlto" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(1016, 186)
+texture = ExtResource("18_a7fcm")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/LampioneAlto"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/LampioneAlto/Collisione"]
+position = Vector2(16, -2)
+shape = SubResource("RectangleShape2D_dx_lampione")
+
+[node name="AlberoAlto" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(1004, 150)
+texture = ExtResource("tex_dx_tree_round")
+centered = false
+offset = Vector2(0, -48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/AlberoAlto"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/AlberoAlto/Collisione"]
+position = Vector2(16, -3)
+shape = SubResource("RectangleShape2D_dx_albero")
+
+[node name="Fontana" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(760, 300)
+texture = ExtResource("27_jq72i")
+centered = false
+offset = Vector2(0, -48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Fontana"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Fontana/Collisione"]
+position = Vector2(16, -6)
+shape = SubResource("RectangleShape2D_dx_fontana")
+
+[node name="Panchina0" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(704, 300)
+texture = ExtResource("tex_dx_bench")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Panchina0"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Panchina0/Collisione"]
+position = Vector2(16, -4)
+shape = SubResource("RectangleShape2D_dx_panchina")
+
+[node name="Panchina1" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(816, 300)
+texture = ExtResource("tex_dx_bench")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Panchina1"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Panchina1/Collisione"]
+position = Vector2(16, -4)
+shape = SubResource("RectangleShape2D_dx_panchina")
+
+[node name="Albero0" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(664, 270)
+texture = ExtResource("21_k0hxi")
+centered = false
+offset = Vector2(0, -48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Albero0"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Albero0/Collisione"]
+position = Vector2(16, -3)
+shape = SubResource("RectangleShape2D_dx_albero")
+
+[node name="Albero1" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(868, 274)
+texture = ExtResource("tex_dx_tree_round")
+centered = false
+offset = Vector2(0, -48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Albero1"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Albero1/Collisione"]
+position = Vector2(16, -3)
+shape = SubResource("RectangleShape2D_dx_albero")
+
+[node name="Albero2" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(1020, 300)
+texture = ExtResource("21_k0hxi")
+centered = false
+offset = Vector2(0, -48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Albero2"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Albero2/Collisione"]
+position = Vector2(16, -3)
+shape = SubResource("RectangleShape2D_dx_albero")
+
+[node name="Lampione0" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(736, 254)
+texture = ExtResource("18_a7fcm")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Lampione0"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Lampione0/Collisione"]
+position = Vector2(16, -2)
+shape = SubResource("RectangleShape2D_dx_lampione")
+
+[node name="Cestino" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(852, 300)
+texture = ExtResource("tex_dx_trashbin")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ParcoDestra/Cestino"]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ParcoDestra/Cestino/Collisione"]
+position = Vector2(8, -3)
+shape = SubResource("RectangleShape2D_dx_cestino")
+
+[node name="Fiori0" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(700, 330)
+texture = ExtResource("tex_dx_flowers")
+centered = false
+offset = Vector2(0, -16)
+
+[node name="Fiori1" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(800, 330)
+texture = ExtResource("tex_dx_flowers")
+centered = false
+offset = Vector2(0, -16)
+
+[node name="Cespuglio0" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(680, 318)
+texture = ExtResource("tex_dx_bush")
+centered = false
+offset = Vector2(0, -16)
+
+[node name="Cespuglio1" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(880, 318)
+texture = ExtResource("tex_dx_bush")
+centered = false
+offset = Vector2(0, -16)
+
+[node name="Fiori2" type="Sprite2D" parent="Mondo/ParcoDestra"]
+position = Vector2(1012, 340)
+texture = ExtResource("tex_dx_flowers")
+centered = false
+offset = Vector2(0, -16)
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=1475897952]
 
