@@ -166,6 +166,13 @@
     "entrate": 28000
   },
   "coincidenze": {
+    "tempo": 75,
+    "mappa": {
+      "CASA": [70, 122],
+      "PIAZZA": [250, 50],
+      "STAZIONE": [250, 194],
+      "ZONA IND.": [490, 122]
+    },
     "partenza": 400,
     "entrata": "8:00",
     "budget": 6,

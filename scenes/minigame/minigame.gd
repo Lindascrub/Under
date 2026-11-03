@@ -18,9 +18,13 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##                    (Teo: LA PRATICA IMPOSSIBILE)
 ##   type "volantini": in piazza passa la gente; dai il volantino a chi ti guarda, non a chi ha fretta,
 ##                    è al telefono o è una guardia CHEAP (Ada: VOLANTINAGGIO). Dati in data/city.json
-##   type "coincidenze": il tabellone delle partenze; una corsa alla volta, che parta da dove sei e
-##                    dopo che sei arrivato, fino al lavoro in tempo e nel budget (Nadir: L'ORARIO DELLE
-##                    COINCIDENZE). Dati in data/city.json, "coincidenze"
+##   type "consegne": il furgone di Amir, come uno snake: prendi il pacco, portalo alla casa che si
+##                    illumina prima che scada il tempo; muri, cantieri e le altre case fanno sbattere
+##                    (Amir: L'ULTIMA CONSEGNA). Numeri, case e cantieri nella config del minigioco
+##   type "coincidenze": la mappa delle linee; trascini il dito da una fermata all'altra lungo una linea
+##                    e Nadir prende la prima corsa che fa in tempo a prendere, fino al lavoro in orario e
+##                    nel budget, prima che scada il tempo (Nadir: L'ORARIO DELLE COINCIDENZE).
+##                    Dati in data/city.json, "coincidenze" (anche dove stanno le fermate: "mappa")
 ## Opzioni: "win_flags"/"partial_flags" (flag da accendere), "item" (regalo se vinci),
 ## "help_on_win_only" (conta come aiuto solo se riesce; "help_on_partial": anche a metà).
 ## Se vinci, la persona ti ringrazia e ti dà qualche euro.
@@ -69,7 +73,21 @@ var wire_done: Array[int] = []
 var wire_sel := 0
 var wire_pick := -1
 var wire_round := 0
+## dove sta il dito che trascina un filo (come in Among Us); x < 0: nessun filo trascinato
+var wire_drag := Vector2(-1, -1)
 var hurt_t := 0.0
+# consegne (il furgone di Amir)
+var sn_body: Array[Vector2i] = []
+var sn_dir := Vector2i.RIGHT
+var sn_next := Vector2i.RIGHT
+var sn_t := 0.0
+var sn_parcel := Vector2i(-1, -1)  # il pacco da prendere (-1: nessuno per terra)
+var sn_carry := -1                 # la casa a cui portare il pacco a bordo (-1: niente a bordo)
+var sn_left := 0.0                 # secondi rimasti per questa consegna
+var sn_done := 0
+var sn_late := 0
+var sn_msg := ""
+var sn_rng := RandomNumberGenerator.new()
 ## dove tiene il dito chi gioca col telefono (il cuore della raccolta); x < 0: nessun dito
 var finger := Vector2(-1, -1)
 # sequence
@@ -149,6 +167,7 @@ var cz_at := 0
 var cz_now := 0
 var cz_focus := 0
 var cz_msg := ""
+var cz_trail := PackedVector2Array()  # la strada che sta tracciando il dito (vuota: nessun trascinamento)
 
 var _title: Label
 var _info: Label
@@ -207,6 +226,14 @@ func _start() -> void:
 			var goods := INV_GOODS.duplicate()
 			goods.shuffle()
 			inv_queue = goods.slice(0, int(cfg.get("count", 8)))
+		"consegne":
+			if cfg.has("seed"):
+				sn_rng.seed = int(cfg["seed"])
+			else:
+				sn_rng.randomize()
+			_sn_start()
+			_sn_spawn_parcel()
+			sn_msg = "Scorri il dito per partire e girare il furgone." if TouchControls.enabled else "Le FRECCE fanno partire e girare il furgone."
 		"route":
 			_rt_load(0)
 			if cfg.has("seed"):
@@ -241,7 +268,8 @@ func _start() -> void:
 			_vl_ada()
 		"coincidenze":
 			_cz_restart()
-			cz_msg = "Tocca le corse, una dopo l'altra, da casa di Nadir al lavoro." if TouchControls.enabled else "FRECCE scegli la corsa, %s la prendi." % GameState.fmt("{ok}")
+			time_left = float(_cz_data().get("tempo", 75))
+			cz_msg = "Trascina il dito da una fermata all'altra, lungo una linea, fino al lavoro." if TouchControls.enabled else "Trascina col mouse da una fermata all'altra. Oppure FRECCE e %s." % GameState.fmt("{ok}")
 
 
 func _new_bulb() -> void:
@@ -288,6 +316,7 @@ func _new_wires() -> void:
 	wire_done.clear()
 	wire_sel = 0
 	wire_pick = -1
+	wire_drag = Vector2(-1, -1)
 
 
 ## Il filo di sinistra `wire_pick` va al posto di destra `wire_sel`: giusto o sbagliato?
@@ -330,6 +359,8 @@ func touch_scheme() -> String:
 			return "swipe"
 		"volantini":
 			return "tap"
+		"consegne":
+			return "swipe"
 	return "point"
 
 
@@ -352,11 +383,8 @@ func touch_point(pos: Vector2, step: int) -> void:
 					_rate_row_pick(i)
 					return
 		return
-	if type == "coincidenze" and step == 0:
-		for t in _cz_targets():
-			if (t[1] as Rect2).has_point(pos):
-				_cz_act(t[0])
-				return
+	if type == "coincidenze":
+		_cz_touch(pos, step)
 		return
 	if type == "pratiche" and step == 0:
 		for k in _pr_target_count():
@@ -385,19 +413,32 @@ func touch_point(pos: Vector2, step: int) -> void:
 		return
 	if type == "collect":
 		finger = pos if step != 2 else Vector2(-1, -1)
-	elif type == "wires" and step == 0:
-		# tocca un filo a sinistra, poi il posto a destra dove va
+	elif type == "wires":
+		# come in Among Us: tieni il dito su un filo a sinistra, trascinalo e lascialo sul posto a destra.
+		# Va bene anche toccare il filo e poi toccare il posto.
 		var y0 := BOX.position.y + 26
 		var gap := (BOX.size.y - 52) / 3.0
 		var row := clampi(int(round((pos.y - y0) / gap)), 0, 3)
-		if pos.x < BOX.get_center().x:
-			if row not in wire_done:
-				wire_pick = row
+		var right := pos.x >= BOX.get_center().x
+		if step == 0:
+			if not right:
+				if row not in wire_done:
+					wire_pick = row
+					wire_sel = row
+					wire_drag = pos
+					Sound.sfx("select")
+			elif wire_pick >= 0:
 				wire_sel = row
-				Sound.sfx("select")
-		elif wire_pick >= 0:
-			wire_sel = row
-			_wire_connect()
+				_wire_connect()
+		elif step == 1 and wire_drag.x >= 0.0:
+			wire_drag = pos
+			if right:
+				wire_sel = row
+		elif step == 2 and wire_drag.x >= 0.0:
+			wire_drag = Vector2(-1, -1)
+			if right and wire_pick >= 0:
+				wire_sel = row
+				_wire_connect()
 
 
 # --- SCATOLE E SCAFFALI ---------------------------------------------------------
@@ -612,8 +653,13 @@ func _process(delta: float) -> void:
 				_info.text = "Trova la riga sospetta · Pratica %d/%d · Errori %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
 			elif type == "volantini":
 				_vl_step(delta)
+			elif type == "consegne":
+				_sn_process(delta)
 			elif type == "coincidenze":
-				_info.text = "Ore %s   Spesa: %d €   Errori: %d/3" % [_clock(cz_now), _cz_cost(), misses]
+				time_left -= delta
+				_info.text = "Tempo: %d   Ore %s   Spesa: %d €   Errori: %d/3" % [int(ceil(time_left)), _clock(cz_now), _cz_cost(), misses]
+				if time_left <= 0.0:
+					_finish(false)
 			elif type == "inventory":
 				time_left -= delta
 				_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done + inv_queue.size(), misses, int(cfg.get("misses", 3))]
@@ -669,7 +715,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
 		return
 	# sul PC i giochi "a dito" si fanno anche col mouse
-	if type in ["inventory", "route", "rate", "pratiche", "coincidenze"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
+	# la mappa di Nadir col mouse: si preme su una fermata, si trascina, si lascia sull'altra
+	if type == "coincidenze" and not TouchControls.enabled:
+		if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+			touch_point((event as InputEventMouseButton).position, 0 if (event as InputEventMouseButton).pressed else 2)
+			return
+		if event is InputEventMouseMotion and ((event as InputEventMouseMotion).button_mask & MOUSE_BUTTON_MASK_LEFT):
+			touch_point((event as InputEventMouseMotion).position, 1)
+			return
+	if type in ["inventory", "route", "rate", "pratiche"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
 			and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
 		touch_point((event as InputEventMouseButton).position, 0)
 		return
@@ -703,6 +757,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("confirm"):
 			_vl_give()
 		return
+	if type == "consegne":
+		for pair in [["move_up", Vector2i.UP], ["move_down", Vector2i.DOWN], ["move_left", Vector2i.LEFT], ["move_right", Vector2i.RIGHT]]:
+			if event.is_action_pressed(pair[0]):
+				_sn_turn(pair[1])
+		return
 	if type == "coincidenze":
 		var targets := _cz_targets()
 		var d := 0
@@ -714,8 +773,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			cz_focus = posmod(cz_focus + d, targets.size())
 			Sound.sfx("move")
 		elif event.is_action_pressed("confirm") and not targets.is_empty():
-			var t: Array = targets[clampi(cz_focus, 0, targets.size() - 1)]
-			_cz_act(t[0])
+			var t: Variant = targets[clampi(cz_focus, 0, targets.size() - 1)]
+			if t is Dictionary:
+				_cz_take(t)
+			else:
+				_cz_act("reset")
 		return
 	if type == "pratiche":
 		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up") \
@@ -858,7 +920,7 @@ func _finish(success: bool, partial := false) -> void:
 
 func _draw() -> void:
 	var font := Assets.font()
-	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze"] else BOX))
+	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze", "consegne"] else BOX))
 	if type == "route":
 		Art.backdrop(self)
 		Art.panel(self, frame, Color("202b35"), Color("829caa"))
@@ -874,6 +936,8 @@ func _draw() -> void:
 			_draw_volantini(font)
 		"coincidenze":
 			_draw_coincidenze(font)
+		"consegne":
+			_draw_consegne(font)
 		"timing":
 			var bar := Rect2(BOX.position.x + 20, BOX.get_center().y - 10, BOX.size.x - 40, 20)
 			Art.panel(self, bar.grow(3), Color("46566b"), Color("94a7b9"))
@@ -1233,6 +1297,214 @@ func _draw_volantini(font: Font) -> void:
 		Color("ffb0b0") if flash > 0.0 else Color("f0eadc"))
 
 
+# --- LE CONSEGNE DI AMIR: il furgone (uno snake) ------------------------------------------------
+# Tutti i numeri (pacchi, secondi, velocità, case, cantieri) stanno nella config del minigioco
+# (data/npcs.json, amir > help > minigame): si cambiano lì.
+
+const SN_CELL := 16
+const SN_GRID := Vector2i(34, 12)
+## Dove comincia la griglia (in alto c'è la riga con il pacco a bordo).
+const SN_ORIGIN := Vector2(48, 130)
+
+
+func _sn_houses() -> Array:
+	return cfg.get("case", [])
+
+
+func _sn_house_cell(i: int) -> Vector2i:
+	var c: Array = _sn_houses()[i]["cella"]
+	return Vector2i(int(c[0]), int(c[1]))
+
+
+func _sn_house_at(c: Vector2i) -> int:
+	for i in _sn_houses().size():
+		if _sn_house_cell(i) == c:
+			return i
+	return -1
+
+
+func _sn_blocked(c: Vector2i) -> bool:
+	for r: Array in cfg.get("cantieri", []):
+		if Rect2i(int(r[0]), int(r[1]), int(r[2]), int(r[3])).has_point(c):
+			return true
+	return false
+
+
+func _sn_cell_rect(c: Vector2i) -> Rect2:
+	return Rect2(SN_ORIGIN + Vector2(c * SN_CELL), Vector2(SN_CELL, SN_CELL))
+
+
+func _sn_start() -> void:
+	var s: Array = cfg.get("partenza", [5, 6])
+	var head := Vector2i(int(s[0]), int(s[1]))
+	sn_body = []
+	for i in maxi(2, int(cfg.get("lunghezza", 3)) + sn_done):
+		sn_body.append(head - Vector2i(i, 0))
+	# fermo finché non giri la prima volta (anche dopo un incidente): così non sbatte da solo
+	sn_dir = Vector2i.ZERO
+	sn_next = Vector2i.ZERO
+	sn_t = 0.0
+
+
+func _sn_spawn_parcel() -> void:
+	var head: Vector2i = sn_body[0]
+	var free: Array[Vector2i] = []
+	for y in SN_GRID.y:
+		for x in SN_GRID.x:
+			var c := Vector2i(x, y)
+			if c in sn_body or _sn_blocked(c) or _sn_house_at(c) >= 0:
+				continue
+			if absi(c.x - head.x) + absi(c.y - head.y) < 5:
+				continue
+			free.append(c)
+	sn_parcel = free[sn_rng.randi_range(0, free.size() - 1)] if not free.is_empty() else Vector2i(-1, -1)
+
+
+## Una mossa del furgone: una casella avanti.
+func _sn_step() -> void:
+	if sn_next != -sn_dir:
+		sn_dir = sn_next
+	if sn_dir == Vector2i.ZERO:
+		return
+	var head: Vector2i = sn_body[0] + sn_dir
+	var house := _sn_house_at(head)
+	var crash := ""
+	if head.x < 0 or head.y < 0 or head.x >= SN_GRID.x or head.y >= SN_GRID.y:
+		crash = "Il marciapiede! Amir frena di colpo."
+	elif _sn_blocked(head):
+		crash = "Il cantiere! Di qui non si passa."
+	elif head in sn_body.slice(0, sn_body.size() - 1):
+		crash = "Il furgone si è chiuso da solo in un vicolo."
+	elif house >= 0 and house != sn_carry:
+		crash = "Non è questa casa: il furgone ci sbatte contro."
+	if crash != "":
+		_sn_crash(crash)
+		return
+	sn_body.insert(0, head)
+	if head == sn_parcel:
+		# il pacco sale sul furgone: adesso c'è una casa da raggiungere, col tempo che corre
+		sn_parcel = Vector2i(-1, -1)
+		var choices: Array = range(_sn_houses().size()).filter(func(i: int) -> bool:
+			var hc := _sn_house_cell(i)
+			return absi(hc.x - head.x) + absi(hc.y - head.y) >= 8)
+		if choices.is_empty():
+			choices = range(_sn_houses().size())
+		sn_carry = int(choices[sn_rng.randi_range(0, choices.size() - 1)])
+		sn_left = float(cfg.get("secondi", 12))
+		sn_msg = "Pacco a bordo! Portalo alla casa %s." % str(_sn_houses()[sn_carry]["nome"])
+		Sound.sfx("blip", 1.3)
+		sn_body.pop_back()
+	elif house >= 0 and house == sn_carry:
+		var late := sn_left <= 0.0
+		sn_done += 1
+		if late:
+			sn_late += 1
+		sn_carry = -1
+		sn_msg = "Consegnato, ma in ritardo." if late else "Consegnato! Il furgone si allunga."
+		Sound.sfx("coin" if not late else "deny", 1.2)
+		# il furgone si allunga (la coda resta dov'è) e va un po' più veloce
+		if sn_done >= int(cfg.get("consegne", 6)):
+			_sn_end()
+			return
+		_sn_spawn_parcel()
+	else:
+		sn_body.pop_back()
+
+
+func _sn_crash(msg: String) -> void:
+	misses += 1
+	flash = 0.4
+	Sound.sfx("deny")
+	sn_msg = msg + (" Si riparte: gira per ripartire." if misses < int(cfg.get("errori", 3)) else "")
+	if misses >= int(cfg.get("errori", 3)):
+		_sn_end()
+		return
+	_sn_start()
+	if sn_parcel == Vector2i(-1, -1) and sn_carry < 0:
+		_sn_spawn_parcel()
+
+
+## Tutti puntuali: vinto (anche il bonus). Consegnati tutti ma qualcuno in ritardo, o fermi a metà
+## con almeno la metà dei pacchi: a metà. Altrimenti è andata male.
+func _sn_end() -> void:
+	var total := int(cfg.get("consegne", 6))
+	if sn_done >= total and sn_late == 0:
+		_finish(true)
+	elif sn_done >= total or sn_done * 2 >= total:
+		_finish(false, true)
+	else:
+		_finish(false)
+
+
+func _sn_process(delta: float) -> void:
+	if sn_carry >= 0 and sn_left > 0.0:
+		sn_left -= delta
+		if sn_left <= 0.0:
+			sn_msg = "Tempo scaduto! Il pacco arriverà in ritardo."
+			Sound.sfx("deny", 0.8)
+	sn_t += delta
+	var step := maxf(0.07, float(cfg.get("passo", 0.17)) - float(cfg.get("accelera", 0.012)) * sn_done)
+	while sn_t >= step and phase == "play":
+		sn_t -= step
+		_sn_step()
+	var total := int(cfg.get("consegne", 6))
+	_info.text = "Pacchi: %d/%d   %s   Errori: %d/%d" % [sn_done, total,
+		("Tempo: %d" % int(ceil(sn_left)) if sn_left > 0.0 else "IN RITARDO") if sn_carry >= 0 else "Prendi il pacco",
+		misses, int(cfg.get("errori", 3))]
+
+
+func _sn_turn(d: Vector2i) -> void:
+	# non si torna indietro dentro il furgone
+	if d == -sn_dir or (sn_body.size() > 1 and sn_body[0] + d == sn_body[1]):
+		return
+	sn_next = d
+
+
+func _draw_consegne(font: Font) -> void:
+	var area := Rect2(SN_ORIGIN, Vector2(SN_GRID * SN_CELL))
+	draw_rect(area, Color("3a4048"))
+	# le strisce della strada, per capire la griglia
+	for x in range(0, SN_GRID.x, 2):
+		for y in range(0, SN_GRID.y, 2):
+			draw_rect(Rect2(SN_ORIGIN + Vector2(x * SN_CELL + 7, y * SN_CELL + 7), Vector2(2, 2)), Color("4d545e"))
+	for r: Array in cfg.get("cantieri", []):
+		for x in range(int(r[0]), int(r[0]) + int(r[2])):
+			for y in range(int(r[1]), int(r[1]) + int(r[3])):
+				var cr := _sn_cell_rect(Vector2i(x, y))
+				draw_rect(cr, Color("e08a2a"))
+				draw_line(cr.position + Vector2(2, cr.size.y - 2), cr.position + Vector2(cr.size.x - 2, 2), Color("2a2a2a"), 3.0)
+	for i in _sn_houses().size():
+		var h: Dictionary = _sn_houses()[i]
+		var r := _sn_cell_rect(_sn_house_cell(i))
+		var col := Color(str(h.get("colore", "#c0c0c0")))
+		var target := i == sn_carry
+		if target:
+			draw_rect(r.grow(3 + sin(t_spin * 2.0) * 1.5), YELLOW, false, 2.0)
+		draw_rect(Rect2(r.position + Vector2(1, 6), Vector2(r.size.x - 2, r.size.y - 6)), col if target or sn_carry < 0 else col.darkened(0.5))
+		draw_colored_polygon(PackedVector2Array([r.position + Vector2(0, 7), r.position + Vector2(r.size.x / 2.0, 0), r.position + Vector2(r.size.x, 7)]), Color("6a3a2a"))
+		draw_rect(Rect2(r.position + Vector2(6, 10), Vector2(4, 6)), Color("2a2a2a"))
+	if sn_parcel != Vector2i(-1, -1):
+		var pr := _sn_cell_rect(sn_parcel).grow(-3)
+		draw_rect(pr, Color("b0844c"))
+		draw_line(pr.position + Vector2(pr.size.x / 2.0, 0), pr.position + Vector2(pr.size.x / 2.0, pr.size.y), Color("6a4a2a"), 2.0)
+	for k in range(sn_body.size() - 1, -1, -1):
+		var br := _sn_cell_rect(sn_body[k]).grow(-1)
+		if k == 0:
+			draw_rect(br, Color("f2f2f2"))
+			# il finestrino guarda dove va il furgone
+			var c := br.get_center() + Vector2(sn_dir) * 4.0
+			draw_rect(Rect2(c - Vector2(3, 3), Vector2(6, 6)), Color("4aa8f0"))
+		else:
+			draw_rect(br, Color("d8d8d8") if k % 2 == 0 else Color("c8c8c8"))
+			draw_rect(br.grow(-4), Color("b0844c"))
+	var top := Vector2(SN_ORIGIN.x, SN_ORIGIN.y - 8)
+	var line := "A bordo: pacco per la casa %s" % str(_sn_houses()[sn_carry]["nome"]) if sn_carry >= 0 else "Vai a prendere il pacco (la scatola marrone)."
+	draw_string(font, top, line, HORIZONTAL_ALIGNMENT_LEFT, area.size.x, 9, YELLOW)
+	if sn_msg != "":
+		draw_string(font, Vector2(SN_ORIGIN.x, area.end.y + 14), sn_msg, HORIZONTAL_ALIGNMENT_LEFT, area.size.x, 9,
+			Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+
+
 # --- IL PERCORSO POSSIBILE (Nadir) -------------------------------------------------------
 
 func _cz_data() -> Dictionary:
@@ -1249,21 +1521,153 @@ func _cz_restart() -> void:
 	cz_now = int(_cz_data().get("partenza", 400))
 
 
-## La riga di una corsa sul tabellone, e il bottone per ricominciare.
-func _cz_row(k: int) -> Rect2:
-	return Rect2(BIG.position.x + 10, BIG.position.y + 42 + k * 18, BIG.size.x - 20, 17)
+## Le linee della mappa: le corse con lo stesso nome, la stessa partenza e lo stesso arrivo
+## sono una linea sola (una curva), con i suoi orari. Tra due fermate con più linee le curve
+## si allargano, così si vedono tutte e col dito si sceglie quale seguire.
+func _cz_lines() -> Array:
+	var out: Array = []
+	var by_key := {}
+	var rides := _cz_rides()
+	for k in rides.size():
+		var c: Dictionary = rides[k]
+		var key := "%s|%d|%d" % [str(c["linea"]), int(c["da"]), int(c["a"])]
+		if not by_key.has(key):
+			by_key[key] = {"linea": str(c["linea"]), "da": int(c["da"]), "a": int(c["a"]), "corse": []}
+			out.append(by_key[key])
+		(by_key[key]["corse"] as Array).append(k)
+	var per_pair := {}
+	for l: Dictionary in out:
+		var pair := _cz_pair(l)
+		l["i"] = int(per_pair.get(pair, 0))
+		per_pair[pair] = int(l["i"]) + 1
+	for l: Dictionary in out:
+		l["n"] = int(per_pair[_cz_pair(l)])
+	return out
+
+
+func _cz_pair(l: Dictionary) -> String:
+	return "%d|%d" % [mini(int(l["da"]), int(l["a"])), maxi(int(l["da"]), int(l["a"]))]
+
+
+const CZ_COLORS: Array[Color] = [Color("f0a040"), Color("4aa8f0"), Color("6ad07a"), Color("9a9aa8"), Color("c07af0"), Color("f06a6a"), Color("f0e06a")]
+const CZ_STOP := 11.0      # raggio di una fermata
+const CZ_GRAB := 24.0      # quanto vicino deve arrivare il dito per "prendere" una fermata
+const CZ_BEND := 44.0      # quanto si allontanano le curve di due linee sulle stesse fermate
+
+
+func _cz_stop_pos(i: int) -> Vector2:
+	var p: Array = (_cz_data().get("mappa", {}) as Dictionary).get(_cz_stop_name(i), [0, 0])
+	return BIG.position + Vector2(float(p[0]), float(p[1]))
+
+
+## I punti della curva di una linea, dalla fermata di partenza a quella di arrivo.
+func _cz_curve(l: Dictionary) -> PackedVector2Array:
+	var p0 := _cz_stop_pos(int(l["da"]))
+	var p2 := _cz_stop_pos(int(l["a"]))
+	# la piegatura non dipende dal verso della linea
+	var lo := _cz_stop_pos(mini(int(l["da"]), int(l["a"])))
+	var hi := _cz_stop_pos(maxi(int(l["da"]), int(l["a"])))
+	var perp := (hi - lo).orthogonal().normalized()
+	var off := (float(l["i"]) - (float(l["n"]) - 1.0) / 2.0) * CZ_BEND
+	var ctrl := (p0 + p2) / 2.0 + perp * off * 2.0
+	var pts := PackedVector2Array()
+	for t in 21:
+		var u := t / 20.0
+		pts.append(p0.lerp(ctrl, u).lerp(ctrl.lerp(p2, u), u))
+	return pts
 
 
 func _cz_reset_button() -> Rect2:
 	return Rect2(BIG.end.x - 120, BIG.end.y - 30, 110, 24)
 
 
+## Per la tastiera: le linee che partono da dove è Nadir, poi RICOMINCIA.
 func _cz_targets() -> Array:
 	var out: Array = []
-	for k in _cz_rides().size():
-		out.append(["c%d" % k, _cz_row(k)])
-	out.append(["reset", _cz_reset_button()])
+	for l: Dictionary in _cz_lines():
+		if int(l["da"]) == cz_at:
+			out.append(l)
+	out.append("reset")
 	return out
+
+
+## Il dito: si preme sulla fermata dov'è Nadir, si trascina, si lascia su un'altra fermata.
+func _cz_touch(pos: Vector2, step: int) -> void:
+	if phase != "play":
+		return
+	var stops := (_cz_data()["fermate"] as Array).size()
+	if step == 0:
+		cz_trail = PackedVector2Array()
+		if _cz_reset_button().has_point(pos):
+			_cz_act("reset")
+			return
+		if pos.distance_to(_cz_stop_pos(cz_at)) <= CZ_GRAB:
+			cz_trail.append(_cz_stop_pos(cz_at))
+			cz_trail.append(pos)
+			Sound.sfx("arcade/select_2", 1.0, 4.0)
+			return
+		for i in stops:
+			if pos.distance_to(_cz_stop_pos(i)) <= CZ_GRAB:
+				cz_msg = "Nadir è a %s: parti da lì." % _cz_stop_name(cz_at)
+				Sound.sfx("deny")
+		return
+	if cz_trail.is_empty():
+		return
+	if step == 1:
+		if pos.distance_to(cz_trail[cz_trail.size() - 1]) > 3.0:
+			cz_trail.append(pos)
+		return
+	# step 2: il dito si alza
+	var trail := cz_trail
+	trail.append(pos)
+	cz_trail = PackedVector2Array()
+	var dest := -1
+	for i in stops:
+		if i != cz_at and pos.distance_to(_cz_stop_pos(i)) <= CZ_GRAB:
+			dest = i
+	if dest < 0:
+		cz_msg = "Porta il dito fino a un'altra fermata."
+		return
+	# tra le linee che vanno lì, quella che il dito ha seguito di più
+	var best: Dictionary = {}
+	var best_d := INF
+	for l: Dictionary in _cz_lines():
+		if int(l["da"]) != cz_at or int(l["a"]) != dest:
+			continue
+		var curve := _cz_curve(l)
+		var tot := 0.0
+		for q in trail:
+			var m := INF
+			for c in curve:
+				m = minf(m, q.distance_squared_to(c))
+			tot += m
+		if tot < best_d:
+			best_d = tot
+			best = l
+	if best.is_empty():
+		cz_msg = "Da %s a %s non passa nessuna linea." % [_cz_stop_name(cz_at), _cz_stop_name(dest)]
+		Sound.sfx("deny")
+		return
+	_cz_take(best)
+
+
+## Nadir prende la prima corsa di quella linea che fa in tempo a prendere.
+func _cz_take(l: Dictionary) -> void:
+	var ready := cz_now + (0 if cz_path.is_empty() else int(_cz_data().get("cambio", 3)))
+	var pick := -1
+	for k: int in l["corse"]:
+		var c: Dictionary = _cz_rides()[k]
+		if str(c.get("stato", "")) == "soppressa":
+			continue
+		pick = k
+		if str(c.get("stato", "")) == "badge" or _cz_min(str(c["parte"])) >= ready:
+			break
+	if pick < 0:
+		cz_msg = "SOPPRESSA. Oggi questa linea non passa."
+		Sound.sfx("deny")
+		return
+	# se nessuna corsa fa in tempo resta l'ultima: è già partita, e _cz_act lo dice
+	_cz_act("c%d" % pick)
 
 
 func _cz_cost() -> int:
@@ -1344,34 +1748,66 @@ func _cz_miss(msg: String) -> void:
 
 
 func _draw_coincidenze(font: Font) -> void:
-	draw_rect(BIG.grow(-4), Color("141a20"))
+	draw_rect(BIG.grow(-4), Color("1c232b"))
 	var d := _cz_data()
-	draw_string(font, BIG.position + Vector2(14, 18), "PARTENZE   ·   Nadir è a %s alle %s   ·   si entra alle %s   ·   %d € al giorno" % [
+	draw_string(font, BIG.position + Vector2(14, 18), "Nadir è a %s alle %s   ·   si entra alle %s   ·   %d € al giorno" % [
 		_cz_stop_name(cz_at), _clock(cz_now), str(d.get("entrata", "8:00")), int(d.get("budget", 6))], HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 28, 9, YELLOW)
-	var cols := [0, 40, 130, 230, 330, 375, 405]
-	var head := ["PARTE", "LINEA", "DA", "A", "ARRIVA", "€", "NOTE"]
-	for k in head.size():
-		draw_string(font, BIG.position + Vector2(14 + cols[k], 36), head[k], HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("7f93a3"))
 	var targets := _cz_targets()
-	var focus := "" if TouchControls.enabled or targets.is_empty() else str(targets[clampi(cz_focus, 0, targets.size() - 1)][0])
+	var focus: Variant = null if TouchControls.enabled or targets.is_empty() else targets[clampi(cz_focus, 0, targets.size() - 1)]
+	var lines := _cz_lines()
 	var rides := _cz_rides()
-	for k in rides.size():
-		var c: Dictionary = rides[k]
-		var r := _cz_row(k)
-		var taken := k in cz_path
-		var here := int(c["da"]) == cz_at
-		draw_rect(r, Color("2a3a22") if taken else (Color("1f2b35") if here else Color("181f26")))
-		if focus == "c%d" % k:
-			draw_rect(r, YELLOW, false, 2.0)
-		var col := YELLOW if taken else (Color("f2ead8") if here else Color("8a98a4"))
-		var stato := str(c.get("stato", ""))
-		var vals := [str(c["parte"]), str(c["linea"]), _cz_stop_name(int(c["da"])), _cz_stop_name(int(c["a"])), str(c["arriva"]),
-			str(int(c.get("euro", 0))), "SOPPRESSA" if stato == "soppressa" else ("SOLO BADGE" if stato == "badge" else str(c.get("nota", "")))]
-		for i in vals.size():
-			var w: float = (cols[i + 1] - cols[i] - 4) if i + 1 < cols.size() else BIG.size.x - 34 - cols[i]
-			draw_string(font, Vector2(r.position.x + 4 + cols[i], r.position.y + 12), vals[i], HORIZONTAL_ALIGNMENT_LEFT, w, 8,
-				Color("ff7a6a") if (i == 6 and stato != "") else col)
-	PracticeCard.button(self, _cz_reset_button(), "RICOMINCIA", Color("4a5a6a"), font, focus == "reset", 11)
+	# prima le curve, poi i cartellini con gli orari, poi le fermate sopra a tutto
+	for li in lines.size():
+		var l: Dictionary = lines[li]
+		var curve := _cz_curve(l)
+		var taken := false
+		for k: int in l["corse"]:
+			taken = taken or k in cz_path
+		var col: Color = CZ_COLORS[li % CZ_COLORS.size()]
+		if int(l["da"]) != cz_at and not taken:
+			col = col.darkened(0.55)
+		if focus is Dictionary and (focus as Dictionary)["linea"] == l["linea"] and (focus as Dictionary)["da"] == l["da"]:
+			draw_polyline(curve, YELLOW, 8.0)
+		draw_polyline(curve, Color.WHITE if taken else col, 4.0)
+		# la freccia (prima del cartellino): da che parte va la linea
+		var mid := curve[5]
+		var dir := (curve[6] - curve[4]).normalized()
+		draw_colored_polygon(PackedVector2Array([mid + dir * 7, mid - dir * 5 + dir.orthogonal() * 6, mid - dir * 5 - dir.orthogonal() * 6]), Color.WHITE if taken else col)
+	for li in lines.size():
+		var l: Dictionary = lines[li]
+		var first: Dictionary = rides[(l["corse"] as Array)[0]]
+		var stato := str(first.get("stato", ""))
+		var top := str(l["linea"]) + "  ·  " + ("solo badge" if stato == "badge" else (str(first["nota"]) if first.has("nota") else "%d €" % int(first.get("euro", 0))))
+		var times: Array = []
+		for k: int in l["corse"]:
+			var c: Dictionary = rides[k]
+			times.append(str(c["parte"]) + (" soppressa" if str(c.get("stato", "")) == "soppressa" else ""))
+		var bottom := "parte " + ", ".join(times)
+		var curve := _cz_curve(l)
+		var w := maxf(font.get_string_size(top, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, font.get_string_size(bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x) + 8
+		# il cartellino sta sulla curva, a metà: così non si confonde con quello della linea accanto
+		var r := Rect2(curve[10] - Vector2(w, 21) / 2.0, Vector2(w, 21))
+		var col: Color = CZ_COLORS[li % CZ_COLORS.size()]
+		var here := int(l["da"]) == cz_at
+		draw_rect(r, Color(0.08, 0.1, 0.13, 0.92 if here else 0.75))
+		draw_rect(r, col if here else col.darkened(0.55), false, 1.0)
+		draw_string(font, r.position + Vector2(4, 9), top, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("ff7a6a") if stato == "badge" else (Color("f2ead8") if here else Color("8a98a4")))
+		draw_string(font, r.position + Vector2(4, 18), bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("f2ead8") if here else Color("8a98a4"))
+	var last := (d["fermate"] as Array).size() - 1
+	for i in last + 1:
+		var p := _cz_stop_pos(i)
+		var here := i == cz_at
+		draw_circle(p, CZ_STOP + 2, Color.BLACK)
+		draw_circle(p, CZ_STOP, YELLOW if here else (Color("6ad07a") if i == last else Color("e8e8e8")))
+		var name := _cz_stop_name(i) + (" (lavoro)" if i == last else "")
+		# il lavoro ha il nome sotto: sopra passano le linee che arrivano
+		draw_string(font, p + Vector2(-60, CZ_STOP + 14 if i == last else -CZ_STOP - 5), name, HORIZONTAL_ALIGNMENT_CENTER, 120, 9, YELLOW if here else Color("f2ead8"))
+		if here:
+			draw_arc(p, CZ_STOP + 4 + sin(Time.get_ticks_msec() / 160.0) * 2.0, 0, TAU, 24, YELLOW, 2.0)
+	if cz_trail.size() >= 2:
+		draw_polyline(cz_trail, YELLOW, 3.0)
+		draw_circle(cz_trail[cz_trail.size() - 1], 5, YELLOW)
+	PracticeCard.button(self, _cz_reset_button(), "RICOMINCIA", Color("4a5a6a"), font, focus is String, 11)
 	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 14), cz_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 150, 9,
 		Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
 
@@ -1561,8 +1997,12 @@ func _draw_wires(font: Font) -> void:
 	else:
 		var yl2 := y0 + wire_pick * gap
 		var yr := y0 + wire_sel * gap
-		Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
-		draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
+		if wire_drag.x >= 0.0 and wire_drag.x < rx - 4:
+			# il filo segue il dito
+			Art.lead(self, Vector2(lx, yl2), wire_drag, WIRE_COLS[wire_pick], 4)
+		else:
+			Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
+			draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
 	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di %d" % [wire_round + 1, _wire_rounds()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
 
 

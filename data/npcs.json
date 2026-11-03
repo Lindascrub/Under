@@ -1977,11 +1977,8 @@
           "* Una lampadina alla volta.",
           "* Le buone a destra, le rotte a sinistra. Quelle che sfarfallano si avvitano su e giù."
         ],
-        "count": 12,
-        "time": 16,
-        "per_bulb": 1.6,
-        "fix": 3,
-        "misses": 2,
+        "count": 10,
+        "time": 25,
         "reward": 10
       }
     },
@@ -2443,11 +2440,11 @@
       ],
       "minigame": {
         "music": "aiuto_amir",
-        "type": "route",
+        "type": "consegne",
         "title": "L'ultima consegna",
         "intro": [
-          "* Due giri: la mattina e il pomeriggio. Tre pacchi per giro, e il tempo contato.",
-          "* Le strade brevi passano dal cantiere. Le altre sono più lunghe, ma ci si arriva."
+          "* Il furgone di Amir. Prendi il pacco, poi portalo alla casa che si illumina prima che scada il tempo.",
+          "* Non sbattere contro i bordi, i cantieri, le altre case o il furgone stesso. Ogni pacco consegnato lo allunga."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2460,7 +2457,23 @@
         "partial_flags": [
           "c3_amir_aiutato"
         ],
-        "budget": 120
+        "budget": 120,
+        "consegne": 6,
+        "secondi": 12,
+        "passo": 0.17,
+        "accelera": 0.012,
+        "errori": 3,
+        "lunghezza": 3,
+        "partenza": [5, 6],
+        "case": [
+          {"nome": "ROSSA", "colore": "#d85050", "cella": [2, 1]},
+          {"nome": "BLU", "colore": "#4a8ae0", "cella": [16, 0]},
+          {"nome": "VERDE", "colore": "#4ab060", "cella": [31, 1]},
+          {"nome": "GIALLA", "colore": "#e0c040", "cella": [3, 10]},
+          {"nome": "VIOLA", "colore": "#a060d0", "cella": [17, 11]},
+          {"nome": "ARANCIONE", "colore": "#e08a3a", "cella": [30, 10]}
+        ],
+        "cantieri": [[10, 3, 2, 5], [22, 4, 2, 5]]
       }
     },
     "robot_lines": [

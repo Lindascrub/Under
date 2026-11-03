@@ -270,6 +270,19 @@ func _run() -> void:
 	_check(int(m.get("wire_pick")) == 0, "toccare il primo filo dovrebbe sceglierlo")
 	await _tap_at(Vector2(box.end.x - 25, y0 + right.find(0) * gap))
 	_check(0 in (m.get("wire_done") as Array), "toccare il posto giusto dovrebbe collegare il filo")
+	# come in Among Us: trascina il secondo filo fino al suo posto
+	_touch(Vector2(box.position.x + 25, y0 + gap), true)
+	await _frames(2)
+	_check(int(m.get("wire_pick")) == 1, "appoggiare il dito sul secondo filo dovrebbe prenderlo")
+	var dest := Vector2(box.end.x - 25, y0 + right.find(1) * gap)
+	_drag(box.get_center())
+	await _frames(2)
+	_check((m.get("wire_drag") as Vector2).x >= 0.0, "trascinando, il filo dovrebbe seguire il dito")
+	_drag(dest)
+	await _frames(2)
+	_touch(dest, false)
+	await _frames(2)
+	_check(1 in (m.get("wire_done") as Array), "lasciare il filo sul posto giusto dovrebbe collegarlo")
 
 	# --- Leda, SCATOLE E SCAFFALI: tocca lo scaffale giusto
 	m = await _help("inventory")
@@ -303,6 +316,35 @@ func _run() -> void:
 				break
 			await _frames(1)
 	_check(int(m.get("rt_total")) == 6, "sei pacchi su sei: la consegna è finita (fatti %d)" % int(m.get("rt_total")))
+
+	# --- Amir, LE CONSEGNE: il furgone (snake); si scorre per girare, si prende il pacco, si porta alla casa giusta
+	var amir_mg: Dictionary = (GameState.npc_data("amir")["help"]["minigame"] as Dictionary).duplicate(true)
+	amir_mg.merge({"kind": "help", "id": "amir", "name": "Amir", "intro": ["* Prova."], "return": Router.FONDO, "seed": 5, "passo": 0.05, "accelera": 0.0, "partenza": [3, 9]}, true)
+	GameState.minigame = amir_mg
+	Router.goto(Router.MINIGAME)
+	await _wait_scene(Router.MINIGAME)
+	m = await _wait_play()
+	await _frames(20)
+	var start := Vector2i(3, 9)
+	_check((m.get("sn_body") as Array)[0] == start, "il furgone aspetta la prima svolta prima di partire")
+	m.set("sn_parcel", start + Vector2i(2, 0))
+	await _swipe(Vector2(200, 200), Vector2(300, 200))
+	for i in 300:
+		if int(m.get("sn_carry")) >= 0:
+			break
+		await _frames(1)
+	var casa := int(m.get("sn_carry"))
+	_check(casa >= 0, "scorrendo a destra il furgone parte e prende il pacco")
+	# la casa del pacco, messa poco più avanti sulla strada
+	var head: Vector2i = (m.get("sn_body") as Array)[0]
+	(m.get("cfg")["case"][casa] as Dictionary)["cella"] = [head.x + 6, head.y]
+	m.set("sn_done", 5)
+	for i in 300:
+		if str(m.get("phase")) != "play":
+			break
+		await _frames(1)
+	_check(int(m.get("sn_done")) == 6 and bool(m.get("won")), "il sesto pacco puntuale alla casa giusta: consegna finita, con il bonus (pacchi %d, errori %d, %s)" % [int(m.get("sn_done")), int(m.get("misses")), str(m.get("sn_msg"))])
+	await _idle()
 
 	# --- la cassa del Mercato: tocca l'articolo, poi CORREGGI il prezzo sbagliato
 	w = await _work("cassa", {"job": {"pay_max": 160, "duration": 40}})
@@ -395,21 +437,43 @@ func _run() -> void:
 	await _tap_at(Vector2(320, 300))
 	_check(str(m.get("phase")) != "play" and int(GameState.flags.get("c5_volantini", 0)) == 8, "otto volantini presi: il minigioco finisce")
 
-	# --- Nadir, L'ORARIO DELLE COINCIDENZE: una corsa alla volta; soppressa, coincidenza persa, troppo cara, poi quella giusta
+	# --- Nadir, L'ORARIO DELLE COINCIDENZE: col dito da fermata a fermata lungo una linea della mappa
 	m = await _help("coincidenze")
-	var row := func(k: int) -> Vector2: return (m.call("_cz_row", k) as Rect2).get_center()
-	await _tap_at(row.call(5))
-	_check((m.get("cz_path") as Array).is_empty() and int(m.get("misses")) == 0, "da casa il Bus 30 non parte (e non è un errore)")
-	await _tap_at(row.call(2))
-	_check((m.get("cz_path") as Array).is_empty() and int(m.get("misses")) == 0, "la corsa soppressa non si prende")
-	for k in [0, 3]:
-		await _tap_at(row.call(k))
-	_check(int(m.get("misses")) == 1 and (m.get("cz_path") as Array).is_empty(), "il treno delle 7:04 parte mentre Nadir scende dal Bus 4: si riparte")
-	for k in [1, 6]:
-		await _tap_at(row.call(k))
+	var line := func(name: String, da: int) -> Dictionary:
+		for l: Dictionary in m.call("_cz_lines"):
+			if l["linea"] == name and int(l["da"]) == da:
+				return l
+		return {}
+	var trace := func(l: Dictionary) -> void:
+		var curve: PackedVector2Array = m.call("_cz_curve", l)
+		_touch(curve[0], true)
+		await _frames(1)
+		for i in range(2, curve.size(), 3):
+			_drag(curve[i])
+			await _frames(1)
+		_touch(curve[curve.size() - 1], false)
+		await _frames(2)
+	# da casa si trascina verso la zona industriale: nessuna linea diretta, non è un errore
+	_touch(m.call("_cz_stop_pos", 0), true)
+	await _frames(1)
+	_drag(m.call("_cz_stop_pos", 3))
+	await _frames(1)
+	_touch(m.call("_cz_stop_pos", 3), false)
+	await _frames(2)
+	_check((m.get("cz_path") as Array).is_empty() and int(m.get("misses")) == 0, "da casa al lavoro non c'è una linea diretta (e non è un errore)")
+	await trace.call(line.call("Bus 12", 0))
+	_check(m.get("cz_path") == [1] and int(m.get("cz_at")) == 1, "trascinando lungo il Bus 12 Nadir prende la corsa delle 6:45")
+	await _tap_at((m.call("_cz_reset_button") as Rect2).get_center())
+	await trace.call(line.call("Bus 4", 0))
+	await trace.call(line.call("Navetta CHEAP", 2))
+	_check(m.get("cz_path") == [0] and int(m.get("misses")) == 0, "la navetta CHEAP vuole il badge: non parte (e non è un errore)")
+	await trace.call(line.call("Treno R", 2))
+	_check(int(m.get("misses")) == 1 and (m.get("cz_path") as Array).is_empty(), "il treno delle 7:04 è già partito, quello dopo arriva tardi: si riparte")
+	await trace.call(line.call("Bus 12", 0))
+	await trace.call(line.call("Express", 1))
 	_check(int(m.get("misses")) == 2 and str(m.get("phase")) == "play", "il Bus 12 più l'Express costa troppo")
-	for k in [1, 5]:
-		await _tap_at(row.call(k))
+	await trace.call(line.call("Bus 12", 0))
+	await trace.call(line.call("Bus 30", 1))
 	_check(str(m.get("phase")) != "play" and GameState.flags.get("c5_nadir_corse", []) == [1, 5], "Bus 12 e Bus 30 con lo stesso biglietto: Nadir arriva alle 7:58")
 
 	# --- il centralino della Città: destinazioni; poi le discrepanze (VERIFICA, CONFERMA)
