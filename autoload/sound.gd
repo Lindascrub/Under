@@ -78,7 +78,7 @@ func _load(file: String) -> AudioStream:
 	return stream
 
 
-func sfx(name: String, pitch := 1.0) -> void:
+func sfx(name: String, pitch := 1.0, gain_db := 0.0) -> void:
 	var stream := _load(name)
 	if stream == null:
 		return
@@ -86,6 +86,7 @@ func sfx(name: String, pitch := 1.0) -> void:
 	_next = (_next + 1) % _sfx.size()
 	p.stream = stream
 	p.pitch_scale = pitch
+	p.volume_db = gain_db
 	p.play()
 
 
@@ -125,37 +126,38 @@ var _fade: Tween
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
 const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
-	# i piani: una canzone ciascuno
-	"festa": ["gettinsillywithit"],
-	"attesa": ["superretrolounge"],
-	"mercato": ["waitingroomennui"],
-	"banca": ["vacationdayadventure"],
-	"citta": ["metropolitancosmopolitan"],
-	"quartiere": ["wood_forest_town"],
-	"cima": ["royal_castle"],
-	"presidente": ["magic_temple"],
-	"ascensore": ["nighttownwaltz"],
+	# I luoghi lunghi hanno almeno due brani: quando uno finisce, il successivo
+	# viene scelto senza ripetere quello appena ascoltato.
+	"festa": ["gettinsillywithit", "gettinwackywithit"],
+	"attesa": ["superretrolounge", "soundfontjazzclub"],
+	"mercato": ["waitingroomennui", "marketjam"],
+	"banca": ["vacationdayadventure", "tracerbulletprivateeye"],
+	"citta": ["metropolitancosmopolitan", "east_town"],
+	"quartiere": ["wood_forest_town", "peaceful_village"],
+	"cima": ["royal_castle", "the_old_magician"],
+	"presidente": ["magic_temple", "ancient_library"],
+	"ascensore": ["hypnoticsynthloop"],
 	# i turni: uno per piano (scenes/minigame/work.gd, JOB_MUSIC)
 	"turno_dinamo": ["pkmngoldluckycornerioweitalltoyou"],
 	"turno_callcenter": ["sugarrushzoomies"],
 	"turno_cassa": ["lifeishardbase"],
 	"turno_sportello": ["alleycat"],
-	"turno_smistamento": ["pkmngoldluckycornerioweitalltoyou"],
-	"lavoro": ["pkmngoldluckycornerioweitalltoyou"],
+	"turno_smistamento": ["dark_factory"],
+	"lavoro": ["porkyminchtypebeat"],
 	# il capo: quando telefona, e nel furto che ti chiede
-	"capo": ["metropolitancosmopolitan"],
+	"capo": ["malicious_scheme", "military_base"],
 	# i minigiochi d'aiuto: una canzone per persona (campo "music" del minigioco in data/npcs.json)
 	"aiuto_mina": ["hewillneverbetheapeescapesoundtrack"],
-	"aiuto_bulbo": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_bulbo": ["goofy_monster"],
 	"aiuto_tilde": ["jestersdistraction"],
-	"aiuto_ercole": ["jestersdistraction"],
+	"aiuto_ercole": ["dwarven_mine"],
 	"aiuto_leda": ["mischiefgroove"],
-	"aiuto_amir": ["mischiefgroove"],
+	"aiuto_amir": ["traveling_the_sky"],
 	"aiuto_olga": ["distantskyline"],
-	"aiuto_teo": ["distantskyline"],
-	"aiuto_ada": ["hewillneverbetheapeescapesoundtrack"],
-	"aiuto_nadir": ["hewillneverbetheapeescapesoundtrack"],
-	"aiuto": ["hewillneverbetheapeescapesoundtrack"],
+	"aiuto_teo": ["slycooperclarinet"],
+	"aiuto_ada": ["trunk_knox_go_buck"],
+	"aiuto_nadir": ["unknown_island"],
+	"aiuto": ["volcanic_crater"],
 	# il resto
 	"titolo": ["frostylabratory"],
 	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],

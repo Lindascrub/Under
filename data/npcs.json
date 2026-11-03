@@ -2600,7 +2600,8 @@
         "title": "La pratica impossibile",
         "intro": [
           "* Sei pratiche di credito, una alla volta.",
-          "* Per ognuna: è tutto in ordine, o c'è un problema? Non decidi chi merita i soldi. Controlli i fogli."
+          "* Leggile riga per riga e indica quella che dimostra l'anomalia. Se il fascicolo è pulito, scegli NESSUNA ANOMALIA.",
+          "* Non decidi chi merita i soldi. Controlli le prove che il sistema preferisce non guardare."
         ],
         "reward": 0,
         "fixed_reward": true,

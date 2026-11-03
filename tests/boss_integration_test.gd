@@ -42,6 +42,16 @@ func _ready() -> void:
    await touch((current.buttons[0]["rect"] as Rect2).get_center())
    if floor != "-4": check(int(current.p[key]) != old_value, "Touch trasformato " + floor + str(size))
   TouchControls.enabled = false
+  if floor == "-4":
+   current.selected = 0
+   await action("move_right")
+   check(int(current.selected) == 1, "Vaschette: destra segue la riga superiore")
+   await action("move_down")
+   check(int(current.selected) == 3, "Vaschette: giù segue la colonna")
+   await action("move_down")
+   check(int(current.selected) == 4, "Vaschette: giù raggiunge SALVA ED ESCI")
+   await action("move_up")
+   check(int(current.selected) == 2, "Vaschette: su rientra nella scrivania")
   current.selected = 0
   var old_value: int = int(current.p.get("intensity", current.p.get("rate", current.p.get("months", current.p.get("source", 0)))))
   await action("confirm")

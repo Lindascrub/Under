@@ -1,35 +1,34 @@
-[gd_scene format=4 uid="uid://scudhbgfip3s"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://ds0afsgd6hem" path="res://chapters/c1/fondo_c1.gd" id="1_jee0l"]
-[ext_resource type="TileSet" uid="uid://icpxarxxa543" path="res://world/tilesets/interni.tres" id="2_ya8wr"]
-[ext_resource type="Script" uid="uid://c273hyc3vo8ri" path="res://world/room_outline.gd" id="3_70trp"]
-[ext_resource type="Texture2D" uid="uid://1vddhnodd51w" path="res://assets/limezu/tiles/birthday.png" id="4_e48jl"]
-[ext_resource type="Script" uid="uid://biycx1pqfc3y2" path="res://world/electrical_wires.gd" id="5_kwl31"]
-[ext_resource type="Texture2D" uid="uid://b7kueas3c2o3d" path="res://assets/limezu/themes/hospital.png" id="6_ibhvm"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="7_i6r6f"]
-[ext_resource type="Texture2D" uid="uid://bw2cvmhpopunl" path="res://assets/limezu/market/table_1.png" id="8_vse3m"]
-[ext_resource type="Texture2D" uid="uid://bxk3mp71u0bdd" path="res://assets/limezu/street/box_trash.png" id="10_um4k8"]
-[ext_resource type="Shader" uid="uid://cxgayfxfeyo0q" path="res://shaders/greyscale.gdshader" id="10_ya8wr"]
-[ext_resource type="Texture2D" uid="uid://vme2n12g54mu" path="res://assets/limezu/characters/cheap_fermo.png" id="11_70trp"]
-[ext_resource type="Script" uid="uid://b3j0n0sj3kphd" path="res://world/char_sprite.gd" id="11_u05vs"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="12_20qjt"]
-[ext_resource type="Texture2D" uid="uid://bc231cevq0fwf" path="res://assets/limezu/grocery/449.png" id="14_cvym0"]
-[ext_resource type="Texture2D" uid="uid://buq4rsa1xvay8" path="res://assets/limezu/grocery/451.png" id="15_0sumg"]
-[ext_resource type="Texture2D" uid="uid://c7evag5dxre3j" path="res://assets/limezu/themes/gym.png" id="16_gul0e"]
-[ext_resource type="Script" uid="uid://br6k6k1xm6y31" path="res://world/room_feature.gd" id="17_xgsui"]
-[ext_resource type="Script" uid="uid://8ce2sn1w8q1l" path="res://world/lift.gd" id="19_kwl31"]
-[ext_resource type="Texture2D" uid="uid://canmhdud6tp6e" path="res://assets/limezu/props/camera_right.png" id="21_vse3m"]
-[ext_resource type="Texture2D" uid="uid://bb7sg78cghida" path="res://assets/limezu/props/camera_left.png" id="23_susag"]
+[ext_resource type="Script" path="res://chapters/c1/fondo_c1.gd" id="1_jee0l"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_ya8wr"]
+[ext_resource type="Script" path="res://world/room_outline.gd" id="3_70trp"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/birthday.png" id="4_e48jl"]
+[ext_resource type="Script" path="res://world/electrical_wires.gd" id="5_kwl31"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/hospital.png" id="6_ibhvm"]
+[ext_resource type="Script" path="res://world/examine.gd" id="7_i6r6f"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/table_1.png" id="8_vse3m"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/box_trash.png" id="10_um4k8"]
+[ext_resource type="Shader" path="res://shaders/greyscale.gdshader" id="10_ya8wr"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/cheap_fermo.png" id="11_70trp"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="11_u05vs"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="12_20qjt"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/449.png" id="14_cvym0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/451.png" id="15_0sumg"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="16_gul0e"]
+[ext_resource type="Script" path="res://world/lift.gd" id="19_kwl31"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_right.png" id="21_vse3m"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_left.png" id="23_susag"]
 [ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="Script" uid="uid://c1a41vjnt4y4t" path="res://world/security_camera.gd" id="cam_sc"]
-[ext_resource type="Texture2D" uid="uid://cqxlrmdbfw0m7" path="res://assets/limezu/grocery/356.png" id="crate_356"]
-[ext_resource type="Texture2D" uid="uid://bxm7sguidt1jh" path="res://art/lampadina_cassetta.png" id="lamp_png"]
-[ext_resource type="Script" uid="uid://0dvkw17htlqe" path="res://world/thin_wall.gd" id="thin_wall"]
-
-[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/356.png" id="crate_356"]
 [ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
-[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="Texture2D" path="res://art/lampadina_cassetta.png" id="lamp_png"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
+[ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
+[ext_resource type="Script" path="res://world/thin_wall.gd" id="thin_wall"]
+
 [sub_resource type="RectangleShape2D" id="muro_MuroTramezzo"]
 size = Vector2(6, 145)
 
@@ -54,7 +53,7 @@ size = Vector2(12, 4)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jgk06"]
 size = Vector2(12, 4)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_nompp"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_20qjt"]
 size = Vector2(12, 4)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_um4k8"]
@@ -66,11 +65,11 @@ size = Vector2(12, 9)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f8wrv"]
 size = Vector2(10, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qfwf5"]
-size = Vector2(31, 12)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6clgy"]
+size = Vector2(19.375, 7.7500153)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lkgv6"]
-size = Vector2(30, 12)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cvym0"]
+size = Vector2(18.75, 7.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_aspv0"]
 size = Vector2(11.5, 8)
@@ -764,14 +763,14 @@ size = Vector2(12, 6)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_82pgs"]
 size = Vector2(8, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7eyd8"]
-size = Vector2(9, 7)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0sumg"]
+size = Vector2(10, 7.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jt0g"]
 size = Vector2(8, 7)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_51mel"]
-size = Vector2(15, 25)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gul0e"]
+size = Vector2(16, 25)
 
 [node name="Fondo" type="Node2D" unique_id=1163209316]
 script = ExtResource("1_jee0l")
@@ -910,6 +909,42 @@ scale = Vector2(0.5, 0.5)
 skew = -0.012217305
 script = ExtResource("5_kwl31")
 
+[node name="ScaleSu" parent="Decori" unique_id=1826024092 instance=ExtResource("stairs_up_tscn")]
+position = Vector2(512, 48)
+target = "res://chapters/c2/sottoufficio.tscn"
+need = "-4"
+
+[node name="Telecamera_304" type="Sprite2D" parent="Decori" unique_id=1967331536]
+position = Vector2(304, 24)
+texture = ExtResource("21_vse3m")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 0, 16, 16)
+script = ExtResource("cam_sc")
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_304" unique_id=358150557]
+position = Vector2(8, 40)
+script = ExtResource("7_i6r6f")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+
+[node name="Telecamera_496" type="Sprite2D" parent="Decori" unique_id=659011511]
+position = Vector2(476, 18)
+texture = ExtResource("23_susag")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+script = ExtResource("cam_sc")
+facing = "left"
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_496" unique_id=1191374305]
+position = Vector2(8, 40)
+script = ExtResource("7_i6r6f")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+
 [node name="MuriBiglietteria" type="Node2D" parent="." unique_id=550272067]
 metadata/prop_talk_skip = true
 
@@ -969,9 +1004,9 @@ shape = SubResource("RectangleShape2D_y4htq")
 [node name="GuardaPalloncino0" type="Node2D" parent="Mondo" unique_id=901167470]
 position = Vector2(40, 56)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino giallo. Ci hanno stampato sopra: \"BENVENUTO AL FONDO!\".", "* Non c\'è scritto il nome di nessuno. Va bene per tutti quelli che arrivano.")
 lines_after = PackedStringArray("* Il palloncino giallo è afflosciato. La scritta adesso dice \"BENVE...\". Il resto è una piega.")
+after_flag = "c1_rivelazione"
 
 [node name="Palloncino1" type="Sprite2D" parent="Mondo" unique_id=1335233157]
 position = Vector2(48, 64)
@@ -990,16 +1025,16 @@ shape = SubResource("RectangleShape2D_dqhas")
 [node name="GuardaPalloncino1" type="Node2D" parent="Mondo" unique_id=830864029]
 position = Vector2(56, 56)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino blu. Lo tocchi: è tiepido. Come se qualcuno ci avesse soffiato dentro poco fa.", "* Su un\'etichetta: \"Gonfiato al piano terra. Non riutilizzabile\".")
 lines_after = PackedStringArray("* Il palloncino blu è grigio e floscio. Tiepido non lo è più.")
+after_flag = "c1_rivelazione"
 
 [node name="GuardaPalloncino2" type="Node2D" parent="Mondo" unique_id=1617494417]
 position = Vector2(152, 56)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via. Come te.")
 lines_after = PackedStringArray("* Il cuore rosso si è sgonfiato. Adesso sembra un portafoglio vuoto.")
+after_flag = "c1_rivelazione"
 
 [node name="Palloncino3" type="Sprite2D" parent="Mondo" unique_id=181484508]
 position = Vector2(256, 64)
@@ -1018,9 +1053,9 @@ shape = SubResource("RectangleShape2D_4ujwl")
 [node name="GuardaPalloncino3" type="Node2D" parent="Mondo" unique_id=1137078042]
 position = Vector2(264, 56)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino verde. Dentro c\'è un bigliettino: \"Hai vinto un turno extra!\".", "* Sul retro, in piccolo: \"Il premio non è convertibile in tempo libero\".")
 lines_after = PackedStringArray("* Il palloncino verde è per terra. Il bigliettino è rimasto dentro, ma ormai non lo legge nessuno.")
+after_flag = "c1_rivelazione"
 
 [node name="Palloncino4" type="Sprite2D" parent="Mondo" unique_id=1723142299]
 position = Vector2(320, 208)
@@ -1039,9 +1074,9 @@ shape = SubResource("RectangleShape2D_jgk06")
 [node name="GuardaPalloncino4" type="Node2D" parent="Mondo" unique_id=624804722]
 position = Vector2(328, 200)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino in fondo alla stanza, lontano da tutti. Anche le decorazioni, qui, fanno i turni.", "* Questo è di guardia.")
 lines_after = PackedStringArray("* Anche quello di guardia si è sgonfiato. Nessuno gli darà il cambio.")
+after_flag = "c1_rivelazione"
 
 [node name="Palloncino5" type="Sprite2D" parent="Mondo" unique_id=1194471433]
 position = Vector2(16, 208)
@@ -1050,19 +1085,20 @@ centered = false
 offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(32, 80, 16, 32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Palloncino5" unique_id=230149548]
 
 [node name="@CollisionShape2D@26" type="CollisionShape2D" parent="Mondo/Palloncino5/Collisione" unique_id=237997728]
 position = Vector2(8, -2)
-shape = SubResource("RectangleShape2D_nompp")
+shape = SubResource("RectangleShape2D_20qjt")
 
 [node name="GuardaPalloncino5" type="Node2D" parent="Mondo" unique_id=1772652158]
 position = Vector2(24, 200)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un palloncino che qualcuno ha disegnato a pennarello con una faccina. La faccina è triste.", "* L\'unico onesto della festa.")
 lines_after = PackedStringArray("* La faccina triste, adesso che è tutto grigio, sembra quasi sollevata.")
+after_flag = "c1_rivelazione"
 
 [node name="TavoloFesta" type="Sprite2D" parent="Mondo" unique_id=1915396200]
 position = Vector2(160, 176)
@@ -1088,9 +1124,9 @@ region_rect = Rect2(0, 40, 32, 24)
 [node name="GuardaTorta" type="Node2D" parent="Mondo" unique_id=1867648806]
 position = Vector2(184, 168)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Una torta con le candeline. Sulla glassa c\'è scritto: \"AUGURI ALLA CHEAP\".", "* La festa è per l\'azienda. Tu sei l\'invitato che porta il regalo.")
 lines_after = PackedStringArray("* La torta, adesso, si vede per quello che è: plastica. Le candeline sono lampadine. Spente.")
+after_flag = "c1_rivelazione"
 
 [node name="RegaloRosso" type="Sprite2D" parent="Mondo" unique_id=1557468486]
 position = Vector2(208, 176)
@@ -1123,21 +1159,22 @@ shape = SubResource("RectangleShape2D_f8wrv")
 [node name="GuardaRegaloRosso" type="Node2D" parent="Mondo" unique_id=951755808]
 position = Vector2(216, 168)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un regalo impacchettato benissimo. Lo scuoti: è vuoto.", "* Sul biglietto: \"Il regalo sei tu. Con affetto, l\'Ufficio Risorse Umane\".")
 lines_after = PackedStringArray("* Il regalo rosso è grigio. Il fiocco si è sciolto da solo. Dentro, sempre niente.")
+after_flag = "c1_rivelazione"
 
 [node name="GuardaRegaloBlu" type="Node2D" parent="Mondo" unique_id=1717766129]
 position = Vector2(152, 184)
 script = ExtResource("7_i6r6f")
-after_flag = "c1_rivelazione"
 lines = PackedStringArray("* Un regalo blu, con il tuo nome scritto a mano sul biglietto. Come facevano a saperlo?", "* Dentro c\'è un modulo: \"Dichiarazione di disponibilità al lavoro straordinario\". Già firmato. Con la tua firma.")
 lines_after = PackedStringArray("* Il regalo blu, spento, sembra solo una scatola. Il modulo dentro è ancora firmato.")
+after_flag = "c1_rivelazione"
 
 [node name="GuardaStriscione" type="Node2D" parent="Mondo" unique_id=726861301]
 position = Vector2(104, 56)
 script = ExtResource("7_i6r6f")
 lines = PackedStringArray("* Uno striscione: \"IL POSTO PIÙ FELICE DELLA TORRE!\".", "* Più in piccolo: \"Felicità garantita fino a esaurimento scorte\".")
+lines_after = PackedStringArray()
 
 [node name="ScatolaLampadine1" type="Sprite2D" parent="Mondo" unique_id=1503138058]
 position = Vector2(291.00003, 174.00002)
@@ -1146,13 +1183,14 @@ texture = ExtResource("crate_356")
 centered = false
 offset = Vector2(0, -32)
 metadata/prop_talk_skip = true
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine1" unique_id=565555671]
 
 [node name="@CollisionShape2D@30" type="CollisionShape2D" parent="Mondo/ScatolaLampadine1/Collisione" unique_id=102402730]
-position = Vector2(15.9999695, -6.4000244)
+position = Vector2(15.9999695, -6.200012)
 scale = Vector2(0.99999976, 0.99999976)
-shape = SubResource("RectangleShape2D_qfwf5")
+shape = SubResource("RectangleShape2D_6clgy")
 
 [node name="Lampadina1" type="Sprite2D" parent="Mondo/ScatolaLampadine1" unique_id=1662468557]
 position = Vector2(8, -24.5)
@@ -1190,13 +1228,14 @@ texture = ExtResource("crate_356")
 centered = false
 offset = Vector2(0, -32)
 metadata/prop_talk_skip = true
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine2" unique_id=607541979]
 
 [node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/ScatolaLampadine2/Collisione" unique_id=184510837]
 position = Vector2(17, -6)
 scale = Vector2(0.99999994, 0.99999994)
-shape = SubResource("RectangleShape2D_lkgv6")
+shape = SubResource("RectangleShape2D_cvym0")
 
 [node name="Lampadina1" type="Sprite2D" parent="Mondo/ScatolaLampadine2" unique_id=702340434]
 position = Vector2(8, -24.5)
@@ -1229,11 +1268,13 @@ texture = ExtResource("lamp_png")
 position = Vector2(301, 168)
 script = ExtResource("7_i6r6f")
 lines = PackedStringArray("* Scatole piene di lampadine. Alcune accese, alcune rotte, alcune che non hanno ancora deciso.")
+lines_after = PackedStringArray()
 
 [node name="GuardaCavi" type="Node2D" parent="Mondo" unique_id=908535381]
 position = Vector2(91, 133)
 script = ExtResource("7_i6r6f")
 lines = PackedStringArray("* Un groviglio di cavi colorati. Rosso con rosso, blu con blu. In teoria.")
+lines_after = PackedStringArray()
 
 [node name="CassettaFermo" type="Sprite2D" parent="Mondo" unique_id=1292924169]
 position = Vector2(224, 80)
@@ -1265,6 +1306,8 @@ grey = true
 [node name="ParlaConFermo" type="Node2D" parent="Mondo" unique_id=896288952]
 position = Vector2(230, 64)
 script = ExtResource("7_i6r6f")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
 method = "_talk_fermo"
 
 [node name="Bulbo" type="Node2D" parent="Mondo" unique_id=1240000128]
@@ -1338,6 +1381,7 @@ shape = SubResource("RectangleShape2D_jnpu8")
 position = Vector2(408, 120)
 script = ExtResource("7_i6r6f")
 lines = PackedStringArray("* Quattro sedie per chi aspetta il badge. Nessuno aspetta: o hai i soldi o torni a pedalare.")
+lines_after = PackedStringArray()
 
 [node name="PiantaBadge0" type="Sprite2D" parent="Mondo" unique_id=1447914449]
 position = Vector2(494, 55)
@@ -1347,6 +1391,7 @@ offset = Vector2(0, -23)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaBadge0" unique_id=1625534348]
 position = Vector2(0, 9)
+
 [node name="@CollisionShape2D@38" type="CollisionShape2D" parent="Mondo/PiantaBadge0/Collisione" unique_id=2109606981]
 position = Vector2(8, -13)
 shape = SubResource("RectangleShape2D_82pgs")
@@ -1356,12 +1401,14 @@ position = Vector2(528, 187)
 texture = ExtResource("15_0sumg")
 centered = false
 offset = Vector2(0, -27)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaBadge1" unique_id=1341669133]
 position = Vector2(0, 5)
+
 [node name="@CollisionShape2D@39" type="CollisionShape2D" parent="Mondo/PiantaBadge1/Collisione" unique_id=2102026812]
-position = Vector2(8, -9)
-shape = SubResource("RectangleShape2D_7eyd8")
+position = Vector2(8, -8.75)
+shape = SubResource("RectangleShape2D_0sumg")
 
 [node name="PiantaBadge2" type="Sprite2D" parent="Mondo" unique_id=2023398139]
 position = Vector2(384, 199)
@@ -1371,6 +1418,7 @@ offset = Vector2(0, -23)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaBadge2" unique_id=1788537149]
 position = Vector2(0, 9)
+
 [node name="@CollisionShape2D@40" type="CollisionShape2D" parent="Mondo/PiantaBadge2/Collisione" unique_id=1873639191]
 position = Vector2(8, -13.5)
 shape = SubResource("RectangleShape2D_0jt0g")
@@ -1382,12 +1430,13 @@ centered = false
 offset = Vector2(0, -32)
 region_enabled = true
 region_rect = Rect2(96, 480, 32, 32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/CycletteDinamo" unique_id=1522150992]
 
 [node name="@CollisionShape2D@41" type="CollisionShape2D" parent="Mondo/CycletteDinamo/Collisione" unique_id=1040014275]
 position = Vector2(16, -12)
-shape = SubResource("RectangleShape2D_51mel")
+shape = SubResource("RectangleShape2D_gul0e")
 
 [node name="UsaCycletteDinamo" parent="Mondo" unique_id=1488878892 instance=ExtResource("posto_tscn")]
 position = Vector2(64, 100)
@@ -1396,47 +1445,12 @@ job = "dinamo"
 [node name="SportelloBadge" parent="Mondo" unique_id=1882302969 instance=ExtResource("booth_tscn")]
 position = Vector2(372, 78)
 
-[node name="ScaleSu" parent="Decori" instance=ExtResource("stairs_up_tscn")]
-position = Vector2(512, 48)
-target = "res://chapters/c2/sottoufficio.tscn"
-spawn = "from_below"
-need = "-4"
-
 [node name="Stellina" parent="Mondo" unique_id=1568763228 instance=ExtResource("stellina_tscn")]
 position = Vector2(80, 176)
 
 [node name="AscensoreOriginale" type="Node2D" parent="Mondo" unique_id=1137108137]
 position = Vector2(176, 16)
 script = ExtResource("19_kwl31")
-
-[node name="Telecamera_304" type="Sprite2D" parent="Mondo" unique_id=1967331536]
-position = Vector2(304, 24)
-texture = ExtResource("21_vse3m")
-centered = false
-region_enabled = true
-region_rect = Rect2(112, 0, 16, 16)
-script = ExtResource("cam_sc")
-z_index = 1
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_304" unique_id=358150557]
-position = Vector2(8, 40)
-script = ExtResource("7_i6r6f")
-
-[node name="Telecamera_496" type="Sprite2D" parent="Mondo" unique_id=659011511]
-position = Vector2(476, 18)
-texture = ExtResource("23_susag")
-centered = false
-region_enabled = true
-region_rect = Rect2(80, 0, 16, 16)
-script = ExtResource("cam_sc")
-z_index = 1
-facing = "left"
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_496" unique_id=1191374305]
-position = Vector2(8, 40)
-script = ExtResource("7_i6r6f")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=1574611149]
 
@@ -1452,13 +1466,12 @@ metadata/facing = "down"
 position = Vector2(504, 94)
 metadata/facing = "down"
 
-[node name="Inquadrature" type="Node2D" parent="."]
+[node name="Inquadrature" type="Node2D" parent="." unique_id=1407782813]
 
-[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=1994448893]
 position = Vector2(190, 112)
 script = ExtResource("inq_script")
 zoom = 1.875
 durata = 3.5
-durata_ritorno = 0.65
 
 [editable path="Mondo/UsaCycletteDinamo"]

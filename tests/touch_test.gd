@@ -331,14 +331,15 @@ func _run() -> void:
 	await _tap_at((m.call("_rate_row", 3) as Rect2).get_center())
 	_check(str(m.get("phase")) != "play", "la seconda commissione è la voce doppia: il minigioco finisce")
 
-	# --- Teo, LA PRATICA IMPOSSIBILE: tocca il tipo di problema giusto
+	# --- Teo, LA PRATICA IMPOSSIBILE: indica la riga che dimostra l'anomalia
 	m = await _help("pratiche")
 	var list: Array = GameState.bank["teo"]["pratiche"]
-	var wrong_type := (int(list[0]["tipo"]) + 1) % 5
-	await _tap_at((m.call("_pr_button", wrong_type) as Rect2).get_center())
-	_check(int(m.get("misses")) == 1 and int(m.get("pr_i")) == 0, "il tipo sbagliato dovrebbe essere un errore")
-	await _tap_at((m.call("_pr_button", int(list[0]["tipo"])) as Rect2).get_center())
-	_check(int(m.get("pr_i")) == 1, "il tipo giusto dovrebbe chiudere la pratica")
+	await _tap_at((m.call("_pr_row", 0) as Rect2).get_center())
+	_check(int(m.get("misses")) == 1 and int(m.get("pr_i")) == 0, "segnalare una riga pulita dovrebbe essere un errore")
+	await _tap_at((m.call("_pr_none_button") as Rect2).get_center())
+	_check(int(m.get("pr_i")) == 1, "NESSUNA ANOMALIA dovrebbe chiudere una pratica pulita")
+	await _tap_at((m.call("_pr_row", int(list[1]["riga"])) as Rect2).get_center())
+	_check(int(m.get("pr_i")) == 2, "toccare la riga sospetta dovrebbe trovare il doppione")
 
 	# --- lo sportello della Banca: APPROVA subito, RICHIEDI VERIFICA ci mette di più
 	w = await _work("sportello", {"job": {"pay_max": 1000, "duration": 45}})

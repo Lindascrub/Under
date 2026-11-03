@@ -822,16 +822,11 @@ func _test_chapter6() -> void:
 	# la musica: una scaletta, e alla fine della canzone ne parte un'altra (se le canzoni ci sono)
 	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):
 		Sound.music("festa")
-		_check(Sound.PLAYLISTS["festa"].size() == 1, "al Fondo una canzone sola")
-		# ogni piano, turno, persona e il capo: una canzone che non si sente da nessun'altra parte
+		for mood: String in ["festa", "attesa", "mercato", "banca", "citta", "quartiere", "cima", "presidente"]:
+			_check(Sound.PLAYLISTS[mood].size() >= 2, "%s cambia canzone invece di ripetere sempre la stessa" % mood)
+		# Ogni luogo, turno, persona e il Capo hanno brani propri: niente riciclo mascherato.
 		var seen := {}
 		for mood: String in Sound.PLAYLISTS:
-			if mood in ["epilogo", "battaglia", "tensione", "fondo", "notte"]:
-				continue
-			# scelte di Linda: una canzone sola per tutti i turni, una per tutti gli aiuti, e il capo
-			# ha quella della Città
-			if mood.begins_with("turno_") or mood.begins_with("aiuto") or mood in ["lavoro", "capo"]:
-				continue
 			for track: String in Sound.PLAYLISTS[mood]:
 				_check(not seen.has(track), "%s suona sia in %s che in %s" % [track, seen.get(track, ""), mood])
 				seen[track] = mood
@@ -841,13 +836,15 @@ func _test_chapter6() -> void:
 			var mus := str(GameState.npc_data(helper)["help"]["minigame"].get("music", ""))
 			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
 		Sound.music("cima")
-		_check(Sound.current_track() == "royal_castle", "alla Cima suona la sua canzone")
+		_check(Sound.current_track() in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")
 		# dove le canzoni sono più d'una (gli epiloghi), finita una ne parte un'altra
 		Sound.music("epilogo")
 		var first: String = Sound.current_track()
 		Sound.call("_on_music_finished")
 		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["epilogo"], "finita una canzone ne parte un'altra, diversa")
 		Sound.music("cima")
+	for effect: String in ["select_2", "confirm_2", "blocked", "collect_3", "computer_1", "chime"]:
+		_check(ResourceLoader.exists("res://audio/arcade/%s.wav" % effect), "effetto arcade importato: " + effect)
 	# la Presidente: STRAP, desiderio "origine", tre sezioni, perché, tre domande, l'offerta, il TURNO
 	director_plan = [
 		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}},

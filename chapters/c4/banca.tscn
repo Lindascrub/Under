@@ -1,87 +1,86 @@
-[gd_scene format=4 uid="uid://bnyjoalhujmve"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://ryrxk6041hoj" path="res://chapters/c4/banca_c4.gd" id="1_7cjwg"]
-[ext_resource type="TileSet" uid="uid://icpxarxxa543" path="res://world/tilesets/interni.tres" id="2_feh56"]
-[ext_resource type="Script" uid="uid://c273hyc3vo8ri" path="res://world/room_outline.gd" id="3_wkgms"]
-[ext_resource type="Texture2D" uid="uid://cxywpptenxn2r" path="res://art/c4/insegna_banca.png" id="4_gkrrw"]
-[ext_resource type="Texture2D" uid="uid://byc4l2ltylbqq" path="res://assets/limezu/tiles/generic.png" id="6_6d6qs"]
-[ext_resource type="Texture2D" uid="uid://b7kueas3c2o3d" path="res://assets/limezu/themes/hospital.png" id="7_4m25g"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="8_bhnu7"]
-[ext_resource type="Script" uid="uid://b3j0n0sj3kphd" path="res://world/char_sprite.gd" id="9_b8kf0"]
-[ext_resource type="Texture2D" uid="uid://co0m8ddyujwsy" path="res://art/c4/distributore_numeri.png" id="10_n8r3t"]
-[ext_resource type="Texture2D" uid="uid://dnxibmi2w54es" path="res://art/c4/terminale_conto.png" id="11_o03ey"]
-[ext_resource type="Texture2D" uid="uid://buq4rsa1xvay8" path="res://assets/limezu/grocery/451.png" id="12_14kcq"]
-[ext_resource type="Texture2D" uid="uid://bc231cevq0fwf" path="res://assets/limezu/grocery/449.png" id="13_gyq7i"]
-[ext_resource type="Texture2D" uid="uid://b8qbgsukf3kib" path="res://assets/limezu/themes/living_room.png" id="14_nu50v"]
-[ext_resource type="Shader" uid="uid://cxgayfxfeyo0q" path="res://shaders/greyscale.gdshader" id="14_rflng"]
-[ext_resource type="Texture2D" uid="uid://brbpi3o0jguo8" path="res://assets/limezu/characters/char_13.png" id="15_guiwc"]
-[ext_resource type="Texture2D" uid="uid://tu37m1rbt7ap" path="res://assets/limezu/grocery/450.png" id="15_x3rj1"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="16_vx0p1"]
-[ext_resource type="Texture2D" uid="uid://b4jt15c8s4tly" path="res://assets/limezu/themes/classroom.png" id="17_ekptw"]
-[ext_resource type="Texture2D" uid="uid://k3p2ag6mwfgr" path="res://assets/limezu/characters/char_18.png" id="17_wo38k"]
-[ext_resource type="Texture2D" uid="uid://08t832ab0xb4" path="res://assets/limezu/characters/char_20.png" id="18_g363w"]
-[ext_resource type="Texture2D" uid="uid://cxomb48xjc7qa" path="res://assets/limezu/characters/char_05.png" id="19_sffwg"]
-[ext_resource type="Texture2D" uid="uid://csi367g08f3ko" path="res://art/c4/terminale_rapporto.png" id="20_au7u7"]
-[ext_resource type="Script" uid="uid://br6k6k1xm6y31" path="res://world/room_feature.gd" id="21_gpl2i"]
-[ext_resource type="Texture2D" uid="uid://f1w58rtloi7i" path="res://assets/limezu/bank/Hospital_Singles_37.png" id="21_mfwve"]
-[ext_resource type="Texture2D" uid="uid://canmhdud6tp6e" path="res://assets/limezu/props/camera_right.png" id="21_wkgms"]
-[ext_resource type="Texture2D" uid="uid://d1brngqbicnjm" path="res://assets/limezu/bank/Hospital_Singles_50.png" id="22_pj7jm"]
-[ext_resource type="Texture2D" uid="uid://bb7sg78cghida" path="res://assets/limezu/props/camera_left.png" id="23_gkrrw"]
-[ext_resource type="Texture2D" uid="uid://ceuqqhjk184rf" path="res://assets/limezu/bank/Hospital_Singles_1.png" id="33_wvkii"]
-[ext_resource type="Texture2D" uid="uid://cey8mt5r6rnew" path="res://assets/limezu/bank/Hospital_Singles_2.png" id="34_63n3h"]
-[ext_resource type="Texture2D" uid="uid://c6klavapvnqv2" path="res://assets/limezu/bank/Hospital_Singles_3.png" id="35_d0kdd"]
-[ext_resource type="Texture2D" uid="uid://djmo35i3vsqgf" path="res://assets/limezu/bank/Hospital_Singles_4.png" id="36_4deln"]
-[ext_resource type="Texture2D" uid="uid://s4n0scosbicn" path="res://assets/limezu/bank/Hospital_Singles_26.png" id="37_rh8gc"]
-[ext_resource type="Texture2D" uid="uid://bfn87c8oahw1t" path="res://assets/limezu/characters/char_11.png" id="38_urdal"]
-[ext_resource type="Texture2D" uid="uid://bn20se4ucovlk" path="res://assets/limezu/bank/Hospital_Singles_20.png" id="39_n2t0j"]
-[ext_resource type="Texture2D" uid="uid://coutmm0jw6wl4" path="res://assets/limezu/bank/Hospital_Singles_51.png" id="40_s0qcs"]
-[ext_resource type="Texture2D" uid="uid://lm1vqaovc2jg" path="res://assets/limezu/bank/Hospital_Singles_112.png" id="41_dmf57"]
-[ext_resource type="Texture2D" uid="uid://cd8jutmv5uxjg" path="res://assets/limezu/bank/Hospital_Singles_119.png" id="42_plp74"]
-[ext_resource type="Texture2D" uid="uid://bauahsbxjqsw3" path="res://assets/limezu/bank/Hospital_Singles_126.png" id="43_i776y"]
-[ext_resource type="Texture2D" uid="uid://orf8te6w8xts" path="res://assets/limezu/bank/Hospital_Singles_134.png" id="44_84qwo"]
-[ext_resource type="Texture2D" uid="uid://dwvr02b87bvei" path="res://assets/limezu/bank/Hospital_Singles_135.png" id="45_joiwl"]
-[ext_resource type="Texture2D" uid="uid://c6xhxdntxk7uj" path="res://assets/limezu/bank/Conference_Hall_Singles_57.png" id="46_6784b"]
-[ext_resource type="Texture2D" uid="uid://djs7r8i4y38p0" path="res://assets/limezu/bank/Hospital_Singles_52.png" id="47_idjf4"]
-[ext_resource type="Texture2D" uid="uid://cgd0jhx5dlhxw" path="res://assets/limezu/bank/Hospital_Singles_57.png" id="48_hxls6"]
-[ext_resource type="Texture2D" uid="uid://dmc8c3hmx6sdq" path="res://assets/limezu/bank/Hospital_Singles_58.png" id="49_jl85r"]
-[ext_resource type="Texture2D" uid="uid://o6s361qt8tdk" path="res://assets/limezu/bank/Hospital_Singles_59.png" id="50_7f1uq"]
-[ext_resource type="Texture2D" uid="uid://7csjg15gx4uo" path="res://assets/limezu/bank/Hospital_Singles_60.png" id="51_mm37s"]
-[ext_resource type="Texture2D" uid="uid://dvx2w45ox3v5i" path="res://assets/limezu/bank/Hospital_Singles_61.png" id="52_db5wg"]
-[ext_resource type="Texture2D" uid="uid://d4jf5td26rl4v" path="res://assets/limezu/bank/Hospital_Singles_62.png" id="53_da00q"]
-[ext_resource type="Texture2D" uid="uid://bsm5wh2pimo41" path="res://assets/limezu/bank/Hospital_Singles_68.png" id="56_4o2d8"]
-[ext_resource type="Texture2D" uid="uid://ddhehikpstruo" path="res://assets/limezu/bank/Hospital_Singles_73.png" id="57_ngj3o"]
-[ext_resource type="Texture2D" uid="uid://bfkpsn771dwi7" path="res://assets/limezu/bank/Hospital_Singles_78.png" id="58_lamvu"]
-[ext_resource type="Texture2D" uid="uid://dgko2rx8h3ffg" path="res://assets/limezu/bank/Hospital_Singles_84.png" id="59_qjojs"]
-[ext_resource type="Texture2D" uid="uid://ie4qx0mqkckt" path="res://assets/limezu/bank/Hospital_Singles_90.png" id="60_rwk0b"]
-[ext_resource type="Texture2D" uid="uid://bsv20r2srkrv5" path="res://assets/limezu/bank/Hospital_Singles_114.png" id="61_uu2f0"]
-[ext_resource type="Texture2D" uid="uid://c0iueidn46h44" path="res://assets/limezu/bank/Hospital_Singles_117.png" id="62_go30u"]
-[ext_resource type="Texture2D" uid="uid://ewvb644vu3ps" path="res://assets/limezu/bank/Hospital_Singles_127.png" id="63_dfaup"]
-[ext_resource type="Texture2D" uid="uid://cir1fdohguqwt" path="res://assets/limezu/characters/char_03.png" id="63_g363w"]
-[ext_resource type="Texture2D" uid="uid://d310o8fbthm8j" path="res://assets/limezu/bank/Hospital_Singles_130.png" id="64_q08wn"]
-[ext_resource type="Texture2D" uid="uid://ceos4au2iat3m" path="res://assets/limezu/characters/char_07.png" id="64_sffwg"]
-[ext_resource type="Texture2D" uid="uid://bd8qewna60hw4" path="res://assets/limezu/bank/Basement_Singles_228.png" id="65_3u6is"]
-[ext_resource type="Texture2D" uid="uid://cjx0ed66bgso4" path="res://assets/limezu/characters/char_14.png" id="65_mfwve"]
-[ext_resource type="Texture2D" uid="uid://dnyusqk6npjol" path="res://assets/limezu/bank/Basement_Singles_227.png" id="66_kw4i6"]
-[ext_resource type="Texture2D" uid="uid://bf0ov7yyp7l8y" path="res://assets/limezu/characters/char_12.png" id="66_pj7jm"]
-[ext_resource type="Texture2D" uid="uid://c31bk2dc7yycy" path="res://assets/limezu/characters/char_09.png" id="67_wvkii"]
+[ext_resource type="Script" path="res://chapters/c4/banca_c4.gd" id="1_7cjwg"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_feh56"]
+[ext_resource type="Script" path="res://world/room_outline.gd" id="3_wkgms"]
+[ext_resource type="Texture2D" path="res://art/c4/insegna_banca.png" id="4_gkrrw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="6_6d6qs"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/hospital.png" id="7_4m25g"]
+[ext_resource type="Script" path="res://world/examine.gd" id="8_bhnu7"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="9_b8kf0"]
+[ext_resource type="Texture2D" path="res://art/c4/distributore_numeri.png" id="10_n8r3t"]
+[ext_resource type="Texture2D" path="res://art/c4/terminale_conto.png" id="11_o03ey"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/451.png" id="12_14kcq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/449.png" id="13_gyq7i"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/living_room.png" id="14_nu50v"]
+[ext_resource type="Shader" path="res://shaders/greyscale.gdshader" id="14_rflng"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_13.png" id="15_guiwc"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/450.png" id="15_x3rj1"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="16_vx0p1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/classroom.png" id="17_ekptw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_18.png" id="17_wo38k"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_20.png" id="18_g363w"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_05.png" id="19_sffwg"]
+[ext_resource type="Texture2D" path="res://art/c4/terminale_rapporto.png" id="20_au7u7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_37.png" id="21_mfwve"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_right.png" id="21_wkgms"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_50.png" id="22_pj7jm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_left.png" id="23_gkrrw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_1.png" id="33_wvkii"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_2.png" id="34_63n3h"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_3.png" id="35_d0kdd"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_4.png" id="36_4deln"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_26.png" id="37_rh8gc"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_11.png" id="38_urdal"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_20.png" id="39_n2t0j"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_51.png" id="40_s0qcs"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_112.png" id="41_dmf57"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_119.png" id="42_plp74"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_126.png" id="43_i776y"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_134.png" id="44_84qwo"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_135.png" id="45_joiwl"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Conference_Hall_Singles_57.png" id="46_6784b"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_52.png" id="47_idjf4"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_57.png" id="48_hxls6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_58.png" id="49_jl85r"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_59.png" id="50_7f1uq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_60.png" id="51_mm37s"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_61.png" id="52_db5wg"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_62.png" id="53_da00q"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_68.png" id="56_4o2d8"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_73.png" id="57_ngj3o"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_78.png" id="58_lamvu"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_84.png" id="59_qjojs"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_90.png" id="60_rwk0b"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_114.png" id="61_uu2f0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_117.png" id="62_go30u"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_127.png" id="63_dfaup"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_03.png" id="63_g363w"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_130.png" id="64_q08wn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_07.png" id="64_sffwg"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Basement_Singles_228.png" id="65_3u6is"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_14.png" id="65_mfwve"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Basement_Singles_227.png" id="66_kw4i6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_12.png" id="66_pj7jm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_09.png" id="67_wvkii"]
 [ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="Script" uid="uid://c1a41vjnt4y4t" path="res://world/security_camera.gd" id="cam_sc"]
-[ext_resource type="Script" uid="uid://e5xvd76qibjb" path="res://world/number_display.gd" id="Script_numero_servito"]
+[ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Script" path="res://world/number_display.gd" id="Script_numero_servito"]
+[ext_resource type="PackedScene" path="res://world/serranda.tscn" id="serranda_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
-[ext_resource type="PackedScene" path="res://world/serranda.tscn" id="serranda_tscn"]
-[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
-[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_eshio"]
 size = Vector2(32, 16)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vouie"]
-size = Vector2(44, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pj7jm"]
+size = Vector2(44, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_06yal"]
-size = Vector2(44, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wvkii"]
+size = Vector2(44, 6)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a28io"]
 size = Vector2(12, 8)
@@ -2806,8 +2805,8 @@ size = Vector2(16, 16)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4m25g"]
 size = Vector2(30, 20)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bhnu7"]
-size = Vector2(31, 22.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_63n3h"]
+size = Vector2(32, 24.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d3uj0_Merendine"]
 size = Vector2(28, 7)
@@ -2851,14 +2850,14 @@ size = Vector2(12, 6)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sffwg"]
 size = Vector2(12, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mfwve"]
-size = Vector2(28, 8)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_d0kdd"]
+size = Vector2(28, 10)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pj7jm"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4deln"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4deln_Leggio"]
-size = Vector2(28, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_urdal"]
+size = Vector2(15, 9)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rh8gc"]
 size = Vector2(12, 8)
@@ -3553,16 +3552,22 @@ size = Vector2(21, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_14x7"]
 size = Vector2(14, 7)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n2t0j"]
+size = Vector2(14, 14)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_27x12"]
 size = Vector2(27, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_13x12"]
 size = Vector2(13, 12)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_20x12"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s0qcs"]
 size = Vector2(20, 12)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_22x12"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dmf57"]
+size = Vector2(22, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plp74"]
 size = Vector2(22, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile_9x7"]
@@ -6898,6 +6903,12 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i776y"]
+size = Vector2(9, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_84qwo"]
+size = Vector2(8, 5)
+
 [node name="Banca" type="Node2D" unique_id=279209491]
 script = ExtResource("1_7cjwg")
 room_music = "banca"
@@ -6932,7 +6943,7 @@ position = Vector2(560, 53)
 target = "res://scenes/world/office.tscn"
 need = "0"
 
-[node name="LettoreBadge" type="Sprite2D" parent="Decori"]
+[node name="LettoreBadge" type="Sprite2D" parent="Decori" unique_id=1760759737]
 position = Vector2(601, 44)
 texture = ExtResource("22_pj7jm")
 metadata/prop_talk_skip = true
@@ -6944,10 +6955,12 @@ target = "res://chapters/c3/mercato.tscn"
 [node name="BasementSingles227" type="Sprite2D" parent="Decori" unique_id=851132307]
 position = Vector2(347, 158)
 texture = ExtResource("66_kw4i6")
+metadata/calpestabile = true
 
 [node name="BasementSingles228" type="Sprite2D" parent="Decori" unique_id=1787338602]
 position = Vector2(378, 158)
 texture = ExtResource("65_3u6is")
+metadata/calpestabile = true
 
 [node name="TappetoMarrone0" type="Sprite2D" parent="Decori" unique_id=1332843017]
 position = Vector2(196, 104)
@@ -6955,6 +6968,7 @@ texture = ExtResource("6_6d6qs")
 centered = false
 region_enabled = true
 region_rect = Rect2(144, 400, 32, 64)
+metadata/calpestabile = true
 
 [node name="TappetoMarrone1" type="Sprite2D" parent="Decori" unique_id=546179532]
 position = Vector2(408, 104)
@@ -6962,6 +6976,7 @@ texture = ExtResource("6_6d6qs")
 centered = false
 region_enabled = true
 region_rect = Rect2(144, 400, 32, 64)
+metadata/calpestabile = true
 
 [node name="TappetoMarrone2" type="Sprite2D" parent="Decori" unique_id=695141717]
 position = Vector2(300, 92)
@@ -6969,6 +6984,7 @@ texture = ExtResource("6_6d6qs")
 centered = false
 region_enabled = true
 region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
 
 [node name="TappetoMarrone3" type="Sprite2D" parent="Decori" unique_id=861654323]
 position = Vector2(264, 186)
@@ -6976,6 +6992,46 @@ texture = ExtResource("6_6d6qs")
 centered = false
 region_enabled = true
 region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
+
+[node name="HospitalSingles52" type="Sprite2D" parent="Decori" unique_id=999922996]
+position = Vector2(455, 58)
+texture = ExtResource("47_idjf4")
+
+[node name="HospitalSingles69" type="Sprite2D" parent="Decori" unique_id=345938541]
+position = Vector2(200, 32)
+texture = ExtResource("56_4o2d8")
+
+[node name="Telecamera_320" type="Sprite2D" parent="Decori" unique_id=57453554]
+position = Vector2(320, 28)
+texture = ExtResource("21_wkgms")
+centered = false
+region_enabled = true
+region_rect = Rect2(96, 0, 16, 16)
+script = ExtResource("cam_sc")
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_320" unique_id=56371221]
+position = Vector2(8, 40)
+script = ExtResource("8_bhnu7")
+lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
+lines_after = PackedStringArray()
+
+[node name="Telecamera_608" type="Sprite2D" parent="Decori" unique_id=1887788358]
+position = Vector2(600, 20)
+texture = ExtResource("23_gkrrw")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+script = ExtResource("cam_sc")
+facing = "left"
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_608" unique_id=1296547532]
+position = Vector2(8, 40)
+script = ExtResource("8_bhnu7")
+lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
+lines_after = PackedStringArray()
 
 [node name="Mondo" type="Node2D" parent="." unique_id=2056967318]
 y_sort_enabled = true
@@ -7022,12 +7078,13 @@ centered = false
 offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(208, 368, 48, 16)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cordone0" unique_id=1400424650]
 
 [node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/Cordone0/Collisione" unique_id=603494608]
-position = Vector2(24, -2)
-shape = SubResource("RectangleShape2D_vouie")
+position = Vector2(24, -3)
+shape = SubResource("RectangleShape2D_pj7jm")
 
 [node name="Cordone1" type="Sprite2D" parent="Mondo" unique_id=59718801]
 position = Vector2(309, 121)
@@ -7036,12 +7093,13 @@ centered = false
 offset = Vector2(0, -16)
 region_enabled = true
 region_rect = Rect2(208, 368, 48, 16)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cordone1" unique_id=1052352148]
 
 [node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/Cordone1/Collisione" unique_id=1644749433]
-position = Vector2(24, -2)
-shape = SubResource("RectangleShape2D_06yal")
+position = Vector2(24, -3)
+shape = SubResource("RectangleShape2D_wvkii")
 
 [node name="Distributore" type="Sprite2D" parent="Mondo" unique_id=1244451225]
 position = Vector2(284, 115)
@@ -7241,18 +7299,8 @@ metadata/footprint_applied = true
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Divano1" unique_id=1171855055]
 
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Divano1/Collisione" unique_id=2078485284]
-position = Vector2(16, -13)
-shape = SubResource("RectangleShape2D_bhnu7")
-
-[node name="HospitalSingles37" type="Sprite2D" parent="Mondo/Divano1/Collisione" unique_id=566022780]
-light_mask = 5
-z_index = 1
-position = Vector2(-19, 13)
-texture = ExtResource("21_mfwve")
-
-[node name="HospitalSingles50" type="Sprite2D" parent="Mondo/Divano1/Collisione" unique_id=88540501]
-position = Vector2(409, 64)
-texture = ExtResource("22_pj7jm")
+position = Vector2(16, -12.125)
+shape = SubResource("RectangleShape2D_63n3h")
 
 [node name="Merendine" type="Sprite2D" parent="Mondo" unique_id=126314338]
 position = Vector2(68, 55)
@@ -7476,13 +7524,14 @@ position = Vector2(138, 88)
 texture = ExtResource("15_x3rj1")
 centered = false
 offset = Vector2(0, -27)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaAttesa" unique_id=709776354]
 position = Vector2(0, 5)
 
 [node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Mondo/PiantaAttesa/Collisione" unique_id=1196875543]
-position = Vector2(16, -9)
-shape = SubResource("RectangleShape2D_mfwve")
+position = Vector2(16, -10)
+shape = SubResource("RectangleShape2D_d0kdd")
 
 [node name="Olga" type="Node2D" parent="Mondo" unique_id=2097031885]
 position = Vector2(136, 126)
@@ -7495,13 +7544,14 @@ position = Vector2(463, 112)
 texture = ExtResource("13_gyq7i")
 centered = false
 offset = Vector2(0, -23)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaUfficio" unique_id=1095867226]
 position = Vector2(0, 9)
 
 [node name="@CollisionShape2D@51" type="CollisionShape2D" parent="Mondo/PiantaUfficio/Collisione" unique_id=1784898285]
 position = Vector2(8, -13)
-shape = SubResource("RectangleShape2D_pj7jm")
+shape = SubResource("RectangleShape2D_4deln")
 
 [node name="GuardaArchivio" type="Node2D" parent="Mondo" unique_id=969913198]
 position = Vector2(568, 206)
@@ -7525,13 +7575,14 @@ centered = false
 offset = Vector2(0, -34)
 region_enabled = true
 region_rect = Rect2(224, 232, 32, 40)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Leggio" unique_id=691234720]
 position = Vector2(0, 6)
 
 [node name="@CollisionShape2D@55" type="CollisionShape2D" parent="Mondo/Leggio/Collisione" unique_id=1100819796]
-position = Vector2(16, -8)
-shape = SubResource("RectangleShape2D_4deln_Leggio")
+position = Vector2(16.5, -10.5)
+shape = SubResource("RectangleShape2D_urdal")
 
 [node name="GuardaLeggio" type="Node2D" parent="Mondo" unique_id=1314960049]
 position = Vector2(600, 216)
@@ -7575,48 +7626,13 @@ position = Vector2(16, 8)
 
 [node name="Targhetta" parent="Mondo/PostoSportello" index="1"]
 offset_left = 3.0
-offset_top = -22.0
 offset_right = 29.0
-offset_bottom = -10.0
 
 [node name="SportelloBadge" parent="Mondo" unique_id=448368885 instance=ExtResource("booth_tscn")]
 position = Vector2(464, 78)
 
 [node name="Stellina" parent="Mondo" unique_id=2096335280 instance=ExtResource("stellina_tscn")]
 position = Vector2(384, 208)
-
-[node name="Telecamera_320" type="Sprite2D" parent="Mondo" unique_id=57453554]
-z_index = 1
-position = Vector2(320, 28)
-texture = ExtResource("21_wkgms")
-centered = false
-region_enabled = true
-region_rect = Rect2(96, 0, 16, 16)
-script = ExtResource("cam_sc")
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_320" unique_id=56371221]
-position = Vector2(8, 40)
-script = ExtResource("8_bhnu7")
-lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
-lines_after = PackedStringArray()
-
-[node name="Telecamera_608" type="Sprite2D" parent="Mondo" unique_id=1887788358]
-z_index = 1
-position = Vector2(600, 20)
-texture = ExtResource("23_gkrrw")
-centered = false
-region_enabled = true
-region_rect = Rect2(96, 0, 16, 16)
-script = ExtResource("cam_sc")
-facing = "left"
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_608" unique_id=1296547532]
-position = Vector2(8, 40)
-script = ExtResource("8_bhnu7")
-lines = PackedStringArray("* Una telecamera. La lucina rossa lampeggia.", "* Da qualche parte, ai piani alti, qualcuno ti sta guardando.")
-lines_after = PackedStringArray()
 
 [node name="Bancone1" type="Node2D" parent="Mondo" unique_id=1890125856]
 
@@ -7857,8 +7873,8 @@ offset = Vector2(0, -8)
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ConferenceHallSingles64" unique_id=960627576]
 
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/ConferenceHallSingles64/Collisione" unique_id=893481818]
-position = Vector2(0, -3.5)
-shape = SubResource("RectangleShape2D_mobile_14x7")
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_n2t0j")
 
 [node name="HospitalSingles57" type="Sprite2D" parent="Mondo" unique_id=144408456]
 position = Vector2(584, 162)
@@ -8073,34 +8089,37 @@ shape = SubResource("RectangleShape2D_mobile_21x12")
 position = Vector2(122, 160)
 texture = ExtResource("63_dfaup")
 offset = Vector2(0, -6)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/HospitalSingles127" unique_id=100686342]
 
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/HospitalSingles127/Collisione" unique_id=1054738913]
 position = Vector2(0, -6)
-shape = SubResource("RectangleShape2D_mobile_20x12")
+shape = SubResource("RectangleShape2D_s0qcs")
 
 [node name="HospitalSingles130" type="Sprite2D" parent="Mondo" unique_id=2073812285]
 position = Vector2(54, 210)
 texture = ExtResource("64_q08wn")
 offset = Vector2(0, -6)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/HospitalSingles130" unique_id=365779575]
 
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/HospitalSingles130/Collisione" unique_id=807683988]
 position = Vector2(1, -6)
-shape = SubResource("RectangleShape2D_mobile_22x12")
+shape = SubResource("RectangleShape2D_dmf57")
 
 [node name="HospitalSingles131" type="Sprite2D" parent="Mondo" unique_id=1633649785]
 position = Vector2(122, 210)
 texture = ExtResource("64_q08wn")
 offset = Vector2(0, -6)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/HospitalSingles131" unique_id=764418671]
 
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/HospitalSingles131/Collisione" unique_id=868354632]
 position = Vector2(1, -6)
-shape = SubResource("RectangleShape2D_mobile_22x12")
+shape = SubResource("RectangleShape2D_plp74")
 
 [node name="HospitalSingles73" type="Sprite2D" parent="Mondo" unique_id=1140636159]
 position = Vector2(618, 88)
@@ -8206,36 +8225,58 @@ sheet = "rpg_vx2_2"
 anim = "idle_up"
 nudge = Vector2(0, 4)
 
-[node name="Serranda" parent="Mondo" instance=ExtResource("serranda_tscn")]
+[node name="Serranda" parent="Mondo" unique_id=1387951791 instance=ExtResource("serranda_tscn")]
 position = Vector2(448, 64)
 
-[node name="ScenaSegreta" type="Node2D" parent="Mondo"]
+[node name="ScenaSegreta" type="Node2D" parent="Mondo" unique_id=1825761369]
 y_sort_enabled = true
 
-[node name="SedutoTeo" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta"]
+[node name="SedutoTeo" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta" unique_id=1892520372]
 position = Vector2(26, 90)
 centered = false
 offset = Vector2(-8, -38)
 script = ExtResource("9_b8kf0")
 sheet = "cheap_teo"
-anim = "idle_down"
 nudge = Vector2(0, -7)
 person = "teo"
 grey = true
 
-[node name="SedutaOlga" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta"]
+[node name="SedutaOlga" type="AnimatedSprite2D" parent="Mondo/ScenaSegreta" unique_id=1579126280]
 position = Vector2(42, 90)
 centered = false
 offset = Vector2(-8, -38)
 script = ExtResource("9_b8kf0")
 sheet = "cheap_olga"
-anim = "idle_down"
 nudge = Vector2(0, -7)
 person = "olga"
 grey = true
 
-[node name="Guarda" type="Marker2D" parent="Mondo/ScenaSegreta"]
+[node name="Guarda" type="Marker2D" parent="Mondo/ScenaSegreta" unique_id=782782787]
 position = Vector2(34, 98)
+
+[node name="HospitalSingles37" type="Sprite2D" parent="Mondo" unique_id=566022780]
+light_mask = 5
+position = Vector2(62, 103)
+texture = ExtResource("21_mfwve")
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/HospitalSingles37" unique_id=493531476]
+
+[node name="Base" type="CollisionShape2D" parent="Mondo/HospitalSingles37/Collisione" unique_id=1607437443]
+position = Vector2(-0.5, -1)
+shape = SubResource("RectangleShape2D_i776y")
+
+[node name="HospitalSingles50" type="Sprite2D" parent="Mondo" unique_id=88540501]
+position = Vector2(490, 160)
+texture = ExtResource("22_pj7jm")
+offset = Vector2(0, -6)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/HospitalSingles50" unique_id=833075845]
+
+[node name="Base" type="CollisionShape2D" parent="Mondo/HospitalSingles50/Collisione" unique_id=1623525585]
+position = Vector2(0, -2.5)
+shape = SubResource("RectangleShape2D_84qwo")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=1858085897]
 
@@ -8243,25 +8284,15 @@ position = Vector2(34, 98)
 position = Vector2(312, 206)
 metadata/facing = "up"
 
-[node name="HospitalSingles52" type="Sprite2D" parent="." unique_id=999922996]
-z_index = 1
-position = Vector2(455, 58)
-texture = ExtResource("47_idjf4")
+[node name="Inquadrature" type="Node2D" parent="." unique_id=1698364663]
 
-[node name="HospitalSingles69" type="Sprite2D" parent="." unique_id=345938541]
-position = Vector2(200, 32)
-texture = ExtResource("56_4o2d8")
-
-[node name="Inquadrature" type="Node2D" parent="."]
-
-[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=352629975]
 position = Vector2(320, 120)
 script = ExtResource("inq_script")
 zoom = 1.3235
 durata = 3.5
-durata_ritorno = 0.65
 
-[node name="SalutoTeo" type="Marker2D" parent="Inquadrature"]
+[node name="SalutoTeo" type="Marker2D" parent="Inquadrature" unique_id=1527139725]
 position = Vector2(488, 200)
 script = ExtResource("inq_script")
 zoom = 2.5
@@ -8269,7 +8300,7 @@ durata = 0.6
 durata_ritorno = 0.6
 velocita_inseguimento = 5.0
 
-[node name="SalutoOlga" type="Marker2D" parent="Inquadrature"]
+[node name="SalutoOlga" type="Marker2D" parent="Inquadrature" unique_id=818436849]
 position = Vector2(136, 110)
 script = ExtResource("inq_script")
 zoom = 2.5
@@ -8277,24 +8308,24 @@ durata = 0.8
 durata_ritorno = 0.6
 velocita_inseguimento = 5.0
 
-[node name="Punti" type="Node2D" parent="."]
+[node name="Punti" type="Node2D" parent="." unique_id=1130346055]
 
-[node name="UscitaOlga" type="Marker2D" parent="Punti"]
+[node name="UscitaOlga" type="Marker2D" parent="Punti" unique_id=1030714775]
 position = Vector2(184, 190)
 
-[node name="ArrivoSaluti" type="Marker2D" parent="Punti"]
+[node name="ArrivoSaluti" type="Marker2D" parent="Punti" unique_id=646481500]
 position = Vector2(470, 150)
 
-[node name="SalutoTeo" type="Marker2D" parent="Punti"]
+[node name="SalutoTeo" type="Marker2D" parent="Punti" unique_id=1411986888]
 position = Vector2(596, 80)
 
-[node name="SalutoOlga" type="Marker2D" parent="Punti"]
+[node name="SalutoOlga" type="Marker2D" parent="Punti" unique_id=1098420360]
 position = Vector2(552, 84)
 
-[node name="DietroTeo" type="Marker2D" parent="Punti"]
+[node name="DietroTeo" type="Marker2D" parent="Punti" unique_id=787853821]
 position = Vector2(424, 76)
 
-[node name="DietroOlga" type="Marker2D" parent="Punti"]
+[node name="DietroOlga" type="Marker2D" parent="Punti" unique_id=130752334]
 position = Vector2(410, 90)
 
 [editable path="Mondo/PostoSportello"]

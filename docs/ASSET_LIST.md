@@ -102,38 +102,43 @@ Canzoni vere da due pacchetti in `../music/` (accanto al progetto): **28 High Qu
 **Gli zip non contengono una licenza**: prima di pubblicare il gioco va controllata sulla pagina da cui sono stati
 scaricati (uso commerciale, obbligo di citare l'autore nei titoli).
 
-Ogni piano ha una canzone sua (lo controlla lo smoke test); turni, minigiochi d'aiuto e capo possono condividerla. Una canzone sola si ripete; dove ce ne sono di più, finita una ne parte un'altra
-(`autoload/sound.gd`, `PLAYLISTS`). Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
+I luoghi in cui si resta a lungo hanno almeno due canzoni: finita una ne parte un'altra senza ripetere
+quella appena ascoltata (`autoload/sound.gd`, `PLAYLISTS`). Turni, aiuti e Capo hanno invece identità
+distinte e brevi. Se i file mancano, si sentono i vecchi segnaposto `audio/music_*.wav`.
+
+Gli effetti in `audio/arcade/` provengono da `Arcade_Sound_FX.zip` scaricato il 3 novembre 2026.
+Sono usati nei minigiochi per movimento, conferma, errore, raccolta, computer e completamento.
+La licenza del pacchetto non era inclusa nello zip e va verificata prima della pubblicazione.
 
 | Atmosfera | Dove | Canzoni |
 |---|---|---|
-| `festa` | Fondo (-5) | GettinSillyWithIt |
-| `attesa` | Sottoufficio (-4) | Super Retro Lounge |
-| `mercato` | Mercato (-3) | Waiting Room Ennui |
-| `banca` | Banca (-2) | Vacation Day (ADVENTURE) |
-| `citta` | Città (0) | MetropolitanCosmopolitan |
-| `quartiere` | Casa Comune, stanze di prima | Wood Forest Town |
-| `cima` | Cima | Royal Castle |
-| `presidente` | Direzione | Magic Temple |
-| `ascensore` | Gli ascensori | NightTownWaltz |
+| `festa` | Fondo (-5) | GettinSillyWithIt, GettinWackyWithIt |
+| `attesa` | Sottoufficio (-4) | Super Retro Lounge, Soundfont Jazz Club |
+| `mercato` | Mercato (-3) | Waiting Room Ennui, Market Jam |
+| `banca` | Banca (-2) | Vacation Day (ADVENTURE), Tracer Bullet Private Eye |
+| `citta` | Città (0) | MetropolitanCosmopolitan, East Town |
+| `quartiere` | Casa Comune, stanze di prima | Wood Forest Town, Peaceful Village |
+| `cima` | Cima | Royal Castle, The Old Magician |
+| `presidente` | Direzione | Magic Temple, Ancient Library |
+| `ascensore` | Gli ascensori | Hypnotic Synth Loop |
 | `turno_dinamo` | TURNO del -5 (cyclette) | PkmnGoldLuckyCorner |
 | `turno_callcenter` | TURNO del -4 (call center) | Sugar Rush (ZOOMIES) |
 | `turno_cassa` | TURNO del -3 (cassa) | Life Is Hard (BASE) |
 | `turno_sportello` | TURNO del -2 (sportello) | Alley Cat (DUMPSTER PARTY) |
-| `turno_smistamento` | TURNO dello 0 (smistamento) | PkmnGoldLuckyCorner |
-| `lavoro` | Gli altri turni | PkmnGoldLuckyCorner |
-| `capo` | Il capo: quando telefona, il furto che ti chiede, il suo ufficio | MetropolitanCosmopolitan |
+| `turno_smistamento` | TURNO dello 0 (smistamento) | Dark Factory |
+| `lavoro` | Gli altri turni | Porky Minch Type Beat |
+| `capo` | Il capo: quando telefona, il furto che ti chiede, il suo ufficio | Malicious Scheme, Military Base |
 | `aiuto_mina` | Minigiochi di Mina | He Will Never Be The Ape |
-| `aiuto_bulbo` | Minigiochi di Bulbo | He Will Never Be The Ape |
+| `aiuto_bulbo` | Minigiochi di Bulbo | Goofy Monster |
 | `aiuto_tilde` | Minigiochi di Tilde | Jester's Distraction |
-| `aiuto_ercole` | Minigiochi di Ercole | Jester's Distraction |
+| `aiuto_ercole` | Minigiochi di Ercole | Dwarven Mine |
 | `aiuto_leda` | Minigiochi di Leda | Mischief (GROOVE) |
-| `aiuto_amir` | Minigiochi di Amir | Mischief (GROOVE) |
+| `aiuto_amir` | Minigiochi di Amir | Traveling the Sky |
 | `aiuto_olga` | Minigiochi di Olga | Distant Skyline (CITY LIGHTS) |
-| `aiuto_teo` | Minigiochi di Teo | Distant Skyline (CITY LIGHTS) |
-| `aiuto_ada` | Minigiochi di Ada | He Will Never Be The Ape |
-| `aiuto_nadir` | Minigiochi di Nadir | He Will Never Be The Ape |
-| `aiuto` | Minigiochi d'aiuto della versione precedente | He Will Never Be The Ape |
+| `aiuto_teo` | Minigiochi di Teo | Sly Cooper Clarinet |
+| `aiuto_ada` | Minigiochi di Ada | Trunk Knox Go Buck |
+| `aiuto_nadir` | Minigiochi di Nadir | Unknown Island |
+| `aiuto` | Minigiochi d'aiuto della versione precedente | Volcanic Crater |
 | `titolo` | Schermata iniziale | Frosty Laboratory |
 | `epilogo` | Epiloghi e titoli | Long Journey, Holy Sanctuary, Melancholic Bittersweet Groovy Cave Journey |
 | `notte` | La notte | NightTownWaltz |

@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" path="res://art/c6/finestra_panorama.png" id="7_h8ct1"]
 [ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="8_kw2m7"]
 [ext_resource type="Script" path="res://world/examine.gd" id="9_aqhgw"]
-[ext_resource type="Script" path="res://world/room_feature.gd" id="10_jseg7"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/boxes_small.png" id="12_rfblm"]
 [ext_resource type="Texture2D" path="res://art/c6/scrivania_presidenza.png" id="13_mbsow"]
 [ext_resource type="Texture2D" path="res://art/c6/cartellina_obbligo.png" id="14_f3twc"]
@@ -22,37 +21,36 @@
 [ext_resource type="Texture2D" path="res://assets/limezu/props/trash.png" id="21_pjcvb"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/palm.png" id="22_kc68t"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/lamp.png" id="23_l6d22"]
-[ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="Texture_bici_originale"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
-[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="Texture_bici_originale"]
 [ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_126.png" id="tex_stampante"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_f7vec"]
-size = Vector2(19, 6)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b7el1"]
+size = Vector2(19, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hojh2"]
-size = Vector2(19, 6)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ntyyj"]
+size = Vector2(19, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nyrlc"]
 size = Vector2(28, 10)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ju6wo"]
-size = Vector2(12, 6)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5m67u"]
+size = Vector2(14, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uiv8x"]
 size = Vector2(62, 24)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_stampante"]
-size = Vector2(30, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wpuuv"]
+size = Vector2(30, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_42ej2"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_khrlh"]
-size = Vector2(19, 6)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h8ct1"]
+size = Vector2(19, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_r33sa"]
-size = Vector2(28, 12)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kw2m7"]
+size = Vector2(32, 23)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0trnd"]
 size = Vector2(12, 6)
@@ -66,20 +64,14 @@ size = Vector2(12, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gy7x6"]
 size = Vector2(12, 4)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ujxw"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aqhgw"]
 size = Vector2(28, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_b6ch2"]
-size = Vector2(12, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jseg7"]
+size = Vector2(13, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_on7c4"]
-size = Vector2(19, 6)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ju6wo_ScatoleDinamo"]
-size = Vector2(12, 4)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_b6ch2_Lampada"]
-size = Vector2(12, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o0lts"]
+size = Vector2(19, 8)
 
 [node name="Cima" type="Node2D" unique_id=1858792568]
 script = ExtResource("1_uiv8x")
@@ -97,56 +89,48 @@ tile_set = ExtResource("2_0rdvt")
 [node name="Decori" type="Node2D" parent="." unique_id=2062303982]
 
 [node name="InsegnaAscensore" type="Sprite2D" parent="Decori" unique_id=436555539]
-z_index = 1
 position = Vector2(24, 108)
 texture = ExtResource("3_b7el1")
 centered = false
 offset = Vector2(0, -12)
 
 [node name="SpecchioAscensore" type="Sprite2D" parent="Decori" unique_id=1218001482]
-z_index = 1
 position = Vector2(40, 128)
 texture = ExtResource("4_ntyyj")
 centered = false
 offset = Vector2(0, -32)
 
 [node name="Specchio0" type="Sprite2D" parent="Decori" unique_id=1388437387]
-z_index = 1
 position = Vector2(144, 144)
 texture = ExtResource("5_5m67u")
 centered = false
 offset = Vector2(0, -24)
 
 [node name="Specchio1" type="Sprite2D" parent="Decori" unique_id=923120510]
-z_index = 1
 position = Vector2(224, 144)
 texture = ExtResource("5_5m67u")
 centered = false
 offset = Vector2(0, -24)
 
 [node name="Specchio2" type="Sprite2D" parent="Decori" unique_id=291313780]
-z_index = 1
 position = Vector2(304, 144)
 texture = ExtResource("5_5m67u")
 centered = false
 offset = Vector2(0, -24)
 
 [node name="Ritratto0" type="Sprite2D" parent="Decori" unique_id=2107416411]
-z_index = 1
 position = Vector2(176, 140)
 texture = ExtResource("6_wpuuv")
 centered = false
 offset = Vector2(0, -32)
 
 [node name="Ritratto1" type="Sprite2D" parent="Decori" unique_id=643411971]
-z_index = 1
 position = Vector2(256, 140)
 texture = ExtResource("6_wpuuv")
 centered = false
 offset = Vector2(0, -32)
 
 [node name="Finestra" type="Sprite2D" parent="Decori" unique_id=381532766]
-z_index = 1
 position = Vector2(496, 64)
 texture = ExtResource("7_h8ct1")
 centered = false
@@ -205,12 +189,13 @@ centered = false
 offset = Vector2(0, -31)
 region_enabled = true
 region_rect = Rect2(212, 408, 23, 31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/VasoCorridoio0" unique_id=1928168915]
 
 [node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/VasoCorridoio0/Collisione" unique_id=348167128]
-position = Vector2(11.5, -3)
-shape = SubResource("RectangleShape2D_f7vec")
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_b7el1")
 
 [node name="VasoCorridoio1" type="Sprite2D" parent="Mondo" unique_id=1762621420]
 position = Vector2(224, 208)
@@ -219,12 +204,13 @@ centered = false
 offset = Vector2(0, -31)
 region_enabled = true
 region_rect = Rect2(212, 408, 23, 31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/VasoCorridoio1" unique_id=2143757268]
 
 [node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/VasoCorridoio1/Collisione" unique_id=1270666505]
-position = Vector2(11.5, -3)
-shape = SubResource("RectangleShape2D_hojh2")
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_ntyyj")
 
 [node name="CycletteVecchia" type="Sprite2D" parent="Mondo" unique_id=1636198744]
 position = Vector2(260, 272)
@@ -252,12 +238,14 @@ position = Vector2(304, 298)
 texture = ExtResource("12_rfblm")
 centered = false
 offset = Vector2(0, -26)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScatoleDinamo" unique_id=18220448]
 position = Vector2(0, 6)
+
 [node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/ScatoleDinamo/Collisione" unique_id=308300106]
-position = Vector2(8, -8)
-shape = SubResource("RectangleShape2D_ju6wo_ScatoleDinamo")
+position = Vector2(8, -10)
+shape = SubResource("RectangleShape2D_5m67u")
 
 [node name="GuardaScatole" type="Node2D" parent="Mondo" unique_id=868069906]
 position = Vector2(312, 280)
@@ -285,17 +273,19 @@ metadata/footprint_applied = true
 position = Vector2(32, -12)
 shape = SubResource("RectangleShape2D_uiv8x")
 
-[node name="Stampante" type="Sprite2D" parent="Mondo"]
-position = Vector2(560, 128)
+[node name="Stampante" type="Sprite2D" parent="Mondo" unique_id=1618184071]
+position = Vector2(560, 118)
 texture = ExtResource("tex_stampante")
 centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -22)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/Stampante"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Stampante" unique_id=1658406950]
+position = Vector2(0, 10)
 
-[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Stampante/Collisione"]
-position = Vector2(16, -8)
-shape = SubResource("RectangleShape2D_stampante")
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/Stampante/Collisione" unique_id=1626832916]
+position = Vector2(16, -9)
+shape = SubResource("RectangleShape2D_wpuuv")
 
 [node name="Cartellina" type="Sprite2D" parent="Mondo" unique_id=2069813968]
 z_index = 1
@@ -345,24 +335,26 @@ centered = false
 offset = Vector2(0, -31)
 region_enabled = true
 region_rect = Rect2(212, 408, 23, 31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=1237179691]
 
 [node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=574643653]
-position = Vector2(11.5, -3)
-shape = SubResource("RectangleShape2D_khrlh")
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_h8ct1")
 
 [node name="ArchivioDebito" type="Sprite2D" parent="Mondo" unique_id=1629440954]
 position = Vector2(672, 96)
 texture = ExtResource("17_1mx4a")
 centered = false
 offset = Vector2(0, -40)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ArchivioDebito" unique_id=1308506450]
 
 [node name="@CollisionShape2D@28" type="CollisionShape2D" parent="Mondo/ArchivioDebito/Collisione" unique_id=54326767]
-position = Vector2(16, -6)
-shape = SubResource("RectangleShape2D_r33sa")
+position = Vector2(16, -11.5)
+shape = SubResource("RectangleShape2D_kw2m7")
 
 [node name="ApriArchivio" type="Node2D" parent="Mondo" unique_id=1408250942]
 position = Vector2(680, 104)
@@ -379,6 +371,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=1796169935]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=1950961793]
 position = Vector2(8, -10)
 shape = SubResource("RectangleShape2D_0trnd")
@@ -439,24 +432,28 @@ position = Vector2(704, 319)
 texture = ExtResource("22_kc68t")
 centered = false
 offset = Vector2(0, -31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Palma" unique_id=605029171]
 position = Vector2(0, 1)
+
 [node name="@CollisionShape2D@33" type="CollisionShape2D" parent="Mondo/Palma/Collisione" unique_id=381488819]
 position = Vector2(16, -4)
-shape = SubResource("RectangleShape2D_3ujxw")
+shape = SubResource("RectangleShape2D_aqhgw")
 
 [node name="Lampada" type="Sprite2D" parent="Mondo" unique_id=829894055]
 position = Vector2(656, 297)
 texture = ExtResource("23_l6d22")
 centered = false
 offset = Vector2(0, -41)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Lampada" unique_id=189095538]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@34" type="CollisionShape2D" parent="Mondo/Lampada/Collisione" unique_id=1041699944]
-position = Vector2(8, -9)
-shape = SubResource("RectangleShape2D_b6ch2_Lampada")
+position = Vector2(7.5, -11)
+shape = SubResource("RectangleShape2D_jseg7")
 
 [node name="Pianta2" type="Sprite2D" parent="Mondo" unique_id=1898463560]
 position = Vector2(608, 320)
@@ -465,12 +462,13 @@ centered = false
 offset = Vector2(0, -31)
 region_enabled = true
 region_rect = Rect2(212, 408, 23, 31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta2" unique_id=1444001903]
 
 [node name="@CollisionShape2D@35" type="CollisionShape2D" parent="Mondo/Pianta2/Collisione" unique_id=1402619846]
-position = Vector2(11.5, -3)
-shape = SubResource("RectangleShape2D_on7c4")
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_o0lts")
 
 [node name="GuardaSalotto" type="Node2D" parent="Mondo" unique_id=1197603592]
 position = Vector2(648, 280)
@@ -497,17 +495,17 @@ metadata/facing = "right"
 [node name="desk" type="Marker2D" parent="Arrivi" unique_id=1507420200]
 position = Vector2(520, 158)
 metadata/facing = "up"
-[node name="Posti" type="Node2D" parent="."]
 
-[node name="PostoScrivania" type="Marker2D" parent="Posti"]
+[node name="Posti" type="Node2D" parent="." unique_id=1620044182]
+
+[node name="PostoScrivania" type="Marker2D" parent="Posti" unique_id=251254645]
 position = Vector2(568, 142)
 
-[node name="PostoTavolo" type="Marker2D" parent="Posti"]
+[node name="PostoTavolo" type="Marker2D" parent="Posti" unique_id=407704185]
 position = Vector2(584, 254)
 
-[node name="PostoCapo" type="Marker2D" parent="Posti"]
+[node name="PostoCapo" type="Marker2D" parent="Posti" unique_id=538037169]
 position = Vector2(440, 190)
 
-[node name="PostoDinamo" type="Marker2D" parent="Posti"]
+[node name="PostoDinamo" type="Marker2D" parent="Posti" unique_id=1962171030]
 position = Vector2(328, 286)
-

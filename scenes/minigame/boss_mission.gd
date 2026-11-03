@@ -93,6 +93,20 @@ func _unhandled_input(event: InputEvent) -> void:
  if Ui.busy or finishing: return
  if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
   touch_point(event.position, 0)
+ elif floor == "-4" and selected <= 4 and (event.is_action_pressed("move_up") or event.is_action_pressed("move_down") \
+   or event.is_action_pressed("move_left") or event.is_action_pressed("move_right")):
+  # I fascicoli si spostano fra quattro vaschette disposte come sulla scrivania,
+  # quindi anche la tastiera segue quella geometria invece di una lista verticale.
+  if event.is_action_pressed("move_left"):
+   selected = (selected ^ 1) if selected < 4 else 3
+  elif event.is_action_pressed("move_right"):
+   selected = (selected ^ 1) if selected < 4 else 0
+  elif event.is_action_pressed("move_up"):
+   selected = selected - 2 if selected in [2, 3] else (2 if selected == 4 else 4)
+  else:
+   selected = selected + 2 if selected in [0, 1] else (0 if selected == 4 else 4)
+  Sound.sfx("arcade/select_2", 1.0, 4.0)
+  queue_redraw()
  elif event.is_action_pressed("move_up") or event.is_action_pressed("move_left"):
   selected = posmod(selected - 1, maxi(1, buttons.size())); queue_redraw()
  elif event.is_action_pressed("move_down") or event.is_action_pressed("move_right"):
@@ -148,11 +162,12 @@ func _act(action: String) -> void:
     if int(p["round"]) == 3:
      B.finish_market(); _finish(); return
  B.checkpoint(floor)
- Sound.sfx("blip")
+ Sound.sfx("arcade/computer_1" if floor == "-4" else "blip")
  queue_redraw()
 
 func _finish() -> void:
  finishing = true
+ Sound.sfx("arcade/chime", 1.0, 2.0)
  queue_redraw()
  if floor == "0":
   for clip: Dictionary in B.state("0").get("result", {}).get("clips", []):
@@ -187,14 +202,19 @@ func _draw_energy() -> void:
 
 func _draw_documents() -> void:
  var doc: Dictionary = B.DOCUMENTS[mini(3, int(p["document"]))]
- draw_rect(Rect2(24, 62, 336, 218), PAPER)
- text_line("FASCICOLO %s / %d DI 4" % [doc["id"], int(p["document"]) + 1], 36, 83, 10, INK)
- _wrap_text(str(doc["title"]), Rect2(36, 96, 310, 42), 13, INK)
- _wrap_text(str(doc["body"]), Rect2(36, 147, 310, 121), 10, INK)
+ draw_rect(Rect2(24, 62, 592, 218), Color("59483f"))
+ draw_rect(Rect2(34, 72, 330, 198), PAPER)
+ draw_rect(Rect2(42, 80, 330, 198), Color("d8d0bd"))
+ draw_rect(Rect2(34, 72, 330, 198), PAPER)
+ text_line("FASCICOLO %s / %d DI 4" % [doc["id"], int(p["document"]) + 1], 46, 92, 10, INK)
+ _wrap_text(str(doc["title"]), Rect2(46, 103, 306, 38), 12, INK)
+ _wrap_text(str(doc["body"]), Rect2(46, 145, 306, 112), 9, INK)
+ text_line("SCEGLI LA VASCHETTA", 386, 78, 9, GOLD)
  var labels := ["CONTABILITÀ", "PERSONALE", "CHIEDI INTEGRAZIONE", "SEGNA RISOLTA"]
+ var trays := [Rect2(382, 88, 108, 76), Rect2(500, 88, 108, 76), Rect2(382, 176, 108, 76), Rect2(500, 176, 108, 76)]
  for i in 4:
-  button(Rect2(376, 62 + i * 48, 240, 40), labels[i], "doc_%d" % i)
- text_line("Leggi, poi scegli dove va.", 376, 273, 8)
+  button(trays[i], labels[i], "doc_%d" % i)
+ text_line("Sposta il fascicolo in una vaschetta.", 386, 270, 8, Color("eadfca"))
 
 func _draw_contract() -> void:
  var r := B.contract_preview(p)

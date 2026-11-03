@@ -1,42 +1,41 @@
-[gd_scene format=4 uid="uid://dhgced3okm0bu"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://x1iwaqtfltoy" path="res://chapters/c2/sottoufficio_c2.gd" id="1_upwdg"]
-[ext_resource type="TileSet" uid="uid://icpxarxxa543" path="res://world/tilesets/interni.tres" id="2_4lclw"]
-[ext_resource type="Script" uid="uid://c273hyc3vo8ri" path="res://world/room_outline.gd" id="3_rvb2o"]
-[ext_resource type="Texture2D" uid="uid://08t832ab0xb4" path="res://assets/limezu/characters/char_20.png" id="7_rvb2o"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="8_08xbl"]
-[ext_resource type="Script" uid="uid://b3j0n0sj3kphd" path="res://world/char_sprite.gd" id="9_ahxmk"]
-[ext_resource type="Texture2D" uid="uid://je2xw7jpqf8g" path="res://assets/limezu/market/Conference_Hall_Singles_27.png" id="9_e8dck"]
-[ext_resource type="Texture2D" uid="uid://5dcfwr2hxe7n" path="res://assets/limezu/market/Conference_Hall_Singles_26.png" id="10_2p2xr"]
-[ext_resource type="Texture2D" uid="uid://vm2a6uyr4m2t" path="res://assets/limezu/market/Conference_Hall_Singles_25.png" id="12_4bynh"]
-[ext_resource type="Texture2D" uid="uid://byc4l2ltylbqq" path="res://assets/limezu/tiles/generic.png" id="12_jbijt"]
-[ext_resource type="Texture2D" uid="uid://k3p2ag6mwfgr" path="res://assets/limezu/characters/char_18.png" id="13_7dg1s"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="13_upakn"]
-[ext_resource type="Texture2D" uid="uid://bw2d0apnyh8ri" path="res://assets/limezu/characters/char_19.png" id="14_nbw6n"]
-[ext_resource type="Texture2D" uid="uid://boph6w5mg4fjv" path="res://assets/limezu/characters/char_15.png" id="15_vlse1"]
-[ext_resource type="Texture2D" uid="uid://bmhc3jl821m5a" path="res://assets/limezu/themes/subway.png" id="16_4bynh"]
-[ext_resource type="Texture2D" uid="uid://c718imd4cb7dh" path="res://assets/limezu/characters/char_16.png" id="16_8u3v6"]
-[ext_resource type="Texture2D" uid="uid://b4jt15c8s4tly" path="res://assets/limezu/themes/classroom.png" id="17_e5ss3"]
-[ext_resource type="Texture2D" uid="uid://bs5gyd12tydhq" path="res://art/cabinet.png" id="18_t34w7"]
-[ext_resource type="Texture2D" uid="uid://cctxxct5vfmtr" path="res://assets/limezu/props/plant.png" id="20_bli27"]
-[ext_resource type="Texture2D" uid="uid://dky4ujkrxl7qp" path="res://assets/limezu/props/palm.png" id="21_vh5hi"]
-[ext_resource type="Script" uid="uid://br6k6k1xm6y31" path="res://world/room_feature.gd" id="22_q02fj"]
-[ext_resource type="Texture2D" uid="uid://canmhdud6tp6e" path="res://assets/limezu/props/camera_right.png" id="25_vlse1"]
-[ext_resource type="Texture2D" uid="uid://bb7sg78cghida" path="res://assets/limezu/props/camera_left.png" id="27_8u3v6"]
-[ext_resource type="Texture2D" uid="uid://bwj168oeejx0v" path="res://assets/limezu/market/Conference_Hall_Singles_2.png" id="32_e5ss3"]
-[ext_resource type="Texture2D" uid="uid://cr6q3n13y1jcn" path="res://assets/limezu/market/Conference_Hall_Singles_6.png" id="33_t34w7"]
-[ext_resource type="Texture2D" uid="uid://r637vyilfe0v" path="res://assets/limezu/market/Conference_Hall_Singles_1.png" id="34_w1rr2"]
-[ext_resource type="Texture2D" uid="uid://cj8g3dy765xcd" path="res://assets/limezu/market/Conference_Hall_Singles_28.png" id="36_vh5hi"]
+[ext_resource type="Script" path="res://chapters/c2/sottoufficio_c2.gd" id="1_upwdg"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_4lclw"]
+[ext_resource type="Script" path="res://world/room_outline.gd" id="3_rvb2o"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_20.png" id="7_rvb2o"]
+[ext_resource type="Script" path="res://world/examine.gd" id="8_08xbl"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="9_ahxmk"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_27.png" id="9_e8dck"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_26.png" id="10_2p2xr"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_25.png" id="12_4bynh"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/generic.png" id="12_jbijt"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_18.png" id="13_7dg1s"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="13_upakn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_19.png" id="14_nbw6n"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_15.png" id="15_vlse1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/subway.png" id="16_4bynh"]
+[ext_resource type="Texture2D" path="res://assets/limezu/characters/char_16.png" id="16_8u3v6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/classroom.png" id="17_e5ss3"]
+[ext_resource type="Texture2D" path="res://art/cabinet.png" id="18_t34w7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/plant.png" id="20_bli27"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/palm.png" id="21_vh5hi"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_right.png" id="25_vlse1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/camera_left.png" id="27_8u3v6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_2.png" id="32_e5ss3"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_6.png" id="33_t34w7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_1.png" id="34_w1rr2"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/Conference_Hall_Singles_28.png" id="36_vh5hi"]
 [ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="Script" uid="uid://c1a41vjnt4y4t" path="res://world/security_camera.gd" id="cam_sc"]
-[ext_resource type="Texture2D" uid="uid://b7kueas3c2o3d" path="res://assets/limezu/themes/hospital.png" id="desk_hospital"]
-[ext_resource type="Script" uid="uid://drqn0ed5ugonn" path="res://world/wall_notice.gd" id="Script_poster"]
+[ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/hospital.png" id="desk_hospital"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Script" path="res://world/wall_notice.gd" id="Script_poster"]
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
-[ext_resource type="Texture2D" uid="uid://dahldxko6cj3j" path="res://art/tritacarte.png" id="trita_png"]
-[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
-[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Texture2D" path="res://art/tritacarte.png" id="trita_png"]
 
 [sub_resource type="RectangleShape2D" id="poster_PosterSorridi"]
 size = Vector2(56, 24)
@@ -3440,17 +3439,17 @@ size = Vector2(12, 10)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e7752"]
 size = Vector2(12, 10)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_g6yp8"]
-size = Vector2(30, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g6yp8_Libreria28"]
+size = Vector2(30, 15)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_prytt"]
-size = Vector2(27, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_prytt_Libreria30"]
+size = Vector2(27, 15)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2yjs4"]
-size = Vector2(37, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2yjs4_Libreria32"]
+size = Vector2(37, 15)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_u7c8q"]
-size = Vector2(32, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u7c8q_Libreria34"]
+size = Vector2(32, 15)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uy445"]
 size = Vector2(14.5, 27)
@@ -3494,8 +3493,8 @@ size = Vector2(13, 24)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g0ufq"]
 size = Vector2(7, 7)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hkelr"]
-size = Vector2(12, 9)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e8dck"]
+size = Vector2(12, 10)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dldje"]
 size = Vector2(7, 7)
@@ -3506,26 +3505,13 @@ size = Vector2(9.5, 6)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a4u5h"]
 size = Vector2(7.5, 7)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fg10a"]
-size = Vector2(9, 7)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_g6yp8_Libreria28"]
-size = Vector2(30, 15)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_prytt_Libreria30"]
-size = Vector2(27, 15)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2yjs4_Libreria32"]
-size = Vector2(37, 15)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_u7c8q_Libreria34"]
-size = Vector2(32, 15)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4bynh"]
+size = Vector2(10, 9)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g6yp8_Libreria29"]
 size = Vector2(30, 15)
 
 [node name="Sottoufficio" type="Node2D" unique_id=1256184881]
-camera_lift = 28
 script = ExtResource("1_upwdg")
 room_music = "attesa"
 room_floor = "-4"
@@ -3546,6 +3532,7 @@ script = ExtResource("3_rvb2o")
 [node name="PosterSorridi" type="Node2D" parent="Decori" unique_id=1936973048]
 position = Vector2(24, 40)
 script = ExtResource("Script_poster")
+righe = PackedStringArray()
 
 [node name="PareteManifesto" type="StaticBody2D" parent="Decori/PosterSorridi" unique_id=566203361]
 
@@ -3557,6 +3544,7 @@ shape = SubResource("poster_PosterSorridi")
 position = Vector2(90, 48)
 script = ExtResource("Script_poster")
 kind = "modulo"
+righe = PackedStringArray()
 
 [node name="PareteManifesto" type="StaticBody2D" parent="Decori/PosterModulo" unique_id=1436205549]
 position = Vector2(-38, -4)
@@ -3569,6 +3557,7 @@ shape = SubResource("poster_PosterModulo")
 position = Vector2(184, 40)
 script = ExtResource("Script_poster")
 kind = "attesa"
+righe = PackedStringArray()
 
 [node name="PareteManifesto" type="StaticBody2D" parent="Decori/PosterAttesa" unique_id=226215491]
 
@@ -3629,6 +3618,37 @@ shape = SubResource("pedana_Sinistra")
 [node name="dietro" type="CollisionShape2D" parent="Decori/ConferenzaRialzo/BordiPedana" unique_id=876004349]
 position = Vector2(338.5, 186.25)
 shape = SubResource("pedana_Destra")
+
+[node name="Telecamera_192" type="Sprite2D" parent="Decori" unique_id=1037982607]
+position = Vector2(72, 16)
+texture = ExtResource("25_vlse1")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 0, 16, 16)
+script = ExtResource("cam_sc")
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_192" unique_id=173745491]
+position = Vector2(8, 40)
+script = ExtResource("8_08xbl")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
+
+[node name="Telecamera_432" type="Sprite2D" parent="Decori" unique_id=1894594151]
+position = Vector2(414, 125)
+texture = ExtResource("27_8u3v6")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+script = ExtResource("cam_sc")
+facing = "left"
+metadata/prop_talk_skip = true
+
+[node name="Guarda" type="Node2D" parent="Decori/Telecamera_432" unique_id=2021752408]
+position = Vector2(8, 40)
+script = ExtResource("8_08xbl")
+lines = PackedStringArray()
+lines_after = PackedStringArray()
 
 [node name="Mondo" type="Node2D" parent="." unique_id=757980677]
 y_sort_enabled = true
@@ -3735,6 +3755,34 @@ script = ExtResource("8_08xbl")
 lines = PackedStringArray("* Un tritacarte, lucido come nuovo. Accanto, un cartellino: \"ARCHIVIAZIONE RAPIDA\".", "* Il cestino sotto è pieno di striscioline. Su una leggi: \"...B-4...\".")
 lines_after = PackedStringArray("* Il tritacarte. Dentro c\'è il tuo B-4, in centoventi striscioline. L\'archiviazione più rapida della torre.")
 after_flag = "c2_rivelazione"
+
+[node name="IngressoFoglio" type="Marker2D" parent="Mondo/Tritacarte" unique_id=1552437928]
+position = Vector2(4, -26)
+
+[node name="Foglio" type="Polygon2D" parent="Mondo/Tritacarte/IngressoFoglio" unique_id=1289526424]
+visible = false
+z_index = 20
+color = Color(0.541176, 0.784314, 1, 1)
+polygon = PackedVector2Array(0, 0, 7, 0, 7, 10, 0, 10)
+
+[node name="UscitaStrisce" type="Marker2D" parent="Mondo/Tritacarte" unique_id=991624781]
+position = Vector2(4, -6)
+
+[node name="StrisciaA" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce" unique_id=1094274126]
+visible = false
+z_index = 20
+offset_right = 1.0
+offset_bottom = 5.0
+mouse_filter = 2
+color = Color(0.541176, 0.784314, 1, 1)
+
+[node name="StrisciaB" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce" unique_id=1111498921]
+visible = false
+z_index = 20
+offset_right = 1.0
+offset_bottom = 5.0
+mouse_filter = 2
+color = Color(0.811765, 0.901961, 1, 1)
 
 [node name="GuardaUrna" type="Node2D" parent="Mondo" unique_id=1002330000]
 position = Vector2(280, 200)
@@ -4079,6 +4127,7 @@ region_rect = Rect2(0, 208, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Libreria28" unique_id=1868329260]
 position = Vector2(0, 6)
+
 [node name="@CollisionShape2D@47" type="CollisionShape2D" parent="Mondo/Libreria28/Collisione" unique_id=1170302177]
 position = Vector2(18, -13.5)
 shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
@@ -4093,6 +4142,7 @@ region_rect = Rect2(0, 208, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Libreria30" unique_id=609042837]
 position = Vector2(0, 6)
+
 [node name="@CollisionShape2D@48" type="CollisionShape2D" parent="Mondo/Libreria30/Collisione" unique_id=210303063]
 position = Vector2(14.5, -13.5)
 shape = SubResource("RectangleShape2D_prytt_Libreria30")
@@ -4107,6 +4157,7 @@ region_rect = Rect2(0, 208, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Libreria32" unique_id=1593377052]
 position = Vector2(0, 6)
+
 [node name="@CollisionShape2D@49" type="CollisionShape2D" parent="Mondo/Libreria32/Collisione" unique_id=1546857845]
 position = Vector2(14.5, -13.5)
 shape = SubResource("RectangleShape2D_2yjs4_Libreria32")
@@ -4121,6 +4172,7 @@ region_rect = Rect2(0, 208, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Libreria34" unique_id=1491455867]
 position = Vector2(0, 6)
+
 [node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Mondo/Libreria34/Collisione" unique_id=1334911135]
 position = Vector2(15, -13.5)
 shape = SubResource("RectangleShape2D_u7c8q_Libreria34")
@@ -4315,6 +4367,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta0" unique_id=1604096981]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@66" type="CollisionShape2D" parent="Mondo/Pianta0/Collisione" unique_id=196685344]
 position = Vector2(7.5, -13.5)
 shape = SubResource("RectangleShape2D_g0ufq")
@@ -4324,12 +4377,14 @@ position = Vector2(38, 239)
 texture = ExtResource("21_vh5hi")
 centered = false
 offset = Vector2(0, -31)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta1" unique_id=1244910070]
 position = Vector2(0, 1)
+
 [node name="@CollisionShape2D@67" type="CollisionShape2D" parent="Mondo/Pianta1/Collisione" unique_id=1429353482]
-position = Vector2(16, -6.5)
-shape = SubResource("RectangleShape2D_hkelr")
+position = Vector2(16, -6)
+shape = SubResource("RectangleShape2D_e8dck")
 
 [node name="Pianta2" type="Sprite2D" parent="Mondo" unique_id=1456761877]
 position = Vector2(243, 98)
@@ -4339,6 +4394,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta2" unique_id=124875015]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@68" type="CollisionShape2D" parent="Mondo/Pianta2/Collisione" unique_id=601417893]
 position = Vector2(8, -12)
 shape = SubResource("RectangleShape2D_dldje")
@@ -4351,6 +4407,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta3" unique_id=1815711138]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@69" type="CollisionShape2D" parent="Mondo/Pianta3/Collisione" unique_id=646829301]
 position = Vector2(8.25, -12)
 shape = SubResource("RectangleShape2D_ddr0u")
@@ -4363,6 +4420,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta4" unique_id=860452740]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@70" type="CollisionShape2D" parent="Mondo/Pianta4/Collisione" unique_id=1279967991]
 position = Vector2(7.25, -12.5)
 shape = SubResource("RectangleShape2D_a4u5h")
@@ -4372,12 +4430,14 @@ position = Vector2(379, 121)
 texture = ExtResource("20_bli27")
 centered = false
 offset = Vector2(0, -25)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pianta5" unique_id=2130523007]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@71" type="CollisionShape2D" parent="Mondo/Pianta5/Collisione" unique_id=2042089420]
-position = Vector2(7.5, -12.5)
-shape = SubResource("RectangleShape2D_fg10a")
+position = Vector2(8, -11.5)
+shape = SubResource("RectangleShape2D_4bynh")
 
 [node name="GuardaPianta" type="Node2D" parent="Mondo" unique_id=1442926595]
 position = Vector2(24, 72)
@@ -4395,9 +4455,7 @@ guarda_verso = "down"
 position = Vector2(8, -18)
 
 [node name="Targhetta" parent="Mondo/PostoCallCenter" index="1"]
-offset_left = -5.0
 offset_top = -48.0
-offset_right = 21.0
 offset_bottom = -36.0
 
 [node name="SportelloBadge" parent="Mondo" unique_id=514751075 instance=ExtResource("booth_tscn")]
@@ -4405,39 +4463,6 @@ position = Vector2(272, 78)
 
 [node name="Stellina" parent="Mondo" unique_id=752157852 instance=ExtResource("stellina_tscn")]
 position = Vector2(176, 176)
-
-[node name="Telecamera_192" type="Sprite2D" parent="Mondo" unique_id=1037982607]
-z_index = 1
-position = Vector2(72, 16)
-texture = ExtResource("25_vlse1")
-centered = false
-region_enabled = true
-region_rect = Rect2(112, 0, 16, 16)
-script = ExtResource("cam_sc")
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_192" unique_id=173745491]
-position = Vector2(8, 40)
-script = ExtResource("8_08xbl")
-lines = PackedStringArray()
-lines_after = PackedStringArray()
-
-[node name="Telecamera_432" type="Sprite2D" parent="Mondo" unique_id=1894594151]
-z_index = 1
-position = Vector2(414, 125)
-texture = ExtResource("27_8u3v6")
-centered = false
-region_enabled = true
-region_rect = Rect2(16, 0, 16, 16)
-script = ExtResource("cam_sc")
-facing = "left"
-metadata/prop_talk_skip = true
-
-[node name="Guarda" type="Node2D" parent="Mondo/Telecamera_432" unique_id=2021752408]
-position = Vector2(8, 40)
-script = ExtResource("8_08xbl")
-lines = PackedStringArray()
-lines_after = PackedStringArray()
 
 [node name="Libreria29" type="Sprite2D" parent="Mondo" unique_id=38890334]
 position = Vector2(417, 58)
@@ -4449,6 +4474,7 @@ region_rect = Rect2(0, 208, 32, 48)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Libreria29" unique_id=486858271]
 position = Vector2(0, 6)
+
 [node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/Libreria29/Collisione" unique_id=524938450]
 position = Vector2(18, -13.5)
 shape = SubResource("RectangleShape2D_g6yp8_Libreria29")
@@ -4645,48 +4671,17 @@ metadata/facing = "down"
 position = Vector2(184, 110)
 metadata/facing = "down"
 
-[node name="Inquadrature" type="Node2D" parent="."]
+[node name="Inquadrature" type="Node2D" parent="." unique_id=2066071036]
 
-[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=374940227]
 position = Vector2(296, 116)
 script = ExtResource("inq_script")
 zoom = 1.2857
 durata = 3.5
-durata_ritorno = 0.65
 
-[node name="Tritacarte" type="Marker2D" parent="Inquadrature"]
+[node name="Tritacarte" type="Marker2D" parent="Inquadrature" unique_id=74991043]
 position = Vector2(340, 212)
 script = ExtResource("inq_script")
 zoom = 3.5
-durata = 0.75
-durata_ritorno = 0.65
-
-[node name="IngressoFoglio" type="Marker2D" parent="Mondo/Tritacarte"]
-position = Vector2(4, -26)
-
-[node name="Foglio" type="Polygon2D" parent="Mondo/Tritacarte/IngressoFoglio"]
-visible = false
-z_index = 20
-color = Color(0.541176, 0.784314, 1, 1)
-polygon = PackedVector2Array(0, 0, 7, 0, 7, 10, 0, 10)
-
-[node name="UscitaStrisce" type="Marker2D" parent="Mondo/Tritacarte"]
-position = Vector2(4, -6)
-
-[node name="StrisciaA" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce"]
-visible = false
-z_index = 20
-offset_right = 1.0
-offset_bottom = 5.0
-mouse_filter = 2
-color = Color(0.541176, 0.784314, 1, 1)
-
-[node name="StrisciaB" type="ColorRect" parent="Mondo/Tritacarte/UscitaStrisce"]
-visible = false
-z_index = 20
-offset_right = 1.0
-offset_bottom = 5.0
-mouse_filter = 2
-color = Color(0.811765, 0.901961, 1, 1)
 
 [editable path="Mondo/PostoCallCenter"]

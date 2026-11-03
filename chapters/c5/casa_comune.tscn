@@ -1,36 +1,34 @@
-[gd_scene format=4 uid="uid://dtakisd0hv17r"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://dl2ggakte2p38" path="res://chapters/c5/casa_comune_c5.gd" id="1_6lfuj"]
-[ext_resource type="TileSet" uid="uid://icpxarxxa543" path="res://world/tilesets/interni.tres" id="2_3jnyv"]
-[ext_resource type="Texture2D" uid="uid://oeljyk7kv3w1" path="res://art/c5/avviso_chiusura.png" id="3_vn8wj"]
-[ext_resource type="Texture2D" uid="uid://d57nyfh3n2f6" path="res://art/c5/contatore.png" id="6_4e46h"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="8_u4p8y"]
-[ext_resource type="Texture2D" uid="uid://b8tkri2sv60ak" path="res://art/c5/lettera_cheap.png" id="11_sdey1"]
-[ext_resource type="Texture2D" uid="uid://c73cvkhigptl8" path="res://assets/limezu/library/Classroom_and_Library_Singles_26.png" id="12_4e46h"]
-[ext_resource type="Texture2D" uid="uid://dpen4h3tatmya" path="res://assets/limezu/props/dresser.png" id="12_kc5ao"]
-[ext_resource type="Texture2D" uid="uid://ct2r21w22kovo" path="res://art/c5/cartella_b4.png" id="13_ofkpl"]
-[ext_resource type="Texture2D" uid="uid://cymhlhgclxmw" path="res://assets/limezu/library/Classroom_and_Library_Singles_9.png" id="13_u0r0v"]
-[ext_resource type="Texture2D" uid="uid://cctxxct5vfmtr" path="res://assets/limezu/props/plant.png" id="14_23euy"]
-[ext_resource type="Texture2D" uid="uid://bice06nethwbq" path="res://assets/limezu/library/Classroom_and_Library_Singles_55.png" id="14_u4p8y"]
-[ext_resource type="Texture2D" uid="uid://b84oljq1vexyn" path="res://assets/limezu/library/Classroom_and_Library_Singles_59.png" id="15_2s2yh"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="16_nh8nj"]
-[ext_resource type="Texture2D" uid="uid://b3aw01fsyc7gt" path="res://assets/limezu/library/Classroom_and_Library_Singles_63.png" id="16_u7a4u"]
-[ext_resource type="Texture2D" uid="uid://bl4t5md80q04h" path="res://art/c5/porta_archivio.png" id="17_4mk3p"]
-[ext_resource type="Texture2D" uid="uid://dh2nx4etd81pi" path="res://assets/limezu/library/Classroom_and_Library_Singles_71.png" id="17_sdey1"]
-[ext_resource type="Texture2D" uid="uid://3erqh8bnb7t8" path="res://assets/limezu/library/Classroom_and_Library_Singles_5.png" id="18_kc5ao"]
-[ext_resource type="Texture2D" uid="uid://duod45kubi3ay" path="res://assets/limezu/library/Classroom_and_Library_Singles_43.png" id="19_ofkpl"]
-[ext_resource type="Texture2D" uid="uid://pbscuyiq8lf8" path="res://assets/limezu/library/Classroom_and_Library_Singles_44.png" id="20_23euy"]
-[ext_resource type="Texture2D" uid="uid://grooqjvthk2r" path="res://assets/limezu/library/Classroom_and_Library_Singles_60.png" id="21_rowhi"]
-[ext_resource type="Texture2D" uid="uid://dyk75l5v2eyts" path="res://assets/limezu/library/Classroom_and_Library_Singles_54.png" id="22_nh8nj"]
-[ext_resource type="Texture2D" uid="uid://qfypupc5m1cn" path="res://assets/limezu/library/Classroom_and_Library_Singles_2.png" id="23_4mk3p"]
-[ext_resource type="Texture2D" uid="uid://ejkh0rvxj0x5" path="res://assets/limezu/bank/Hospital_Singles_49.png" id="24_fqhox"]
-
-[ext_resource type="Script" path="res://world/room_outline.gd" id="room_outline"]
-[ext_resource type="Texture2D" path="res://assets/limezu/props/porta_legno.png" id="porta_legno"]
+[ext_resource type="Script" path="res://chapters/c5/casa_comune_c5.gd" id="1_6lfuj"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_3jnyv"]
+[ext_resource type="Texture2D" path="res://art/c5/avviso_chiusura.png" id="3_vn8wj"]
+[ext_resource type="Texture2D" path="res://art/c5/contatore.png" id="6_4e46h"]
+[ext_resource type="Script" path="res://world/examine.gd" id="8_u4p8y"]
+[ext_resource type="Texture2D" path="res://art/c5/lettera_cheap.png" id="11_sdey1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_26.png" id="12_4e46h"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/dresser.png" id="12_kc5ao"]
+[ext_resource type="Texture2D" path="res://art/c5/cartella_b4.png" id="13_ofkpl"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_9.png" id="13_u0r0v"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/plant.png" id="14_23euy"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_55.png" id="14_u4p8y"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_59.png" id="15_2s2yh"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="16_nh8nj"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_63.png" id="16_u7a4u"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_71.png" id="17_sdey1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_5.png" id="18_kc5ao"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_43.png" id="19_ofkpl"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_44.png" id="20_23euy"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_60.png" id="21_rowhi"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_54.png" id="22_nh8nj"]
+[ext_resource type="Texture2D" path="res://assets/limezu/library/Classroom_and_Library_Singles_2.png" id="23_4mk3p"]
+[ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_49.png" id="24_fqhox"]
 [ext_resource type="Texture2D" path="res://assets/limezu/props/porta_laterale.png" id="porta_laterale"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/porta_legno.png" id="porta_legno"]
+[ext_resource type="Script" path="res://world/room_outline.gd" id="room_outline"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bidll_Cassettiera"]
-size = Vector2(28, 5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u4p8y"]
+size = Vector2(30, 11)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ia3v4"]
 size = Vector2(12, 8)
@@ -38,14 +36,14 @@ size = Vector2(12, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1g6eu"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uo35q"]
-size = Vector2(12, 16)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile18"]
+size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtrsf"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile1"]
-size = Vector2(26, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2s2yh"]
+size = Vector2(28, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile2"]
 size = Vector2(14, 14)
@@ -62,8 +60,8 @@ size = Vector2(25, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile6"]
 size = Vector2(25, 13)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile7"]
-size = Vector2(26, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u7a4u"]
+size = Vector2(28, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile8"]
 size = Vector2(14, 14)
@@ -74,8 +72,8 @@ size = Vector2(14, 14)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile10"]
 size = Vector2(14, 14)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile11"]
-size = Vector2(26, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sdey1"]
+size = Vector2(28, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile12"]
 size = Vector2(26, 14)
@@ -95,9 +93,6 @@ size = Vector2(20, 14)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile17"]
 size = Vector2(12, 14)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mobile18"]
-size = Vector2(16, 16)
-
 [node name="CasaComune" type="Node2D" unique_id=1546043959]
 script = ExtResource("1_6lfuj")
 room_music = "quartiere"
@@ -111,7 +106,7 @@ tile_set = ExtResource("2_3jnyv")
 tile_map_data = PackedByteArray("AAAAAAAAAAAMAAAAAAABAAAAAAAMAAAAAAACAAAAAAAMAAAAAAADAAAAAAAMAAAAAAAEAAAAAAAMAAAAAAAFAAAAAAAMAAAAAAAGAAAAAAAMAAAAAAAHAAAAAAAMAAAAAAAIAAAAAAAMAAAAAAAJAAAAAAAMAAAAAAAKAAAAAAAMAAAAAAALAAAAAAAMAAAAAAAMAAAAAAAMAAAAAAANAAAAAAAMAAAAAAAOAAAAAAAMAAAAAAAPAAAAAAAMAAAAAAAQAAAAAAAMAAAAAAARAAAAAAAMAAAAAAASAAAAAAAMAAAAAAATAAAAAAAMAAAAAAAUAAAAAAAMAAAAAAAVAAAAAAAMAAAAAAAAAAEAAAAMAAAAAAABAAEAAAAeABkAAAACAAEAAAAfABkAAAADAAEAAAAdABkAAAAEAAEAAAAeABkAAAAFAAEAAAAfABkAAAAGAAEAAAAdABkAAAAHAAEAAAAeABkAAAAIAAEAAAAfABkAAAAJAAEAAAAdABkAAAAKAAEAAAAeABkAAAALAAEAAAAfABkAAAAMAAEAAAAdABkAAAANAAEAAAAeABkAAAAOAAEAAAAMAAAAAAAPAAEAAAAdABkAAAAQAAEAAAAeABkAAAARAAEAAAAfABkAAAASAAEAAAAdABkAAAATAAEAAAAeABkAAAAUAAEAAAAfABkAAAAVAAEAAAAMAAAAAAAAAAIAAAAMAAAAAAABAAIAAAAeABoAAAACAAIAAAAfABoAAAADAAIAAAAdABoAAAAEAAIAAAAeABoAAAAFAAIAAAAfABoAAAAGAAIAAAAdABoAAAAHAAIAAAAeABoAAAAIAAIAAAAfABoAAAAJAAIAAAAdABoAAAAKAAIAAAAeABoAAAALAAIAAAAfABoAAAAMAAIAAAAdABoAAAANAAIAAAAeABoAAAAOAAIAAAAMAAAAAAAPAAIAAAAdABoAAAAQAAIAAAAeABoAAAARAAIAAAAfABoAAAASAAIAAAAdABoAAAATAAIAAAAeABoAAAAUAAIAAAAfABoAAAAVAAIAAAAMAAAAAAAAAAMAAAAMAAAAAAAOAAMAAAAMAAAAAAAVAAMAAAAMAAAAAAAAAAQAAAAMAAAAAAAOAAQAAAAMAAAAAAAVAAQAAAAMAAAAAAAAAAUAAAAMAAAAAAAOAAUAAAAMAAAAAAAVAAUAAAAMAAAAAAAAAAYAAAAMAAAAAAAOAAYAAAAMAAAAAAAVAAYAAAAMAAAAAAAAAAcAAAAMAAAAAAAVAAcAAAAMAAAAAAAAAAgAAAAMAAAAAAAOAAgAAAAMAAAAAAAVAAgAAAAMAAAAAAAAAAkAAAAMAAAAAAAOAAkAAAAMAAAAAAAVAAkAAAAMAAAAAAAAAAoAAAAMAAAAAAAOAAoAAAAMAAAAAAAVAAoAAAAMAAAAAAAAAAsAAAAMAAAAAAAOAAsAAAAMAAAAAAAVAAsAAAAMAAAAAAAAAAwAAAAMAAAAAAABAAwAAAAMAAAAAAACAAwAAAAMAAAAAAADAAwAAAAMAAAAAAAEAAwAAAAMAAAAAAAFAAwAAAAMAAAAAAAGAAwAAAAMAAAAAAAHAAwAAAAMAAAAAAAIAAwAAAAMAAAAAAAJAAwAAAAMAAAAAAAKAAwAAAAMAAAAAAALAAwAAAAMAAAAAAAMAAwAAAAMAAAAAAANAAwAAAAMAAAAAAAOAAwAAAAMAAAAAAAPAAwAAAAMAAAAAAAQAAwAAAAMAAAAAAARAAwAAAAMAAAAAAASAAwAAAAMAAAAAAATAAwAAAAMAAAAAAAUAAwAAAAMAAAAAAAVAAwAAAAMAAAAAAA=")
 tile_set = ExtResource("2_3jnyv")
 
-[node name="Bordo" type="Node2D" parent="."]
+[node name="Bordo" type="Node2D" parent="." unique_id=597137050]
 script = ExtResource("room_outline")
 
 [node name="Decori" type="Node2D" parent="." unique_id=755834777]
@@ -128,12 +123,16 @@ texture = ExtResource("6_4e46h")
 centered = false
 offset = Vector2(0, -24)
 
-[node name="PortaIngresso" type="Sprite2D" parent="Decori"]
-position = Vector2(192, 208)
+[node name="PortaIngresso" type="Sprite2D" parent="Decori" unique_id=1082470889]
+position = Vector2(193, 199)
 texture = ExtResource("porta_legno")
 centered = false
 offset = Vector2(0, -32)
 hframes = 5
+
+[node name="Orologio" type="Sprite2D" parent="Decori" unique_id=1307016236]
+position = Vector2(158, 35)
+texture = ExtResource("24_fqhox")
 
 [node name="Mondo" type="Node2D" parent="." unique_id=471842664]
 y_sort_enabled = true
@@ -177,17 +176,17 @@ position = Vector2(176, 71)
 texture = ExtResource("12_kc5ao")
 centered = false
 offset = Vector2(0, -39)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cassettiera" unique_id=1138158677]
 position = Vector2(0, 9)
 
 [node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/Cassettiera/Collisione" unique_id=871615775]
-position = Vector2(16, -11.5)
-shape = SubResource("RectangleShape2D_bidll_Cassettiera")
+position = Vector2(16, -14.5)
+shape = SubResource("RectangleShape2D_u4p8y")
 
-[node name="CartellaB4" type="Sprite2D" parent="Mondo" unique_id=411912804]
-z_index = 1
-position = Vector2(186, 50)
+[node name="CartellaB4" type="Sprite2D" parent="Mondo/Cassettiera" unique_id=411912804]
+position = Vector2(10, -21)
 texture = ExtResource("13_ofkpl")
 centered = false
 offset = Vector2(0, -8)
@@ -295,12 +294,13 @@ position = Vector2(134, 145)
 texture = ExtResource("12_4e46h")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles26"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles26" unique_id=720321466]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles26/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles26/Collisione" unique_id=400054575]
 position = Vector2(0, -7)
-shape = SubResource("RectangleShape2D_mobile1")
+shape = SubResource("RectangleShape2D_2s2yh")
 
 [node name="ClassroomAndLibrarySingles9" type="Sprite2D" parent="Mondo" unique_id=586760892]
 position = Vector2(166, 149)
@@ -308,9 +308,9 @@ texture = ExtResource("13_u0r0v")
 centered = false
 offset = Vector2(-8, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles9"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles9" unique_id=1437020294]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles9/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles9/Collisione" unique_id=407479636]
 position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_mobile2")
 
@@ -320,9 +320,9 @@ texture = ExtResource("14_u4p8y")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles55"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles55" unique_id=234861178]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles55/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles55/Collisione" unique_id=1114434420]
 position = Vector2(-0.5, -11.5)
 shape = SubResource("RectangleShape2D_mobile3")
 
@@ -332,9 +332,9 @@ texture = ExtResource("15_2s2yh")
 centered = false
 offset = Vector2(-8, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles59"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles59" unique_id=1366955059]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles59/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles59/Collisione" unique_id=1617514288]
 position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_mobile4")
 
@@ -344,9 +344,9 @@ texture = ExtResource("16_u7a4u")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles63"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles63" unique_id=1490667996]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles63/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles63/Collisione" unique_id=483232215]
 position = Vector2(-0.5, -13)
 shape = SubResource("RectangleShape2D_mobile5")
 
@@ -356,29 +356,24 @@ texture = ExtResource("17_sdey1")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles71"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles71" unique_id=308000008]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles71/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles71/Collisione" unique_id=1507441636]
 position = Vector2(0.5, -12.5)
 shape = SubResource("RectangleShape2D_mobile6")
-
-[node name="Arrivi" type="Node2D" parent="." unique_id=302027506]
-
-[node name="default" type="Marker2D" parent="Arrivi" unique_id=563823506]
-position = Vector2(200, 168)
-metadata/facing = "up"
 
 [node name="ClassroomAndLibrarySingles26b" type="Sprite2D" parent="Mondo" unique_id=1116205688]
 position = Vector2(71, 145)
 texture = ExtResource("12_4e46h")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles26b"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles26b" unique_id=285258444]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles26b/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles26b/Collisione" unique_id=800282044]
 position = Vector2(0, -7)
-shape = SubResource("RectangleShape2D_mobile7")
+shape = SubResource("RectangleShape2D_u7a4u")
 
 [node name="ClassroomAndLibrarySingles5" type="Sprite2D" parent="Mondo" unique_id=1978752081]
 position = Vector2(104, 150)
@@ -386,9 +381,9 @@ texture = ExtResource("18_kc5ao")
 centered = false
 offset = Vector2(-8, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles5"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles5" unique_id=1616274008]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles5/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles5/Collisione" unique_id=2017811891]
 position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_mobile8")
 
@@ -398,9 +393,9 @@ texture = ExtResource("13_u0r0v")
 centered = false
 offset = Vector2(-8, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles9b"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles9b" unique_id=84837841]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles9b/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles9b/Collisione" unique_id=805600990]
 position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_mobile9")
 
@@ -410,9 +405,9 @@ texture = ExtResource("13_u0r0v")
 centered = false
 offset = Vector2(-8, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles10"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles10" unique_id=619391339]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles10/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles10/Collisione" unique_id=773110624]
 position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_mobile10")
 
@@ -421,12 +416,13 @@ position = Vector2(103, 182)
 texture = ExtResource("12_4e46h")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles27"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles27" unique_id=1794638224]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles27/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles27/Collisione" unique_id=1154617058]
 position = Vector2(0, -7)
-shape = SubResource("RectangleShape2D_mobile11")
+shape = SubResource("RectangleShape2D_sdey1")
 
 [node name="ClassroomAndLibrarySingles28" type="Sprite2D" parent="Mondo" unique_id=1962283637]
 position = Vector2(172, 181)
@@ -434,9 +430,9 @@ texture = ExtResource("12_4e46h")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles28"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles28" unique_id=946441654]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles28/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles28/Collisione" unique_id=1668386023]
 position = Vector2(0, -7)
 shape = SubResource("RectangleShape2D_mobile12")
 
@@ -446,9 +442,9 @@ texture = ExtResource("19_ofkpl")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles43"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles43" unique_id=420189738]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles43/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles43/Collisione" unique_id=1968855768]
 position = Vector2(0, -14.5)
 shape = SubResource("RectangleShape2D_mobile13")
 
@@ -458,9 +454,9 @@ texture = ExtResource("20_23euy")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles44"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles44" unique_id=1990480176]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles44/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles44/Collisione" unique_id=1166636543]
 position = Vector2(0, -14.5)
 shape = SubResource("RectangleShape2D_mobile14")
 
@@ -470,9 +466,9 @@ texture = ExtResource("21_rowhi")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles60"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles60" unique_id=1383234034]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles60/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles60/Collisione" unique_id=1675290016]
 position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_mobile15")
 
@@ -482,9 +478,9 @@ texture = ExtResource("22_nh8nj")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles54"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles54" unique_id=557776577]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles54/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles54/Collisione" unique_id=165279837]
 position = Vector2(0, -7)
 shape = SubResource("RectangleShape2D_mobile16")
 
@@ -494,13 +490,14 @@ texture = ExtResource("23_4mk3p")
 centered = false
 offset = Vector2(-8, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ClassroomAndLibrarySingles2" unique_id=1742524273]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ClassroomAndLibrarySingles2/Collisione" unique_id=1584222537]
 position = Vector2(0, -14)
 shape = SubResource("RectangleShape2D_mobile17")
 
-[node name="Orologio" type="Sprite2D" parent="Decori" unique_id=1307016236]
-position = Vector2(158, 35)
-texture = ExtResource("24_fqhox")
+[node name="Arrivi" type="Node2D" parent="." unique_id=302027506]
 
+[node name="default" type="Marker2D" parent="Arrivi" unique_id=563823506]
+position = Vector2(200, 168)
+metadata/facing = "up"

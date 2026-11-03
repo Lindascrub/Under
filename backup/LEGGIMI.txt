@@ -1,0 +1,2 @@
+Versioni precedenti conservate. Questa cartella non viene importata da Godot e non appare nel gioco.
+Originali: 2026-10-28_rework. Non rimettere questi file nel progetto senza controllare le dipendenze.

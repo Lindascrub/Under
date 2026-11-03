@@ -1,82 +1,80 @@
-[gd_scene format=4 uid="uid://c48ddke4ydjsw"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://cglkxxtq4lleo" path="res://chapters/c3/mercato_c3.gd" id="1_ermtk"]
-[ext_resource type="TileSet" uid="uid://icpxarxxa543" path="res://world/tilesets/interni.tres" id="2_fe82k"]
-[ext_resource type="Script" uid="uid://c273hyc3vo8ri" path="res://world/room_outline.gd" id="3_37sdo"]
-[ext_resource type="Texture2D" uid="uid://n4rxgrrbsnse" path="res://art/sign_saldi.png" id="4_jtsxm"]
-[ext_resource type="Texture2D" uid="uid://honqmwuvfha" path="res://art/price_board.png" id="5_ijwyr"]
-[ext_resource type="Texture2D" uid="uid://cc1wlfxd4fupu" path="res://assets/limezu/grocery/97.png" id="6_pb64e"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="7_phso2"]
-[ext_resource type="Texture2D" uid="uid://dfipyx3xk425x" path="res://assets/limezu/grocery/250.png" id="8_vsi8c"]
-[ext_resource type="Texture2D" uid="uid://dhbfriv77nm7d" path="res://assets/limezu/grocery/147.png" id="9_ifahs"]
-[ext_resource type="Texture2D" uid="uid://dgkwnddmvdlh7" path="res://assets/limezu/grocery/437.png" id="10_4m5ns"]
-[ext_resource type="Texture2D" uid="uid://rbeqaif1dt1v" path="res://assets/limezu/grocery/249.png" id="11_00ad0"]
-[ext_resource type="Texture2D" uid="uid://cds7xec4odun5" path="res://assets/limezu/grocery/145.png" id="12_ommgp"]
-[ext_resource type="Texture2D" uid="uid://o38xjqhmqkqe" path="res://assets/limezu/grocery/146.png" id="13_mdiev"]
-[ext_resource type="Texture2D" uid="uid://ci4ymo3af5ilh" path="res://art/chalkboard.png" id="14_d5y3d"]
-[ext_resource type="Texture2D" uid="uid://bvagmjs430tx0" path="res://art/water_machine.png" id="15_iph5s"]
-[ext_resource type="Texture2D" uid="uid://bsv2f6cm87xal" path="res://assets/limezu/grocery/58.png" id="16_thb2e"]
-[ext_resource type="Texture2D" uid="uid://cbc532n7172wt" path="res://assets/limezu/grocery/61.png" id="17_gyumu"]
-[ext_resource type="Texture2D" uid="uid://dswvj5xa4x0kc" path="res://assets/limezu/grocery/113.png" id="18_bu38g"]
-[ext_resource type="Texture2D" uid="uid://baoc5fj1vfd50" path="res://assets/limezu/grocery/114.png" id="19_r1ov5"]
-[ext_resource type="Texture2D" uid="uid://c2oqluw4rep53" path="res://assets/limezu/grocery/115.png" id="20_0nuhe"]
-[ext_resource type="Texture2D" uid="uid://b08xicrhtfwdb" path="res://assets/limezu/grocery/116.png" id="21_tp8vh"]
-[ext_resource type="Texture2D" uid="uid://di57xbxivdjcc" path="res://assets/limezu/grocery/148.png" id="22_he0vb"]
-[ext_resource type="Texture2D" uid="uid://suenj1dbmcys" path="res://assets/limezu/grocery/149.png" id="23_bdy3v"]
-[ext_resource type="Texture2D" uid="uid://3y55rugxf3t3" path="res://assets/limezu/grocery/403.png" id="24_350y1"]
-[ext_resource type="Texture2D" uid="uid://wyqlttq55856" path="res://assets/limezu/grocery/404.png" id="26_qihyh"]
-[ext_resource type="Texture2D" uid="uid://y5c26fr82os8" path="res://assets/limezu/grocery/406.png" id="28_c0cbu"]
-[ext_resource type="Texture2D" uid="uid://cejj8l7x0ait8" path="res://assets/limezu/grocery/405.png" id="32_llx2m"]
-[ext_resource type="Texture2D" uid="uid://nvebotns1n10" path="res://assets/limezu/grocery/415.png" id="33_34r1w"]
-[ext_resource type="Texture2D" uid="uid://dpjip83cv4oux" path="res://assets/limezu/grocery/413.png" id="34_ay5cw"]
-[ext_resource type="Texture2D" uid="uid://buq4rsa1xvay8" path="res://assets/limezu/grocery/451.png" id="35_me0ja"]
-[ext_resource type="Texture2D" uid="uid://bc231cevq0fwf" path="res://assets/limezu/grocery/449.png" id="36_6x5ou"]
-[ext_resource type="Script" uid="uid://60a6pjgn5q0f" path="res://world/shopper.gd" id="37_6ra1p"]
-[ext_resource type="Texture2D" uid="uid://d1bacw6koxw8c" path="res://assets/limezu/themes/grocery.png" id="38_3xhdo"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="39_o3j34"]
-[ext_resource type="Texture2D" uid="uid://b6rx5jn8e6611" path="res://assets/limezu/grocery/401.png" id="40_lnp6b"]
-[ext_resource type="Texture2D" uid="uid://bbp1ogs7hv3ep" path="res://assets/limezu/grocery/402.png" id="41_8hbhh"]
-[ext_resource type="Texture2D" uid="uid://ba42pax28genf" path="res://assets/limezu/market/table_3.png" id="42_ebbgv"]
-[ext_resource type="Texture2D" uid="uid://dvkla8vyvqyqm" path="res://assets/limezu/props/boxes.png" id="43_tc1qn"]
-[ext_resource type="Texture2D" uid="uid://cpo22o40bskpv" path="res://assets/limezu/market/box_1.png" id="44_41fmr"]
-[ext_resource type="Texture2D" uid="uid://cww1n0n5excf5" path="res://assets/limezu/market/box_2.png" id="45_y88i3"]
-[ext_resource type="Texture2D" uid="uid://c48dhd4mh7qva" path="res://assets/limezu/market/box_5.png" id="46_tjxyk"]
-[ext_resource type="Texture2D" uid="uid://f30go22pvbea" path="res://art/terminal_consegne.png" id="47_orsyj"]
-[ext_resource type="Texture2D" uid="uid://cv71sj3d4jvn1" path="res://assets/limezu/street/bench_side.png" id="48_hmf7x"]
-[ext_resource type="Script" uid="uid://br6k6k1xm6y31" path="res://world/room_feature.gd" id="49_jk605"]
-[ext_resource type="Texture2D" uid="uid://cu8u2efv6d76a" path="res://assets/limezu/props/cart_blue_empty_down.png" id="51_ifahs"]
-[ext_resource type="Texture2D" uid="uid://ccmyvu67rv7a6" path="res://assets/limezu/props/cart_red_empty_down.png" id="53_4m5ns"]
-[ext_resource type="Texture2D" uid="uid://c21nj13354tci" path="res://assets/limezu/props/cart_green_empty_down.png" id="54_00ad0"]
-[ext_resource type="Texture2D" uid="uid://beff2vki74d5x" path="res://assets/limezu/props/cart_blue_full1_right.png" id="55_ommgp"]
-[ext_resource type="Texture2D" uid="uid://cwaky8jdtw4m1" path="res://assets/limezu/props/cart_red_full3_down.png" id="56_mdiev"]
-[ext_resource type="Texture2D" uid="uid://kawcfmgmtpce" path="res://assets/limezu/props/cart_green_full2_up.png" id="57_d5y3d"]
+[ext_resource type="Script" path="res://chapters/c3/mercato_c3.gd" id="1_ermtk"]
+[ext_resource type="TileSet" path="res://world/tilesets/interni.tres" id="2_fe82k"]
+[ext_resource type="Script" path="res://world/room_outline.gd" id="3_37sdo"]
+[ext_resource type="Texture2D" path="res://art/sign_saldi.png" id="4_jtsxm"]
+[ext_resource type="Texture2D" path="res://art/price_board.png" id="5_ijwyr"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/97.png" id="6_pb64e"]
+[ext_resource type="Script" path="res://world/examine.gd" id="7_phso2"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/250.png" id="8_vsi8c"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/147.png" id="9_ifahs"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/437.png" id="10_4m5ns"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/249.png" id="11_00ad0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/145.png" id="12_ommgp"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/146.png" id="13_mdiev"]
+[ext_resource type="Texture2D" path="res://art/chalkboard.png" id="14_d5y3d"]
+[ext_resource type="Texture2D" path="res://art/water_machine.png" id="15_iph5s"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/58.png" id="16_thb2e"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/61.png" id="17_gyumu"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/113.png" id="18_bu38g"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/114.png" id="19_r1ov5"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/115.png" id="20_0nuhe"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/116.png" id="21_tp8vh"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/148.png" id="22_he0vb"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/149.png" id="23_bdy3v"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/403.png" id="24_350y1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/404.png" id="26_qihyh"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/406.png" id="28_c0cbu"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/405.png" id="32_llx2m"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/415.png" id="33_34r1w"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/413.png" id="34_ay5cw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/451.png" id="35_me0ja"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/449.png" id="36_6x5ou"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/grocery.png" id="38_3xhdo"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="39_o3j34"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/401.png" id="40_lnp6b"]
+[ext_resource type="Texture2D" path="res://assets/limezu/grocery/402.png" id="41_8hbhh"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/table_3.png" id="42_ebbgv"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/boxes.png" id="43_tc1qn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_1.png" id="44_41fmr"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_2.png" id="45_y88i3"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_5.png" id="46_tjxyk"]
+[ext_resource type="Texture2D" path="res://art/terminal_consegne.png" id="47_orsyj"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/bench_side.png" id="48_hmf7x"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_blue_empty_down.png" id="51_ifahs"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_red_empty_down.png" id="53_4m5ns"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_empty_down.png" id="54_00ad0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_blue_full1_right.png" id="55_ommgp"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_red_full3_down.png" id="56_mdiev"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_full2_up.png" id="57_d5y3d"]
 [ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="Script" uid="uid://d3mjn8f0mqaot" path="res://world/shopping_cart.gd" id="cart_sc"]
-[ext_resource type="Script" uid="uid://42f58xkur48k" path="res://world/produce_stand.gd" id="Script_ortofrutta"]
+[ext_resource type="Script" path="res://world/shopping_cart.gd" id="cart_sc"]
+[ext_resource type="PackedScene" path="res://world/comparsa.tscn" id="comparsa_tscn"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
+[ext_resource type="Script" path="res://world/produce_stand.gd" id="Script_ortofrutta"]
 [ext_resource type="PackedScene" path="res://world/stairs_down.tscn" id="stairs_down_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
-[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
-[ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
-[ext_resource type="PackedScene" path="res://world/comparsa.tscn" id="comparsa_tscn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iph5s"]
 size = Vector2(24, 25)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7xjmm"]
-size = Vector2(28, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7xjmm_Latte"]
+size = Vector2(28, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yfrbd"]
 size = Vector2(30, 13)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_thb2e"]
-size = Vector2(24, 25)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_thb2e_Aria"]
+size = Vector2(24, 22.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyumu"]
-size = Vector2(29, 18.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyumu_Bancone0"]
+size = Vector2(29, 16.25)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bu38g"]
-size = Vector2(29, 18.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bu38g_Bancone1"]
+size = Vector2(29, 15.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rkao0"]
 size = Vector2(13, 14)
@@ -90,29 +88,29 @@ size = Vector2(24, 35)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0nuhe"]
 size = Vector2(25.5, 34.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pvyyg"]
-size = Vector2(18.5, 38)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ifahs"]
+size = Vector2(18.5, 47)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5vru1"]
 size = Vector2(19, 39)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ikqjg"]
-size = Vector2(20, 38)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4m5ns"]
+size = Vector2(20, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5cyjs"]
 size = Vector2(20, 40)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_r8m2r"]
-size = Vector2(19, 38)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_00ad0"]
+size = Vector2(19, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uy7bp"]
 size = Vector2(19, 38)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tp8vh"]
-size = Vector2(30, 21.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tp8vh_BancoFrigo0"]
+size = Vector2(30, 17.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_he0vb"]
-size = Vector2(29, 19.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_he0vb_BancoFrigo1"]
+size = Vector2(29, 17.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qp0vw"]
 size = Vector2(13, 19)
@@ -126,11 +124,11 @@ size = Vector2(14, 15)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_25ovx"]
 size = Vector2(13, 14)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bck6x"]
-size = Vector2(12, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ommgp"]
+size = Vector2(16, 20)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1lesu"]
-size = Vector2(12, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mdiev"]
+size = Vector2(16, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_403om"]
 size = Vector2(12, 8)
@@ -159,14 +157,14 @@ size = Vector2(11.5, 19)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ghvuf"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_swyfm"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_d5y3d"]
 size = Vector2(12, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0bpej"]
-size = Vector2(13, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0bpej_Cassette0"]
+size = Vector2(13, 15)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fr67f"]
-size = Vector2(16, 18)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fr67f_Cassette1"]
+size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1i7f7"]
 size = Vector2(16, 20)
@@ -189,8 +187,8 @@ size = Vector2(16, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wlc0i"]
 size = Vector2(12, 3)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_iw8cx"]
-size = Vector2(23.5, 25.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_iw8cx_Scatoloni"]
+size = Vector2(23.5, 22.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yhxth"]
 size = Vector2(13, 12)
@@ -198,8 +196,8 @@ size = Vector2(13, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0cghe"]
 size = Vector2(14, 18)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5b8v6"]
-size = Vector2(15, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_thb2e"]
+size = Vector2(15, 11)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_45c4t"]
 size = Vector2(16, 26)
@@ -225,41 +223,14 @@ size = Vector2(13, 20)
 [sub_resource type="RectangleShape2D" id="cart_shape_CarrelloFila2"]
 size = Vector2(12, 19)
 
-[sub_resource type="RectangleShape2D" id="cart_shape_CarrelloCliente2"]
-size = Vector2(16, 16)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyumu"]
+size = Vector2(17, 18)
 
 [sub_resource type="RectangleShape2D" id="cart_shape_CarrelloCliente3"]
 size = Vector2(14, 8)
 
 [sub_resource type="RectangleShape2D" id="cart_shape_CarrelloCorsia"]
 size = Vector2(13, 19)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7xjmm_Latte"]
-size = Vector2(28, 16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_thb2e_Aria"]
-size = Vector2(24, 22.5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyumu_Bancone0"]
-size = Vector2(29, 16.25)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bu38g_Bancone1"]
-size = Vector2(29, 15.25)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tp8vh_BancoFrigo0"]
-size = Vector2(30, 17.5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_he0vb_BancoFrigo1"]
-size = Vector2(29, 17.5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0bpej_Cassette0"]
-size = Vector2(13, 15)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fr67f_Cassette1"]
-size = Vector2(16, 16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_iw8cx_Scatoloni"]
-size = Vector2(23.5, 22.5)
 
 [node name="Mercato" type="Node2D" unique_id=1362303612]
 script = ExtResource("1_ermtk")
@@ -344,6 +315,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Pane" unique_id=1689190796]
 position = Vector2(0, 2)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Pane/Collisione" unique_id=244213858]
 position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_iph5s")
@@ -356,6 +328,7 @@ offset = Vector2(0, -25)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Latte" unique_id=29862067]
 position = Vector2(0, 7)
+
 [node name="@CollisionShape2D@22" type="CollisionShape2D" parent="Mondo/Latte/Collisione" unique_id=1429469297]
 position = Vector2(16, -15)
 shape = SubResource("RectangleShape2D_7xjmm_Latte")
@@ -368,6 +341,7 @@ offset = Vector2(0, -30)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Sogni" unique_id=850541002]
 position = Vector2(0, 2)
+
 [node name="@CollisionShape2D@23" type="CollisionShape2D" parent="Mondo/Sogni/Collisione" unique_id=1219693016]
 position = Vector2(16, -10.5)
 shape = SubResource("RectangleShape2D_yfrbd")
@@ -381,6 +355,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Aria" unique_id=198403593]
 position = Vector2(0, 2)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Aria/Collisione" unique_id=290186414]
 position = Vector2(17, -13.25)
 shape = SubResource("RectangleShape2D_thb2e_Aria")
@@ -394,6 +369,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone0" unique_id=88041640]
 position = Vector2(0, 7)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Bancone0/Collisione" unique_id=404163692]
 position = Vector2(17, -15.125)
 shape = SubResource("RectangleShape2D_gyumu_Bancone0")
@@ -407,6 +383,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Bancone1" unique_id=1578417019]
 position = Vector2(0, 7)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Bancone1/Collisione" unique_id=1883547341]
 position = Vector2(15, -14.625)
 shape = SubResource("RectangleShape2D_bu38g_Bancone1")
@@ -493,6 +470,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Frigo0" unique_id=2112179864]
 position = Vector2(0, 7)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Frigo0/Collisione" unique_id=1563661699]
 position = Vector2(16, -26)
 shape = SubResource("RectangleShape2D_r1ov5")
@@ -506,6 +484,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Frigo1" unique_id=1041779615]
 position = Vector2(0, 8)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/Frigo1/Collisione" unique_id=2038221528]
 position = Vector2(16.25, -26.25)
 shape = SubResource("RectangleShape2D_0nuhe")
@@ -525,8 +504,8 @@ offset = Vector2(0, -48)
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Corsia0A" unique_id=1724029056]
 
 [node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/Corsia0A/Collisione" unique_id=506334458]
-position = Vector2(15.75, -21)
-shape = SubResource("RectangleShape2D_pvyyg")
+position = Vector2(15.75, -16.5)
+shape = SubResource("RectangleShape2D_ifahs")
 
 [node name="Corsia0B" type="Sprite2D" parent="Mondo" unique_id=196162723]
 position = Vector2(144, 192)
@@ -549,8 +528,8 @@ offset = Vector2(0, -48)
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Corsia1A" unique_id=1181212281]
 
 [node name="@CollisionShape2D@33" type="CollisionShape2D" parent="Mondo/Corsia1A/Collisione" unique_id=555417246]
-position = Vector2(15, -21)
-shape = SubResource("RectangleShape2D_ikqjg")
+position = Vector2(15, -16)
+shape = SubResource("RectangleShape2D_4m5ns")
 
 [node name="Corsia1B" type="Sprite2D" parent="Mondo" unique_id=207134058]
 position = Vector2(208, 192)
@@ -573,8 +552,8 @@ offset = Vector2(0, -48)
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Corsia2A" unique_id=611305160]
 
 [node name="@CollisionShape2D@35" type="CollisionShape2D" parent="Mondo/Corsia2A/Collisione" unique_id=577324514]
-position = Vector2(15.5, -21)
-shape = SubResource("RectangleShape2D_r8m2r")
+position = Vector2(15.5, -16)
+shape = SubResource("RectangleShape2D_00ad0")
 
 [node name="Corsia2B" type="Sprite2D" parent="Mondo" unique_id=1492014050]
 position = Vector2(272, 192)
@@ -603,6 +582,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/BancoFrigo0" unique_id=1308757830]
 position = Vector2(0, 7)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/BancoFrigo0/Collisione" unique_id=1454126283]
 position = Vector2(16, -15.75)
 shape = SubResource("RectangleShape2D_tp8vh_BancoFrigo0")
@@ -616,6 +596,7 @@ metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/BancoFrigo1" unique_id=1381040921]
 position = Vector2(0, 7)
+
 [node name="Ingombro" type="CollisionShape2D" parent="Mondo/BancoFrigo1/Collisione" unique_id=1829688658]
 position = Vector2(16.5, -15.75)
 shape = SubResource("RectangleShape2D_he0vb_BancoFrigo1")
@@ -716,12 +697,13 @@ position = Vector2(320, 256)
 texture = ExtResource("32_llx2m")
 centered = false
 offset = Vector2(0, -32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Frutta4" unique_id=1720683004]
 
 [node name="@CollisionShape2D@43" type="CollisionShape2D" parent="Mondo/Frutta4/Collisione" unique_id=497309985]
-position = Vector2(8, -5)
-shape = SubResource("RectangleShape2D_bck6x")
+position = Vector2(8, -11)
+shape = SubResource("RectangleShape2D_ommgp")
 
 [node name="Sopra" type="Sprite2D" parent="Mondo/Frutta4" unique_id=310893935]
 texture = ExtResource("33_34r1w")
@@ -733,12 +715,13 @@ position = Vector2(336, 256)
 texture = ExtResource("24_350y1")
 centered = false
 offset = Vector2(0, -32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Frutta5" unique_id=2004368857]
 
 [node name="@CollisionShape2D@44" type="CollisionShape2D" parent="Mondo/Frutta5/Collisione" unique_id=456964491]
-position = Vector2(8, -5)
-shape = SubResource("RectangleShape2D_1lesu")
+position = Vector2(8, -11)
+shape = SubResource("RectangleShape2D_mdiev")
 
 [node name="Sopra" type="Sprite2D" parent="Mondo/Frutta5" unique_id=2140169827]
 texture = ExtResource("34_ay5cw")
@@ -783,18 +766,17 @@ sheet = "rpg_vx2_8"
 look = "left"
 lines = PackedStringArray("Ho comprato tre cose che non mi servono. Ma erano al 50%!", "Lo scontrino è più lungo di me. Lo tengo come ricordo.", "Il carrello cigola. Lo prendo come un complimento.")
 
-[node name="Giro" type="Node2D" parent="Mondo/Cliente0"]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente0" unique_id=2058445788]
 
-[node name="Punto0" type="Marker2D" parent="Mondo/Cliente0/Giro"]
-position = Vector2(0, 0)
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente0/Giro" unique_id=1643184690]
 
-[node name="Punto1" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente0/Giro" unique_id=194895991]
 position = Vector2(0, 80)
 
-[node name="Punto2" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente0/Giro" unique_id=1998638]
 position = Vector2(64, 80)
 
-[node name="Punto3" type="Marker2D" parent="Mondo/Cliente0/Giro"]
+[node name="Punto3" type="Marker2D" parent="Mondo/Cliente0/Giro" unique_id=1022873277]
 position = Vector2(64, 0)
 
 [node name="Cliente1" parent="Mondo" unique_id=232408115 instance=ExtResource("comparsa_tscn")]
@@ -802,15 +784,14 @@ position = Vector2(200, 94)
 sheet = "rpg_vx3_1"
 lines = PackedStringArray("Mi scusi, sa dov\'è il reparto Felicità? Sulla mappa c\'è, ma è in esaurimento.", "Il latte costa quanto un\'ora di cassa. Lo guardo e basta. Guardare è ancora gratis. Credo.")
 
-[node name="Giro" type="Node2D" parent="Mondo/Cliente1"]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente1" unique_id=1053332286]
 
-[node name="Punto0" type="Marker2D" parent="Mondo/Cliente1/Giro"]
-position = Vector2(0, 0)
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente1/Giro" unique_id=1769038455]
 
-[node name="Punto1" type="Marker2D" parent="Mondo/Cliente1/Giro"]
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente1/Giro" unique_id=1832107501]
 position = Vector2(96, 0)
 
-[node name="Punto2" type="Marker2D" parent="Mondo/Cliente1/Giro"]
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente1/Giro" unique_id=398095344]
 position = Vector2(64, 0)
 
 [node name="Cliente2" parent="Mondo" unique_id=1697630145 instance=ExtResource("comparsa_tscn")]
@@ -819,15 +800,14 @@ sheet = "rpg_vx3_2"
 look = "down"
 lines = PackedStringArray("Le mele hanno il codice a barre sulla buccia. Così si sa subito quanto costa morderle.", "Prendo una banana. Una. Il resto lo guardo.")
 
-[node name="Giro" type="Node2D" parent="Mondo/Cliente2"]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente2" unique_id=289901671]
 
-[node name="Punto0" type="Marker2D" parent="Mondo/Cliente2/Giro"]
-position = Vector2(0, 0)
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente2/Giro" unique_id=585109714]
 
-[node name="Punto1" type="Marker2D" parent="Mondo/Cliente2/Giro"]
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente2/Giro" unique_id=1660362697]
 position = Vector2(80, 0)
 
-[node name="Punto2" type="Marker2D" parent="Mondo/Cliente2/Giro"]
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente2/Giro" unique_id=1396833569]
 position = Vector2(48, 0)
 
 [node name="Cliente3" parent="Mondo" unique_id=1427172841 instance=ExtResource("comparsa_tscn")]
@@ -835,15 +815,14 @@ position = Vector2(312, 158)
 look = "right"
 lines = PackedStringArray("Cerco il surgelato in offerta. Ogni volta che lo trovo, l\'offerta è finita.", "Faccio la spesa per tre. Vivo da solo. Ma la confezione singola costa di più.")
 
-[node name="Giro" type="Node2D" parent="Mondo/Cliente3"]
+[node name="Giro" type="Node2D" parent="Mondo/Cliente3" unique_id=954543464]
 
-[node name="Punto0" type="Marker2D" parent="Mondo/Cliente3/Giro"]
-position = Vector2(0, 0)
+[node name="Punto0" type="Marker2D" parent="Mondo/Cliente3/Giro" unique_id=460058079]
 
-[node name="Punto1" type="Marker2D" parent="Mondo/Cliente3/Giro"]
+[node name="Punto1" type="Marker2D" parent="Mondo/Cliente3/Giro" unique_id=1953757027]
 position = Vector2(0, -48)
 
-[node name="Punto2" type="Marker2D" parent="Mondo/Cliente3/Giro"]
+[node name="Punto2" type="Marker2D" parent="Mondo/Cliente3/Giro" unique_id=100058260]
 position = Vector2(-96, -80)
 
 [node name="CassaLeda" type="Sprite2D" parent="Mondo" unique_id=1079740534]
@@ -922,13 +901,14 @@ position = Vector2(521, 111)
 texture = ExtResource("35_me0ja")
 centered = false
 offset = Vector2(0, -27)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaUfficio1" unique_id=1290626792]
 position = Vector2(0, 5)
 
 [node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Mondo/PiantaUfficio1/Collisione" unique_id=1610988749]
 position = Vector2(8, -9)
-shape = SubResource("RectangleShape2D_swyfm")
+shape = SubResource("RectangleShape2D_d5y3d")
 
 [node name="Cassette0" type="Sprite2D" parent="Mondo" unique_id=1296650428]
 position = Vector2(416, 166)
@@ -938,6 +918,7 @@ offset = Vector2(0, -38)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cassette0" unique_id=1779485933]
 position = Vector2(0, 10)
+
 [node name="@CollisionShape2D@51" type="CollisionShape2D" parent="Mondo/Cassette0/Collisione" unique_id=1996740432]
 position = Vector2(7, -17.5)
 shape = SubResource("RectangleShape2D_0bpej_Cassette0")
@@ -950,6 +931,7 @@ offset = Vector2(0, -38)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Cassette1" unique_id=811681192]
 position = Vector2(0, 10)
+
 [node name="@CollisionShape2D@52" type="CollisionShape2D" parent="Mondo/Cassette1/Collisione" unique_id=1216442950]
 position = Vector2(6, -18)
 shape = SubResource("RectangleShape2D_fr67f_Cassette1")
@@ -1031,6 +1013,7 @@ offset = Vector2(0, -27)
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Scatoloni" unique_id=1044599229]
 position = Vector2(0, 5)
+
 [node name="@CollisionShape2D@58" type="CollisionShape2D" parent="Mondo/Scatoloni/Collisione" unique_id=3969536]
 position = Vector2(14.25, -16.25)
 shape = SubResource("RectangleShape2D_iw8cx_Scatoloni")
@@ -1064,12 +1047,13 @@ position = Vector2(464, 256)
 texture = ExtResource("46_tjxyk")
 centered = false
 offset = Vector2(0, -32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaAmir2" unique_id=1518585640]
 
 [node name="@CollisionShape2D@61" type="CollisionShape2D" parent="Mondo/ScatolaAmir2/Collisione" unique_id=1506222494]
-position = Vector2(16.5, -6)
-shape = SubResource("RectangleShape2D_5b8v6")
+position = Vector2(16.5, -5.5)
+shape = SubResource("RectangleShape2D_thb2e")
 
 [node name="Terminale" type="Sprite2D" parent="Mondo" unique_id=676841235]
 position = Vector2(544, 208)
@@ -1159,9 +1143,7 @@ position = Vector2(-8, 8)
 
 [node name="Targhetta" parent="Mondo/PostoCassa" index="1"]
 offset_left = -21.0
-offset_top = -22.0
 offset_right = 5.0
-offset_bottom = -10.0
 
 [node name="SportelloBadge" parent="Mondo" unique_id=791083012 instance=ExtResource("booth_tscn")]
 position = Vector2(384, 79)
@@ -1220,7 +1202,7 @@ texture = ExtResource("54_00ad0")
 centered = false
 offset = Vector2(0, -32)
 region_enabled = true
-region_rect = Rect2(64, 0, 32, 32)
+region_rect = Rect2(0, 0, 32, 32)
 script = ExtResource("cart_sc")
 color = "green"
 metadata/prop_talk_skip = true
@@ -1243,17 +1225,19 @@ texture = ExtResource("55_ommgp")
 centered = false
 offset = Vector2(0, -27)
 region_enabled = true
-region_rect = Rect2(32, 0, 32, 32)
+region_rect = Rect2(0, 0, 32, 32)
 script = ExtResource("cart_sc")
 load_kind = "full1"
 facing = "right"
 metadata/prop_talk_skip = true
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/CarrelloCliente2" unique_id=849493295]
 position = Vector2(0, 5)
+
 [node name="Forma" type="CollisionShape2D" parent="Mondo/CarrelloCliente2/Collisione" unique_id=596195038]
-position = Vector2(17, -15)
-shape = SubResource("cart_shape_CarrelloCliente2")
+position = Vector2(17.5, -14)
+shape = SubResource("RectangleShape2D_gyumu")
 
 [node name="Guarda" type="Node2D" parent="Mondo/CarrelloCliente2" unique_id=2034737870]
 position = Vector2(16, -3)
@@ -1267,7 +1251,7 @@ texture = ExtResource("56_mdiev")
 centered = false
 offset = Vector2(0, -32)
 region_enabled = true
-region_rect = Rect2(64, 0, 32, 32)
+region_rect = Rect2(0, 0, 32, 32)
 script = ExtResource("cart_sc")
 color = "red"
 load_kind = "full3"
@@ -1300,6 +1284,7 @@ metadata/prop_talk_skip = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/CarrelloCorsia" unique_id=1521259444]
 position = Vector2(0, 5)
+
 [node name="Forma" type="CollisionShape2D" parent="Mondo/CarrelloCorsia/Collisione" unique_id=1812410345]
 position = Vector2(16.5, -14.5)
 shape = SubResource("cart_shape_CarrelloCorsia")
@@ -1316,20 +1301,16 @@ lines_after = PackedStringArray()
 position = Vector2(184, 110)
 metadata/facing = "down"
 
-[node name="Inquadrature" type="Node2D" parent="."]
+[node name="Inquadrature" type="Node2D" parent="." unique_id=1866807183]
 
-[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature"]
+[node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=568406712]
 position = Vector2(288, 120)
 script = ExtResource("inq_script")
 zoom = 1.3235
 durata = 3.5
-durata_ritorno = 0.65
 
-[node name="Tabellone" type="Marker2D" parent="Inquadrature"]
+[node name="Tabellone" type="Marker2D" parent="Inquadrature" unique_id=1614784129]
 position = Vector2(256, 60)
 script = ExtResource("inq_script")
-zoom = 3
-durata = 0.75
-durata_ritorno = 0.65
 
 [editable path="Mondo/PostoCassa"]

@@ -1,112 +1,131 @@
-[gd_scene format=4 uid="uid://c0lct0pfqt0c2"]
+[gd_scene format=4]
 
-[ext_resource type="Script" uid="uid://du3dp60v5346w" path="res://chapters/c5/citta_c5.gd" id="1_anvy5"]
-[ext_resource type="TileSet" uid="uid://cb82d7fc272ay" path="res://world/tilesets/citta.tres" id="2_h6op4"]
-[ext_resource type="Texture2D" uid="uid://yff48hwqidoq" path="res://art/c5/cielo.png" id="3_ucb5q"]
-[ext_resource type="Texture2D" uid="uid://gd73ptruoul5" path="res://assets/limezu/buildings/cheap_tower.png" id="4_1t5em"]
-[ext_resource type="Texture2D" uid="uid://0jga8hecte01" path="res://art/c5/porta_vetro.png" id="6_umeh6"]
-[ext_resource type="Texture2D" uid="uid://dps1lveyyb58u" path="res://assets/limezu/buildings/condo_yellow.png" id="7_ma1d4"]
-[ext_resource type="Texture2D" uid="uid://v0518t6lh6qt" path="res://assets/limezu/buildings/condo_blue.png" id="11_1k6hv"]
-[ext_resource type="Texture2D" uid="uid://c245op7d45nrs" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_3_2.png" id="12_cesve"]
-[ext_resource type="Texture2D" uid="uid://c152ag66727bd" path="res://assets/limezu/street/billboard.png" id="13_5cqe0"]
-[ext_resource type="Texture2D" uid="uid://36dftjbb2xt4" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_4_3.png" id="13_en4mk"]
-[ext_resource type="Texture2D" uid="uid://ccqs7ydt0oqso" path="res://art/c5/cartellone_premium.png" id="14_dmu8u"]
-[ext_resource type="Texture2D" uid="uid://durb5s17fkobw" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_Info_Sign_Side_3.png" id="14_pqfqw"]
-[ext_resource type="Texture2D" uid="uid://cko0vesr3f0s7" path="res://assets/limezu/market/shop_big.png" id="15_th4ur"]
-[ext_resource type="Texture2D" uid="uid://p62q6xbr6h4h" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_4.png" id="16_3hyro"]
-[ext_resource type="Texture2D" uid="uid://bq5m8mrcu38c4" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_3.png" id="17_j1k71"]
-[ext_resource type="Script" uid="uid://dx5eqyiwehf6c" path="res://world/examine.gd" id="17_v0nlt"]
-[ext_resource type="Texture2D" uid="uid://cvyajq7xwt5s0" path="res://assets/limezu/street/lamp.png" id="18_a7fcm"]
-[ext_resource type="Texture2D" uid="uid://b82thhpv7nl2w" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_2.png" id="18_h6bfd"]
-[ext_resource type="Texture2D" uid="uid://dqvceovk5q3hu" path="res://art/c5/altoparlante.png" id="19_p474u"]
-[ext_resource type="Texture2D" uid="uid://djcwx4jjw8v3t" path="res://art/c5/terminale_presentazioni.png" id="20_kei42"]
-[ext_resource type="Texture2D" uid="uid://c436n4y0tv4pd" path="res://assets/limezu/street/tree.png" id="21_k0hxi"]
-[ext_resource type="Script" uid="uid://cm4b8702qlt1l" path="res://world/npc_spot.gd" id="22_vebpn"]
-[ext_resource type="Texture2D" uid="uid://cqmhqd0v0kebu" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_1.png" id="23_kk1yp"]
-[ext_resource type="Texture2D" uid="uid://ehkojorl1qje" path="res://assets/limezu/park/fountain.png" id="27_jq72i"]
-[ext_resource type="Texture2D" uid="uid://c0xrc2xvkaltx" path="res://art/c5/tabellone_bus.png" id="28_fb5ue"]
-[ext_resource type="Texture2D" uid="uid://bok36qww60uud" path="res://assets/limezu/street/hydrant.png" id="30_fbj6j"]
-[ext_resource type="Texture2D" uid="uid://c5bvoamslsoww" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_1.png" id="31_l1eqg"]
-[ext_resource type="Texture2D" uid="uid://c5qnwk2cmllkm" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_10.png" id="32_xcy1e"]
-[ext_resource type="Texture2D" uid="uid://b3261crua82r" path="res://assets/limezu/park/Modern_Exteriors_Singles_Hydrant_2.png" id="34_vfd1q"]
-[ext_resource type="Texture2D" uid="uid://dx350xliifxyd" path="res://assets/limezu/park/Modern_Exteriors_Singles_Info_Sign_1.png" id="35_s7gpo"]
-[ext_resource type="Texture2D" uid="uid://cxxuacoo1v2pb" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_1.png" id="39_v0nlt"]
-[ext_resource type="Texture2D" uid="uid://cwrojmm8mkfj5" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_2.png" id="40_a7fcm"]
-[ext_resource type="Texture2D" uid="uid://cw74d6wmrivkx" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Entrance_1.png" id="41_p474u"]
-[ext_resource type="Texture2D" uid="uid://cio11ektk6t8y" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_4.png" id="42_kei42"]
-[ext_resource type="Texture2D" uid="uid://bx642a0fc75xo" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Entrance_2.png" id="43_k0hxi"]
-[ext_resource type="Texture2D" uid="uid://87xaumy51lcg" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_6.png" id="44_vebpn"]
-[ext_resource type="Texture2D" uid="uid://4g35bun8ohf" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_8.png" id="45_qwos7"]
-[ext_resource type="Texture2D" uid="uid://crt36xl22r12p" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_7.png" id="46_c0vvq"]
-[ext_resource type="Texture2D" uid="uid://bte64506khyn5" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_5.png" id="47_lnq12"]
-[ext_resource type="Texture2D" uid="uid://donmq1da2i0mh" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Slide_1.png" id="50_y6cp3"]
-[ext_resource type="Texture2D" uid="uid://dajav1e5kd5hw" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Swing_1.png" id="51_3028f"]
-[ext_resource type="Texture2D" uid="uid://ctplsyiuvncvt" path="res://assets/limezu/park/tree_2.png" id="52_jnckw"]
-[ext_resource type="Texture2D" uid="uid://f5fcdyhe8jdl" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_1.png" id="53_t2lxe"]
-[ext_resource type="Texture2D" uid="uid://c5vvd3ul2ivq5" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_5.png" id="54_0s1l0"]
-[ext_resource type="Texture2D" uid="uid://drm2xm0h3mfeb" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bench_2.png" id="55_w601c"]
-[ext_resource type="Texture2D" uid="uid://ck4wl27rp1xso" path="res://assets/limezu/park/Modern_Exteriors_Singles_Ball_1.png" id="56_yioj0"]
-[ext_resource type="Texture2D" uid="uid://cbhm1234q2g6t" path="res://assets/limezu/park/Modern_Exteriors_Singles_Ball_2.png" id="57_hf54c"]
-[ext_resource type="Texture2D" uid="uid://by55q1mj5nr74" path="res://assets/limezu/park/Modern_Exteriors_Singles_Basketball_Basket_1.png" id="58_51ewb"]
-[ext_resource type="Texture2D" uid="uid://cfrg0sr33xmyi" path="res://assets/limezu/park/Modern_Exteriors_Singles_Billboard_8.png" id="59_nu84p"]
-[ext_resource type="Texture2D" uid="uid://b3pfpoar36iwn" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_2.png" id="60_iqr5t"]
-[ext_resource type="Texture2D" uid="uid://ccc1gwunyu0j6" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_4.png" id="61_5jl8h"]
-[ext_resource type="Texture2D" uid="uid://dpnxktrrwj7nw" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_5.png" id="62_t2r2j"]
-[ext_resource type="Texture2D" uid="uid://dpwdc47rhoc2" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_7.png" id="63_cmp8a"]
-[ext_resource type="Texture2D" uid="uid://cuocpxhcd8aoe" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_2_1.png" id="64_2s8jb"]
-[ext_resource type="Texture2D" uid="uid://bljrcy3tgix88" path="res://assets/limezu/park/Modern_Exteriors_Singles_Candy_Cart_2.png" id="65_olcym"]
-[ext_resource type="Texture2D" uid="uid://dh38e6ddq6yyq" path="res://assets/limezu/park/Modern_Exteriors_Singles_Drinking_Fountain_2.png" id="66_3bajl"]
-[ext_resource type="Texture2D" uid="uid://ty0nhhkbsewl" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_Open_2.png" id="67_113th"]
-[ext_resource type="Texture2D" uid="uid://dwn68td6oj7h7" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_Open_4.png" id="68_kx465"]
-[ext_resource type="Texture2D" uid="uid://bjkbnrauy4dnm" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Cloth_2.png" id="69_hc0sm"]
-[ext_resource type="Texture2D" uid="uid://d2lwekugv7xl7" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Sign_1.png" id="70_arypb"]
-[ext_resource type="Texture2D" uid="uid://bwy6vfqy3hxk5" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Table_3.png" id="71_ynjc2"]
-[ext_resource type="Texture2D" uid="uid://boyii4d3hf7q1" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Table_4.png" id="72_my5fn"]
-[ext_resource type="Texture2D" uid="uid://66xva7viced6" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_1.png" id="73_t80rq"]
-[ext_resource type="Texture2D" uid="uid://xm3edd61tbch" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_2.png" id="74_6udlk"]
-[ext_resource type="Texture2D" uid="uid://ckvww4cpw7wwq" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_3.png" id="75_nxxv0"]
-[ext_resource type="Texture2D" uid="uid://dja2kow6anxyc" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_4.png" id="76_vcx0q"]
-[ext_resource type="Texture2D" uid="uid://ca3l6b48h3uan" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_5.png" id="77_8n3cu"]
-[ext_resource type="Texture2D" uid="uid://ctodlj2g151wc" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_6.png" id="78_dj4dq"]
-[ext_resource type="Texture2D" uid="uid://cybqiqcla2stu" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_9.png" id="79_yd6h6"]
-[ext_resource type="Texture2D" uid="uid://byymi5lmuk6ds" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_12.png" id="80_4578w"]
-[ext_resource type="Texture2D" uid="uid://dcdv27gyhlo27" path="res://assets/limezu/park/Modern_Exteriors_Singles_Hydrant_1.png" id="81_au1ko"]
-[ext_resource type="Texture2D" uid="uid://bre6qv5fq3ivv" path="res://assets/limezu/park/Modern_Exteriors_Singles_Lemonade_Stand_2.png" id="82_bs2o2"]
-[ext_resource type="Texture2D" uid="uid://cpjoly83r286w" path="res://assets/limezu/park/Modern_Exteriors_Singles_Mailbox_1.png" id="83_r2erp"]
-[ext_resource type="Texture2D" uid="uid://b5npirm2atau5" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_1.png" id="84_bmhe5"]
-[ext_resource type="Texture2D" uid="uid://wdnypqe0aegx" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_4.png" id="85_eabyn"]
-[ext_resource type="Texture2D" uid="uid://4il31abo0lgf" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_Open_2.png" id="86_gqmwm"]
-[ext_resource type="Texture2D" uid="uid://cfrtqj64mf4de" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_1.png" id="87_0ch47"]
-[ext_resource type="Texture2D" uid="uid://bavjpdonqxlu0" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_2.png" id="88_tuamt"]
-[ext_resource type="Texture2D" uid="uid://xwceve6thh4n" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_3.png" id="89_onprn"]
-[ext_resource type="Texture2D" uid="uid://bkki6vdttkqck" path="res://assets/limezu/park/Modern_Exteriors_Singles_Parking_1.png" id="90_xl207"]
-[ext_resource type="Texture2D" uid="uid://1njjl171dthd" path="res://assets/limezu/park/Modern_Exteriors_Singles_Parking_2.png" id="91_igwup"]
-[ext_resource type="Texture2D" uid="uid://cxssrkw46iii8" path="res://assets/limezu/park/Modern_Exteriors_Singles_Portable_Bathroom_1.png" id="92_payh7"]
-[ext_resource type="Texture2D" uid="uid://uoc3ralvjbvs" path="res://assets/limezu/park/Modern_Exteriors_Singles_Portable_Bathroom_4.png" id="93_ro5cb"]
-[ext_resource type="Texture2D" uid="uid://boxh6v842yi8t" path="res://assets/limezu/park/Modern_Exteriors_Singles_Sand_Playground_3.png" id="94_wmx6y"]
-[ext_resource type="Texture2D" uid="uid://civ8uwa3fce6e" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_1.png" id="95_p1bdy"]
-[ext_resource type="Texture2D" uid="uid://c2bmge7k7io26" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_1_Signboard_1.png" id="96_ga6mi"]
-[ext_resource type="Texture2D" uid="uid://0umkg2v483i2" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_Trolley_Shelter_1.png" id="97_qjl0e"]
-[ext_resource type="Texture2D" uid="uid://dp86hiurm3dl" path="res://assets/limezu/park/Modern_Exteriors_Singles_Stoplight_2.png" id="98_720iq"]
-[ext_resource type="Texture2D" uid="uid://bq7soq0yseip1" path="res://assets/limezu/park/Modern_Exteriors_Singles_Street_Lamp_4.png" id="99_ss2kd"]
-[ext_resource type="Texture2D" uid="uid://cyx0nw6phjml1" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Cone_2.png" id="100_t2c0j"]
-[ext_resource type="Texture2D" uid="uid://fklfphbmxpik" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Signs_25.png" id="101_bisux"]
-[ext_resource type="Texture2D" uid="uid://yugvpc8134ob" path="res://assets/limezu/park/Modern_Exteriors_Singles_Underground_Parking_3.png" id="102_raypq"]
-[ext_resource type="PackedScene" path="res://world/badge_booth.tscn" id="booth_tscn"]
-[ext_resource type="Texture2D" uid="uid://bdr6gpbxlwumd" path="res://art/c5/cartello_protesta.png" id="f3_cartello"]
-[ext_resource type="Texture2D" uid="uid://063u6a2pg36p" path="res://art/c5/cartone.png" id="f3_cartone"]
-[ext_resource type="Texture2D" uid="uid://bxk8sesax47ph" path="res://art/c5/panca_premium.png" id="f3_premium"]
-[ext_resource type="Texture2D" uid="uid://c4fdjxuvtjn3a" path="res://art/c5/vetrina_rotta.png" id="f3_vetrina"]
-[ext_resource type="Script" uid="uid://b8nexmesr57pf" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="Script" path="res://chapters/c5/citta_c5.gd" id="1_anvy5"]
+[ext_resource type="TileSet" path="res://world/tilesets/citta.tres" id="2_h6op4"]
+[ext_resource type="Texture2D" path="res://art/c5/cielo.png" id="3_ucb5q"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/cheap_tower.png" id="4_1t5em"]
+[ext_resource type="Texture2D" path="res://art/c5/porta_vetro.png" id="6_umeh6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_yellow.png" id="7_ma1d4"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_blue.png" id="11_1k6hv"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_3_2.png" id="12_cesve"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/billboard.png" id="13_5cqe0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_4_3.png" id="13_en4mk"]
+[ext_resource type="Texture2D" path="res://art/c5/cartellone_premium.png" id="14_dmu8u"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_Info_Sign_Side_3.png" id="14_pqfqw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/shop_big.png" id="15_th4ur"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_4.png" id="16_3hyro"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_3.png" id="17_j1k71"]
+[ext_resource type="Script" path="res://world/examine.gd" id="17_v0nlt"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/lamp.png" id="18_a7fcm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_2.png" id="18_h6bfd"]
+[ext_resource type="Texture2D" path="res://art/c5/altoparlante.png" id="19_p474u"]
+[ext_resource type="Texture2D" path="res://art/c5/terminale_presentazioni.png" id="20_kei42"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/tree.png" id="21_k0hxi"]
+[ext_resource type="Script" path="res://world/npc_spot.gd" id="22_vebpn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_1.png" id="23_kk1yp"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/fountain.png" id="27_jq72i"]
+[ext_resource type="Texture2D" path="res://art/c5/tabellone_bus.png" id="28_fb5ue"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/hydrant.png" id="30_fbj6j"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_1.png" id="31_l1eqg"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_10.png" id="32_xcy1e"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Hydrant_2.png" id="34_vfd1q"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Info_Sign_1.png" id="35_s7gpo"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_1.png" id="39_v0nlt"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_2.png" id="40_a7fcm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Entrance_1.png" id="41_p474u"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_4.png" id="42_kei42"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Entrance_2.png" id="43_k0hxi"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_6.png" id="44_vebpn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_8.png" id="45_qwos7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_7.png" id="46_c0vvq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_5.png" id="47_lnq12"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Slide_1.png" id="50_y6cp3"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Swing_1.png" id="51_3028f"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/tree_2.png" id="52_jnckw"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_1.png" id="53_t2lxe"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Flowers_5.png" id="54_0s1l0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bench_2.png" id="55_w601c"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Ball_1.png" id="56_yioj0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Ball_2.png" id="57_hf54c"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Basketball_Basket_1.png" id="58_51ewb"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Billboard_8.png" id="59_nu84p"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_2.png" id="60_iqr5t"]
+[ext_resource type="Script" path="res://world/badge_booth.gd" id="61_3hyro"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_4.png" id="61_5jl8h"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="62_j1k71"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_5.png" id="62_t2r2j"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Bin_7.png" id="63_cmp8a"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Building_2_1.png" id="64_2s8jb"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Candy_Cart_2.png" id="65_olcym"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Drinking_Fountain_2.png" id="66_3bajl"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_Open_2.png" id="67_113th"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Dumpster_Open_4.png" id="68_kx465"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Cloth_2.png" id="69_hc0sm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Sign_1.png" id="70_arypb"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Table_3.png" id="71_ynjc2"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Garage_Sales_Table_4.png" id="72_my5fn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_1.png" id="73_t80rq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_2.png" id="74_6udlk"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_3.png" id="75_nxxv0"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_4.png" id="76_vcx0q"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_5.png" id="77_8n3cu"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_6.png" id="78_dj4dq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_9.png" id="79_yd6h6"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Graffiti_12.png" id="80_4578w"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Hydrant_1.png" id="81_au1ko"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Lemonade_Stand_2.png" id="82_bs2o2"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Mailbox_1.png" id="83_r2erp"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_1.png" id="84_bmhe5"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_4.png" id="85_eabyn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_Open_2.png" id="86_gqmwm"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_1.png" id="87_0ch47"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_2.png" id="88_tuamt"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Other_Signs_3.png" id="89_onprn"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Parking_1.png" id="90_xl207"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Parking_2.png" id="91_igwup"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Portable_Bathroom_1.png" id="92_payh7"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Portable_Bathroom_4.png" id="93_ro5cb"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Sand_Playground_3.png" id="94_wmx6y"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_1.png" id="95_p1bdy"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_1_Signboard_1.png" id="96_ga6mi"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Shop_Shopping_Center_Trolley_Shelter_1.png" id="97_qjl0e"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Stoplight_2.png" id="98_720iq"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Street_Lamp_4.png" id="99_ss2kd"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Cone_2.png" id="100_t2c0j"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Signs_25.png" id="101_bisux"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Underground_Parking_3.png" id="102_raypq"]
+[ext_resource type="Texture2D" path="res://art/c5/cartello_protesta.png" id="f3_cartello"]
+[ext_resource type="Texture2D" path="res://art/c5/cartone.png" id="f3_cartone"]
+[ext_resource type="Texture2D" path="res://art/c5/panca_premium.png" id="f3_premium"]
+[ext_resource type="Texture2D" path="res://art/c5/vetrina_rotta.png" id="f3_vetrina"]
+[ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
-[ext_resource type="Texture2D" uid="uid://dndk6i16up7gt" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Centro.png" id="prato_centro"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Park_Centro.png" id="prato_centro"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
-
 [ext_resource type="PackedScene" path="res://world/strisce.tscn" id="strisce_tscn"]
 [ext_resource type="Script" path="res://world/traffico.gd" id="traffico_gd"]
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vum5e"]
-size = Vector2(224, 112)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin1"]
+size = Vector2(94, 190)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin2"]
+size = Vector2(110, 286)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin17"]
+size = Vector2(94, 158)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin36"]
+size = Vector2(286, 190)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin44"]
+size = Vector2(110, 110)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pqfqw"]
+size = Vector2(311, 228)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3hyro"]
+size = Vector2(272, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_if6ur"]
 size = Vector2(32, 48)
@@ -117,14 +136,14 @@ size = Vector2(32, 32)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yfaun"]
 size = Vector2(80, 48)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_g28u7"]
-size = Vector2(32, 48)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c0xxv"]
 size = Vector2(32, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m5iax"]
 size = Vector2(28, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j1k71"]
+size = Vector2(96, 284)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3tg0i"]
 size = Vector2(32, 16)
@@ -159,155 +178,17 @@ size = Vector2(28, 6)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nwigb"]
 size = Vector2(32, 144)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_80oku"]
-size = Vector2(28, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h6bfd"]
+size = Vector2(29, 26)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_luvxt"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kk1yp"]
 size = Vector2(28, 6)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5djhy_Idrante"]
-size = Vector2(12, 4)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l1eqg"]
+size = Vector2(13, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_runla"]
-size = Vector2(16, 336)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2881t"]
-size = Vector2(16, 336)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_jabii"]
-size = Vector2(672, 16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin1"]
-size = Vector2(94, 190)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin2"]
-size = Vector2(110, 286)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin3"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin4"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin5"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin6"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin7"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin8"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin9"]
-size = Vector2(74, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin10"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin11"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin12"]
-size = Vector2(74, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin13"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin14"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin15"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin16"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin17"]
-size = Vector2(94, 158)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin18"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin19"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin20"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin21"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin22"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin23"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin24"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin25"]
-size = Vector2(42, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin26"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin27"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin28"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin29"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin30"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin31"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin32"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin33"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin34"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin35"]
-size = Vector2(26, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin36"]
-size = Vector2(286, 190)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin37"]
-size = Vector2(58, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin38"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin39"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin40"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin41"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin42"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin43"]
-size = Vector2(8, 5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin44"]
-size = Vector2(110, 110)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xcy1e"]
+size = Vector2(12, 6)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lin45"]
 size = Vector2(16, 420)
@@ -318,11 +199,140 @@ size = Vector2(16, 420)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lin47"]
 size = Vector2(1680, 16)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin3"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vfd1q"]
+size = Vector2(27, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin5"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s7gpo"]
+size = Vector2(13, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y6cp3"]
+size = Vector2(6, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3028f"]
+size = Vector2(26, 63)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jnckw"]
+size = Vector2(74, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin10"]
+size = Vector2(42, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t2lxe"]
+size = Vector2(13, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin12"]
+size = Vector2(74, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin13"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin14"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0s1l0"]
+size = Vector2(11, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w601c"]
+size = Vector2(8, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yioj0"]
+size = Vector2(44, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin19"]
+size = Vector2(26, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hf54c"]
+size = Vector2(27, 23)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_51ewb"]
+size = Vector2(27, 23)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin22"]
+size = Vector2(42, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin23"]
+size = Vector2(42, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nu84p"]
+size = Vector2(42, 11)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_iqr5t"]
+size = Vector2(47.743073, 13.547302)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5jl8h"]
+size = Vector2(13, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t2r2j"]
+size = Vector2(32, 27)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cmp8a"]
+size = Vector2(15, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2s8jb"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_olcym"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3bajl"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_113th"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kx465"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hc0sm"]
+size = Vector2(28, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_arypb"]
+size = Vector2(26, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ynjc2"]
+size = Vector2(60, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_my5fn"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t80rq"]
+size = Vector2(10, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lin40"]
+size = Vector2(8, 5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6udlk"]
+size = Vector2(10, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nxxv0"]
+size = Vector2(10, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vcx0q"]
+size = Vector2(15, 9)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lin48"]
 size = Vector2(592, 348)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lin49"]
 size = Vector2(384, 352)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8n3cu"]
+size = Vector2(13, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dj4dq"]
+size = Vector2(111, 41)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yd6h6"]
+size = Vector2(48, 42)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4578w"]
+size = Vector2(15, 8)
 
 [node name="Citta" type="Node2D" unique_id=857815144]
 script = ExtResource("1_anvy5")
@@ -336,8 +346,8 @@ tile_set = ExtResource("2_h6op4")
 [node name="Decori" type="Node2D" parent="." unique_id=1471367728]
 
 [node name="Cielo" type="Sprite2D" parent="Decori" unique_id=266668212]
-position = Vector2(-592, 0)
 z_index = -1
+position = Vector2(-592, 0)
 scale = Vector2(2.575, 1)
 texture = ExtResource("3_ucb5q")
 centered = false
@@ -396,51 +406,45 @@ need = "cima"
 position = Vector2(833, 60)
 texture = ExtResource("12_cesve")
 
-[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding32"]
+[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding32" unique_id=556832385]
 
-[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding32/Collisione"]
-position = Vector2(0, 0)
+[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding32/Collisione" unique_id=2068038485]
 shape = SubResource("RectangleShape2D_lin1")
 
 [node name="ModernExteriorsSinglesBuilding43" type="Sprite2D" parent="Decori" unique_id=2015143428]
 position = Vector2(-216, 7)
 texture = ExtResource("13_en4mk")
 
-[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding43"]
+[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding43" unique_id=510082641]
 
-[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding43/Collisione"]
-position = Vector2(0, 0)
+[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding43/Collisione" unique_id=743276413]
 shape = SubResource("RectangleShape2D_lin2")
 
 [node name="ModernExteriorsSinglesBuilding21" type="Sprite2D" parent="Decori" unique_id=705175801]
 position = Vector2(724, 76)
 texture = ExtResource("64_2s8jb")
 
-[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding21"]
+[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesBuilding21" unique_id=97781936]
 
-[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding21/Collisione"]
-position = Vector2(0, 0)
+[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesBuilding21/Collisione" unique_id=2008838322]
 shape = SubResource("RectangleShape2D_lin17")
 
 [node name="ModernExteriorsSinglesShopShoppingCenter1" type="Sprite2D" parent="Decori" unique_id=535989075]
 position = Vector2(-433, 87)
 texture = ExtResource("95_p1bdy")
 
-[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesShopShoppingCenter1"]
+[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesShopShoppingCenter1" unique_id=1652588431]
 
-[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesShopShoppingCenter1/Collisione"]
-position = Vector2(0, 0)
+[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesShopShoppingCenter1/Collisione" unique_id=1040026776]
 shape = SubResource("RectangleShape2D_lin36")
 
 [node name="ModernExteriorsSinglesUndergroundParking3" type="Sprite2D" parent="Decori" unique_id=882737547]
 position = Vector2(-390, 287)
 texture = ExtResource("102_raypq")
 
+[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesUndergroundParking3" unique_id=1159031871]
 
-[node name="Collisione" type="StaticBody2D" parent="Decori/ModernExteriorsSinglesUndergroundParking3"]
-
-[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesUndergroundParking3/Collisione"]
-position = Vector2(0, 0)
+[node name="Forma" type="CollisionShape2D" parent="Decori/ModernExteriorsSinglesUndergroundParking3/Collisione" unique_id=214440332]
 shape = SubResource("RectangleShape2D_lin44")
 
 [node name="ModernExteriorsSinglesBuildingInfoSignSide3" type="Sprite2D" parent="Decori" unique_id=1004295029]
@@ -488,6 +492,7 @@ position = Vector2(-385, 105)
 texture = ExtResource("96_ga6mi")
 
 [node name="PratoParco" type="Node2D" parent="." unique_id=1500100200]
+metadata/calpestabile = true
 
 [node name="Prato1" type="Sprite2D" parent="PratoParco" unique_id=777793662]
 position = Vector2(-51, 248)
@@ -793,18 +798,19 @@ texture = ExtResource("18_h6bfd")
 position = Vector2(132, 293)
 texture = ExtResource("17_j1k71")
 
-[node name="Terra" type="Node2D" parent="."]
+[node name="Terra" type="Node2D" parent="." unique_id=414205840]
+metadata/calpestabile = true
 
-[node name="Strisce0" parent="Terra" instance=ExtResource("strisce_tscn")]
+[node name="Strisce0" parent="Terra" unique_id=1916503248 instance=ExtResource("strisce_tscn")]
 position = Vector2(-352, 192)
 
-[node name="Strisce1" parent="Terra" instance=ExtResource("strisce_tscn")]
+[node name="Strisce1" parent="Terra" unique_id=2111507692 instance=ExtResource("strisce_tscn")]
 position = Vector2(96, 192)
 
-[node name="Strisce2" parent="Terra" instance=ExtResource("strisce_tscn")]
+[node name="Strisce2" parent="Terra" unique_id=1862949262 instance=ExtResource("strisce_tscn")]
 position = Vector2(272, 192)
 
-[node name="Strisce3" parent="Terra" instance=ExtResource("strisce_tscn")]
+[node name="Strisce3" parent="Terra" unique_id=1808839747 instance=ExtResource("strisce_tscn")]
 position = Vector2(576, 192)
 
 [node name="ModernExteriorsSinglesPark1" type="Sprite2D" parent="Terra" unique_id=809600495]
@@ -1072,9 +1078,13 @@ method = "_insegna_esterno"
 [node name="Torre" type="StaticBody2D" parent="Mondo" unique_id=1261083927]
 position = Vector2(112, 56)
 
-[node name="@CollisionShape2D@21" type="CollisionShape2D" parent="Mondo/Torre" unique_id=323426252]
-position = Vector2(-75, 7)
-shape = SubResource("RectangleShape2D_vum5e")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/Torre" unique_id=473991263]
+position = Vector2(-36.5, -82)
+shape = SubResource("RectangleShape2D_pqfqw")
+
+[node name="Forma2" type="CollisionShape2D" parent="Mondo/Torre" unique_id=449968428]
+position = Vector2(-56, 44)
+shape = SubResource("RectangleShape2D_3hyro")
 
 [node name="TorreSinistra" type="StaticBody2D" parent="Mondo" unique_id=808308175]
 position = Vector2(16, 136)
@@ -1095,12 +1105,6 @@ position = Vector2(104, 136)
 
 [node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/TorreNives" unique_id=899356749]
 shape = SubResource("RectangleShape2D_yfaun")
-
-[node name="TorreDestra" type="StaticBody2D" parent="Mondo" unique_id=1278782203]
-position = Vector2(208, 136)
-
-[node name="@CollisionShape2D@25" type="CollisionShape2D" parent="Mondo/TorreDestra" unique_id=148245437]
-shape = SubResource("RectangleShape2D_g28u7")
 
 [node name="SopraScala" type="StaticBody2D" parent="Mondo" unique_id=216049474]
 position = Vector2(160, 104)
@@ -1149,6 +1153,10 @@ method = "_volantini"
 
 [node name="CasaComune" type="StaticBody2D" parent="Mondo" unique_id=1842694146]
 position = Vector2(272, 72)
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/CasaComune" unique_id=1846764]
+position = Vector2(0, -70)
+shape = SubResource("RectangleShape2D_j1k71")
 
 [node name="CasaSinistra" type="StaticBody2D" parent="Mondo" unique_id=569160082]
 position = Vector2(240, 152)
@@ -1282,12 +1290,13 @@ position = Vector2(288, 304)
 texture = ExtResource("27_jq72i")
 centered = false
 offset = Vector2(0, -48)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Fontana" unique_id=24293098]
 
 [node name="@CollisionShape2D@45" type="CollisionShape2D" parent="Mondo/Fontana/Collisione" unique_id=350039106]
-position = Vector2(16, -7)
-shape = SubResource("RectangleShape2D_80oku")
+position = Vector2(15.5, -13)
+shape = SubResource("RectangleShape2D_h6bfd")
 
 [node name="GuardaFontana" type="Node2D" parent="Mondo" unique_id=486099467]
 position = Vector2(296, 312)
@@ -1301,12 +1310,13 @@ position = Vector2(336, 256)
 texture = ExtResource("28_fb5ue")
 centered = false
 offset = Vector2(0, -32)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Tabellone" unique_id=825378361]
 
 [node name="@CollisionShape2D@46" type="CollisionShape2D" parent="Mondo/Tabellone/Collisione" unique_id=1120201825]
 position = Vector2(16, -3)
-shape = SubResource("RectangleShape2D_luvxt")
+shape = SubResource("RectangleShape2D_kk1yp")
 
 [node name="InArrivo" type="Label" parent="Mondo/Tabellone" unique_id=1506141958]
 visible = false
@@ -1315,8 +1325,8 @@ offset_left = -2.0
 offset_top = -44.0
 offset_right = 38.0
 offset_bottom = -36.0
-theme_override_colors/font_color = Color(1, 0.882353, 0.301961, 1)
 theme_override_font_sizes/font_size = 6
+theme_override_colors/font_color = Color(1, 0.882353, 0.301961, 1)
 text = "IN ARRIVO"
 
 [node name="GuardaTabellone" type="Node2D" parent="Mondo" unique_id=413373714]
@@ -1331,13 +1341,14 @@ position = Vector2(528, 238)
 texture = ExtResource("30_fbj6j")
 centered = false
 offset = Vector2(0, -30)
+metadata/footprint_applied = true
 
 [node name="Collisione" type="StaticBody2D" parent="Mondo/Idrante" unique_id=475257094]
 position = Vector2(0, 2)
 
 [node name="@CollisionShape2D@48" type="CollisionShape2D" parent="Mondo/Idrante/Collisione" unique_id=1057146290]
-position = Vector2(8, -4)
-shape = SubResource("RectangleShape2D_5djhy_Idrante")
+position = Vector2(7.5, -6)
+shape = SubResource("RectangleShape2D_l1eqg")
 
 [node name="Nadir" type="Node2D" parent="Mondo" unique_id=417633859]
 position = Vector2(392, 254)
@@ -1349,28 +1360,45 @@ activity = "idle_left"
 position = Vector2(368, 160)
 job = "comunicazioni_citta"
 
-[node name="SportelloBadge" parent="Mondo" unique_id=1008349278 instance=ExtResource("booth_tscn")]
+[node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=170100235]
+y_sort_enabled = true
 position = Vector2(78, 188)
+script = ExtResource("61_3hyro")
+metadata/prop_talk_skip = true
+
+[node name="Addetta" type="AnimatedSprite2D" parent="Mondo/SportelloBadge" unique_id=1459179526]
+position = Vector2(104, -16)
+centered = false
+offset = Vector2(-8, -31)
+script = ExtResource("62_j1k71")
+sheet = "char_13"
+
+[node name="Ingombro" type="StaticBody2D" parent="Mondo/SportelloBadge/Addetta" unique_id=385074054]
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/SportelloBadge/Addetta/Ingombro" unique_id=1589136264]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_xcy1e")
+
+[node name="InquadraturaAddetta" type="Marker2D" parent="Mondo/SportelloBadge" unique_id=1033475299]
+position = Vector2(104, -4)
+script = ExtResource("inq_script")
 
 [node name="BordoSinistro" type="StaticBody2D" parent="Mondo" unique_id=493828360]
 position = Vector2(-600, 168)
 
 [node name="@CollisionShape2D@49" type="CollisionShape2D" parent="Mondo/BordoSinistro" unique_id=1743897678]
-position = Vector2(0, 0)
 shape = SubResource("RectangleShape2D_lin45")
 
 [node name="BordoDestro" type="StaticBody2D" parent="Mondo" unique_id=772643305]
 position = Vector2(1064, 168)
 
 [node name="@CollisionShape2D@50" type="CollisionShape2D" parent="Mondo/BordoDestro" unique_id=403130603]
-position = Vector2(0, 0)
 shape = SubResource("RectangleShape2D_lin46")
 
 [node name="BordoSotto" type="StaticBody2D" parent="Mondo" unique_id=1253837775]
 position = Vector2(232, 360)
 
 [node name="@CollisionShape2D@51" type="CollisionShape2D" parent="Mondo/BordoSotto" unique_id=56653727]
-position = Vector2(0, 0)
 shape = SubResource("RectangleShape2D_lin47")
 
 [node name="Stellina" parent="Mondo" unique_id=242992583 instance=ExtResource("stellina_tscn")]
@@ -1382,9 +1410,9 @@ texture = ExtResource("23_kk1yp")
 centered = false
 offset = Vector2(-8, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin1" unique_id=1617708545]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin1/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin1/Collisione" unique_id=213423817]
 position = Vector2(0, -2.5)
 shape = SubResource("RectangleShape2D_lin3")
 
@@ -1393,12 +1421,13 @@ position = Vector2(-144, 231)
 texture = ExtResource("31_l1eqg")
 centered = false
 offset = Vector2(-16, -32)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpster1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpster1" unique_id=1855865012]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpster1/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin4")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpster1/Collisione" unique_id=1272158332]
+position = Vector2(-0.5, -5)
+shape = SubResource("RectangleShape2D_vfd1q")
 
 [node name="ModernExteriorsSinglesBin10" type="Sprite2D" parent="Mondo" unique_id=1292052332]
 position = Vector2(75, 245)
@@ -1406,59 +1435,65 @@ texture = ExtResource("32_xcy1e")
 centered = false
 offset = Vector2(-8, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin10"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin10" unique_id=1785408889]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin10/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin10/Collisione" unique_id=379253391]
 position = Vector2(0, -2.5)
 shape = SubResource("RectangleShape2D_lin5")
 
 [node name="ModernExteriorsSinglesHydrant2" type="Sprite2D" parent="Mondo" unique_id=1248376413]
-position = Vector2(234, 240)
+position = Vector2(234, 238)
 texture = ExtResource("34_vfd1q")
 centered = false
-offset = Vector2(-8, -32)
+offset = Vector2(-8, -30)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesHydrant2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesHydrant2" unique_id=379866413]
+position = Vector2(0, 2)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesHydrant2/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin6")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesHydrant2/Collisione" unique_id=1347750056]
+position = Vector2(-0.5, -6)
+shape = SubResource("RectangleShape2D_s7gpo")
 
 [node name="ModernExteriorsSinglesInfoSign1" type="Sprite2D" parent="Mondo" unique_id=639479343]
-position = Vector2(135, 264)
+position = Vector2(135, 251)
 texture = ExtResource("35_s7gpo")
 centered = false
-offset = Vector2(-8, -32)
+offset = Vector2(-8, -19)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesInfoSign1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesInfoSign1" unique_id=2018484077]
+position = Vector2(0, 13)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesInfoSign1/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin7")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesInfoSign1/Collisione" unique_id=157372423]
+position = Vector2(0, -15)
+shape = SubResource("RectangleShape2D_y6cp3")
 
 [node name="ModernExteriorsSinglesParkSlide1" type="Sprite2D" parent="Mondo" unique_id=1668044993]
 position = Vector2(-49, 273)
 texture = ExtResource("50_y6cp3")
 centered = false
 offset = Vector2(-24, -80)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesParkSlide1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesParkSlide1" unique_id=1391642957]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesParkSlide1/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin8")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesParkSlide1/Collisione" unique_id=820249312]
+position = Vector2(0, -31.5)
+shape = SubResource("RectangleShape2D_3028f")
 
 [node name="ModernExteriorsSinglesParkSwing1" type="Sprite2D" parent="Mondo" unique_id=2140185423]
 position = Vector2(-12, 341)
 texture = ExtResource("51_3028f")
 centered = false
 offset = Vector2(-40, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesParkSwing1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesParkSwing1" unique_id=1377469096]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesParkSwing1/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin9")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesParkSwing1/Collisione" unique_id=358152737]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_jnckw")
 
 [node name="ModernExteriorsSinglesBench2" type="Sprite2D" parent="Mondo" unique_id=128098049]
 position = Vector2(119, 243)
@@ -1467,9 +1502,9 @@ texture = ExtResource("55_w601c")
 centered = false
 offset = Vector2(-24, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBench2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBench2" unique_id=1383623514]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBench2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBench2/Collisione" unique_id=82721001]
 position = Vector2(0, -5)
 shape = SubResource("RectangleShape2D_lin10")
 
@@ -1478,12 +1513,13 @@ position = Vector2(20, 251)
 texture = ExtResource("58_51ewb")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBasketballBasket1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBasketballBasket1" unique_id=588096758]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBasketballBasket1/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin11")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBasketballBasket1/Collisione" unique_id=73066935]
+position = Vector2(-0.5, -5)
+shape = SubResource("RectangleShape2D_t2lxe")
 
 [node name="ModernExteriorsSinglesBillboard8" type="Sprite2D" parent="Mondo" unique_id=356606195]
 position = Vector2(-119, 159)
@@ -1491,9 +1527,9 @@ texture = ExtResource("59_nu84p")
 centered = false
 offset = Vector2(-40, -96)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBillboard8"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBillboard8" unique_id=1085231846]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBillboard8/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBillboard8/Collisione" unique_id=1870821770]
 position = Vector2(0, -5)
 shape = SubResource("RectangleShape2D_lin12")
 
@@ -1503,9 +1539,9 @@ texture = ExtResource("60_iqr5t")
 centered = false
 offset = Vector2(-8, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin2" unique_id=429985375]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin2/Collisione" unique_id=750469328]
 position = Vector2(0, -2.5)
 shape = SubResource("RectangleShape2D_lin13")
 
@@ -1515,9 +1551,9 @@ texture = ExtResource("61_5jl8h")
 centered = false
 offset = Vector2(-8, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin4" unique_id=969721256]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin4/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin4/Collisione" unique_id=988864412]
 position = Vector2(0, -2.5)
 shape = SubResource("RectangleShape2D_lin14")
 
@@ -1526,36 +1562,39 @@ position = Vector2(434, 243)
 texture = ExtResource("62_t2r2j")
 centered = false
 offset = Vector2(-8, -32)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin5"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin5" unique_id=1963356276]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin5/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin15")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin5/Collisione" unique_id=1276741467]
+position = Vector2(-0.5, -4.5)
+shape = SubResource("RectangleShape2D_0s1l0")
 
 [node name="ModernExteriorsSinglesBin7" type="Sprite2D" parent="Mondo" unique_id=421217179]
 position = Vector2(282, 243)
 texture = ExtResource("63_cmp8a")
 centered = false
 offset = Vector2(-8, -32)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin7"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesBin7" unique_id=1350632718]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin7/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin16")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesBin7/Collisione" unique_id=1865055734]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_w601c")
 
 [node name="ModernExteriorsSinglesCandyCart2" type="Sprite2D" parent="Mondo" unique_id=1155224333]
 position = Vector2(458, 314)
 texture = ExtResource("65_olcym")
 centered = false
 offset = Vector2(-24, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesCandyCart2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesCandyCart2" unique_id=828245150]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesCandyCart2/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin18")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesCandyCart2/Collisione" unique_id=343055799]
+position = Vector2(-1, -10)
+shape = SubResource("RectangleShape2D_yioj0")
 
 [node name="ModernExteriorsSinglesDrinkingFountain2" type="Sprite2D" parent="Mondo" unique_id=2078267647]
 position = Vector2(-144, 161)
@@ -1563,9 +1602,9 @@ texture = ExtResource("66_3bajl")
 centered = false
 offset = Vector2(-16, -48)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDrinkingFountain2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDrinkingFountain2" unique_id=1411497947]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDrinkingFountain2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDrinkingFountain2/Collisione" unique_id=1059305544]
 position = Vector2(0, -5)
 shape = SubResource("RectangleShape2D_lin19")
 
@@ -1574,24 +1613,26 @@ position = Vector2(-178, 262)
 texture = ExtResource("67_113th")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen2" unique_id=2136850389]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen2/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin20")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen2/Collisione" unique_id=925337366]
+position = Vector2(-0.5, -11.5)
+shape = SubResource("RectangleShape2D_hf54c")
 
 [node name="ModernExteriorsSinglesDumpsterOpen4" type="Sprite2D" parent="Mondo" unique_id=553592700]
 position = Vector2(-212, 264)
 texture = ExtResource("68_kx465")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen4" unique_id=1197643779]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen4/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin21")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesDumpsterOpen4/Collisione" unique_id=1077474265]
+position = Vector2(-0.5, -11.5)
+shape = SubResource("RectangleShape2D_51ewb")
 
 [node name="ModernExteriorsSinglesGarageSalesCloth2" type="Sprite2D" parent="Mondo" unique_id=1267167878]
 position = Vector2(-216.5, 282)
@@ -1600,9 +1641,9 @@ texture = ExtResource("69_hc0sm")
 centered = false
 offset = Vector2(-24, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesCloth2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesCloth2" unique_id=1046854541]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesCloth2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesCloth2/Collisione" unique_id=1841076764]
 position = Vector2(0, -5)
 shape = SubResource("RectangleShape2D_lin22")
 
@@ -1612,9 +1653,9 @@ texture = ExtResource("70_arypb")
 centered = false
 offset = Vector2(-24, -32)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesSign1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesSign1" unique_id=1589285056]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesSign1/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesSign1/Collisione" unique_id=675975296]
 position = Vector2(0, -5)
 shape = SubResource("RectangleShape2D_lin23")
 
@@ -1623,12 +1664,13 @@ position = Vector2(-215, 274)
 texture = ExtResource("71_ynjc2")
 centered = false
 offset = Vector2(-24, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable3"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable3" unique_id=1616392551]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable3/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin24")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable3/Collisione" unique_id=119689509]
+position = Vector2(0, -5.5)
+shape = SubResource("RectangleShape2D_nu84p")
 
 [node name="ModernExteriorsSinglesGarageSalesTable4" type="Sprite2D" parent="Mondo" unique_id=1075359549]
 position = Vector2(-169, 277)
@@ -1636,168 +1678,185 @@ scale = Vector2(1.0416666, 1.0208334)
 texture = ExtResource("72_my5fn")
 centered = false
 offset = Vector2(-24, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable4" unique_id=187314468]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable4/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin25")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesGarageSalesTable4/Collisione" unique_id=331861034]
+position = Vector2(0, -6.36734)
+shape = SubResource("RectangleShape2D_iqr5t")
 
 [node name="ModernExteriorsSinglesHydrant1" type="Sprite2D" parent="Mondo" unique_id=1625499896]
-position = Vector2(-99, 243)
+position = Vector2(-99, 241)
 texture = ExtResource("81_au1ko")
 centered = false
-offset = Vector2(-8, -32)
+offset = Vector2(-8, -30)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesHydrant1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesHydrant1" unique_id=372469004]
+position = Vector2(0, 2)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesHydrant1/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin26")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesHydrant1/Collisione" unique_id=1985151708]
+position = Vector2(-0.5, -6)
+shape = SubResource("RectangleShape2D_5jl8h")
 
 [node name="ModernExteriorsSinglesLemonadeStand2" type="Sprite2D" parent="Mondo" unique_id=1349556303]
 position = Vector2(621, 256)
 texture = ExtResource("82_bs2o2")
 centered = false
 offset = Vector2(-16, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesLemonadeStand2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesLemonadeStand2" unique_id=266394899]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesLemonadeStand2/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin27")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesLemonadeStand2/Collisione" unique_id=453673728]
+position = Vector2(0, -13.5)
+shape = SubResource("RectangleShape2D_t2r2j")
 
 [node name="ModernExteriorsSinglesMailbox1" type="Sprite2D" parent="Mondo" unique_id=145693080]
-position = Vector2(20, 188)
+position = Vector2(20, 179)
 texture = ExtResource("83_r2erp")
 centered = false
-offset = Vector2(-8, -32)
+offset = Vector2(-8, -23)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesMailbox1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesMailbox1" unique_id=1999106904]
+position = Vector2(0, 9)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesMailbox1/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin28")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesMailbox1/Collisione" unique_id=392620120]
+position = Vector2(-0.5, -13)
+shape = SubResource("RectangleShape2D_cmp8a")
 
 [node name="ModernExteriorsSinglesOtherSigns1" type="Sprite2D" parent="Mondo" unique_id=1248721709]
 position = Vector2(-84, 235)
 texture = ExtResource("87_0ch47")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns1" unique_id=815619887]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns1/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns1/Collisione" unique_id=501445282]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin29")
+shape = SubResource("RectangleShape2D_2s8jb")
 
 [node name="ModernExteriorsSinglesOtherSigns2" type="Sprite2D" parent="Mondo" unique_id=1778487872]
 position = Vector2(248, 236)
 texture = ExtResource("87_0ch47")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns2" unique_id=881737616]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns2/Collisione" unique_id=1544989012]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin30")
+shape = SubResource("RectangleShape2D_olcym")
 
 [node name="ModernExteriorsSinglesOtherSigns3" type="Sprite2D" parent="Mondo" unique_id=218335740]
 position = Vector2(554, 236)
 texture = ExtResource("87_0ch47")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns3"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns3" unique_id=1784157860]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns3/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns3/Collisione" unique_id=2030521281]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin31")
+shape = SubResource("RectangleShape2D_3bajl")
 
 [node name="ModernExteriorsSinglesOtherSigns4" type="Sprite2D" parent="Mondo" unique_id=1737738340]
 position = Vector2(449, 191)
 texture = ExtResource("88_tuamt")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns4" unique_id=440468876]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns4/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns4/Collisione" unique_id=1340291513]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin32")
+shape = SubResource("RectangleShape2D_113th")
 
 [node name="ModernExteriorsSinglesOtherSigns5" type="Sprite2D" parent="Mondo" unique_id=1431579851]
 position = Vector2(218, 191)
 texture = ExtResource("89_onprn")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns5"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesOtherSigns5" unique_id=19502116]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns5/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesOtherSigns5/Collisione" unique_id=28015142]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin33")
+shape = SubResource("RectangleShape2D_kx465")
 
 [node name="ModernExteriorsSinglesPortableBathroom1" type="Sprite2D" parent="Mondo" unique_id=237153758]
 position = Vector2(183, 328)
 texture = ExtResource("92_payh7")
 centered = false
 offset = Vector2(-16, -64)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1" unique_id=2086157286]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin34")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1/Collisione" unique_id=120313362]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_hc0sm")
 
 [node name="ModernExteriorsSinglesPortableBathroom4" type="Sprite2D" parent="Mondo" unique_id=1528719428]
-position = Vector2(220, 343)
+position = Vector2(220, 337)
 texture = ExtResource("93_ro5cb")
 centered = false
-offset = Vector2(-16, -80)
+offset = Vector2(-16, -74)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4" unique_id=161749096]
+position = Vector2(0, 6)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4/Collisione" unique_id=121474293]
 position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin35")
+shape = SubResource("RectangleShape2D_arypb")
 
 [node name="ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1" type="Sprite2D" parent="Mondo" unique_id=1169987076]
 position = Vector2(-525, 278)
 texture = ExtResource("97_qjl0e")
 centered = false
 offset = Vector2(-32, -64)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1" unique_id=964632605]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1/Collisione"]
-position = Vector2(0, -5)
-shape = SubResource("RectangleShape2D_lin37")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1/Collisione" unique_id=953689685]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_ynjc2")
 
 [node name="ModernExteriorsSinglesStoplight2" type="Sprite2D" parent="Mondo" unique_id=1269093404]
 position = Vector2(281, 187)
 texture = ExtResource("98_720iq")
 centered = false
 offset = Vector2(-8, -80)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStoplight2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStoplight2" unique_id=150505500]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStoplight2/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStoplight2/Collisione" unique_id=1092054642]
 position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin38")
+shape = SubResource("RectangleShape2D_my5fn")
 
 [node name="ModernExteriorsSinglesStreetLamp4" type="Sprite2D" parent="Mondo" unique_id=1676098246]
 position = Vector2(-39, 190)
 texture = ExtResource("99_ss2kd")
 centered = false
 offset = Vector2(-16, -64)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp4"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp4" unique_id=500778983]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp4/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin39")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp4/Collisione" unique_id=249221764]
+position = Vector2(-8, -3)
+shape = SubResource("RectangleShape2D_t80rq")
 
 [node name="ModernExteriorsSinglesStreetLamp5" type="Sprite2D" parent="Mondo" unique_id=1938433786]
 position = Vector2(-277, 181.5)
@@ -1806,9 +1865,9 @@ texture = ExtResource("99_ss2kd")
 centered = false
 offset = Vector2(-16, -64)
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp5"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp5" unique_id=1056051404]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp5/Collisione"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp5/Collisione" unique_id=1188787761]
 position = Vector2(0, -2.5)
 shape = SubResource("RectangleShape2D_lin40")
 
@@ -1817,60 +1876,96 @@ position = Vector2(519, 191)
 texture = ExtResource("99_ss2kd")
 centered = false
 offset = Vector2(-16, -64)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp6"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesStreetLamp6" unique_id=1103089844]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp6/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin41")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesStreetLamp6/Collisione" unique_id=1476882738]
+position = Vector2(-8, -3)
+shape = SubResource("RectangleShape2D_6udlk")
 
 [node name="ModernExteriorsSinglesTrafficCone2" type="Sprite2D" parent="Mondo" unique_id=160923533]
-position = Vector2(472, 242)
+position = Vector2(472, 238)
 texture = ExtResource("100_t2c0j")
 centered = false
-offset = Vector2(-8, -32)
+offset = Vector2(-8, -28)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesTrafficCone2"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesTrafficCone2" unique_id=576889570]
+position = Vector2(0, 4)
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesTrafficCone2/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin42")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesTrafficCone2/Collisione" unique_id=1167966313]
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_nxxv0")
 
 [node name="ModernExteriorsSinglesTrafficSigns25" type="Sprite2D" parent="Mondo" unique_id=499511771]
 position = Vector2(913, 245)
 texture = ExtResource("101_bisux")
 centered = false
 offset = Vector2(-8, -48)
+metadata/footprint_applied = true
 
-[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesTrafficSigns25"]
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesTrafficSigns25" unique_id=13998171]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesTrafficSigns25/Collisione"]
-position = Vector2(0, -2.5)
-shape = SubResource("RectangleShape2D_lin43")
+[node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesTrafficSigns25/Collisione" unique_id=1945683308]
+position = Vector2(-0.5, -4.5)
+shape = SubResource("RectangleShape2D_vcx0q")
 
-[node name="Traffico" type="Node2D" parent="Mondo"]
+[node name="Traffico" type="Node2D" parent="Mondo" unique_id=955033317]
 y_sort_enabled = true
 script = ExtResource("traffico_gd")
 
-[node name="VersoSinistra" type="Marker2D" parent="Mondo/Traffico"]
+[node name="VersoSinistra" type="Marker2D" parent="Mondo/Traffico" unique_id=1330499398]
 position = Vector2(0, 208)
 metadata/verso = -1
 
-[node name="VersoDestra" type="Marker2D" parent="Mondo/Traffico"]
+[node name="VersoDestra" type="Marker2D" parent="Mondo/Traffico" unique_id=1011787985]
 position = Vector2(0, 224)
 metadata/verso = 1
 
-[node name="DietroFacciateSinistra" type="StaticBody2D" parent="Mondo"]
+[node name="DietroFacciateSinistra" type="StaticBody2D" parent="Mondo" unique_id=134132532]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/DietroFacciateSinistra"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/DietroFacciateSinistra" unique_id=734758703]
 position = Vector2(-296, -26)
 shape = SubResource("RectangleShape2D_lin48")
 
-[node name="DietroFacciateDestra" type="StaticBody2D" parent="Mondo"]
+[node name="DietroFacciateDestra" type="StaticBody2D" parent="Mondo" unique_id=1054369830]
 
-[node name="Forma" type="CollisionShape2D" parent="Mondo/DietroFacciateDestra"]
+[node name="Forma" type="CollisionShape2D" parent="Mondo/DietroFacciateDestra" unique_id=1638404292]
 position = Vector2(864, -26)
 shape = SubResource("RectangleShape2D_lin49")
+
+[node name="Tree2" type="Sprite2D" parent="Mondo" unique_id=33118375]
+position = Vector2(89, 242)
+texture = ExtResource("52_jnckw")
+offset = Vector2(0, -24)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/Tree2" unique_id=1992048880]
+
+[node name="Base" type="CollisionShape2D" parent="Mondo/Tree2/Collisione" unique_id=1642084872]
+position = Vector2(-0.5, -4)
+shape = SubResource("RectangleShape2D_8n3cu")
+
+[node name="TorreAngolo" type="StaticBody2D" parent="Mondo" unique_id=1382273419]
+position = Vector2(-25, 133)
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/TorreAngolo" unique_id=1893053233]
+position = Vector2(0.5, -0.5)
+shape = SubResource("RectangleShape2D_dj4dq")
+
+[node name="DietroScala" type="StaticBody2D" parent="Mondo" unique_id=1643738853]
+position = Vector2(168, 133)
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/DietroScala" unique_id=962647224]
+shape = SubResource("RectangleShape2D_yd6h6")
+
+[node name="FessuraPalazzi" type="StaticBody2D" parent="Mondo" unique_id=1905408745]
+position = Vector2(779, 152)
+
+[node name="Forma" type="CollisionShape2D" parent="Mondo/FessuraPalazzi" unique_id=1890094009]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_4578w")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=1475897952]
 
@@ -1993,9 +2088,9 @@ offset_left = 224.0
 offset_top = 68.0
 offset_right = 320.0
 offset_bottom = 78.0
+theme_override_font_sizes/font_size = 6
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 6
 text = "ESITO DELL'ASSEMBLEA"
 horizontal_alignment = 1
 
@@ -2022,9 +2117,5 @@ visible = false
 z_index = 30
 position = Vector2(120, 266)
 texture = ExtResource("f3_premium")
-
-[node name="Tree2" type="Sprite2D" parent="." unique_id=33118375]
-position = Vector2(89, 218)
-texture = ExtResource("52_jnckw")
 
 [editable path="Mondo/PostoTurno"]

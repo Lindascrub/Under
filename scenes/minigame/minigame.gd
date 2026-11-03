@@ -14,7 +14,8 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##   type "route":    due giri (mattina e pomeriggio), tre pacchi ciascuno: scegli le strade (Amir: L'ULTIMA CONSEGNA)
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
 ##                    (Olga: LE RATE MANCANTI; dati in data/bank.json)
-##   type "pratiche": per ogni pratica, quale problema c'è (Teo: LA PRATICA IMPOSSIBILE)
+##   type "pratiche": trova direttamente la riga sospetta nel fascicolo
+##                    (Teo: LA PRATICA IMPOSSIBILE)
 ##   type "volantini": in piazza passa la gente; dai il volantino a chi ti guarda, non a chi ha fretta,
 ##                    è al telefono o è una guardia CHEAP (Ada: VOLANTINAGGIO). Dati in data/city.json
 ##   type "coincidenze": il tabellone delle partenze; una corsa alla volta, che parta da dove sei e
@@ -358,8 +359,8 @@ func touch_point(pos: Vector2, step: int) -> void:
 				return
 		return
 	if type == "pratiche" and step == 0:
-		for k in _pr_types().size():
-			if _pr_button(k).grow(3).has_point(pos):
+		for k in _pr_target_count():
+			if _pr_target(k).grow(3).has_point(pos):
 				pr_sel = k
 				_pr_answer(k)
 				return
@@ -413,7 +414,7 @@ func _inv_place(k: int) -> void:
 		inv_queue.pop_front()
 		inv_done += 1
 		inv_msg = ""
-		Sound.sfx("coin", 1.1 + inv_done * 0.04)
+		Sound.sfx("arcade/collect_3", 1.0 + inv_done * 0.025, 4.0)
 		if inv_queue.is_empty():
 			# il contatore in alto si aggiorna solo mentre si gioca: l'ultimo prodotto lo scrive qui
 			_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done, misses, int(cfg.get("misses", 3))]
@@ -421,7 +422,7 @@ func _inv_place(k: int) -> void:
 	else:
 		misses += 1
 		flash = 0.3
-		Sound.sfx("deny")
+		Sound.sfx("arcade/blocked", 1.0, 4.0)
 		inv_msg = "%s in %s? No. (Però una volta Leda ci ha trovato il sapone.)" % [str(g[0]), INV_CATS[k]]
 		if misses >= int(cfg.get("misses", 3)):
 			_finish(false)
@@ -608,7 +609,7 @@ func _process(delta: float) -> void:
 				else:
 					_info.text = "Trova la commissione ripetuta   Errori: %d" % misses
 			elif type == "pratiche":
-				_info.text = "Pratica %d/%d   Errori: %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
+				_info.text = "Trova la riga sospetta · Pratica %d/%d · Errori %d/%d" % [mini(pr_i + 1, _pr_list().size()), _pr_list().size(), misses, int(cfg.get("misses", 2))]
 			elif type == "volantini":
 				_vl_step(delta)
 			elif type == "coincidenze":
@@ -675,7 +676,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if type == "inventory":
 		if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
 			inv_sel = posmod(inv_sel + (-1 if event.is_action_pressed("move_left") else 1), INV_CATS.size())
-			Sound.sfx("move")
+			Sound.sfx("arcade/select_2", 1.0, 4.0)
 		elif event.is_action_pressed("confirm"):
 			_inv_place(inv_sel)
 		return
@@ -717,9 +718,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_cz_act(t[0])
 		return
 	if type == "pratiche":
-		if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
-			pr_sel = posmod(pr_sel + (-1 if event.is_action_pressed("move_left") else 1), _pr_types().size())
-			Sound.sfx("move")
+		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up") \
+				or event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
+			var step := -1 if event.is_action_pressed("move_left") or event.is_action_pressed("move_up") else 1
+			pr_sel = posmod(pr_sel + step, _pr_target_count())
+			Sound.sfx("arcade/select_2", 1.0, 4.0)
 		elif event.is_action_pressed("confirm"):
 			_pr_answer(pr_sel)
 		return
@@ -919,7 +922,7 @@ func _draw() -> void:
 					else:
 						draw_rect(Rect2(p + Vector2(-8, 8), Vector2(16, 2)), Color("8a8494"))
 	if flash > 0.0:
-		draw_rect(INV if type == "inventory" else BOX, Color(1, 0.2, 0.2, flash))
+		draw_rect(frame, Color(1, 0.2, 0.2, flash))
 
 
 func _draw_bulbs(font: Font) -> void:
@@ -1377,31 +1380,54 @@ func _pr_list() -> Array:
 	return GameState.bank.get("teo", {}).get("pratiche", [])
 
 
-func _pr_types() -> Array:
-	return GameState.bank.get("teo", {}).get("tipi", [])
+func _pr_card() -> Rect2:
+	return Rect2(BIG.position.x + 70, BIG.position.y + 8, BIG.size.x - 140, 116)
 
 
-func _pr_button(k: int) -> Rect2:
-	var n := maxi(1, _pr_types().size())
-	var w := (BIG.size.x - 20 - (n - 1) * 8) / float(n)
-	return Rect2(BIG.position.x + 10 + k * (w + 8), BIG.end.y - 52, w, 44)
+func _pr_row(k: int) -> Rect2:
+	var card := _pr_card()
+	return Rect2(card.position.x + 8, card.position.y + 29 + k * 17, card.size.x - 16, 17)
+
+
+func _pr_none_button() -> Rect2:
+	return Rect2(BIG.position.x + 160, BIG.end.y - 46, BIG.size.x - 320, 36)
+
+
+func _pr_target_count() -> int:
+	if pr_i >= _pr_list().size():
+		return 1
+	return (_pr_list()[pr_i].get("righe", []) as Array).size() + 1
+
+
+func _pr_target(k: int) -> Rect2:
+	return _pr_none_button() if k == _pr_target_count() - 1 else _pr_row(k)
+
+
+## Riga che dimostra l'anomalia; -1 significa che il fascicolo è davvero in ordine.
+## Il ripiego mantiene compatibili eventuali dati precedenti privi del campo `riga`.
+func _pr_correct(p: Dictionary) -> int:
+	if p.has("riga"):
+		return int(p["riga"])
+	return [-1, 0, 2, 2, 3][clampi(int(p.get("tipo", 0)), 0, 4)]
 
 
 func _pr_answer(k: int) -> void:
 	if phase != "play" or pr_i >= _pr_list().size():
 		return
 	var p: Dictionary = _pr_list()[pr_i]
-	if k == int(p.get("tipo", 0)):
+	var picked := -1 if k == _pr_target_count() - 1 else k
+	if picked == _pr_correct(p):
 		pr_i += 1
-		pr_msg = "Pratica %s: controllata." % str(p.get("id", ""))
-		Sound.sfx("stamp", 1.0 + pr_i * 0.05)
+		pr_sel = 0
+		pr_msg = "Pratica %s: anomalia trovata." % str(p.get("id", "")) if picked >= 0 else "Pratica %s: nessuna anomalia." % str(p.get("id", ""))
+		Sound.sfx("arcade/confirm_2", 1.0 + pr_i * 0.025, 4.0)
 		if pr_i >= _pr_list().size():
 			_finish(true)
 	else:
 		misses += 1
 		flash = 0.3
-		pr_msg = "Teo: \"Mmm. Rileggiamola. Riga per riga.\""
-		Sound.sfx("deny")
+		pr_msg = "Teo: \"Non il nome del problema. Fammi vedere la riga che lo prova.\""
+		Sound.sfx("arcade/blocked", 1.0, 4.0)
 		if misses >= int(cfg.get("misses", 2)):
 			_finish(false)
 
@@ -1409,13 +1435,19 @@ func _pr_answer(k: int) -> void:
 func _draw_pratiche(font: Font) -> void:
 	draw_rect(BIG.grow(-4), Color("1e2430"))
 	if pr_i < _pr_list().size():
-		PracticeCard.draw(self, Rect2(BIG.position.x + 110, BIG.position.y + 10, 340, 116), _pr_list()[pr_i], font)
+		var card := _pr_card()
+		PracticeCard.draw(self, card, _pr_list()[pr_i], font)
+		for k in (_pr_list()[pr_i].get("righe", []) as Array).size():
+			var row := _pr_row(k)
+			if k == pr_sel and not TouchControls.enabled:
+				draw_rect(row, Color(1.0, 0.88, 0.30, 0.22))
+				draw_rect(row, YELLOW, false, 2.0)
+		draw_string(font, Vector2(BIG.position.x, BIG.position.y + 145), "Indica la riga che dimostra l'errore.", HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 10, Color("c8c0d0"))
 	if pr_msg != "":
-		draw_string(font, Vector2(BIG.position.x, BIG.position.y + 150), pr_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 10, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
-	var labels := ["TUTTO IN\nORDINE", "MANCA UN\nDOCUMENTO", "DATI\nDIVERSI", "DOPPIONE", "ERRORE DI\nREGISTRAZIONE"]
-	for k in _pr_types().size():
-		var text: String = labels[k] if k < labels.size() else str(_pr_types()[k])
-		PracticeCard.button(self, _pr_button(k), text, Color("2a8a4a") if k == 0 else Color("3a4a6a"), font, k == pr_sel and not TouchControls.enabled, 9)
+		draw_string(font, Vector2(BIG.position.x, BIG.position.y + 167), pr_msg, HORIZONTAL_ALIGNMENT_CENTER, BIG.size.x, 9, Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
+	if pr_i < _pr_list().size():
+		var none_index := _pr_target_count() - 1
+		PracticeCard.button(self, _pr_none_button(), "NESSUNA ANOMALIA", Color("2a7a54"), font, pr_sel == none_index and not TouchControls.enabled, 10)
 
 
 func _draw_inventory(font: Font) -> void:

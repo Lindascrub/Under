@@ -10,6 +10,9 @@ extends Interactable
 @export var low_pose := false
 ## Cosa si dice sedendosi (vuoto: niente, ti siedi e basta).
 @export var line := ""
+## Risposta breve dalle volte successive; vuoto: dopo la prima volta ci si siede senza dialogo.
+@export var repeat_line := ""
+var _used := false
 
 
 func interact() -> void:
@@ -18,5 +21,7 @@ func interact() -> void:
 		return
 	p.sit(global_position, dir, lift, low_pose)
 	Sound.sfx("select", 0.8)
-	if line != "":
-		await Ui.say([line])
+	var use := repeat_line if _used else line
+	_used = true
+	if use != "":
+		await Ui.say([use])

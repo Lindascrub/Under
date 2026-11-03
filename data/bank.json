@@ -98,7 +98,8 @@
           "Dichiarazione dei redditi: 1.300 € al mese",
           "Richiesta: 5.000 €"
         ],
-        "tipo": 0
+        "tipo": 0,
+        "riga": -1
       },
       {
         "id": "102",
@@ -109,7 +110,8 @@
           "Busta paga di maggio: 1.800 €",
           "Richiesta: 7.000 €"
         ],
-        "tipo": 3
+        "tipo": 3,
+        "riga": 2
       },
       {
         "id": "103",
@@ -120,7 +122,8 @@
           "Dichiarazione dei redditi: 1.500 € al mese",
           "Richiesta: 4.000 €"
         ],
-        "tipo": 1
+        "tipo": 1,
+        "riga": 0
       },
       {
         "id": "104",
@@ -131,7 +134,8 @@
           "Dichiarazione dei redditi: 1.800 € al mese",
           "Richiesta: 9.000 €"
         ],
-        "tipo": 2
+        "tipo": 2,
+        "riga": 2
       },
       {
         "id": "105",
@@ -142,7 +146,8 @@
           "Richiesta firmata: 8.000 €",
           "Registrato a sistema: 80.000 €"
         ],
-        "tipo": 4
+        "tipo": 4,
+        "riga": 3
       },
       {
         "id": "106",
@@ -153,7 +158,8 @@
           "Dichiarazione dei redditi: 1.650 € al mese",
           "Richiesta: 3.000 €"
         ],
-        "tipo": 0
+        "tipo": 0,
+        "riga": -1
       }
     ]
   },

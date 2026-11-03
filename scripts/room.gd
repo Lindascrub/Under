@@ -1098,9 +1098,16 @@ func add_badge_machine(cell: Vector2i) -> void:
 ## Lo sportello davanti al vetro, dove si compra il badge.
 func use_badge_booth(booth: Node2D) -> void:
 	_badge_booth = booth
-	var spot := add_spot(to_local(booth.global_position) + Vector2(40, 6), _badge_machine)
+	var clerk := booth.get_node_or_null("Addetta") as Node2D
+	var spot: Interactable
+	# l'addetta può stare fuori dalla cabina (96x48, in città è accanto alle scale): le si parla lì
+	if clerk and not Rect2(0, -48, 96, 48).has_point(clerk.position):
+		spot = add_spot(to_local(clerk.global_position), _badge_machine)
+		spot.interaction_bounds = Rect2(-8, -8, 16, 8)
+	else:
+		spot = add_spot(to_local(booth.global_position) + Vector2(40, 6), _badge_machine)
+		spot.interaction_bounds = Rect2(-40, -8, 64, 8)
 	spot.name = "SportelloBadgeInterazione"
-	spot.interaction_bounds = Rect2(-40, -8, 64, 8)
 	spot.approach = Vector2.DOWN
 	spot.facing_required = "up"
 

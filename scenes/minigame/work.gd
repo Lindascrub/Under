@@ -321,7 +321,7 @@ func _process(delta: float) -> void:
 					if float(s["life"]) <= 0.0:
 						stains.remove_at(i)
 						score += 1.0
-						Sound.sfx("blip", 1.4)
+						Sound.sfx("arcade/collect_3", 1.15, 4.0)
 						continue
 				if float(s["age"]) > 8.0 - d * 3.0:
 					stains.remove_at(i)
@@ -658,7 +658,7 @@ func _hd_pick_up(k: int) -> void:
 	hd_sel = 0
 	hd_phase = "talk"
 	hd_t = maxf(3.5, 7.0 - d * 3.0)
-	Sound.sfx("select")
+	Sound.sfx("arcade/select_2", 1.0, 4.0)
 
 
 func _hd_answer(k: int) -> void:
@@ -668,19 +668,19 @@ func _hd_answer(k: int) -> void:
 			score += 1.0
 			hd_last = "Copione. Il cliente si calma un po'. Tu no."
 			_flash(GREEN)
-			Sound.sfx("coin")
+			Sound.sfx("arcade/confirm_2", 1.0, 4.0)
 		"sincera":
 			hd_honest += 1
 			hd_last = "Sincera. Silenzio, poi: \"...grazie\". Il supervisore lo segna."
 			_flash(YELLOW)
-			Sound.sfx("blip", 0.8)
+			Sound.sfx("arcade/chime", 1.0, 2.0)
 		_:
 			mistakes += 1
 			hd_last = "Sgarbata. Ti richiameranno. Per un richiamo."
 			# l'errore si deve vedere, come negli altri turni (anche nel finale, sotto i DRIN)
 			_error("SGARBATO! +1 ERRORE")
 			_flash(RED)
-			Sound.sfx("deny")
+			Sound.sfx("arcade/blocked", 1.0, 4.0)
 	hd_done += 1
 	_hd_next()
 

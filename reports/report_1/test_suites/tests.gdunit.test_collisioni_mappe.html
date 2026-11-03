@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="x-ua-compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>GdUnit4 Testsuite</title>
+	<link rel="stylesheet" href="../css/styles.css">
+	<link href="../css/breadcrumb.css" rel="stylesheet" type="text/css" />
+
+	<script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+	<script>
+		$(document).ready(function () {
+			var report_view = $('#report_area').find('.report-column')
+
+			$('#report-table tr').click(function () {
+				var report = $(this).find('.report-column').html();
+				report_view.html(report)
+				$('.selected').removeClass('selected');
+				$(this).addClass('selected');
+			});
+		});
+	</script>
+</head>
+
+<body>
+	<header>
+		<div class="logo">
+			<img src="../css/logo.png" alt="GdUnit4 Logo">
+			<span>GdUnit4</span>
+		</div>
+		<div class="report-container">
+			<h1>Testsuite Report</h1>
+			<div>
+				<span class="label">res://tests/gdunit/test_collisioni_mappe.gd</span>
+			</div>
+			<div class="summary">
+				<div class="summary-item">
+					<span class="label">Tests</span>
+					<span class="value">24</span>
+				</div>
+				<div class="summary-item">
+					<span class="label">Skipped</span>
+					<span class="value">0</span>
+				</div>
+				<div class="summary-item">
+					<span class="label">Flaky</span>
+					<span class="value">0</span>
+				</div>
+				<div class="summary-item">
+					<span class="label">Failures</span>
+					<span class="value">15</span>
+				</div>
+				<div class="summary-item">
+					<span class="label">Orphans</span>
+					<span class="value">0</span>
+				</div>
+				<div class="summary-item">
+					<span class="label">Duration</span>
+					<span class="value">11min 48s 209ms</span>
+				</div>
+				<div class="success-rate">
+					<div class="check-icon status-error">✓</div>
+					<div class="rate-text">
+						<span class="label">Success Rate</span>
+						<span class="value">37%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="breadcrumb">
+			<a href="../index.html"><span>All</span></a>
+			<a href="../path/tests.gdunit.html"><span>tests/gdunit</span></a>
+			<a class="active" href="#"><span>test_collisioni_mappe</span></a>
+		</div>
+	</header>
+
+	<main>
+		<div class="tab-report-grid">
+			<div class="grid-item tab">
+				<table id="report-table">
+					<thead>
+						<tr>
+							<th>Testcase</th>
+							<th>Result</th>
+							<th>Skipped</th>
+							<th>Orphans</th>
+							<th>Duration</th>
+							<th class="report-column">Report</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:0 ('fondo')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 176ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:1 ('sottoufficio')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 1ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:2 ('mercato')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 253ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:3 ('banca')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 284ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:4 ('citta')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 530ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:5 ('casa_comune')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>942ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:6 ('cima')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1s 34ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_niente_sopra_o_dentro_gli_oggetti:7 ('ufficio_capo')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>725ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:0 ('fondo')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>790ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:1 ('sottoufficio')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>854ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:2 ('mercato')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>853ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:3 ('banca')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>975ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:4 ('citta')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>915ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:5 ('casa_comune')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>739ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:6 ('cima')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>793ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_scale_e_porte_raggiungibili:7 ('ufficio_capo')</td>
+									<td><span class="status status-error">ERROR</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>698ms</td>
+									<td class="report-column">
+										<pre>
+Godot Runtime Error !
+  &#39;Left operand of &#39;is&#39; is a previously freed instance.&#39;
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+Godot Runtime Error !
+  &#39;Invalid call. Nonexistent function &#39;touches&#39; in base &#39;Nil&#39;.&#39;
+	at &#39;test_scale_e_porte_raggiungibili&#39; in res://tests/gdunit/test_collisioni_mappe.gd:87
+	at &#39;_apri&#39; in res://tests/gdunit/test_collisioni_mappe.gd:48
+	at &#39;apri&#39; in res://tests/collisioni/mappa_aperta.gd:23
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:0 ('fondo')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 82ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:1 ('sottoufficio')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 102ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:2 ('mercato')</td>
+									<td><span class="status status-failed">FAILED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 73ms</td>
+									<td class="report-column">
+										<pre>
+mercato: passato attraverso spigoli:
+(204.0, 164.0) move_up+move_right -&gt; (208.6223, 149.3803)
+(180.0, 144.0) move_up -&gt; (180.0, 127.2)
+(180.0, 144.0) move_up+move_left -&gt; (176.076, 129.12)
+(180.0, 144.0) move_down+move_left -&gt; (166.664, 150.924)
+(204.0, 136.0) move_up+move_left -&gt; (192.1206, 124.1206)
+(204.0, 136.0) move_down+move_right -&gt; (208.4708, 150.6828)
+	at &#39;test_tastiera_contro_spigoli&#39; in res://tests/gdunit/test_collisioni_mappe.gd:127
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:3 ('banca')</td>
+									<td><span class="status status-failed">FAILED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 172ms</td>
+									<td class="report-column">
+										<pre>
+banca: passato attraverso spigoli:
+(144.0, 212.0) move_down+move_left -&gt; (131.0061, 217.924)
+	at &#39;test_tastiera_contro_spigoli&#39; in res://tests/gdunit/test_collisioni_mappe.gd:127
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:4 ('citta')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 285ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:5 ('casa_comune')</td>
+									<td><span class="status status-failed">FAILED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 26s 5ms</td>
+									<td class="report-column">
+										<pre>
+casa_comune: passato attraverso spigoli:
+(164.0, 164.0) move_down+move_left -&gt; (150.076, 168.879)
+(164.0, 164.0) move_down+move_left -&gt; (150.076, 168.879)
+(92.0, 104.0) move_up+move_right -&gt; (97.81139, 89.8438)
+	at &#39;test_tastiera_contro_spigoli&#39; in res://tests/gdunit/test_collisioni_mappe.gd:127
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:6 ('cima')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 25s 998ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+
+								<tr class="testcase-group">
+									<td>test_tastiera_contro_spigoli:7 ('ufficio_capo')</td>
+									<td><span class="status status-passed">PASSED</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>1min 25s 919ms</td>
+									<td class="report-column">
+										<pre>
+
+										</pre>
+									</td>
+								</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<div id="report_area" class="grid-item tab">
+				<h4>Failure Report</h4>
+				<div class="report-column"></div>
+			</div>
+		</div>
+	</main>
+
+	<footer>
+		<p>Generated by <a href="https://github.com/MikeSchulze/gdUnit4">GdUnit4</a> at 2026-11-03 12:24:33</p>
+		<div class="status-legend">
+			<span class="status-legend-item">
+				<span class="status-box status-skipped"></span> Skipped
+			</span>
+			<span class="status-legend-item">
+				<span class="status-box status-passed"></span> Passed
+			</span>
+			<span class="status-legend-item">
+				<span class="status-box status-flaky"></span> Flaky
+			</span>
+			<span class="status-legend-item">
+				<span class="status-box status-warning"></span> Warning
+			</span>
+			<span class="status-legend-item">
+				<span class="status-box status-failed"></span> Failed
+			</span>
+			<span class="status-legend-item">
+				<span class="status-box status-error"></span> Error
+			</span>
+		</div>
+	</footer>
+</body>
+
+<script>
+	function groupTableRows() {
+		const table = document.getElementById('report-table');
+		const rows = table.querySelectorAll('tbody tr');
+
+		let previousTestCase = '';
+		let groupStartIndex = 0;
+		let groupColorToggle = true; // Toggle between two colors
+
+		rows.forEach((row, index) => {
+			const testCaseName = row.cells[0].textContent.trim();
+
+			if (testCaseName !== previousTestCase) {
+				// Close the previous group
+				if (index > 0 && groupStartIndex !== index - 1) {
+					// Apply background color to the group
+					const groupClass = groupColorToggle ? 'group-bg-1' : 'group-bg-2';
+					for (let i = groupStartIndex; i <= index - 1; i++) {
+						rows[i].classList.add(groupClass);
+					}
+
+					// Toggle background color for the next group
+					groupColorToggle = !groupColorToggle;
+				}
+
+				// Start a new group
+				groupStartIndex = index;
+			}
+
+			previousTestCase = testCaseName;
+		});
+
+		// Handle the last group
+		if (groupStartIndex !== rows.length - 1) {
+			// Apply background color to the last group
+			const groupClass = groupColorToggle ? 'group-bg-1' : 'group-bg-2';
+			for (let i = groupStartIndex; i < rows.length; i++) {
+				rows[i].classList.add(groupClass);
+			}
+		}
+	}
+
+	// Call the function to group table rows after the DOM loads
+	document.addEventListener('DOMContentLoaded', groupTableRows);
+</script>
+
+</html>
