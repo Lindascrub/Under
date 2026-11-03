@@ -36,9 +36,9 @@ func _fill_options() -> void:
 		_options.assign(["Continua", "Nuova partita", "Impostazioni", "Comandi", "Crediti", "Esci"])
 	else:
 		_options.assign(["Nuova partita", "Impostazioni", "Comandi", "Crediti", "Esci"])
-	# i tasti servono solo a chi ha la tastiera
-	if TouchControls.enabled:
-		_options.erase("Comandi")
+	# sul telefono il gioco si chiude come tutte le app: "Esci" non serve
+	if OS.has_feature("mobile"):
+		_options.erase("Esci")
 	_sel = mini(_sel, _options.size() - 1)
 	_render()
 
@@ -321,7 +321,7 @@ func _choose(option: String) -> void:
 			await Ui.settings_menu(true)
 			_locked = false
 		"Comandi":
-			await Ui.show_page(Ui.COMANDI)
+			await Ui.show_page(Ui.COMANDI_TELEFONO if TouchControls.enabled else Ui.COMANDI)
 			_locked = false
 		"Crediti":
 			await Ui.show_page(Ui.CREDITI)

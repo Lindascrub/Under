@@ -233,21 +233,21 @@ Non hai oggetti."
 
 ## Le pagine che si aprono sopra a tutto: i comandi (tasti disegnati) e i crediti.
 const COMANDI := preload("res://scenes/comandi.tscn")
+## La stessa pagina per chi gioca col dito: il joystick e i pulsanti OK, X, C.
+const COMANDI_TELEFONO := preload("res://scenes/comandi_telefono.tscn")
 const CREDITI := preload("res://scenes/crediti.tscn")
 ## La voce delle Impostazioni (solo dalla schermata iniziale) per cancellare la memoria di Nives.
 const FORGET := "Dimentica le partite"
 
 
 ## Le impostazioni: il volume di musica ed effetti (ogni scelta abbassa di un gradino, dopo lo zero si
-## ricomincia dal massimo) e lo schermo intero (solo sul computer).
+## ricomincia dal massimo). Lo schermo intero non è nel menu: sul computer resta il tasto F11.
 ## Dalla schermata iniziale (from_title) anche "Dimentica le partite", se Nives si ricorda qualcosa.
 func settings_menu(from_title := false) -> void:
 	while true:
 		var m := Sound.volume("Music")
 		var s := Sound.volume("SFX")
 		var options: Array[String] = ["Musica: %s" % _vol_text(m), "Effetti: %s" % _vol_text(s)]
-		if Controls.can_fullscreen():
-			options.append("Schermo intero: %s" % ("sì" if Controls.is_fullscreen() else "no"))
 		if from_title and MemoriaNives.count() > 0:
 			options.append(FORGET)
 		options.append("Fatto")
@@ -258,8 +258,6 @@ func settings_menu(from_title := false) -> void:
 		elif c == 1:
 			Sound.set_volume("SFX", _next_vol(s))
 			Sound.sfx("coin")
-		elif picked.begins_with("Schermo intero"):
-			Controls.set_fullscreen(not Controls.is_fullscreen())
 		elif picked == FORGET:
 			await MemoriaNives.forget_dialog()
 		else:

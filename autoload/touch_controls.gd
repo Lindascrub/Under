@@ -51,6 +51,17 @@ func _ready() -> void:
 	_canvas.draw.connect(_draw_controls)
 	add_child(_canvas)
 	visible = enabled
+	# il tasto Indietro di Android non chiude il gioco: fa come X (annulla, salta il testo)
+	if OS.has_feature("mobile"):
+		get_tree().quit_on_go_back = false
+	# provando il telefono sul PC (--touch) il clic del mouse fa da dito
+	elif enabled and not DisplayServer.is_touchscreen_available():
+		Input.emulate_touch_from_mouse = true
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_tap("cancel")
 
 
 func _process(_delta: float) -> void:

@@ -225,34 +225,6 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "Stato e impostazioni"
 
-[node name="Riga5" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 120.0
-offset_top = 252.0
-offset_right = 532.0
-offset_bottom = 284.0
-
-[node name="F11" type="Control" parent="Riga5"]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 0.0
-offset_right = 32.0
-offset_bottom = 32.0
-script = ExtResource("2")
-regione = Rect2(16, 0, 16, 16)
-scritta = "F11"
-
-[node name="Cosa" type="Label" parent="Riga5"]
-layout_mode = 0
-offset_left = 180.0
-offset_top = 6.0
-offset_right = 412.0
-offset_bottom = 28.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "Schermo intero"
-
 [node name="Indietro" type="Label" parent="."]
 layout_mode = 0
 offset_left = 96.0
