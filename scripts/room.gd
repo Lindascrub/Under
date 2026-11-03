@@ -153,6 +153,7 @@ func grey_world_to(amount: float, time := 0.0) -> void:
 
 ## Il filtro grigio segue quello che inquadra la telecamera (anche ai bordi della mappa).
 func _process(_delta: float) -> void:
+	_check_primi_gradini()
 	if is_instance_valid(_clerk_camera_actor) and is_instance_valid(player):
 		player.camera.global_position = player.camera.global_position.lerp(_clerk_camera_actor.global_position + _clerk_camera_offset, minf(1.0, _delta * _clerk_camera_speed))
 	if player and not _descending_stairs and not _stair_zones.is_empty():
@@ -168,12 +169,13 @@ func _process(_delta: float) -> void:
 		if camera_lift > 0:
 			var t := clampf((camera_lift_riga * T - player.position.y) / (camera_lift_righe * T), 0.0, 1.0)
 			want = -camera_lift * t
+		# lo spostamento della camera non rispetta i suoi limiti: lo teniamo noi dentro la stanza
+		var cam := player.camera
+		var half := get_viewport_rect().size.y / (2.0 * cam.zoom.y)
+		var center := cam.get_screen_center_position().y - cam.offset.y
 		if Ui.busy and player.facing != "up":
-			# non oltre il fondo della stanza: lo spostamento della camera non rispetta i suoi limiti
-			var cam := player.camera
-			var half := get_viewport_rect().size.y / (2.0 * cam.zoom.y)
-			var bottom := cam.get_screen_center_position().y - cam.offset.y + half
-			want += clampf(cam.limit_bottom - bottom, 0.0, alza_nei_dialoghi)
+			want += clampf(cam.limit_bottom - (center + half), 0.0, alza_nei_dialoghi)
+		want = clampf(want, minf(0.0, cam.limit_top - (center - half)), maxf(0.0, cam.limit_bottom - (center + half)))
 		player.camera.offset.y = lerpf(player.camera.offset.y, want, 0.1)
 	if _grey_rect and player:
 		_grey_rect.global_position = player.camera.get_screen_center_position() - _grey_rect.size / 2.0
@@ -939,11 +941,9 @@ func use_stairs_up(st: Node2D) -> void:
 	var look := st.get_node_or_null("GuardaTornello") as Examine
 	if look and look.lines.is_empty():
 		look.lines = PackedStringArray(["* Il tornello. Sopra il lettore c'è scritto: \"%s. Solo con badge\"." % GameState.floor_name(need)])
-	# sul primo gradino (col badge) la stanza può far succedere qualcosa: on_stairs_step()
-	(st.get_node("PrimoGradino") as Area2D).body_entered.connect(func(b: Node2D) -> void:
-		if b is Player and not Ui.blocks_input() and GameState.has_badge(need):
-			on_stairs_step(b as Player, need)
-	)
+	# sul primo gradino (col badge) la stanza può far succedere qualcosa: on_stairs_step().
+	# Solo salendo: chi passa davanti alle scale o arriva da sopra e scende non fa partire niente.
+	_primi_gradini.append({"area": st.get_node("PrimoGradino"), "need": need, "fatto": false})
 	# in cima agli scalini si cambia piano
 	(st.get_node("Cima") as Area2D).body_entered.connect(func(b: Node2D) -> void:
 		if not (b is Player) or Ui.transitioning:
@@ -966,6 +966,23 @@ func _setup_children(node: Node) -> void:
 			n.call("setup_in_room", self)
 
 
+
+
+var _primi_gradini: Array = []
+
+
+func _check_primi_gradini() -> void:
+	if player == null:
+		return
+	for g: Dictionary in _primi_gradini:
+		var area := g["area"] as Area2D
+		if not is_instance_valid(area):
+			continue
+		if not area.overlaps_body(player):
+			g["fatto"] = false
+		elif not g["fatto"] and player.facing == "up" and not Ui.blocks_input() and GameState.has_badge(str(g["need"])):
+			g["fatto"] = true
+			on_stairs_step(player, str(g["need"]))
 
 
 ## Scala sottile del condominio LimeZu, a misura originale (32×64).
@@ -1214,13 +1231,20 @@ func _spawn_player() -> void:
 	if cam_rect.size == Vector2.ZERO:
 		cam_rect = Rect2(0, -camera_top, map_size.x * T, map_size.y * T + camera_top)
 	# se la stanza è più piccola dello schermo, si avvicina la telecamera invece di mostrare il nero
-	var z := maxf(cam.zoom.x, maxf(VIEW.x * 2.0 / cam_rect.size.x, VIEW.y * 2.0 / cam_rect.size.y))
+	var z := maxf(cam.zoom.x, zoom_minimo())
 	cam.zoom = Vector2(z, z)
 	cam.limit_left = int(cam_rect.position.x)
 	cam.limit_right = int(ceil(cam_rect.end.x))
 	cam.limit_top = int(cam_rect.position.y)
 	cam.limit_bottom = int(ceil(cam_rect.end.y))
 
+
+
+## Lo zoom più lontano che non fa vedere il nero fuori dalla stanza.
+func zoom_minimo() -> float:
+	if cam_rect.size.x <= 0.0 or cam_rect.size.y <= 0.0:
+		return 0.0
+	return maxf(VIEW.x * 2.0 / cam_rect.size.x, VIEW.y * 2.0 / cam_rect.size.y)
 
 
 ## Percorso dell'addetta: controlla lo spazio reale, inclusi mobili e persone.

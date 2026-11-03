@@ -9,18 +9,24 @@ static func begin(room: Room, shot: Inquadratura) -> Dictionary:
 		"zoom": cam.zoom, "offset": cam.offset, "smooth": cam.position_smoothing_enabled,
 		"limits": [cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom],
 		"back": shot.durata_ritorno}
-	var start := cam.get_screen_center_position()
+	var start := _inside(cam, cam.get_screen_center_position())
 	cam.position_smoothing_enabled = false
 	cam.top_level = true
 	cam.offset = Vector2.ZERO
-	cam.limit_left = -100000; cam.limit_top = -100000
-	cam.limit_right = 100000; cam.limit_bottom = 100000
+	# i limiti restano: anche nelle inquadrature non si vede mai fuori dalla stanza
 	cam.global_position = start
 	var tw := room.create_tween().set_parallel()
 	tw.tween_property(cam, "global_position", shot.global_position, shot.durata).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(cam, "zoom", Vector2(shot.zoom, shot.zoom), shot.durata).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var z := maxf(shot.zoom, room.zoom_minimo())
+	tw.tween_property(cam, "zoom", Vector2(z, z), shot.durata).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await tw.finished
 	return saved
+
+
+## Il punto più vicino che la camera può davvero inquadrare: con i limiti, una camera "fuori"
+## resterebbe ferma sul bordo e il movimento partirebbe in ritardo.
+static func _inside(cam: Camera2D, p: Vector2) -> Vector2:
+	return Vector2(clampf(p.x, cam.limit_left, cam.limit_right), clampf(p.y, cam.limit_top, cam.limit_bottom))
 
 
 static func restore(room: Room, saved: Dictionary) -> void:
