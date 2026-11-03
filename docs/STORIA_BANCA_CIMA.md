@@ -52,7 +52,7 @@ Alle scale il protagonista cerca il contratto del suo debito, e il contratto non
 - La Direzione è la Presidente.
 - Il fascicolo OBBLIGO DI ESISTENZA spiega l'origine **[ESISTENTE]**: chi entra nella Torre diventa beneficiario dei suoi servizi e riceve una quota. Oggi la assegna una stampante, da sola.
 - La Presidente risponde alla richiesta di verifica. Il protagonista può contestare esplicitamente il suo debito.
-- Poi ci sono tre cicli di bilancio, che sono una prova, la pressione del Capo e la scelta finale.
+- Poi c'è un turno di bilancio, che è una prova: soldi, Casa Comune e debiti nello stesso schermo; seguono la pressione del Capo e la scelta finale.
 
 ---
 
@@ -264,11 +264,11 @@ Flag `c6_contestazione`. La scelta resta disponibile alla voce «Il debito, anco
 - Un personaggio liberato non lavora nella Torre e non prende ruoli, ma può offrire casa o lavoro e venire alle feste da fuori.
 - Un ruolo compare solo se qualcuno ce l'ha davvero.
 
-**La prova e le riforme vere.** I tre cicli sono una prova **[ESISTENTE]**. Diventano realtà solo così:
+**La prova e le riforme vere.** Il turno è una prova **[ESISTENTE]**. Le sue decisioni diventano realtà solo così:
 
 | Finale | Cosa vale nella Torre |
 |---|---|
-| **A** | le decisioni dei cicli, perché il protagonista le adotta prendendo la Direzione |
+| **A** | le decisioni del turno, perché il protagonista le adotta prendendo la Direzione |
 | **C2** | le decisioni adottate dal nuovo governo condiviso (le condizioni di C2 le rendono già sostenibili) |
 | **C1** | solo i risultati concreti della piccola comunità (le reti, la Casa Comune com'è uscita dal capitolo 5). Le politiche della Torre restano quelle di prima |
 | **C3** | nessuna riforma realizzata; si vede il progetto ancora aperto. Le politiche della Torre restano quelle di prima |
@@ -294,7 +294,7 @@ Flag `c6_contestazione`. La scelta resta disponibile alla voce «Il debito, anco
 | servizi 25 o più | «servizi allargati» |
 | servizi sotto 15 | «servizi a pagamento» |
 | arretrato di manutenzione 10 o più | il foglio «Caldaia: mancano…» |
-| Casa Comune | in A e C2 la decisione del ciclo 2; negli altri finali l'esito dell'assemblea del capitolo 5 |
+| Casa Comune | in A e C2 la decisione presa nel turno; negli altri finali l'esito dell'assemblea del capitolo 5 |
 
 **Il tuo debito e quello degli altri.** Due righe separate, in tutti i finali:
 
@@ -317,7 +317,7 @@ Le varianti si leggono in quest'ordine: **A2 → A1 → A3**.
 | Variante | Condizione |
 |---|---|
 | **A2** IL DIRIGENTE CHE CAMBIA LE COSE [ESISTENTE] | come adesso |
-| **A1** «ADESSO CHIAMI TU» | al ciclo 3 hai scelto «Conserva il sistema dei debiti» **mentre almeno un'altra regola era aperta** |
+| **A1** «ADESSO CHIAMI TU» | nel turno hai scelto «Conserva il sistema dei debiti» **mentre almeno un'altra regola era aperta** |
 | **A3** IL TELEFONO SQUILLA ANCORA | tutti gli altri casi |
 
 Non porta ad A1:

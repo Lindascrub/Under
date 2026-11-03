@@ -16,8 +16,8 @@ var fast_dodge := true
 var immortal := false
 ## Come finiscono da soli i minigiochi di aiuto: "win", "fail" o "partial".
 var minigame_result := "win"
-## Il TURNO di Direzione (capitolo 6): per ogni ciclo {"alloc": {...}, "choice": id}. Vuoto: la distribuzione
-## della Presidente, e nessun intervento.
+## Il TURNO di Direzione (capitolo 6), un turno solo: [{"alloc": {...}, "casa": id, "choice": id}]. Vuoto: la
+## distribuzione della Presidente, e nessun intervento.
 var director_plan: Array = []
 
 
@@ -70,7 +70,7 @@ func _drive_direction(d: Node) -> void:
 			d.call("_confirm")
 		"casa", "debiti":
 			var opts: Array = d.get("options")
-			var want := str(p.get("choice", ""))
+			var want := str(p.get("casa" if str(d.get("phase")) == "casa" else "choice", ""))
 			var pick := opts.size() - 1 if str(d.get("phase")) == "casa" else 0
 			for i in opts.size():
 				if str(opts[i][0]) == want and str(opts[i][opts[i].size() - 1]) == "":
@@ -847,9 +847,7 @@ func _test_chapter6() -> void:
 		_check(ResourceLoader.exists("res://audio/arcade/%s.wav" % effect), "effetto arcade importato: " + effect)
 	# la Presidente: STRAP, desiderio "origine", tre sezioni, perché, tre domande, l'offerta, il TURNO
 	director_plan = [
-		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}},
-		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "risorse"},
-		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "revisione"},
+		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "casa": "risorse", "choice": "revisione"},
 	]
 	choose_queue = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	m.call("talk_president")
@@ -858,30 +856,19 @@ func _test_chapter6() -> void:
 	_check(c6["president"]["met"] and c6["president"]["first_wish"] == "origine", "18: la Presidente, lo zucchero, cosa desideri")
 	_check(c6["president"]["debt_contract_read"] and GameState.flags.get("c6_contratto_letto", false) and c6["president"]["origin_explained"], "19: OBBLIGO DI ESISTENZA letto, sezione per sezione")
 	_check(c6["president"]["offer_received"] and GameState.debt == debt0 and not c6["debt_cancelled"], "21: l'offerta senza cancellare niente")
-	# 22-24: tre cicli, lo stato comune; dopo ogni ciclo ASCOLTA GLI ABITANTI (il primo: Amir)
-	choose_queue = [0, 99]
-	m = await _c6_settle()
-	c6 = logic.c6()
-	_check(c6["director_turn"]["cycle_1_completed"] and not c6["director_turn"]["cycle_2_completed"], "22: il ciclo 1")
-	_check(c6["director_turn"]["consulted_citizens"] and "1:amir" in c6["director_turn"]["consulted"], "27: consultazione dopo il ciclo 1")
-	_check(GameState.money == 0, "il TURNO di Direzione non paga uno stipendio personale")
-	choose_queue = [0, 99]
-	m.call("_scrivania")
-	await _wait_scene(Router.DIREZIONE)
-	choose_queue = [99]
-	m = await _c6_settle()
-	c6 = logic.c6()
-	_check(c6["director_turn"]["casa_call_seen"] and c6["director_turn"]["cycle_2_completed"] and str(c6["director_turn"]["state"]["casa"]) == "comunitaria_sostenuta", "23: il ciclo 2, la Casa Comune (comunitaria, con risorse)")
-	choose_queue = [0]
-	m.call("_scrivania")
-	await _wait_scene(Router.DIREZIONE)
-	# dopo il ciclo 3: nessuna voce obbligatoria (già ascoltato), poi il Capo: "Non grazie a te", chiede, rifiuta
-	choose_queue = [99, 1, 2, 1]
+	# 22-24: un turno solo (soldi, Casa Comune, debiti), poi ASCOLTA GLI ABITANTI (Amir), poi il Capo:
+	# "Non grazie a te", chiede, rifiuta
+	choose_queue = [0, 99, 1, 2, 1]
 	m = await _c6_settle()
 	c6 = logic.c6()
 	st = c6["director_turn"]["state"]
-	_check(c6["director_turn"]["cycle_3_completed"] and str(st["debt_rule"]) == "revisione" and (c6["director_turn"]["decisions"] as Array).size() == 3, "24: il ciclo 3, la revisione dei debiti")
-	_check(int(st["reserve"]) == 15 and int(st["backlog"]) == 0 and int(st["wage_floor"]) == 45, "26: le riserve e gli aumenti passano da un ciclo all'altro")
+	_check(c6["director_turn"]["cycle_1_completed"] and c6["director_turn"]["cycle_2_completed"] and c6["director_turn"]["cycle_3_completed"] \
+		and logic.cycles_done() == 3 and not logic.turn_open(), "22: un turno solo, e il TURNO è chiuso")
+	_check(c6["director_turn"]["casa_call_seen"] and str(st["casa"]) == "comunitaria_sostenuta", "23: la Casa Comune nello stesso turno (comunitaria, con risorse)")
+	_check(str(st["debt_rule"]) == "revisione" and (c6["director_turn"]["decisions"] as Array).size() == 1, "24: la regola dei debiti nello stesso turno, una decisione sola")
+	_check(c6["director_turn"]["consulted_citizens"] and "3:amir" in c6["director_turn"]["consulted"], "27: consultazione dopo il turno")
+	_check(GameState.money == 0, "il TURNO di Direzione non paga uno stipendio personale")
+	_check(int(st["reserve"]) == 10 and rules.summary(st)["reserve_ok"] and int(st["backlog"]) == 0 and int(st["wage_floor"]) == 45, "26: le riserve, la manutenzione e l'aumento restano")
 	_check(c6["boss"]["final_call_seen"] and c6["boss"]["global_credit_offer_resolved"] and not c6["boss"]["global_credit_accepted"], "28-29: il Capo, l'attribuzione globale rifiutata")
 	var robots0 := GameState.robots.size()
 	m = await _c6_call(m, "_boss_scene")

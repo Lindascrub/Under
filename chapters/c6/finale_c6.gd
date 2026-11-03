@@ -187,7 +187,7 @@ func _fade_title(top: String, title: String) -> void:
 
 # --- passo 0: il finale ------------------------------------------------------------------------------
 # Le scene seguono docs/STORIA_BANCA_CIMA.md, sezioni 5 e 6. Cosa vale davvero nella Torre lo dice
-# FINALI.effective_summary(): le decisioni dei cicli solo in A e C2, altrimenti le regole di prima.
+# FINALI.effective_summary(): le decisioni del turno solo in A e C2, altrimenti le regole di prima.
 
 func family_scene() -> void:
 	var fam := str(out.get("family", "B"))

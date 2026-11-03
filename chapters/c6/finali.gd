@@ -5,7 +5,7 @@ extends RefCounted
 ##   legami   persone conosciute e aiutate, ancora umane (robot e mai aiutati non contano)
 ##   reti     reti vere già funzionanti (ordini di Leda, pendolari di Nadir, Casa Comune, bottega, consegne...)
 ##   prove    documenti veri sul debito
-##   bilancio cosa è cambiato nei tre cicli (direzione_regole.summary)
+##   bilancio cosa è cambiato nel turno (direzione_regole.summary)
 ##   potere   l'attribuzione globale del Capo, firmata o no
 ## Le condizioni esatte sono in `variant_rules()` e in docs/ENDING_SYSTEM.md. Ogni famiglia ha un fallback:
 ## non esiste una combinazione senza finale.
@@ -59,7 +59,7 @@ static func betrayed() -> Array:
 	return out
 
 
-## Lo stato del bilancio dei tre cicli (salvato in chapter_6.director_turn.state).
+## Lo stato del bilancio del turno (salvato in chapter_6.director_turn.state).
 static func turn_state() -> Dictionary:
 	var c6: Dictionary = GameState.flags.get("chapter_6", {})
 	var dt: Dictionary = c6.get("director_turn", {})
@@ -102,7 +102,7 @@ static func variant_rules() -> Dictionary:
 		"A": [
 			["A2", "stipendi o servizi migliorati, almeno 2 legami, una regola dei debiti cambiata, attribuzione globale rifiutata",
 				func(x: Dictionary) -> bool: return x["improved"] and x["bonds"] >= 2 and x["rule_changed"] and not x["power"]],
-			["A1", "al ciclo 3 \"Conserva il sistema dei debiti\" scelto mentre almeno un'altra regola era aperta",
+			["A1", "nel turno \"Conserva il sistema dei debiti\" scelto mentre almeno un'altra regola era aperta",
 				func(x: Dictionary) -> bool: return x.get("kept_by_choice", false)],
 			["A3", "altrimenti", func(_x: Dictionary) -> bool: return true],
 		],
@@ -112,7 +112,7 @@ static func variant_rules() -> Dictionary:
 			["B1", "altrimenti", func(_x: Dictionary) -> bool: return true],
 		],
 		"C": [
-			["C2", "almeno 3 reti, 4 legami, i 3 ruoli affidati a persone, manutenzione in regola, riserve almeno 15, regola dei debiti cambiata, attribuzione globale rifiutata",
+			["C2", "almeno 3 reti, 4 legami, i 3 ruoli affidati a persone, manutenzione in regola, riserve almeno 10, regola dei debiti cambiata, attribuzione globale rifiutata",
 				func(x: Dictionary) -> bool: return x["networks"] >= 3 and x["bonds"] >= 4 and x["roles_filled"] == 3 \
 					and x["policy"]["maintenance_ok"] and x["policy"]["reserve_ok"] and x["rule_changed"] and not x["power"]],
 			["C3", "meno di 2 legami, oppure nessuna rete, oppure nessun ruolo affidato",
@@ -150,13 +150,13 @@ static func _c2(x: Dictionary) -> bool:
 	return (variant_rules()["C"][0][2] as Callable).call(x)
 
 
-## Le decisioni dei tre cicli diventano vere solo in A (le adotti tu) e in C2 (il governo condiviso).
+## Le decisioni del turno diventano vere solo in A (le adotti tu) e in C2 (il governo condiviso).
 ## Negli altri finali vale la distribuzione della Presidente e la regola dei debiti di prima.
 static func in_force(family: String, variant: String) -> bool:
 	return family == "A" or variant == "C2"
 
 
-## Il riassunto che i finali mostrano: quello dei cicli se è in vigore, se no quello di prima
+## Il riassunto che i finali mostrano: quello del turno se è in vigore, se no quello di prima
 ## (stipendi 40, servizi 20, manutenzione 25, riserve 15; debiti conservati; la Casa Comune
 ## com'è uscita dal capitolo 5).
 static func effective_summary(family: String, variant: String) -> Dictionary:

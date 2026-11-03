@@ -107,7 +107,7 @@ Il gioco è pensato per telefono in orizzontale.
 | Premio del capo al -2 | 3.000 € (il rapporto 404 di Teo), una volta |
 | Paga del centralino al piano 0 | 1.600 € (fino a 2.000 €); dal 3° turno anche il turno rapido (1.600 €, senza minigioco). 5 turni per il badge della Cima |
 | Premio del capo al piano 0 | 6.000 € (il progetto di Ada), una volta |
-| TURNO di Direzione alla Cima | Non paga. 3 cicli da 100 unità (stipendi, servizi, manutenzione, riserve), regole in `chapters/c6/direzione_regole.gd` |
+| TURNO di Direzione alla Cima | Non paga. Un turno: 100 unità fra stipendi, servizi, manutenzione e riserve; poi Casa Comune e regola dei debiti nello stesso schermo. Regole in `chapters/c6/direzione_regole.gd` |
 | Debito personale | Si annulla solo con il finale A, una volta; B e C lo contestano o lo mettono in revisione se ci sono prove |
 | Promozione (sfruttare) | 900 € × 1,7 per ogni sfruttamento precedente |
 | Aiutare qualcuno | 10 € (almeno 1/8 del badge di sopra) e +1 autostima la prima volta; Leda e Amir non pagano (biscotti, gratitudine) |
@@ -218,7 +218,7 @@ Al loro posto ci sono tre **tendenze**, che non si vedono mai durante il gioco e
 
 **Come sono fatti davvero (capitolo 6):** la scelta al tavolo della Cima decide la famiglia
 (A PRENDERE LA DIREZIONE, B IL TEMPO CHE RESTA, C NESSUNO SALE DA SOLO); la variante (A1/A2/A3, B1/B2, C1/C2/C3) dipende da fatti
-contati: legami, reti, prove, il bilancio dei tre cicli, l'attribuzione del Capo. Una funzione sola,
+contati: legami, reti, prove, il bilancio del turno, l'attribuzione del Capo. Una funzione sola,
 `chapters/c6/finali.gd`, `decide()`. Condizioni esatte: [ENDING_SYSTEM](ENDING_SYSTEM.md).
 Poi gli epiloghi "sei mesi dopo" piano per piano (solo le persone conosciute, Nives per ultima), il sogno,
 e CHEAP / Quanto costa una vita? / FINE.

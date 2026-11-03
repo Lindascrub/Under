@@ -2,7 +2,7 @@
 
 L'ultimo piano. Niente scale dopo. Un ascensore dorato senza pulsanti, un corridoio di specchi,
 l'ufficio enorme e quasi vuoto della Presidente. Qui il protagonista scopre da dove viene il debito,
-fa tre cicli del TURNO di Direzione (il bilancio della Torre), riceve l'ultima telefonata del Capo
+fa un turno del TURNO di Direzione (bilancio, Casa Comune e debiti), riceve l'ultima telefonata del Capo
 e decide cosa fare del posto più alto: prenderlo, lasciarlo, o aprirlo a tutti.
 Poi i finali, gli epiloghi "sei mesi dopo", il sogno, e la domanda: **Quanto costa una vita?**
 
@@ -60,11 +60,9 @@ Lo spazio vuoto è voluto: è il posto più ricco della Torre, e non c'è quasi 
 | 6.02 La Presidente | ufficio | Grigia, capelli bianchi, occhiali. STRAP: strappa un foglio. Le chiede cosa desiderava da giovane | `president.met`, `president.first_wish` |
 | 6.03 Il fascicolo | scrivania | OBBLIGO DI ESISTENZA: tre sezioni (chi, quanto, firma). Nessuna firma. Lette tutte e tre, è una prova | `president.debt_contract_read`, `c6_contratto_letto` |
 | 6.04 L'origine e l'offerta | Presidente | Le domande sull'origine del debito; il timbro ANNULLATO mostrato ma **non usato**: "prima guarda il lavoro" | `president.origin_explained`, `president.offer_received` |
-| 6.05 TURNO, ciclo 1 | scrivania → Direzione | QUANTO VALE IL LAVORO? | `director_turn.cycle_1_completed` |
-| 6.06 TURNO, ciclo 2 | scrivania → Direzione | A CHI APPARTENGONO I SERVIZI? Prima: la telefonata sulla Casa Comune (Ada se è umana e l'hai conosciuta, se no una rappresentante degli studenti) | `cycle_2_completed`, `casa_call_seen` |
-| 6.07 TURNO, ciclo 3 | scrivania → Direzione | CHI PAGA IL FUTURO? La regola dei debiti | `cycle_3_completed` |
-| 6.07b Consultazioni | dopo ogni ciclo, terminale | Le persone conosciute dicono cosa è cambiato per loro; i robot rispondono da robot; "l'impiegata" c'è sempre | `director_turn.consulted`, `consulted_citizens` |
-| 6.08 Il Capo | ufficio, dopo il ciclo 3 | DRRRRING. Il Capo, grigio per la prima volta. L'attribuzione globale: tutto il lavoro della Torre con il tuo nome | `boss.final_call_seen`, `global_credit_offer_resolved`, `global_credit_accepted` |
+| 6.05-6.07 TURNO | scrivania → Direzione | Un solo schermo: QUANTO VALE IL LAVORO?, A CHI APPARTENGONO I SERVIZI?, CHI PAGA IL FUTURO? Prima: la telefonata sulla Casa Comune e quella del Capo | i tre flag `cycle_*_completed` diventano veri insieme; `casa_call_seen` |
+| 6.07b Consultazioni | dopo il turno, terminale | Le persone conosciute dicono cosa è cambiato per loro; i robot rispondono da robot; "l'impiegata" c'è sempre | `director_turn.consulted`, `consulted_citizens` |
+| 6.08 Il Capo | ufficio, dopo il turno | DRRRRING. Il Capo, grigio per la prima volta. L'attribuzione globale: tutto il lavoro della Torre con il tuo nome | `boss.final_call_seen`, `global_credit_offer_resolved`, `global_credit_accepted` |
 | 6.09 La scelta | tavolo | A / B / C / Non ancora, poi conferma esplicita ("Ci ripenso" torna indietro) | `final_decision.*`, `outcome.*` |
 | 6.10 Sei mesi dopo | Finale | La scena della famiglia, poi la Torre dall'alto in basso: chi hai conosciuto, piano per piano. Nives per ultima | `epilogue.*` |
 | 6.11 Il sogno | Finale | Il sogno (scelto prima, alla Presidente) secondo la famiglia del finale. CHEAP / Quanto costa una vita? / FINE. I titoli | `dream.*`, `completed` |
@@ -81,12 +79,12 @@ Dalla storia approvata (`docs/STORIA_BANCA_CIMA.md`, sezioni 4-5 e caso 1):
   se contesti la registrazione (`c6_contestazione`, col numero d'ordine). Si può contestare anche dopo, da
   "Il debito, ancora.", fino alla scelta finale. La contestazione non annulla niente.
 - **La stampante** nell'origine: è il nodo `Mondo/Stampante` dietro la Presidente (LimeZu, Hospital_Singles_126) e trema
-  quando stampa (`_vrrr`). Poi il Capo che commenta prima del ciclo 2 (`c6_capo_cicli`).
-- Al ciclo 3 `direzione.gd` salva `debt_other_open`: se "Conserva" è stato scelto mentre un'altra regola era aperta (finale A1).
+  quando stampa (`_vrrr`). Poi il Capo che commenta prima del turno (`c6_capo_cicli`).
+- Nella parte sui debiti `direzione.gd` salva `debt_other_open`: se "Conserva" è stato scelto mentre un'altra regola era aperta (finale A1).
 
 Dalla revisione della storia (vedi `docs/COHERENCE.md`):
-- i tre cicli sono presentati come **una prova**: valgono per la prova, diventano tuoi solo se resti;
-- prima del primo ciclo la Presidente dice "È tutto molto semplice." (la frase del Capo), dopo "Be'. Sulla carta.";
+- il turno è presentato come **una prova**: vale per la prova, diventa tuo solo se resti;
+- prima del turno la Presidente dice "È tutto molto semplice." (la frase del Capo), dopo "Be'. Sulla carta.";
 - "Perché non lo cambi tu?": le regole le ha ereditate, tenute e anche strette; teme che cambiare in fretta fermi tutto;
   cerca un successore, non un salvatore ("Pensi che basti cancellare i numeri?");
 - scegliendo C la Presidente avverte: annunciarlo da quella sedia è decidere da solo per tutti. Si propone, non si impone.
@@ -95,30 +93,29 @@ Dalla revisione della storia (vedi `docs/COHERENCE.md`):
 
 La Presidente non è un boss e non è magica. Il debito del protagonista nasce da un fascicolo,
 OBBLIGO DI ESISTENZA, che nessuno ha firmato: un debito assegnato alla nascita, come a tutti.
-Lei potrebbe annullarlo con un timbro, ma non lo fa subito: prima chiede di fare il suo lavoro per tre cicli.
+Lei potrebbe annullarlo con un timbro, ma non lo fa subito: prima chiede di fare il suo lavoro per un turno.
 **Il debito personale non sparisce mai prima della scelta finale.** Solo il finale A lo annulla (una volta).
 
 ## TURNO di Direzione
 
-Tre cicli, sempre con **100 unità** da dividere in quattro voci, a passi di 5, massimo 60 per voce.
-Ogni ciclo parte dalla distribuzione della Presidente: stipendi 40, servizi 20, manutenzione 25, riserve 15.
+Un turno: prima **100 unità** da dividere in quattro voci, a passi di 5, massimo 60 per voce.
+La distribuzione iniziale della Presidente è: stipendi 40, servizi 20, manutenzione 25, riserve 15.
+Confermato il bilancio, nello stesso schermo si decide prima della Casa Comune e poi della regola dei debiti.
 Le regole sono **deterministiche e tutte visibili** (pulsante REGOLE, e le righe sotto le voci dicono cosa
 succederà prima di confermare). Niente barra della bontà, niente punteggio.
 
 | Voce | Regola |
 |---|---|
-| STIPENDI | Minimo 30 (i contratti firmati). Sotto 35 tagliati, 35-44 fermi, 45-54 coprono metà dei prezzi, 55+ coprono i prezzi. Un aumento sopra 40 è per sempre: dal ciclo dopo non si scende sotto |
-| SERVIZI | Sotto 15 a pagamento, 15-24 come ora, 25+ allargati (+5 al fabbisogno di manutenzione dei cicli dopo) |
-| MANUTENZIONE | Fabbisogno 25 (+5 per ogni ciclo con servizi allargati). Quello che manca diventa arretrato. Con 10 di arretrato si annuncia un guasto: al ciclo dopo lo si paga tutto |
-| RISERVE | Si accumulano. Al ciclo 2 arriva la bolletta della dinamo del Fondo (15, annunciata al ciclo 1) |
+| STIPENDI | Minimo 30 (i contratti firmati). Sotto 35 tagliati, 35-44 fermi, 45-54 coprono metà dei prezzi, 55+ coprono i prezzi |
+| SERVIZI | Sotto 15 a pagamento, 15-24 come ora, 25+ allargati |
+| MANUTENZIONE | Fabbisogno 25. Quello che manca diventa arretrato; con 10 di arretrato la manutenzione non è in regola |
+| RISERVE | Restano disponibili per le scelte successive del turno; 10 o più soddisfano il requisito di sostenibilità del finale C2 |
 
-Le spese (bolletta, guasto) si pagano prima dalle riserve e poi dai servizi del ciclo: in quel caso
-lo schermo lo dice ("ne restano X: Y vanno a coprire le spese"). CONFERMA funziona solo a 100 unità esatte;
-se no dice perché ("Hai assegnato 90 unità su 100.").
+CONFERMA funziona solo a 100 unità esatte; se no dice perché ("Hai assegnato 90 unità su 100.").
 
 Non c'è uno stipendio personale per il protagonista: il TURNO di Direzione non paga.
 
-### Ciclo 2: la Casa Comune
+### La Casa Comune
 
 Le opzioni dipendono da come è finita l'assemblea del capitolo 5 (`c5_esito`):
 
@@ -133,7 +130,7 @@ Le opzioni dipendono da come è finita l'assemblea del capitolo 5 (`c5_esito`):
 
 Un'opzione chiusa resta visibile, grigia, con il motivo scritto.
 
-### Ciclo 3: la regola dei debiti
+### La regola dei debiti
 
 | Regola | Condizione |
 |---|---|
@@ -149,21 +146,21 @@ la contestazione di Olga.
 
 ## Consultazioni
 
-Dopo ogni ciclo (e prima della scelta finale almeno una volta) si sentono le persone dal terminale:
+Dopo il turno (e prima della scelta finale almeno una volta) si sentono le persone dal terminale:
 fino a 5 persone conosciute, in ordine di piano. Ognuna dice una cosa vera su come il bilancio la tocca.
 I robot compaiono con "(robot)" e rispondono con frasi aziendali. Chi è stato liberato non lavora più nella Torre
 e non c'è. "L'impiegata" (una persona senza nome) è sempre l'ultima, così la consultazione non è mai vuota.
 
 ## Il Capo (6.08)
 
-Una volta sola, dopo il ciclo 3. Il Capo è **grigio**: anche lui è una persona. Offre l'attribuzione globale:
+Una volta sola, dopo il turno. Il Capo è **grigio**: anche lui è una persona. Offre l'attribuzione globale:
 tutto il lavoro della Torre a tuo nome. Le battute cambiano con quante persone hai sfruttato.
 Si può chiedere di più ("Chiedi") quante volte si vuole, poi accettare o rifiutare.
 Accettare non cambia la famiglia del finale, ma chiude A2 e C2 e rende il potere "totale" in A.
 
 ## La scelta finale (6.09)
 
-Al tavolo, quando i tre cicli sono fatti, il Capo è passato e hai sentito almeno una persona:
+Al tavolo, quando il turno è chiuso, il Capo è passato e hai sentito almeno una persona:
 
 - **A — Prendi il posto della Presidente** (PRENDERE LA DIREZIONE)
 - **B — Rifiuta, e vai via** (IL TEMPO CHE RESTA)
@@ -200,7 +197,7 @@ Struttura del Finale (`finale_c6.gd`, `epilogue.step`):
 
 Ogni epilogo personale è coerente con lo stato: un robot resta robot (frasi aziendali, sorriso), chi hai
 aiutato e poi sfruttato lo ricorda, i ruoli del finale C compaiono sulle persone che li hanno.
-Quello che vale nella Torre lo dice `FINALI.effective_summary()`: le decisioni dei cicli **solo in A e in C2**;
+Quello che vale nella Torre lo dice `FINALI.effective_summary()`: le decisioni del turno **solo in A e in C2**;
 negli altri finali le regole di prima (e la Casa Comune com'è uscita dal capitolo 5).
 Il finale salva dopo ogni passo e riprende da lì; un `outcome` senza `engine` (salvataggio vecchio) si ricalcola.
 
@@ -222,7 +219,8 @@ debt_cancelled, debt_before, coffee
 ```
 
 `director_turn.state` è lo stato del bilancio (`direzione_regole.new_state()`): riserve, arretrato,
-minimo degli stipendi, servizi allargati, ciclo, registro dei cicli, Casa, regola dei debiti.
+minimo degli stipendi, servizi allargati, registro del turno, Casa, regola dei debiti. I tre flag `cycle_*`
+restano per compatibilità coi salvataggi precedenti e vengono chiusi insieme.
 Fuori da `chapter_6`: `c6_contratto_letto` (la prova, letta da `evidence()`), `c6_contestazione` (+ `_seq`),
 `c6_capo_cicli`. In `director_turn.state`: `debt_other_open`.
 
@@ -242,7 +240,7 @@ Fuori da `chapter_6`: `c6_contratto_letto` (la prova, letta da `evidence()`), `c
 `tests/smoke_test.gd`, `_test_chapter6()` (dopo il capitolo 5, nello stesso giro):
 regole del bilancio (validità, minimo stipendi, bolletta pagata dai servizi, guasto annunciato, riserve,
 servizi allargati); arrivo, ascensore una volta sola, specchi; Presidente, fascicolo, origine, offerta senza
-annullamento anticipato; i tre cicli con lo stato condiviso; consultazioni (robot, impiegata, niente ripetizioni);
+annullamento anticipato; il turno unico con bilancio, Casa Comune e debiti; consultazioni (robot, impiegata, niente ripetizioni);
 nessuno stipendio personale; il Capo una volta sola, attribuzione rifiutata e accettata; la finestra senza premi;
 "Ci ripenso" prima della conferma; percorso C → C2 con i ruoli e il debito in revisione; percorso A → A3 con
 potere, debito annullato una volta sola, robot che restano robot; varianti logiche; 1200 combinazioni casuali
@@ -254,7 +252,7 @@ cosa vale in ogni finale, le combinazioni del finale B (nota 2), Fermo nelle sce
 e **ogni variante giocata dalla scena vera fino ai titoli** (A1, A3, B1, B2, C1, C2, C3) più un salvataggio vecchio.
 
 `tests/touch_test.gd`: lo schermo della Direzione col dito (più a 100 non aggiunge, togliere e dare,
-minimo stipendi, CONFERMA rifiutata a 90, CONFERMA a 100).
+minimo stipendi, CONFERMA rifiutata a 90, CONFERMA a 100, Casa Comune e debiti nello stesso turno).
 
 Verificati **solo leggendo il codice**: alcune combinazioni di epiloghi con robot specifici (es. Teo robot
 alla Banca). Le scene finali girano fino in fondo nei test, ma **non sono state guardate a schermo**.

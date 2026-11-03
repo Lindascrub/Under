@@ -1,21 +1,16 @@
 extends RefCounted
-## Capitolo 6 — le regole del TURNO di Direzione (tre cicli di bilancio). Solo dati e conti, niente scena:
+## Capitolo 6 — le regole del TURNO di Direzione. Solo dati e conti, niente scena:
 ## le usano direzione.gd (lo schermo), cima_c6.gd (la stanza), finali.gd (i finali) e i test.
 ##
 ## Ogni ciclo ha 100 unità da dividere fra quattro voci. Le regole sono tutte qui, scritte per esteso,
 ## e lo schermo le mostra prima della conferma (`hints`). Niente barra della bontà, niente punteggio:
 ##   STIPENDI      base 40. Sotto 30 non si coprono i contratti firmati (minimo vero).
-##                 Un aumento è per sempre: dal ciclo dopo non si scende sotto il nuovo livello.
 ##                 Al -3 i prezzi sono saliti di un terzo: 45-54 copre metà dei prezzi, 55+ li copre tutti.
-##   SERVIZI       base 20. Sotto 15 diventano a pagamento, 25+ si allargano (e consumano: +5 al
-##                 fabbisogno di manutenzione dei cicli dopo).
-##   MANUTENZIONE  fabbisogno 25 (+5 se i servizi si sono allargati). Quello che manca diventa arretrato;
-##                 quello in più lo riduce. Con 10 di arretrato si annuncia un guasto: al ciclo dopo
-##                 si paga tutto l'arretrato (prima dalle riserve, poi dai servizi). Mai a sorpresa.
-##   RISERVE       si accumulano. Al ciclo 2 arriva la bolletta della dinamo del Fondo (15, annunciata
-##                 al ciclo 1): si paga dalle riserve, e se non bastano dai servizi di quel ciclo.
-## Il ciclo 2 decide anche della Casa Comune (dipende dall'assemblea del capitolo 5), il ciclo 3 la regola
-## dei debiti (alcune scelte hanno bisogno di prove o di reti vere: altrimenti sono chiuse, e si dice perché).
+##   SERVIZI       base 20. Sotto 15 diventano a pagamento, 25+ si allargano.
+##   MANUTENZIONE  fabbisogno 25. Quello che manca diventa arretrato.
+##   RISERVE       restano disponibili per le scelte successive e per la sostenibilità dei finali.
+## Dopo la distribuzione si decide della Casa Comune e poi della regola dei debiti. Alcune scelte hanno
+## bisogno di prove o reti vere: altrimenti restano visibili ma chiuse, con il motivo.
 
 const CATS := ["stipendi", "servizi", "manutenzione", "riserve"]
 const NAMES := {"stipendi": "STIPENDI", "servizi": "SERVIZI", "manutenzione": "MANUTENZIONE", "riserve": "RISERVE"}
@@ -160,8 +155,6 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 		out.append("MANUTENZIONE %d: ne servono %d. L'arretrato sale a %d." % [m, need, backlog_after]
 			+ (" Con 10 di arretrato, al ciclo dopo si annuncia un guasto." if backlog_after >= BREAKDOWN_AT else ""))
 	out.append("RISERVE %d: in cassa ne resteranno %d." % [r, int(cover["reserve_after"])])
-	if int(st["cycle"]) == 1:
-		out.append("Previsto al ciclo 2: la bolletta della dinamo del Fondo (%d)." % BILL)
 	return out
 
 
@@ -222,7 +215,7 @@ static func policy_hint(mode: String) -> String:
 	return ""
 
 
-# --- le scelte del ciclo 2 e 3 -----------------------------------------------------------------------
+# --- le scelte successive del turno -----------------------------------------------------------------
 
 ## La Casa Comune com'era alla fine del capitolo 5: "riconversione", "comunitaria" o "sospesa".
 static func casa_state() -> String:
@@ -232,7 +225,7 @@ static func casa_state() -> String:
 	return e
 
 
-## Le opzioni del ciclo 2 sulla Casa Comune: [id, testo, motivo se chiusa ("" se aperta)].
+## Le opzioni sulla Casa Comune: [id, testo, motivo se chiusa ("" se aperta)].
 static func casa_options(st: Dictionary, a: Dictionary) -> Array:
 	var f := GameState.flags
 	var v := int(a["servizi"]) - int(_cover(st, a)["from_services"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0)
@@ -252,7 +245,7 @@ static func casa_options(st: Dictionary, a: Dictionary) -> Array:
 	return out
 
 
-## Com'è la Casa Comune dopo il ciclo 2.
+## Com'è la Casa Comune dopo la scelta.
 static func casa_after(choice: String) -> String:
 	match choice:
 		"accessi":
@@ -275,7 +268,7 @@ static func casa_after(choice: String) -> String:
 	return "chiusa"
 
 
-## La Casa Comune è aperta a tutti, dopo il ciclo 2?
+## La Casa Comune è aperta a tutti, dopo la scelta?
 static func casa_open(c: String) -> bool:
 	return c in ["riconvertita_con_accessi", "contratto_rinegoziato", "comunitaria_sostenuta", "comunitaria_autonoma", "prorogata", "nuovo_modello"]
 
@@ -322,7 +315,7 @@ static func networks(st := {}) -> Array:
 	return out
 
 
-## Le regole sui debiti del ciclo 3: [id, testo, come funziona, motivo se chiusa].
+## Le regole sui debiti: [id, testo, come funziona, motivo se chiusa].
 static func debt_options(st: Dictionary, a: Dictionary) -> Array:
 	var res := int(_cover(st, a)["reserve_after"])
 	var ev := evidence()
@@ -342,7 +335,7 @@ static func debt_options(st: Dictionary, a: Dictionary) -> Array:
 	]
 
 
-## Riassunto dei tre cicli per i finali: cosa è cambiato davvero (fatti, non giudizi).
+## Riassunto del turno per i finali: cosa è cambiato davvero (fatti, non giudizi).
 static func summary(st: Dictionary) -> Dictionary:
 	var log: Array = st.get("log", [])
 	var last: Dictionary = log[log.size() - 1] if not log.is_empty() else {"alloc": BASE, "services_eff": 20}
@@ -355,7 +348,8 @@ static func summary(st: Dictionary) -> Dictionary:
 		"services_paid": int(last["services_eff"]) < 15,
 		"maintenance_ok": int(st.get("backlog", 0)) < BREAKDOWN_AT,
 		"reserve": int(st.get("reserve", 0)),
-		"reserve_ok": int(st.get("reserve", 0)) >= 15,
+		# Con il turno unico 10 è la riserva compatibile con aumento, servizi e manutenzione coperta.
+		"reserve_ok": int(st.get("reserve", 0)) >= 10,
 		"casa": str(st.get("casa", "")),
 		"debt_rule": str(st.get("debt_rule", "conservare")),
 		"cycles": log.size(),

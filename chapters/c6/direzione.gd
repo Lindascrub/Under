@@ -2,11 +2,12 @@ extends Node2D
 
 const B := preload("res://scripts/boss_missions.gd")
 const Art := preload("res://scripts/minigame_art.gd")
-## Capitolo 6 — il TURNO di Direzione: uno schermo, tre cicli (GameState.minigame = {"cycle": n}).
-## Non c'è uno stipendio: si dividono 100 unità fra stipendi, servizi, manutenzione e riserve.
+## Capitolo 6 — il TURNO di Direzione: uno schermo, un turno solo.
+## Non c'è uno stipendio: si dividono 100 unità fra stipendi, servizi, manutenzione e riserve,
+## poi si decide della Casa Comune, poi della regola dei debiti. Tutto nello stesso turno.
 ## Le regole sono in direzione_regole.gd; qui c'è solo lo schermo (dito, mouse, tastiera).
-## Il ciclo 2 decide anche della Casa Comune, il ciclo 3 della regola dei debiti.
-## Alla conferma lo stato comune va in GameState.flags["chapter_6"]["director_turn"], poi si torna alla Cima.
+## Alla fine lo stato comune va in GameState.flags["chapter_6"]["director_turn"] (i tre "cycle_N_completed"
+## diventano veri insieme), poi si torna alla Cima.
 
 const RULES := preload("res://chapters/c6/direzione_regole.gd")
 const CIMA := "res://chapters/c6/cima.tscn"
@@ -25,18 +26,20 @@ const ROW_H := 44
 var cycle := 1
 var st: Dictionary = {}
 var alloc: Dictionary = {}
-## "alloc" (si dividono le unità), "casa" (ciclo 2), "debiti" (ciclo 3), "done"
+## "alloc" (si dividono le unità), "casa" (la Casa Comune), "debiti" (la regola dei debiti), "done"
 var phase := "intro"
 var sel := 0
 var msg := ""
 var options: Array = []
 var choice_id := ""
+## La scelta sulla Casa Comune, tenuta da parte finché non si decide anche dei debiti.
+var casa_id := ""
 
 
 func _ready() -> void:
-	cycle = int(GameState.minigame.get("cycle", 1))
+	cycle = 1
 	var dt := _dt()
-	if dt.get("cycle_%d_completed" % cycle, false):
+	if dt.get("cycle_3_completed", false):
 		# già fatto (un caricamento, un tocco di troppo): niente doppioni
 		Router.goto(CIMA, "desk")
 		return
@@ -66,10 +69,10 @@ func _dt() -> Dictionary:
 	return c6["director_turn"]
 
 
-## Cosa c'è sul tavolo all'inizio del ciclo (con le spese già annunciate).
-func situation() -> Array:
+## Cosa c'è sul tavolo: 1 i soldi (con le spese già annunciate), 2 la Casa Comune, 3 i debiti.
+func situation(part := 1) -> Array:
 	var out: Array = []
-	match cycle:
+	match part:
 		1:
 			out = ["I lavoratori chiedono un aumento.", "La manutenzione richiede fondi.", "E naturalmente dobbiamo mantenere delle riserve."]
 		2:
@@ -83,7 +86,7 @@ func situation() -> Array:
 					out.append("La Casa Comune è sospesa: la chiusura è stata rinviata. Si può prorogare, o proporre un altro modello.")
 		3:
 			out = ["Il debito di tutti: le regole con cui la Torre si paga il futuro."]
-	var d := RULES.due(st)
+	var d := RULES.due(st) if part == 1 else 0
 	if d > 0:
 		out.append("Da pagare in questo ciclo: %d (%s)." % [d, "la bolletta della dinamo" if cycle == 2 and not st.get("bill_paid", false) else "il guasto annunciato"])
 	return out
@@ -91,24 +94,16 @@ func situation() -> Array:
 
 func _intro() -> void:
 	phase = "intro"
-	if B.uses("cima") and not _dt().get("boss_brief_%d" % cycle, false):
-		_dt()["boss_brief_%d" % cycle] = true
+	if B.uses("cima") and not _dt().get("boss_brief_1", false):
+		_dt()["boss_brief_1"] = true
 		_save_draft()
-		await Ui.say(["OTTIMIZZAZIONE FINALE. Ciclo %d." % cycle,
-			["Il bilancio deve tornare. Puoi far pagare cinque unità a chi usa i servizi. Le chiami tariffe, non tagli.", "Troppi interlocutori rallentano. Una sola firma libera cinque unità dai servizi. La tua firma.", "Se vuoi consultare gli altri, costa cinque unità. Puoi farlo. Ma poi devi trovare dove prenderle."][cycle - 1], "È tutto molto semplice!"], "Il Capo")
-
-	match cycle:
-		1:
-			await Ui.say(situation(), PRES)
-			if not _dt().get("rules_seen", false):
-				_dt()["rules_seen"] = true
-				await Ui.say(["Cento unità. Quattro voci. Tocca più o meno, poi CONFERMA.",
-					"Sotto ogni numero c'è scritto cosa succede. Io lo leggo sempre. Quasi sempre."], PRES)
-		2:
-			await Ui.say(situation(), PRES)
-		3:
-			await Ui.say(situation(), PRES)
-			await Ui.say(["ATTENZIONE.", "La stabilità economica è importante.", "Soprattutto per chi è già stabile."], VOICE)
+		await Ui.say(["OTTIMIZZAZIONE FINALE.",
+			"Il bilancio deve tornare. Puoi far pagare cinque unità a chi usa i servizi. Le chiami tariffe, non tagli.", "È tutto molto semplice!"], "Il Capo")
+	await Ui.say(situation(1), PRES)
+	if not _dt().get("rules_seen", false):
+		_dt()["rules_seen"] = true
+		await Ui.say(["Cento unità. Quattro voci. Tocca più o meno, poi CONFERMA.",
+			"Sotto ogni numero c'è scritto cosa succede. Io lo leggo sempre. Quasi sempre."], PRES)
 
 
 # --- disegno -----------------------------------------------------------------------------------------
@@ -140,8 +135,9 @@ func option_button(i: int) -> Rect2:
 func _draw() -> void:
 	var font := Assets.font()
 	Art.backdrop(self)
-	draw_string(font, Vector2(16, 26), "TURNO — DIREZIONE · CICLO %d DI 3" % cycle, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, DIM)
-	draw_string(font, Vector2(16, 48), RULES.QUESTIONS[cycle], HORIZONTAL_ALIGNMENT_LEFT, -1, 18, GOLD)
+	draw_string(font, Vector2(16, 26), "TURNO — DIREZIONE", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, DIM)
+	# la domanda cambia con la parte del turno: i soldi, la Casa Comune, i debiti
+	draw_string(font, Vector2(16, 48), RULES.QUESTIONS[{"casa": 2, "debiti": 3}.get(phase, 1)], HORIZONTAL_ALIGNMENT_LEFT, -1, 18, GOLD)
 	draw_string(font, Vector2(400, 26), "Riserve: %d   Arretrato: %d" % [int(st.get("reserve", 0)), int(st.get("backlog", 0))],
 		HORIZONTAL_ALIGNMENT_LEFT, 230, 11, DIM)
 	if phase in ["alloc", "intro"]:
@@ -341,20 +337,14 @@ func _confirm() -> void:
 		if accept != 0:
 			st["mandate"] = ""; phase = "alloc"; queue_redraw(); return
 	Sound.sfx("stamp")
-	if cycle == 2:
-		options = RULES.casa_options(st, alloc)
-		phase = "casa"
-		sel = 0
-		msg = ""
-		queue_redraw()
-	elif cycle == 3:
-		options = RULES.debt_options(st, alloc)
-		phase = "debiti"
-		sel = 0
-		msg = ""
-		queue_redraw()
-	else:
-		await _finish()
+	# i soldi sono divisi: adesso la Casa Comune
+	phase = "intro"
+	await Ui.say(situation(2), PRES)
+	options = RULES.casa_options(st, alloc)
+	phase = "casa"
+	sel = 0
+	msg = ""
+	queue_redraw()
 
 
 func _pick(i: int) -> void:
@@ -365,34 +355,47 @@ func _pick(i: int) -> void:
 		Sound.sfx("deny")
 		queue_redraw()
 		return
-	choice_id = str(o[0])
 	Sound.sfx("stamp")
+	if phase == "casa":
+		# la Casa è decisa: adesso la regola dei debiti, con le riserve che restano dopo la Casa
+		casa_id = str(o[0])
+		phase = "intro"
+		queue_redraw()
+		var after := st.duplicate(true)
+		RULES.apply_casa(after, casa_id)
+		await Ui.say(situation(3), PRES)
+		await Ui.say(["ATTENZIONE.", "La stabilità economica è importante.", "Soprattutto per chi è già stabile."], VOICE)
+		options = RULES.debt_options(after, alloc)
+		phase = "debiti"
+		sel = 0
+		msg = ""
+		queue_redraw()
+		return
+	choice_id = str(o[0])
 	await _finish()
 
 
-## Il ciclo è deciso: lo stato comune si aggiorna una volta, si salva, e si torna alla Cima.
+## Il turno è deciso: lo stato comune si aggiorna una volta, si salva, e si torna alla Cima.
 func _finish() -> void:
 	if phase == "done":
 		return
-	var chose_phase := phase
 	phase = "done"
 	queue_redraw()
 	var lines := RULES.apply(st, alloc)
-	if chose_phase == "casa":
-		RULES.apply_casa(st, choice_id)
-		lines.append("La Casa Comune: " + _casa_text(str(st["casa"])))
-	elif chose_phase == "debiti":
-		st["debt_rule"] = choice_id
-		# per il finale A1: "Conserva" scelto mentre almeno un'altra regola era aperta (una scelta, non un obbligo)
-		st["debt_other_open"] = options.any(func(o: Array) -> bool: return str(o[0]) != "conservare" and str(o[o.size() - 1]) == "")
-		lines.append("La regola dei debiti: " + _debt_text(choice_id))
+	RULES.apply_casa(st, casa_id)
+	lines.append("La Casa Comune: " + _casa_text(str(st["casa"])))
+	st["debt_rule"] = choice_id
+	# per il finale A1: "Conserva" scelto mentre almeno un'altra regola era aperta (una scelta, non un obbligo)
+	st["debt_other_open"] = options.any(func(o: Array) -> bool: return str(o[0]) != "conservare" and str(o[o.size() - 1]) == "")
+	lines.append("La regola dei debiti: " + _debt_text(choice_id))
 	var dt := _dt()
 	dt["state"] = st
-	dt["cycle_%d_completed" % cycle] = true
+	for n in range(1, 4):
+		dt["cycle_%d_completed" % n] = true
 	var decisions: Array = dt.get("decisions", [])
-	decisions.append({"cycle": cycle, "alloc": alloc.duplicate(), "choice": choice_id})
+	decisions.append({"cycle": cycle, "alloc": alloc.duplicate(), "casa": casa_id, "choice": choice_id})
 	dt["decisions"] = decisions
-	dt["pending"] = cycle
+	dt["pending"] = 3
 	dt.erase("draft")
 	GameState.save_game(CIMA, Vector2(520, 158))
 	await Ui.say(lines)

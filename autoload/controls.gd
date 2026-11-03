@@ -19,12 +19,23 @@ func _ready() -> void:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
 		for key: int in BINDINGS[action]:
-			var ev := InputEventKey.new()
-			ev.physical_keycode = key
-			InputMap.action_add_event(action, ev)
+			_add_key_binding(action, key)
 	var cfg := ConfigFile.new()
 	if cfg.load(Sound.SETTINGS) == OK and bool(cfg.get_value("schermo", "intero", false)):
 		_apply_fullscreen(true)
+
+
+## Registra sia la posizione fisica sia il tasto logico. La prima mantiene WASD
+## coerente su layout diversi; il secondo supporta tastiere virtuali, controllo
+## remoto e strumenti di accessibilità che non forniscono un physical_keycode.
+func _add_key_binding(action: StringName, key: int) -> void:
+	var physical := InputEventKey.new()
+	physical.physical_keycode = key
+	InputMap.action_add_event(action, physical)
+
+	var logical := InputEventKey.new()
+	logical.keycode = key
+	InputMap.action_add_event(action, logical)
 
 
 func _input(event: InputEvent) -> void:

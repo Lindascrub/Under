@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/collisioni/tmp/capo_foto.gd" id="1"]
+
+[node name="Capo" type="Node"]
+script = ExtResource("1")

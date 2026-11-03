@@ -3,7 +3,7 @@ extends EditorRoom
 ## "Finalmente puoi decidere. Ma per chi?"
 ##   6.01 l'ascensore degli specchi      6.02 la Presidente (e lo zucchero)
 ##   6.03 OBBLIGO DI ESISTENZA            6.04 l'offerta: il debito annullato, in cambio della Torre
-##   TURNO di Direzione, tre cicli (direzione.tscn), con la consultazione degli abitanti dopo ognuno
+##   TURNO di Direzione, un turno solo (direzione.tscn), con la consultazione degli abitanti dopo
 ##   6.08 l'ultima telefonata del Capo    6.09 cosa fare della Torre (scelta + conferma)
 ##   la finestra panoramica: l'ultimo sguardo indietro, su tutti i piani (facoltativo)
 ## Poi finale.tscn: il finale, sei mesi dopo, il sogno, i titoli di coda.
@@ -91,7 +91,7 @@ static func cycles_done() -> int:
 	return n
 
 
-## Si può fare l'ultima scelta: tre cicli, il Capo, e almeno una testimonianza ascoltata.
+## Si può fare l'ultima scelta: il turno, il Capo, e almeno una testimonianza ascoltata.
 static func final_ready() -> bool:
 	var d := c6()
 	return cycles_done() == 3 and bool(d["boss"]["final_call_seen"]) and bool(d["director_turn"]["consulted_citizens"]) \
@@ -489,7 +489,7 @@ func _offer() -> void:
 	_targhetta_turno()
 	await Ui.say(["Non devi rispondere adesso. Il timbro aspetta. È abituato.",
 		"Prima di decidere, vuoi vedere come funziona il mio lavoro?",
-		"Tre cicli di bilancio. È una prova: le tue decisioni valgono per quei tre cicli, e si vedranno.",
+		"Un turno di bilancio. È una prova: le tue decisioni valgono per quel turno, e si vedranno.",
 		"Dopo, se resti, diventano tue. Se te ne vai, torna tutto sulla mia scrivania. Come prima."], PRES)
 	var t: int = await Ui.choose("Vuoi vedere come funziona?", ["Sì, fammi vedere.", "Non adesso."], PRES)
 	if t == 0:
@@ -528,8 +528,8 @@ func _president_menu() -> void:
 	match c:
 		0:
 			if cycles_done() < 3:
-				await Ui.say(["Tre cicli di bilancio. Cento unità ogni volta. Nessuno è contento, alla fine. È così che capisci che hai finito.",
-					"La scrivania è lì." if cycles_done() == 0 else "Ne mancano %d." % (3 - cycles_done())], PRES)
+				await Ui.say(["Un turno di bilancio. Cento unità, la Casa Comune, la regola dei debiti. Nessuno è contento, alla fine. È così che capisci che hai finito.",
+					"La scrivania è lì."], PRES)
 			else:
 				await Ui.say(["L'hai visto. Più o meno è tutto qui.", "Il resto sono telefonate."], PRES)
 		1:
@@ -614,36 +614,34 @@ func _scrivania() -> void:
 		await Ui.say(["* Una scrivania enorme. Sopra: una cartellina rosa e una bustina di zucchero vuota.", "* Non è tua. Non ancora."])
 		return
 	if cycles_done() >= 3:
-		await Ui.say(["* Lo schermo del TURNO. Tre cicli chiusi. In basso lampeggia: NESSUNA DECISIONE IN ATTESA.",
+		await Ui.say(["* Lo schermo del TURNO. Il turno è chiuso. In basso lampeggia: NESSUNA DECISIONE IN ATTESA.",
 			"* È la prima volta che lo leggi. Non sembra vero."])
 		return
-	var n := cycles_done() + 1
-	var c: int = await Ui.choose("TURNO — DIREZIONE. Cominciare il ciclo %d di 3?" % n, ["Comincia.", "Non ancora."])
+	var c: int = await Ui.choose("TURNO — DIREZIONE. Cominciare?", ["Comincia.", "Non ancora."])
 	if c == 0:
 		await start_cycle()
 
 
+## Il turno (uno solo): prima le telefonate, la Casa Comune e il Capo; poi lo schermo.
 func start_cycle() -> void:
-	var n := cycles_done() + 1
-	if n > 3:
+	if cycles_done() >= 3:
 		return
-	if n == 2 and not c6()["director_turn"]["casa_call_seen"]:
+	if not c6()["director_turn"]["casa_call_seen"]:
 		await _casa_call()
-	if n == 1:
-		await Ui.say(["È tutto molto semplice."], PRES)
-		await Ui.say(["* La frase del Capo. Detta con la stessa voce, quasi."])
-	if n == 2 and not _f("c6_capo_cicli"):
-		# il Capo durante i cicli: una volta, prima del secondo
+	if not _f("c6_capo_cicli"):
+		# il Capo prima del turno: una volta
 		GameState.flags["c6_capo_cicli"] = true
 		Sound.sfx("alarm", 0.7)
 		await Ui.say(["* Il telefono sulla scrivania vibra. Il Capo."])
 		await Ui.say(["Togli cinque dai servizi. Mettili in riserva. La tua pratica la chiudiamo noi. Timbro e via."], BOSS)
+	await Ui.say(["È tutto molto semplice."], PRES)
+	await Ui.say(["* La frase del Capo. Detta con la stessa voce, quasi."])
 	GameState.save_game(scene_file_path, player.global_position)
-	GameState.minigame = {"cycle": n}
+	GameState.minigame = {"cycle": 1}
 	Router.goto(DIREZIONE)
 
 
-## Prima del ciclo 2: la Casa Comune chiede di partecipare. Ada, se è ancora Ada; altrimenti chi c'è.
+## Prima del turno: la Casa Comune chiede di partecipare. Ada, se è ancora Ada; altrimenti chi c'è.
 func _casa_call() -> void:
 	var d := c6()
 	d["director_turn"]["casa_call_seen"] = true
@@ -661,20 +659,17 @@ func _casa_call() -> void:
 	await Ui.say(["Tecnicamente hai appena chiesto di complicare una procedura.", "Ma ammetto che è una procedura importante."], PRES)
 
 
+## Dopo il turno: la Presidente commenta i soldi, la Casa Comune e i debiti, poi si ascolta qualcuno.
 func _after_cycle(n: int) -> void:
 	var sm := RULES.summary(FINALI.turn_state())
-	match n:
-		1:
-			await Ui.say(["* La Presidente guarda lo schermo: una colonna di conseguenze che non finisce più."])
-			await Ui.say(["Be'.", "Sulla carta.", "Ora qualcuno sarà contento.", "Qualcun altro ha già chiamato."], PRES)
-		2:
-			await Ui.say(["La Casa Comune ha già risposto. Con una lettera. Scritta a mano: fa sempre effetto." if RULES.casa_open(str(sm["casa"])) \
-				else "La Casa Comune non ha risposto. Anche questo è una risposta.", "Avanti."], PRES)
-		3:
-			if str(sm["debt_rule"]) != "conservare":
-				await Ui.say(["Interessante.", "Non ricordo l'ultima volta che qualcuno ha cambiato davvero questa schermata."], PRES)
-			else:
-				await Ui.say(["Come sempre.", "Funziona. Per qualcuno funziona benissimo."], PRES)
+	await Ui.say(["* La Presidente guarda lo schermo: una colonna di conseguenze che non finisce più."])
+	await Ui.say(["Be'.", "Sulla carta.", "Ora qualcuno sarà contento.", "Qualcun altro ha già chiamato."], PRES)
+	await Ui.say(["La Casa Comune ha già risposto. Con una lettera. Scritta a mano: fa sempre effetto." if RULES.casa_open(str(sm["casa"])) \
+		else "La Casa Comune non ha risposto. Anche questo è una risposta."], PRES)
+	if str(sm["debt_rule"]) != "conservare":
+		await Ui.say(["Interessante.", "Non ricordo l'ultima volta che qualcuno ha cambiato davvero questa schermata."], PRES)
+	else:
+		await Ui.say(["Come sempre.", "Funziona. Per qualcuno funziona benissimo."], PRES)
 	await consult(n, n == 3)
 
 
@@ -801,7 +796,7 @@ func _terminale() -> void:
 		await Ui.say(["* BILANCIO DELLA TORRE. RISULTATO: CRESCITA POSITIVA.", "* Sotto, più piccolo: \"Per i dettagli, rivolgersi alla Presidenza.\""])
 		return
 	var sm := RULES.summary(st)
-	await Ui.say(["* BILANCIO DELLA TORRE — %d CICLI SU 3." % cycles_done(),
+	await Ui.say(["* BILANCIO DELLA TORRE — TURNO CHIUSO." if cycles_done() >= 3 else "* BILANCIO DELLA TORRE — TURNO APERTO.",
 		"* Riserve: %d. Arretrato di manutenzione: %d." % [int(st.get("reserve", 0)), int(st.get("backlog", 0))],
 		"* Stipendi: %s. Servizi: %s." % [RULES.wage_label(int((st["log"] as Array).back()["alloc"]["stipendi"])), RULES.service_label(int((st["log"] as Array).back()["services_eff"]))]])
 	if d["final_decision"]["confirmed"]:
@@ -898,7 +893,7 @@ func final_choice() -> void:
 		match sel:
 			"A":
 				await Ui.say(["* Diventi responsabile della Torre. Il tuo debito personale viene cancellato.",
-					"* Le decisioni dei tre cicli restano. Quelle dopo, le prendi tu."])
+					"* Le decisioni del turno restano. Quelle dopo, le prendi tu."])
 			"B":
 				await Ui.say(["* Rifiuti l'incarico. Lasci la Torre.", "* Il debito resta registrato, o contestato se hai le prove per farlo."])
 			"C":
@@ -1063,9 +1058,9 @@ func _boss_review() -> void:
 	Ui.cutscene = true
 	Sound.sfx("drring")
 	GameState.save_game(scene_file_path, player.global_position)
-	await Ui.say(["Tre cicli. Tariffe ai lavoratori: %d. Cicli a firma unica: %d. Decisioni condivise: %d." % [int(st.get("worker_costs", 0)), int(st.get("centralized", 0)), int(st.get("shared", 0))]], "La Presidente")
+	await Ui.say(["Il turno. Tariffe ai lavoratori: %d. Firme uniche: %d. Decisioni condivise: %d." % [int(st.get("worker_costs", 0)), int(st.get("centralized", 0)), int(st.get("shared", 0))]], "La Presidente")
 	await Ui.say(["Hai visto? Il problema non è trovare cento unità. È decidere di chi sono i cinque che mancano.", "È tutto molto semplice!"], BOSS)
-	await Ui.say(["* Ora la frase pesa più del bilancio. Nei tre cicli qualcuno ha potuto parlare. O qualcuno ha pagato per non essere ascoltato.", "* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo."])
+	await Ui.say(["* Ora la frase pesa più del bilancio. Nel turno qualcuno ha potuto parlare. O qualcuno ha pagato per non essere ascoltato.", "* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo."])
 	_remove(president)
 	president = _person("Presidente", PRES_SHEET, _posto("Tavolo"), "idle_left", talk_president, true)
 	GameState.save_game(scene_file_path, player.global_position)

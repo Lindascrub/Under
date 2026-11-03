@@ -25,11 +25,11 @@ La storia approvata è in `docs/STORIA_BANCA_CIMA.md` (sezioni 5-7): questa pagi
 | `evidence` (prove) | `direzione_regole.evidence()`: fascicolo letto alla Cima, `c4_anomalia`, `c4_olga_doppia`, `c4_teo_copia`, `c5_documento` |
 | `power` | Attribuzione globale del Capo accettata (`chapter_6.boss.global_credit_accepted`) |
 | `roles_filled` | Ruoli del finale C (conti, servizi, turni) affidati a qualcuno |
-| `improved` | All'ultimo ciclo stipendi ≥ 45 **oppure** servizi effettivi ≥ 25 |
-| `rule_changed` | Regola dei debiti del ciclo 3 diversa da "conservare" |
+| `improved` | Nel turno stipendi ≥ 45 **oppure** servizi effettivi ≥ 25 |
+| `rule_changed` | Regola dei debiti scelta nel turno diversa da "conservare" |
 | `policy.maintenance_ok` | Arretrato di manutenzione < 10 alla fine |
-| `policy.reserve_ok` | Riserve ≥ 15 alla fine |
-| `kept_by_choice` | Al ciclo 3 "Conserva il sistema dei debiti" scelto **mentre almeno un'altra regola era aperta** (`debt_other_open` nello stato dei cicli, scritto da `direzione.gd`). Un salvataggio di prima non lo sa: vale falso |
+| `policy.reserve_ok` | Riserve ≥ 10 alla fine del turno |
+| `kept_by_choice` | "Conserva il sistema dei debiti" scelto **mentre almeno un'altra regola era aperta** (`debt_other_open` nello stato del turno, scritto da `direzione.gd`). Un salvataggio di prima non lo sa: vale falso |
 | `contested` | La contestazione fatta alla Cima (`c6_contestazione`) |
 
 "Conosciuta" (`met`): flag `met_<id>`, oppure aiutata, oppure robot, oppure liberata (per Fermo anche `fermo_talked`).
@@ -75,7 +75,7 @@ Il finale mostra sempre **due righe separate** (`finale_c6.debt_lines()`): il tu
 
 ## 4b. Cosa vale davvero nella Torre (`in_force`, `effective_summary`)
 
-Le decisioni dei tre cicli diventano vere **solo in A e in C2** (`in_force(family, variant)`).
+Le decisioni del turno diventano vere **solo in A e in C2** (`in_force(family, variant)`).
 Negli altri finali `effective_summary()` restituisce le regole di prima: stipendi 40, servizi 20,
 manutenzione 25, riserve 15, debiti conservati, la Casa Comune com'è uscita dal capitolo 5.
 Il Finale usa sempre `effective_summary()` (stampante, epiloghi, foglio delle decisioni in C2).

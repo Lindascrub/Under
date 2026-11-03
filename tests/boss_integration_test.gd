@@ -68,21 +68,30 @@ func _ready() -> void:
   if current is Room:
    check(current.player.global_position.distance_to(Vector2(saved_pos[0], saved_pos[1])) < 1, "Posizione ripristinata " + floor)
    var booth_spot := current.find_child("SportelloBadgeInterazione", true, false) as Interactable
-   for x in [8, 30, 56]:
-    current.player.global_position = current._badge_booth.global_position + Vector2(x, 12)
+   var booth_clerk := current._badge_booth.get_node_or_null("Addetta") as Node2D
+   var booth_positions: Array[Vector2] = []
+   if booth_clerk and not Rect2(0, -48, 96, 48).has_point(booth_clerk.position):
+    # In Città non c'è più la cabina: Nives è accanto alle scale e si parla davanti a lei.
+    for x in [-8, 0, 8]:
+     booth_positions.append(booth_clerk.global_position + Vector2(x, 16))
+   else:
+    for x in [8, 30, 56]:
+     booth_positions.append(current._badge_booth.global_position + Vector2(x, 12))
+   for booth_position in booth_positions:
+    current.player.global_position = booth_position
     current.player.face("up")
-    check(current.player._find_target() == booth_spot, "Sportello raggiungibile davanti a Nives " + floor + str(x))
+    check(current.player._find_target() == booth_spot, "Sportello raggiungibile davanti a Nives " + floor + str(booth_position))
    current.player.global_position = Vector2(saved_pos[0], saved_pos[1])
   GameState.load_game()
   check(B.progress(floor) == JSON.parse_string(JSON.stringify(progress_copy)), "Ricarica progressi " + floor)
   check(bool(B.state(floor)["seen"]), "Telefonata registrata una volta " + floor)
   await close_current()
- # Actual Director screen: three cycles, policy prompt, save, special decisions and final review.
+ # Actual Director screen: one turn (money, Casa Comune, debts), policy prompt, save, final review.
  await open_room("cima")
  var c6_script = load("res://chapters/c6/cima_c6.gd")
  var d: Dictionary = c6_script.c6()
  d["president"]["met"] = true; d["president"]["debt_contract_read"] = true; d["president"]["offer_received"] = true
- for cycle in range(1, 4):
+ for cycle in [1]:
   await close_current()
   GameState.minigame = {"cycle": cycle}
   current = load(Router.DIREZIONE).instantiate()
@@ -96,9 +105,9 @@ func _ready() -> void:
    if get_tree().current_scene != current: break
    if current.get("phase") in ["casa", "debiti"]:
     # Pick non-intervention or conserving debt: always available.
-    current._pick(current.options.size() - 1 if cycle == 2 else 0)
+    current._pick(current.options.size() - 1 if current.get("phase") == "casa" else 0)
   await wait_scene(Router.CIMA)
-  check(c6_script.cycles_done() == cycle, "Ciclo applicato una volta " + str(cycle))
+  check(c6_script.cycles_done() == 3, "Turno applicato una volta")
   await frames(120)
  await frames(120)
  check(c6_script.c6()["boss"]["final_call_seen"], "Riepilogo del Capo dopo i tre bilanci")

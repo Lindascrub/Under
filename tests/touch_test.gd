@@ -526,8 +526,18 @@ func _run() -> void:
 	for i in 2:
 		await _tap_at((dz.call("plus_button", 2) as Rect2).get_center())
 	await _tap_at((dz.call("confirm_button") as Rect2).get_center())
+	# poi, nello stesso turno, la Casa Comune (l'ultima: non intervenire) e i debiti (il primo: conserva)
+	for want: Array in [["casa", -1], ["debiti", 0]]:
+		for i in 6000:
+			if str(dz.get("phase")) == want[0] and not Ui.busy:
+				break
+			await _frames(1)
+		_check(str(dz.get("phase")) == want[0], "dopo i soldi, nello stesso turno: " + str(want[0]))
+		var k: int = posmod(int(want[1]), (dz.get("options") as Array).size())
+		await _tap_at((dz.call("option_button", k) as Rect2).get_center())
 	var c6: Dictionary = GameState.flags["chapter_6"]
-	_check(c6["director_turn"].get("cycle_1_completed", false) and int(c6["director_turn"]["state"]["log"][0]["alloc"]["stipendi"]) == 30, "CONFERMA a 100: il ciclo 1 è deciso")
+	_check(c6["director_turn"].get("cycle_3_completed", false) and int(c6["director_turn"]["state"]["log"][0]["alloc"]["stipendi"]) == 30 \
+		and str(c6["director_turn"]["state"]["debt_rule"]) == "conservare", "un tocco per scelta: il turno è deciso")
 	c6["director_turn"]["pending"] = null
 	await _wait_scene(Router.CIMA, 60000)
 	await _idle()

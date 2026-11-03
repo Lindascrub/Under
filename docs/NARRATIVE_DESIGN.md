@@ -199,7 +199,7 @@ Si esce, per la prima volta, alla luce. La città della versione precedente torn
 ### Capitolo 6 — La Cima · *Potere, responsabilità, libertà*
 
 > **Superato.** Il Capitolo 6 è stato fatto seguendo una specifica successiva (la Presidente, il fascicolo
-> OBBLIGO DI ESISTENZA, tre cicli del TURNO di Direzione, l'attribuzione globale del Capo, le famiglie A/B/C).
+> OBBLIGO DI ESISTENZA, il turno unico di Direzione, l'attribuzione globale del Capo, le famiglie A/B/C).
 > Quello che c'è davvero nel gioco è in `docs/CHAPTER_06_SUMMIT.md` e `docs/ENDING_SYSTEM.md`.
 > Questa sezione resta come archivio di idee.
 

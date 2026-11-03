@@ -96,7 +96,7 @@ func show_hud(visible_: bool) -> void:
 
 ## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).
 func _update_time_bar() -> void:
-	# alla Cima non c'è un lavoro pagato: c'è il TURNO di Direzione, tre cicli alla scrivania della Presidente
+	# alla Cima non c'è un lavoro pagato: c'è il TURNO di Direzione, un turno alla scrivania della Presidente
 	if GameState.floor_id == "cima" and GameState.flags.has("chapter_6"):
 		var dt: Dictionary = (GameState.flags["chapter_6"] as Dictionary).get("director_turn", {})
 		var done := 0

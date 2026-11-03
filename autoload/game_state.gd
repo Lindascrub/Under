@@ -871,12 +871,25 @@ func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> vo
 	if not JSON.parse_string(FileAccess.get_file_as_string(tmp)) is Dictionary:
 		push_error("Salvataggio temporaneo non valido: originale conservato.")
 		return
-	if FileAccess.file_exists(target) and JSON.parse_string(FileAccess.get_file_as_string(target)) is Dictionary:
-		if DirAccess.copy_absolute(target, target + ".bak") != OK:
+	var had_valid_save := false
+	if FileAccess.file_exists(target):
+		had_valid_save = JSON.parse_string(FileAccess.get_file_as_string(target)) is Dictionary
+		if had_valid_save and DirAccess.copy_absolute(target, target + ".bak") != OK:
 			push_error("Impossibile conservare il precedente salvataggio.")
 			return
-	if DirAccess.rename_absolute(tmp, target) != OK:
+		# Su Windows rename_absolute non sostituisce un file già esistente.
+		# Il vecchio salvataggio valido è già al sicuro nel .bak.
+		if DirAccess.remove_absolute(target) != OK:
+			push_error("Impossibile preparare la sostituzione del salvataggio.")
+			return
+	# rename_absolute resta inaffidabile su Windows anche dopo la rimozione della
+	# destinazione. La copia parte da un JSON già validato e il .bak permette il ripristino.
+	if DirAccess.copy_absolute(tmp, target) != OK:
+		if had_valid_save and FileAccess.file_exists(target + ".bak"):
+			DirAccess.copy_absolute(target + ".bak", target)
 		push_error("Salvataggio non sostituito: precedente e temporaneo conservati.")
+		return
+	DirAccess.remove_absolute(tmp)
 
 
 ## Carica il salvataggio. Restituisce {"room", "pos"} per sapere dove ricomparire, oppure {} se non c'è.
