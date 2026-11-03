@@ -1,5 +1,5 @@
 extends Control
-## Schermata del titolo (scenes/main_menu.tscn): Titolo, Sottotitolo, Voci (il menu), Persone, Crediti,
+## Schermata del titolo (scenes/main_menu.tscn): Titolo, Voci (il menu), Persone,
 ## e SceltaNome (Velo, Domanda, Campo, Ok, Risposta), nascosta finché non scegli "Nuova partita".
 
 const INTRO := [
