@@ -93,6 +93,7 @@
 [ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Street_Lamp_4.png" id="99_ss2kd"]
 [ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Cone_2.png" id="100_t2c0j"]
 [ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Signs_25.png" id="101_bisux"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/bus_destra.png" id="102_j1k71"]
 [ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Underground_Parking_3.png" id="102_raypq"]
 [ext_resource type="Texture2D" path="res://art/c5/cartello_protesta.png" id="f3_cartello"]
 [ext_resource type="Texture2D" path="res://art/c5/cartone.png" id="f3_cartone"]
@@ -1966,6 +1967,27 @@ position = Vector2(779, 152)
 [node name="Forma" type="CollisionShape2D" parent="Mondo/FessuraPalazzi" unique_id=1890094009]
 position = Vector2(-0.5, 0)
 shape = SubResource("RectangleShape2D_4578w")
+
+[node name="PartenzaNadir" type="Node2D" parent="Mondo" unique_id=2005895099]
+y_sort_enabled = true
+metadata/velocita = 90.0
+
+[node name="Autobus" type="Sprite2D" parent="Mondo/PartenzaNadir" unique_id=700698146]
+visible = false
+position = Vector2(354, 228)
+texture = ExtResource("102_j1k71")
+centered = false
+offset = Vector2(0, -64)
+metadata/prop_talk_skip = true
+
+[node name="Entra" type="Marker2D" parent="Mondo/PartenzaNadir" unique_id=583803927]
+position = Vector2(-180, 228)
+
+[node name="Esce" type="Marker2D" parent="Mondo/PartenzaNadir" unique_id=1504488517]
+position = Vector2(1120, 228)
+
+[node name="Porta" type="Marker2D" parent="Mondo/PartenzaNadir" unique_id=1392970027]
+position = Vector2(424, 236)
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=1475897952]
 

@@ -35,6 +35,12 @@ func build() -> void:
 func setup() -> void:
 	add_exit(TOWER_DOOR, Router.BANCA, "from_above")
 	add_exit(CASA_DOOR, Router.CASA_COMUNE, "default")
+	# Nadir è partito con l'autobus: torna in piazza per la manifestazione e l'assemblea
+	if _f("c5_nadir_partito") and not _f("c5_protesta"):
+		var nadir := _npc("nadir")
+		if nadir:
+			nadir.get_parent().remove_child(nadir)
+			nadir.queue_free()
 	if _f("c5_vetrina"):
 		_broken_window()
 	if _f("c5_vetrina_aiuto"):
@@ -275,6 +281,62 @@ func _nadir_after() -> void:
 		var c: int = await Ui.choose("Hai un'idea.", ["E se i pendolari si organizzassero?", "Niente"], "Nadir")
 		if c == 0:
 			await _commuters_network()
+	await _nadir_bus()
+
+
+## Col percorso trovato Nadir prende finalmente l'autobus. Autobus, punto d'arrivo, porta e uscita
+## sono nodi della scena (Mondo/PartenzaNadir): si spostano nell'editor; la velocità è nei suoi metadati.
+func _nadir_bus() -> void:
+	GameState.flags["c5_nadir_partito"] = true
+	var nadir := _npc("nadir")
+	var stop := find_child("PartenzaNadir", true, false) as Node2D
+	if nadir == null or stop == null:
+		return
+	var bus := stop.get_node("Autobus") as Sprite2D
+	var halt := bus.global_position
+	var speed := float(stop.get_meta("velocita", 90.0))
+	var previous := Ui.cutscene
+	Ui.cutscene = true
+	# le auto si fanno da parte finché passa l'autobus
+	var cars: Array[Node2D] = []
+	for car in get_tree().get_nodes_in_group("car"):
+		if car is Car and (car as Car).visible:
+			cars.append(car)
+			car.visible = false
+			car.process_mode = Node.PROCESS_MODE_DISABLED
+	bus.global_position = (stop.get_node("Entra") as Node2D).global_position
+	bus.visible = true
+	Sound.sfx("honk", 0.8)
+	await _slide(bus, halt, speed)
+	# alla porta: prima lungo il marciapiede, poi su
+	var door := (stop.get_node("Porta") as Node2D).global_position
+	await _slide(nadir, Vector2(door.x, nadir.global_position.y), 40.0, nadir.sprite)
+	await _slide(nadir, door, 40.0, nadir.sprite)
+	nadir.get_parent().remove_child(nadir)
+	nadir.queue_free()
+	await get_tree().create_timer(0.5).timeout
+	await _slide(bus, (stop.get_node("Esce") as Node2D).global_position, speed)
+	bus.visible = false
+	bus.global_position = halt
+	for car in cars:
+		car.visible = true
+		car.process_mode = Node.PROCESS_MODE_INHERIT
+	Ui.cutscene = previous
+
+
+## Porta `what` fino a `goal` in linea retta; se ha uno sprite da persona, cammina.
+func _slide(what: Node2D, goal: Vector2, speed: float, spr: AnimatedSprite2D = null) -> void:
+	var d := goal - what.global_position
+	if d.length() < 0.5:
+		return
+	var dir := ("right" if d.x > 0 else "left") if absf(d.x) > absf(d.y) else ("down" if d.y > 0 else "up")
+	if spr:
+		spr.play("walk_" + dir)
+	var tw := create_tween()
+	tw.tween_property(what, "global_position", goal, d.length() / speed)
+	await tw.finished
+	if spr and is_instance_valid(spr):
+		spr.play("idle_" + dir)
 
 
 func _commuters_network() -> void:
