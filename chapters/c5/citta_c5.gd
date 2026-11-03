@@ -308,7 +308,8 @@ func _nadir_bus() -> void:
 	bus.visible = true
 	Sound.sfx("honk", 0.8)
 	await _slide(bus, halt, speed)
-	# alla porta: prima lungo il marciapiede, poi su
+	# alla porta: prima lungo il marciapiede, poi su. Ti passa attraverso invece di spingerti
+	nadir.collision_layer = 0
 	var door := (stop.get_node("Porta") as Node2D).global_position
 	await _slide(nadir, Vector2(door.x, nadir.global_position.y), 40.0, nadir.sprite)
 	await _slide(nadir, door, 40.0, nadir.sprite)
