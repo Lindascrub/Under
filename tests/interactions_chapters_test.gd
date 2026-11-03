@@ -24,10 +24,11 @@ func _ready() -> void:
 		var spot := room.find_child("GuardaCollega%d" % i, true, false) as Interactable
 		p.position = spot.position + Vector2(0, -48); p.face("down")
 		_check(p._find_target() == spot, "Worker %d cannot be approached from behind" % i)
-		p.position = spot.position + Vector2(0, 23); p.face("up")
+		# gli oggetti si toccano da vicino: si cammina fino alla scrivania, poi si guarda
+		_push(p, spot.position + Vector2(0, 23), "up")
 		_check(p._find_target() == spot, "Worker %d lost front interaction" % i)
 	var station := _station("callcenter")
-	p.position = Vector2(136, 128); p.face("down")
+	_push(p, Vector2(136, 128), "down")
 	_check(p._find_target() == station, "Callcenter monitor not usable from operator side")
 	p.position = Vector2(136, 195); p.face("up")
 	_check(p._find_target() != station, "Callcenter work starts behind wrong side of table")
@@ -39,7 +40,9 @@ func _ready() -> void:
 	record_camera = true; camera_seen = false
 	await room.call("on_stairs_step", p, "-3")
 	record_camera = false
-	_check(camera_seen and camera_at.distance_to(Vector2(352, 223)) < 5, "B4 was shredded outside the camera")
+	# la telecamera va dove dice l'inquadratura della scena (Inquadrature/Tritacarte, si sposta nell'editor)
+	var shred_frame := (room.get_node("Inquadrature/Tritacarte") as Node2D).global_position
+	_check(camera_seen and camera_at.distance_to(shred_frame) < 5, "B4 was shredded outside the camera (%s)" % camera_at)
 	_check(not p.camera.top_level and p.camera.zoom == saved_zoom, "C2 camera did not return to player")
 	_check(not Ui.cutscene and bool(GameState.flags.get("c2_rivelazione", false)), "C2 ending left controls blocked")
 	_check(room.get("_ring_voices").size() == 4 and room.get("_ring_intense"), "Unanswered ringing did not build up")
@@ -56,7 +59,7 @@ func _ready() -> void:
 	await _open(Router.MERCATO)
 	p = room.player
 	station = _station("cassa_mercato")
-	p.position = Vector2(200, 238); p.face("left")
+	_push(p, Vector2(220, 238), "left")
 	_check(p._find_target() == station, "Checkout monitor cannot start work")
 	p.position = Vector2(153, 238); p.face("right")
 	_check(p._find_target() != station, "Checkout starts from customer side")
@@ -68,11 +71,15 @@ func _ready() -> void:
 	for name_ in ["Bancone0", "Bancone1", "BancoFrigo0", "BancoFrigo1", "Frigo1", "Scatoloni", "ScatolaAmir0"]:
 		var spr := room.find_child(name_, true, false) as Sprite2D
 		var r := PropTalk._rect(spr)
-		p.position = Vector2(r.get_center().x, r.end.y+16); p.face("up")
-		_check(p._find_target() != null, name_+" has no interaction")
-	# The cashier bay is empty space; the conveyor and the right arm are solid.
+		# davanti al banco, in qualche punto della sua larghezza, c'è qualcosa da toccare
+		var found := false
+		for dx in [0.0, -8.0, 8.0]:
+			_push(p, Vector2(r.get_center().x + dx, r.end.y+16), "up")
+			found = found or p._find_target() != null
+		_check(found, name_+" has no interaction")
+	# The conveyor and the right arm are solid. Il posto del cassiere è chiuso apposta
+	# (CassaTurno/Collisione/Ingombro2, disegnato nell'editor): alla cassa si lavora da fuori.
 	var register := room.find_child("CassaTurno", true, false) as Sprite2D
-	_check(not _solid(register, Vector2(22,-30)), "Cashier bay is an invisible wall")
 	_check(_solid(register, Vector2(7,-22)), "Conveyor can be walked through")
 	_check(_solid(register, Vector2(29,-22)), "Checkout right arm can be walked through")
 	var pallet := room.find_child("Pallet0",true,false) as Sprite2D
@@ -164,7 +171,9 @@ func _solid(spr: Sprite2D, local: Vector2) -> bool:
 
 func _routes() -> void:
 	GameState.minigame={"type":"route","title":"L'ULTIMA CONSEGNA","intro":[],"seed":17}
-	mg=RouteProbe.new();get_tree().root.add_child(mg);get_tree().current_scene=mg
+	# le scritte del minigioco sono nodi della sua scena: la sonda usa la scena vera
+	mg=load("res://scenes/minigame/minigame.tscn").instantiate();mg.set_script(RouteProbe)
+	get_tree().root.add_child(mg);get_tree().current_scene=mg
 	for i in 40: await get_tree().process_frame
 	_check(mg.get("phase")=="play","Amir did not start")
 	await _capture("amir_mappa")
@@ -172,7 +181,10 @@ func _routes() -> void:
 	var plan := [2,5,4,2,5,6]
 	for i in plan.size():
 		var target: int=plan[i]
-		for frame in 40:await get_tree().process_frame
+		# si sceglie la tappa dopo solo quando il furgone è arrivato (il viaggio è animato)
+		for frame in 600:
+			await get_tree().process_frame
+			if float(mg.get("rt_k")) >= 1.0 and frame > 10: break
 		var choices: Array=mg.call("_rt_neighbors",mg.get("rt_at"))
 		var index:=choices.find(target)
 		_check(index>=0,"Safe route is disconnected")
@@ -190,7 +202,10 @@ func _routes() -> void:
 			await _tap_card(index,false)
 		_check(int(mg.get("rt_at"))==target or i in [2,5],"Selected route did not move")
 		print("ROUTE step=",i," at=",mg.get("rt_at")," map=",mg.get("rt_map")," left=",mg.get("rt_left")," total=",mg.get("rt_total")," phase=",mg.get("phase"))
-	for i in 50:await get_tree().process_frame
+	for i in 600:
+		await get_tree().process_frame
+		# a fine giro il gioco mostra il risultato per un momento, poi chiude (la sonda segna probe_done)
+		if mg.get("phase") == "probe_done": break
 	_check(mg.get("won") and int(mg.get("rt_total"))==6,"Safe deliveries cannot be completed")
 	get_tree().current_scene=self;mg.queue_free();mg=null
 	for i in 5:await get_tree().process_frame
@@ -209,6 +224,12 @@ func _tap_card(index: int, touch: bool) -> void:
 		await get_tree().process_frame
 		event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;Input.parse_input_event(event)
 	for i in 2:await get_tree().process_frame
+
+## Cammina verso `dir` finché si sbatte contro qualcosa, come col tasto premuto.
+func _push(p: Player, start: Vector2, dir: String) -> void:
+	p.position = start; p.face(dir)
+	var v: Vector2 = {"up": Vector2.UP, "down": Vector2.DOWN, "left": Vector2.LEFT, "right": Vector2.RIGHT}[dir]
+	p.move_and_collide(v * 48)
 
 func _event(action: String) -> void:
 	var ev:=InputEventAction.new();ev.action=action;ev.pressed=true;Input.parse_input_event(ev)

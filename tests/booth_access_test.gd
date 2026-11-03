@@ -30,6 +30,8 @@ func _ready() -> void:
 		for seat in room.find_children("*","Seat",true,false):
 			_check(not area.has_point(seat.global_position),str(item[2])+" has a seat inside ticket booth")
 		for s in room.find_children("*","Sprite2D",true,false):
+			# in città la cabina non c'è più (c'è solo Nives): niente da coprire
+			if not booth.has_node("Parete"):break
 			if booth.is_ancestor_of(s) or not s.texture:continue
 			if str(item[2])=="c5" and str(s.name) in ["Torre","InsegnaEsterno"]:continue
 			_check(not area.intersects(PropTalk._rect(s)),str(item[2])+" old sprite painted through booth: "+str(s.name))

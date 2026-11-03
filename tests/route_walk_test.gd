@@ -133,15 +133,29 @@ func _play_floor(route: String, i: int) -> void:
 				continue
 			n.call("interact")
 			await _back_to(path)
-	# la scelta della strada, su una persona di questo piano
+	# la scelta della strada, su una persona di questo piano (anche chi sta seduto, come Fermo, è uno sprite)
 	var who := ""
+	# la stanza di adesso: dopo i dialoghi può essere stata ricaricata
+	for c in (_room().find_children("*", "CharSprite", true, false) if _room() else []):
+		var person := str(c.get("person"))
+		if person != "" and person not in ids:
+			ids.append(person)
 	for id in ids:
 		if id in GameState.workers() and not GameState.is_robot(id):
 			who = id
 			break
+	# nessun "lavoratore" (data/npcs.json, campo motive) su questo piano: la scelta cade su chi c'è
+	if who == "":
+		for id in ids:
+			if not GameState.is_robot(id):
+				who = id
+				break
+	print("  scelta della strada al ", FLOOR_IDS[i], ": ", who)
 	match route:
 		"capitalismo":
-			pass
+			# l'incarico del capo c'è solo su qualche piano: si sfrutta anche qui, come si libera e si aiuta
+			if who != "":
+				GameState.exploit(who, 0)
 		"baratto":
 			if who != "":
 				GameState.free_npc(who)
@@ -182,6 +196,9 @@ func _find_npc(id: String) -> Node:
 	for n in get_tree().get_nodes_in_group("npc"):
 		if str(n.get("id")) == id and _room() and _room().is_ancestor_of(n):
 			return n
+	# chi sta seduto fermo (Fermo sulla sua cassetta) è uno sprite, con accanto il punto per parlargli
+	if _room():
+		return _room().find_child("ParlaCon" + id.capitalize(), true, false)
 	return null
 
 
@@ -226,7 +243,10 @@ func _climb(i: int) -> void:
 		await _back_to(room.scene_file_path)
 		var fermo := _find_npc("fermo")
 		_check(fermo != null, "al Fondo non trovo Fermo dopo la rivelazione")
-		if fermo:
+		# la prima volta Fermo si presenta; la verità arriva quando ci riparli
+		for k in 3:
+			if fermo == null or GameState.flags.get("svelato_fermo", false):
+				break
 			fermo.call("interact")
 			await _back_to(room.scene_file_path)
 		_check(GameState.flags.get("svelato_fermo", false), _route + ": Fermo non dice la verità dopo la rivelazione")

@@ -4056,7 +4056,7 @@ lines = PackedStringArray("* Il tabellone delle salite. \"-3 MERCATO: IN ORARIO\
 lines_after = PackedStringArray()
 
 [node name="Cordone" type="Sprite2D" parent="Mondo" unique_id=1044364576]
-position = Vector2(271, 91)
+position = Vector2(271, 94)
 texture = ExtResource("desk_hospital")
 centered = false
 offset = Vector2(0, -16)
