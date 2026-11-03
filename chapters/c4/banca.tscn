@@ -6994,10 +6994,6 @@ region_enabled = true
 region_rect = Rect2(112, 352, 64, 32)
 metadata/calpestabile = true
 
-[node name="HospitalSingles52" type="Sprite2D" parent="Decori" unique_id=999922996]
-position = Vector2(455, 58)
-texture = ExtResource("47_idjf4")
-
 [node name="HospitalSingles69" type="Sprite2D" parent="Decori" unique_id=345938541]
 position = Vector2(200, 32)
 texture = ExtResource("56_4o2d8")
@@ -7635,6 +7631,7 @@ position = Vector2(464, 78)
 position = Vector2(384, 208)
 
 [node name="Bancone1" type="Node2D" parent="Mondo" unique_id=1890125856]
+y_sort_enabled = true
 
 [node name="HospitalSingles1" type="Sprite2D" parent="Mondo/Bancone1" unique_id=338985365]
 position = Vector2(218, 70)
@@ -7687,6 +7684,7 @@ script = ExtResource("9_b8kf0")
 sheet = "rpg_vx1_5"
 
 [node name="Bancone2" type="Node2D" parent="Mondo" unique_id=1997955705]
+y_sort_enabled = true
 position = Vector2(102, -1)
 
 [node name="HospitalSingles1" type="Sprite2D" parent="Mondo/Bancone2" unique_id=148094381]

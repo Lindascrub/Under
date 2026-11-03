@@ -38,8 +38,8 @@ func setup() -> void:
 		if sc:
 			sc.get_parent().remove_child(sc)
 			sc.queue_free()
-	# dopo i saluti la strada indietro è chiusa: si può solo salire
-	if _f("c4_rivelazione") and not _f("c4_fine"):
+	# dopo i saluti la strada indietro è chiusa per sempre, anche tornando giù dalla città
+	if _f("c4_rivelazione"):
 		var serranda := world.get_node_or_null("Serranda") as Serranda
 		if serranda:
 			serranda.chiudi(false)

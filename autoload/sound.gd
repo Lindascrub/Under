@@ -122,20 +122,20 @@ var _fade: Tween
 
 
 ## Le canzoni vere (pacchetti comprati/scaricati, in res://assets/music/, esclusi da git come LimeZu).
-## Ogni atmosfera è una scaletta: finita una canzone ne parte un'altra (mai la stessa due volte di fila).
+## Ogni atmosfera è una scaletta. Con una canzone sola (i piani) quella si ripete in loop;
+## con più canzoni (gli epiloghi, le battaglie) finita una ne parte un'altra, mai la stessa di fila.
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
 const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
-	# I luoghi lunghi hanno almeno due brani: quando uno finisce, il successivo
-	# viene scelto senza ripetere quello appena ascoltato.
-	"festa": ["gettinsillywithit", "gettinwackywithit"],
-	"attesa": ["superretrolounge", "soundfontjazzclub"],
-	"mercato": ["waitingroomennui", "marketjam"],
-	"banca": ["vacationdayadventure", "tracerbulletprivateeye"],
-	"citta": ["metropolitancosmopolitan", "east_town"],
-	"quartiere": ["wood_forest_town", "peaceful_village"],
-	"cima": ["royal_castle", "the_old_magician"],
-	"presidente": ["magic_temple", "ancient_library"],
+	# i piani: una canzone sola per piano, che si ripete in loop
+	"festa": ["gettinsillywithit"],
+	"attesa": ["superretrolounge"],
+	"mercato": ["waitingroomennui"],
+	"banca": ["vacationdayadventure"],
+	"citta": ["metropolitancosmopolitan"],
+	"quartiere": ["wood_forest_town"],
+	"cima": ["royal_castle"],
+	"presidente": ["magic_temple"],
 	"ascensore": ["hypnoticsynthloop"],
 	# i turni: uno per piano (scenes/minigame/work.gd, JOB_MUSIC)
 	"turno_dinamo": ["pkmngoldluckycornerioweitalltoyou"],

@@ -22,7 +22,7 @@ func _test_buses() -> void:
 func _test_playlists() -> void:
 	var long_moods := ["festa", "attesa", "mercato", "banca", "citta", "quartiere", "cima", "presidente"]
 	for mood: String in long_moods:
-		check((Sound.PLAYLISTS[mood] as Array).size() >= 2, "%s alterna almeno due brani" % mood)
+		check((Sound.PLAYLISTS[mood] as Array).size() == 1, "%s ha una canzone sola" % mood)
 	var owners := {}
 	for mood: String in Sound.PLAYLISTS:
 		for track: String in Sound.PLAYLISTS[mood]:
@@ -32,8 +32,10 @@ func _test_playlists() -> void:
 	for mood: String in long_moods:
 		Sound.music(mood)
 		var first := Sound.current_track()
+		var stream := Sound.capture_music()["stream"] as AudioStreamOggVorbis
+		check(stream != null and stream.loop, "%s ripete la sua canzone in loop" % mood)
 		Sound.call("_on_music_finished")
-		check(Sound.current_track() != first, "%s cambia brano a fine traccia" % mood)
+		check(Sound.current_track() == first, "%s resta sulla stessa canzone" % mood)
 
 
 func _test_arcade_effects() -> void:

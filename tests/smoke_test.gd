@@ -819,11 +819,11 @@ func _test_chapter6() -> void:
 	_check(sheets.size() == 11 and not sheets.has("char_01") and str(GameState.npc_data("leda").get("sheet")) == "cheap_leda" \
 		and str(GameState.npc_data("bulbo").get("name")) == "Mina" and str(GameState.npc_data("bulbo").get("sheet")) == "cheap_mina",
 		"le persone hanno fogli diversi fra loro, da Fermo e dal protagonista")
-	# la musica: una scaletta, e alla fine della canzone ne parte un'altra (se le canzoni ci sono)
+	# la musica: ogni piano ha una canzone sola in loop (se le canzoni ci sono)
 	if ResourceLoader.exists("res://assets/music/royal_castle.ogg"):
 		Sound.music("festa")
 		for mood: String in ["festa", "attesa", "mercato", "banca", "citta", "quartiere", "cima", "presidente"]:
-			_check(Sound.PLAYLISTS[mood].size() >= 2, "%s cambia canzone invece di ripetere sempre la stessa" % mood)
+			_check(Sound.PLAYLISTS[mood].size() == 1, "%s ha una canzone sola, in loop" % mood)
 		# Ogni luogo, turno, persona e il Capo hanno brani propri: niente riciclo mascherato.
 		var seen := {}
 		for mood: String in Sound.PLAYLISTS:

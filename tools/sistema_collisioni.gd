@@ -36,7 +36,7 @@ const FIX := {
 	"res://chapters/c4/banca.tscn": {
 		"calpestabile": ["Decori/BasementSingles227", "Decori/BasementSingles228", "Decori/TappetoMarrone0",
 			"Decori/TappetoMarrone1", "Decori/TappetoMarrone2", "Decori/TappetoMarrone3"],
-		"in_decori": ["HospitalSingles52", "HospitalSingles69", "Mondo/Telecamera_320", "Mondo/Telecamera_608"],
+		"in_decori": ["HospitalSingles69", "Mondo/Telecamera_320", "Mondo/Telecamera_608"],
 		"in_mondo": ["Mondo/Divano1/Collisione/HospitalSingles37", "Mondo/Divano1/Collisione/HospitalSingles50"],
 		"base": ["Mondo/Cordone0:4", "Mondo/Cordone1:4", "Mondo/Leggio", "Mondo/HospitalSingles127", "Mondo/HospitalSingles130",
 			"Mondo/HospitalSingles131", "Mondo/PiantaAttesa", "Mondo/PiantaUfficio", "Mondo/Divano1",
