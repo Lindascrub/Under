@@ -309,6 +309,20 @@ lines = PackedStringArray()
 lines_after = PackedStringArray()
 method = "_scrivania"
 
+[node name="Targhetta" type="Label" parent="Mondo/UsaScrivania"]
+z_index = 30
+offset_left = -13.0
+offset_top = -62.0
+offset_right = 13.0
+offset_bottom = -50.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.882353, 0.301961, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 8
+text = "TURNO"
+horizontal_alignment = 1
+
 [node name="TerminaleBilanci" type="Sprite2D" parent="Mondo" unique_id=2044545297]
 position = Vector2(384, 96)
 texture = ExtResource("16_e2qsx")

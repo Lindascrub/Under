@@ -16,6 +16,11 @@ signal _chosen(index: int)
 @export var colore_turno_da_fare := Color("ffb03a")
 @export var colore_turno_fatto := Color("3ddc84")
 @export var colore_turno_cima := Color("ffe14d")
+## Il debito nell'HUD: di che colore è, e per quanti secondi diventa rosso (con l'aumento accanto)
+## dopo una notte.
+@export var colore_debito := Color(1, 1, 1)
+@export var colore_debito_salito := Color("ff5a5a")
+@export var secondi_debito_salito := 6.0
 ## Le scelte: l'angolo in basso a destra del riquadro, quanto è alta ogni riga e i margini.
 @export var angolo_scelte := Vector2(624, 252)
 @export var altezza_riga_scelte := 23.0
@@ -30,7 +35,14 @@ var transitioning := false
 ## Vero durante le scene scriptate (finali): il giocatore non si muove.
 var cutscene := false
 
-@onready var _hud: Label = $Hud
+@onready var _hud: Control = $Hud
+@onready var _hud_prima: Label = $Hud/Prima
+@onready var _hud_debito: Label = $Hud/Debito
+@onready var _hud_dopo: Label = $Hud/Dopo
+@onready var _hud_salito: Label = $DebitoSalito
+## L'ultimo aumento del debito, e quanti secondi resta ancora rosso nell'HUD.
+var _debito_salito := 0
+var _debito_salito_t := 0.0
 @onready var _box: Panel = $Riquadro
 @onready var _name: Label = $Riquadro/Nome
 @onready var _text: Label = $Riquadro/Testo
@@ -78,6 +90,8 @@ func show_hud(visible_: bool) -> void:
 	_hud.visible = visible_
 	if _time_bar:
 		_time_bar.visible = visible_
+	if _hud_salito:
+		_hud_salito.visible = visible_ and _debito_salito_t > 0.0
 
 
 ## Sotto all'HUD: il turno di oggi è da fare o è fatto (e come far passare la notte).
@@ -89,7 +103,8 @@ func _update_time_bar() -> void:
 		for i in range(1, 4):
 			if dt.get("cycle_%d_completed" % i, false):
 				done += 1
-		_time_bar.text = "TURNO di Direzione: %d cicli su 3 (la scrivania della Presidente)." % done if done < 3 else "TURNO di Direzione: fatto. Resta da decidere."
+		# come negli altri piani: si cerca la scritta TURNO
+		_time_bar.text = "Turno di oggi: da fare (cerca la scritta TURNO)." if done < 3 else "Turno di oggi: fatto. Resta da decidere."
 		_time_bar.add_theme_color_override("font_color", colore_turno_cima)
 	elif GameState.worked_today:
 		_time_bar.text = "Turno di oggi: fatto. Per il prossimo, fai passare la notte a una stellina."
@@ -99,11 +114,29 @@ func _update_time_bar() -> void:
 		_time_bar.add_theme_color_override("font_color", colore_turno_da_fare)
 
 
+# 145.660.000 -> "146 mln"
+func _corto(n: int) -> String:
+	if absi(n) >= 1_000_000_000:
+		return "%d mld" % roundi(n / 1e9)
+	if absi(n) >= 1_000_000:
+		return "%d mln" % roundi(n / 1e6)
+	return GameState.euros(n)
+
+
 func _refresh_hud() -> void:
-	_hud.text = "%s  %s  LV %d  Debito %s  Soldi %s  Energia %d/%d  Autostima %d" % [
-		GameState.floor_name(), GameState.clock(), GameState.lv(),
-		GameState.euros_short(GameState.debt), GameState.euros(GameState.money),
-		GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
+	if GameState.debito_salito_stanotte > 0:
+		_debito_salito = GameState.debito_salito_stanotte
+		_debito_salito_t = secondi_debito_salito
+		GameState.debito_salito_stanotte = 0
+	_hud_prima.text = "%s  %s  LV %d  Debito " % [GameState.floor_name(), GameState.clock(), GameState.lv()]
+	_hud_debito.text = GameState.euros_short(GameState.debt)
+	if _debito_salito_t > 0.0:
+		# sotto il numero, corto, se no la barra esce dallo schermo
+		_hud_salito.text = "+%s stanotte" % _corto(_debito_salito)
+	_hud_salito.visible = _debito_salito_t > 0.0 and _hud.visible
+	_hud_debito.add_theme_color_override("font_color", colore_debito_salito if _debito_salito_t > 0.0 else colore_debito)
+	_hud_dopo.text = "  Soldi %s  Energia %d/%d  Autostima %d" % [
+		GameState.euros(GameState.money), GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
 	]
 	_update_time_bar()
 
@@ -309,6 +342,13 @@ func _render_choices() -> void:
 
 
 func _process(delta: float) -> void:
+	# il debito resta rosso solo mentre l'HUD si vede (non durante la notte o i minigiochi)
+	if _debito_salito_t > 0.0 and _hud.visible:
+		_debito_salito_t -= delta
+		# la scritta rossa sta proprio sotto il numero (che si sposta se cambia il nome del piano)
+		_hud_salito.position.x = _hud_debito.global_position.x
+		if _debito_salito_t <= 0.0:
+			_refresh_hud()
 	if not _typing or _label == null:
 		return
 	_typed += delta * velocita_scrittura

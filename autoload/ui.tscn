@@ -24,17 +24,40 @@ layer = 10
 script = ExtResource("1_ui")
 materiale_capo = SubResource("ShaderMaterial_capo")
 
-[node name="Hud" type="Label" parent="."]
+[node name="Hud" type="HBoxContainer" parent="."]
 offset_left = 8.0
 offset_top = 6.0
 offset_right = 600.0
 offset_bottom = 22.0
 mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Prima" type="Label" parent="Hud"]
+layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 11
-text = "PIANO -5  07:00  LV 1  DEBITO ..."
+text = "Piano -5  07:00  LV 1  Debito "
+
+[node name="Debito" type="Label" parent="Hud"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "7,00 mld €"
+
+[node name="Dopo" type="Label" parent="Hud"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "  Soldi 0 €  Energia 20/20  Autostima 0"
 
 [node name="TurnoDiOggi" type="Label" parent="."]
 offset_left = 8.0
@@ -47,6 +70,19 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 11
 text = "Turno di oggi: da fare (cerca la scritta TURNO)."
+
+[node name="DebitoSalito" type="Label" parent="."]
+visible = false
+offset_left = 212.0
+offset_top = 34.0
+offset_right = 320.0
+offset_bottom = 48.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.352941, 0.352941, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "+140 mln stanotte"
 
 [node name="Riquadro" type="Panel" parent="."]
 visible = false

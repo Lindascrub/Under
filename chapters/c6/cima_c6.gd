@@ -13,6 +13,7 @@ const RULES := preload("res://chapters/c6/direzione_regole.gd")
 const FINALI := preload("res://chapters/c6/finali.gd")
 const C5 := preload("res://chapters/c5/citta_c5.gd")
 const DIREZIONE := "res://chapters/c6/direzione.tscn"
+const CITTA := "res://chapters/c5/citta.tscn"
 const FINALE := "res://chapters/c6/finale.tscn"
 const ART := "res://art/c6/"
 const PRES := "La Presidente"
@@ -31,6 +32,13 @@ const FLOORS := [
 
 var president: CharSprite
 var boss: CharSprite
+
+## La scritta TURNO sopra la scrivania (Mondo/UsaScrivania/Targhetta), come negli altri piani:
+## gialla e dondolante finché c'è il turno da fare, grigia quando è fatto.
+@export var colore_turno_da_fare := Color("ffe14d")
+@export var colore_turno_fatto := Color("8a8494")
+@export var dondolio_turno := 3.0
+@export var durata_dondolio_turno := 0.4
 
 
 # --- lo stato del capitolo ---------------------------------------------------------------------------
@@ -98,6 +106,34 @@ func setup() -> void:
 		return
 	var at := _posto("Tavolo") if bool(d["boss"]["final_call_seen"]) else _posto("Scrivania")
 	president = _person("Presidente", PRES_SHEET, at, "idle_left", talk_president, true)
+	_targhetta_turno()
+
+
+func _targhetta_turno() -> void:
+	var mark := get_node_or_null("Mondo/UsaScrivania/Targhetta") as Label
+	if mark == null:
+		return
+	# prima dell'offerta la scrivania non è tua: niente scritta
+	mark.visible = bool(c6()["president"]["offer_received"])
+	var da_fare := turn_open()
+	if _tw_targhetta:
+		_tw_targhetta.kill()
+		mark.position.y = _targhetta_y
+	_targhetta_y = mark.position.y
+	mark.add_theme_color_override("font_color", colore_turno_da_fare if da_fare else colore_turno_fatto)
+	if da_fare:
+		_tw_targhetta = mark.create_tween().set_loops()
+		_tw_targhetta.tween_property(mark, "position:y", _targhetta_y - dondolio_turno, durata_dondolio_turno)
+		_tw_targhetta.tween_property(mark, "position:y", _targhetta_y, durata_dondolio_turno)
+
+
+var _tw_targhetta: Tween
+var _targhetta_y := 0.0
+
+
+## C'è ancora il TURNO da fare alla Cima (dopo l'offerta della Presidente, finché i cicli non sono finiti).
+static func turn_open() -> bool:
+	return bool(c6()["president"]["offer_received"]) and cycles_done() < 3
 
 
 func enter() -> void:
@@ -450,6 +486,7 @@ func _offer() -> void:
 	if o == 0:
 		await Ui.say(["Gli altri resteranno registrati.", "Altrimenti chi farebbe funzionare la Torre?"], PRES)
 	d["president"]["offer_received"] = true
+	_targhetta_turno()
 	await Ui.say(["Non devi rispondere adesso. Il timbro aspetta. È abituato.",
 		"Prima di decidere, vuoi vedere come funziona il mio lavoro?",
 		"Tre cicli di bilancio. È una prova: le tue decisioni valgono per quei tre cicli, e si vedranno.",
@@ -478,8 +515,13 @@ func _president_menu() -> void:
 	var all: Array = ["Come funziona il tuo lavoro?", "Il debito, ancora.", "Perché vuoi andare in pensione?", "Perché non lo cambi tu?"]
 	var left: Array = range(all.size()).filter(func(i: int) -> bool: return i < 2 or not _f("c6_chiesto_%d" % i))
 	var opts: Array = left.map(func(i: int) -> String: return all[i])
+	# l'ascensore scende solo se lo chiede la Presidenza (la targhetta vicino ai pulsanti)
+	opts.append("Vorrei scendere.")
 	opts.append("Niente.")
 	var pick: int = await Ui.choose("Sì?", opts, PRES)
+	if pick == left.size():
+		await _scendi()
+		return
 	var c: int = left[pick] if pick < left.size() else 4
 	if c >= 2 and c < 4:
 		GameState.flags["c6_chiesto_%d" % c] = true
@@ -505,6 +547,15 @@ func _president_menu() -> void:
 				"Non è la stessa cosa. Mi ci sono voluti trent'anni a capirlo."], PRES)
 		3:
 			await _why_not_you()
+
+
+## Si torna giù in Città con l'ascensore degli specchi; dalla Città si risale dalle scale.
+func _scendi() -> void:
+	await Ui.say(["L'ascensore scende solo se lo chiamo io.", "Vai pure. Il timbro aspetta. È abituato."], PRES)
+	Sound.sfx("clunk")
+	await Ui.say(["* L'ascensore degli specchi si apre. Scende piano, come se ci pensasse."])
+	GameState.save_game(CITTA, Vector2.INF)
+	Router.goto(CITTA, "from_above")
 
 
 ## Perché la Presidente non cambia le regole da sola: le ha ereditate, e poi le ha tenute. Anche rafforzate.
