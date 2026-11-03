@@ -540,7 +540,7 @@ func _tower_to(band: int) -> void:
 func epilogue_segment(i: int) -> void:
 	var seg: Array = SEGMENTS[i]
 	if i == 0:
-		Sound.music("epilogo")
+		Sound.music("sei_mesi")
 		await _fade_title("", "SEI MESI DOPO")
 	await _tower_to(int(seg[1]))
 	if i == 0:
@@ -753,7 +753,7 @@ static func dream_line(dream: String, family: String) -> String:
 func _credits() -> void:
 	_clear()
 	bg.color = Color.BLACK
-	Sound.music("epilogo")
+	Sound.music("titoli_coda")
 	var title := _label("CHEAP", Vector2(0, 120), Vector2(640, 50), 36, GOLD)
 	var sub := _label("Quanto costa una vita?", Vector2(0, 176), Vector2(640, 30), 15, Color.WHITE)
 	title.modulate.a = 0.0

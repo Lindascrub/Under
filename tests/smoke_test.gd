@@ -837,11 +837,11 @@ func _test_chapter6() -> void:
 			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
 		Sound.music("cima")
 		_check(Sound.current_track() in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")
-		# dove le canzoni sono più d'una (gli epiloghi), finita una ne parte un'altra
-		Sound.music("epilogo")
+		# dove le canzoni sono più d'una (le battaglie), finita una ne parte un'altra
+		Sound.music("battaglia")
 		var first: String = Sound.current_track()
 		Sound.call("_on_music_finished")
-		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["epilogo"], "finita una canzone ne parte un'altra, diversa")
+		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["battaglia"], "finita una canzone ne parte un'altra, diversa")
 		Sound.music("cima")
 	for effect: String in ["select_2", "confirm_2", "blocked", "collect_3", "computer_1", "chime"]:
 		_check(ResourceLoader.exists("res://audio/arcade/%s.wav" % effect), "effetto arcade importato: " + effect)
@@ -851,7 +851,7 @@ func _test_chapter6() -> void:
 		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "risorse"},
 		{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}, "choice": "revisione"},
 	]
-	choose_queue = [0, 1, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0]
+	choose_queue = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	m.call("talk_president")
 	await _wait_scene(Router.DIREZIONE)
 	c6 = logic.c6()
@@ -888,7 +888,7 @@ func _test_chapter6() -> void:
 	_check(GameState.robots.size() == robots0 and logic.final_ready(), "28/30: il Capo una volta sola, nessun robot nuovo")
 	# l'ultimo sguardo indietro: due piani, poi basta. Nessun premio
 	var money0 := GameState.money
-	choose_queue = [0, 4, 9]
+	choose_queue = [0, 3, 9]
 	m = await _c6_call(m, "_finestra")
 	_check(c6["panorama"]["locations_seen"] == ["-5", "0"] and GameState.money == money0, "panorama: si guarda quello che si vuole, senza premi")
 	_check("Le luci di giù" not in str(logic.panorama_lines("-5")) and "Casa Comune ha le finestre aperte" in str(logic.panorama_lines("0")), "panorama: ogni piano com'è davvero")

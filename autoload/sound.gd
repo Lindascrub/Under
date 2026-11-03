@@ -123,7 +123,7 @@ var _fade: Tween
 
 ## Le canzoni vere (pacchetti comprati/scaricati, in res://assets/music/, esclusi da git come LimeZu).
 ## Ogni atmosfera è una scaletta. Con una canzone sola (i piani) quella si ripete in loop;
-## con più canzoni (gli epiloghi, le battaglie) finita una ne parte un'altra, mai la stessa di fila.
+## con più canzoni (le battaglie, il Capo) finita una ne parte un'altra, mai la stessa di fila.
 ## Se i file mancano si usa il vecchio segnaposto audio/music_<nome>.wav. Elenco: docs/ASSET_LIST.md.
 const MUSIC_DIR := "res://assets/music/"
 const PLAYLISTS := {
@@ -153,14 +153,17 @@ const PLAYLISTS := {
 	"aiuto_ercole": ["dwarven_mine"],
 	"aiuto_leda": ["mischiefgroove"],
 	"aiuto_amir": ["traveling_the_sky"],
-	"aiuto_olga": ["distantskyline"],
+	"aiuto_olga": ["tracerbulletprivateeye"],
 	"aiuto_teo": ["slycooperclarinet"],
 	"aiuto_ada": ["trunk_knox_go_buck"],
 	"aiuto_nadir": ["unknown_island"],
 	"aiuto": ["volcanic_crater"],
 	# il resto
 	"titolo": ["frostylabratory"],
-	"epilogo": ["long_journey", "holy_sanctuary", "melancholic_bittersweet_groovycavejourney"],
+	# sei mesi dopo: la Torre vista dall'alto, piano per piano (chapters/c6/finale_c6.gd)
+	"sei_mesi": ["distantskyline"],
+	# i titoli di coda
+	"titoli_coda": ["holy_sanctuary"],
 	"notte": ["nighttownwaltz"],
 	"nives": ["lively_city"],
 	"fondo": ["dripstonecave"],

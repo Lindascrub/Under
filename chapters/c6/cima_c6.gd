@@ -370,18 +370,14 @@ func read_contract() -> void:
 	Sound.sfx("flap")
 	await Ui.say(["* La Presidente apre un cassetto ed estrae una cartellina rosa.",
 		"* OBBLIGO DI ESISTENZA. IMPORTO ORIGINARIO: 7.000.000.000 €."])
-	var seen: Array = []
-	while true:
-		var opts: Array = []
-		for i in 3:
-			opts.append(("✓ " if i in seen else "") + ["1. Registrazione", "2. Importo", "3. Consenso"][i])
-		opts.append("Chiudi la cartellina")
-		var c: int = await Ui.choose("OBBLIGO DI ESISTENZA — tocca una sezione.", opts)
-		if c == 3:
+	# le sezioni si leggono in ordine, una alla volta
+	var sections := ["1. Registrazione", "2. Importo", "3. Consenso"]
+	var seen := 0
+	while seen < 3:
+		var c: int = await Ui.choose("OBBLIGO DI ESISTENZA — tocca una sezione.", [sections[seen], "Chiudi la cartellina"])
+		if c == 1:
 			break
-		if not c in seen:
-			seen.append(c)
-		match c:
+		match seen:
 			0:
 				await Ui.say(["* SEZIONE 1 — REGISTRAZIONE.", "* Titolare: {name}.",
 					"* Data di apertura: precedente alla registrazione del titolare.", "* Causale: obbligo di esistenza.",
@@ -394,9 +390,8 @@ func read_contract() -> void:
 			2:
 				await Ui.say(["* SEZIONE 3 — CONSENSO.", "* Firma del titolare: non presente.", "* Consenso individuale: non registrato.",
 					"* Stato pratica: attiva.", "* Il regolamento interno considera valida la registrazione anche senza firma."])
-		if seen.size() == 3:
-			break
-	if seen.size() == 3:
+		seen += 1
+	if seen == 3:
 		d["president"]["debt_contract_read"] = true
 		GameState.flags["c6_contratto_letto"] = true
 
@@ -418,14 +413,18 @@ func _origin() -> void:
 	Sound.sfx("blip", 0.6)
 	_vrrr()
 	await Ui.say(["* Vrrr. Un altro."])
+	# una domanda fatta non si ripropone
+	var questions := ["Ma non l'ho mai accettata.", "Chi ha deciso la cifra?", "Quindi non devo niente?"]
 	var asked: Array = []
-	while asked.size() < 3:
-		var opts: Array = ["Ma non l'ho mai accettata.", "Chi ha deciso la cifra?", "Quindi non devo niente?", "Basta così."]
-		var q: int = await Ui.choose("Cosa chiedi?", opts)
-		if q == 3:
+	while asked.size() < questions.size():
+		var left: Array = range(questions.size()).filter(func(i: int) -> bool: return not i in asked)
+		var opts: Array = left.map(func(i: int) -> String: return questions[i])
+		opts.append("Basta così.")
+		var pick: int = await Ui.choose("Cosa chiedi?", opts)
+		if pick >= left.size():
 			break
-		if not q in asked:
-			asked.append(q)
+		var q: int = left[pick]
+		asked.append(q)
 		match q:
 			0:
 				await Ui.say(["Non risulta.", "Ma il sistema registra comunque la quota."], PRES)
@@ -475,8 +474,15 @@ func _stamp_preview() -> void:
 
 func _president_menu() -> void:
 	var d := c6()
-	var opts: Array = ["Come funziona il tuo lavoro?", "Il debito, ancora.", "Perché vuoi andare in pensione?", "Perché non lo cambi tu?", "Niente."]
-	var c: int = await Ui.choose("Sì?", opts, PRES)
+	# le domande con una risposta sola, fatte una volta, spariscono (flag c6_chiesto_<n>)
+	var all: Array = ["Come funziona il tuo lavoro?", "Il debito, ancora.", "Perché vuoi andare in pensione?", "Perché non lo cambi tu?"]
+	var left: Array = range(all.size()).filter(func(i: int) -> bool: return i < 2 or not _f("c6_chiesto_%d" % i))
+	var opts: Array = left.map(func(i: int) -> String: return all[i])
+	opts.append("Niente.")
+	var pick: int = await Ui.choose("Sì?", opts, PRES)
+	var c: int = left[pick] if pick < left.size() else 4
+	if c >= 2 and c < 4:
+		GameState.flags["c6_chiesto_%d" % c] = true
 	match c:
 		0:
 			if cycles_done() < 3:
@@ -717,15 +723,17 @@ func consult(n: int, required := false) -> void:
 	var heard: Array = []
 	await Ui.say(["* ASCOLTA GLI ABITANTI."])
 	while true:
-		var opts: Array = []
-		for p: Array in people:
-			opts.append(("✓ " if p[0] in heard else "") + str(p[1]))
+		# chi hai già ascoltato non si ripropone
+		var left: Array = people.filter(func(p: Array) -> bool: return not p[0] in heard)
+		if left.is_empty():
+			break
+		var opts: Array = left.map(func(p: Array) -> String: return str(p[1]))
 		if not must or not heard.is_empty():
 			opts.append("Basta così.")
 		var c: int = await Ui.choose("Chi ascolti?" if not must or not heard.is_empty() else "Prima di decidere, ascolta almeno una persona.", opts)
-		if c >= people.size():
+		if c >= left.size():
 			break
-		var p: Array = people[c]
+		var p: Array = left[c]
 		await Ui.say(p[2], str(p[1]))
 		if not p[0] in heard:
 			heard.append(p[0])
@@ -781,10 +789,12 @@ func _boss_scene() -> void:
 	d["boss"]["final_call_seen"] = true
 	await Ui.say(["Mi serve un ultimo favore.", "Puoi intestarti il lavoro di tutti gli abitanti della Torre.",
 		"Un solo nome, un solo responsabile.", "Tu."], BOSS)
+	var chiesto := false
 	while true:
 		var c: int = await Ui.choose("ATTRIBUZIONE GLOBALE DEL CONTRIBUTO. LAVORATORI COINVOLTI: TUTTI. BENEFICIARIO: DIREZIONE.",
-			["Autorizza.", "Rifiuta.", "Chiedi cosa comporta."])
+			["Autorizza.", "Rifiuta."] if chiesto else ["Autorizza.", "Rifiuta.", "Chiedi cosa comporta."])
 		if c == 2:
+			chiesto = true
 			await Ui.say(["Niente di drammatico. Nessuno diventa un robot. Che idea.",
 				"Semplicemente, d'ora in poi ogni lavoro della Torre porta un nome solo. Il tuo.",
 				"I premi, i meriti, le trattative: si fanno con chi ha il nome. Gli altri lavorano. Come prima, ma senza firma."], BOSS)
@@ -943,14 +953,16 @@ func _finestra() -> void:
 		"* Da quassù è facile dimenticare che non lo sono."])
 	var seen: Array = d["panorama"]["locations_seen"]
 	while true:
-		var opts: Array = []
-		for fl: Array in FLOORS:
-			opts.append(("✓ " if fl[0] in seen else "") + str(fl[1]))
+		# i piani già guardati non si ripropongono
+		var left: Array = FLOORS.filter(func(f: Array) -> bool: return not f[0] in seen)
+		if left.is_empty():
+			break
+		var opts: Array = left.map(func(f: Array) -> String: return str(f[1]))
 		opts.append("Basta guardare.")
 		var c: int = await Ui.choose("Dove guardi?", opts)
-		if c >= FLOORS.size():
+		if c >= left.size():
 			break
-		var fl: Array = FLOORS[c]
+		var fl: Array = left[c]
 		if not fl[0] in seen:
 			seen.append(fl[0])
 		await Ui.say(panorama_lines(str(fl[0])))

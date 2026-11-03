@@ -556,7 +556,7 @@ func _test_presidente() -> void:
 		var m: Room = await _go(Router.CIMA, "desk")
 		m = await _c6_settle()
 		director_plan = [{"alloc": {"stipendi": 45, "servizi": 20, "manutenzione": 25, "riserve": 10}}]
-		choose_queue = [0, 1, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0]
+		choose_queue = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		m.call("talk_president")
 		await _wait_scene(Router.DIREZIONE)
 		await _idle()
