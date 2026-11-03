@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://world/pannello_righe.gd" id="1_pannello"]
 
 [node name="RivelazioneBanca" type="CanvasLayer"]
-layer = 14
+layer = 9
 script = ExtResource("1_pannello")
 pausa_tra_righe = 0.7
 pausa_dopo_righe = 1.2

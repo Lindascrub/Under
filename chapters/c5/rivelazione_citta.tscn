@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" path="res://art/c5/simbolo_finanza.png" id="s3"]
 
 [node name="RivelazioneCitta" type="CanvasLayer"]
-layer = 14
+layer = 9
 script = ExtResource("1_pannello")
 pausa_tra_righe = 0.9
 pausa_dopo_righe = 1.0

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://chapters/c3/scontrino.gd" id="1_scontrino"]
 
 [node name="Scontrino" type="CanvasLayer"]
-layer = 14
+layer = 9
 script = ExtResource("1_scontrino")
 
 [node name="Carta" type="ColorRect" parent="."]
