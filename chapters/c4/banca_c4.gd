@@ -628,13 +628,23 @@ func _badge_machine() -> void:
 		await Ui.say(["* Hai il badge del Piano Terra. Il tornello ha la lucina verde."])
 		await _nives_remember()
 		return
-	await Ui.say(["Quattromila euro.", "Lo so. È tanto.", "Ma pensa al lato positivo.", "Sei molto più vicino alla cima."], NIVES, BADGE_CLERK)
-	var c: int = await Ui.choose("Cosa rispondi?", ["E il mio debito?", "Non è giusto.", "Voglio salire."], NIVES)
-	if c == 0:
-		GameState.flags["c4_nives_debito"] = true
-		await Ui.say(["Hai già provato a chiedere da dove viene?", "Non sei il primo."], NIVES, BADGE_CLERK)
-	elif c == 1:
-		await Ui.say(["No.", "Ma è il prezzo. Il giusto e il prezzo lavorano in uffici diversi. Non si incontrano mai."], NIVES, BADGE_CLERK)
+	# il discorso intero solo la prima volta; le domande già fatte non tornano
+	if not _f("c4_nives_prezzo"):
+		GameState.flags["c4_nives_prezzo"] = true
+		await Ui.say(["Quattromila euro.", "Lo so. È tanto.", "Ma pensa al lato positivo.", "Sei molto più vicino alla cima."], NIVES, BADGE_CLERK)
+	else:
+		await Ui.say(["Quattromila euro."], NIVES, BADGE_CLERK)
+	var asks := GameState.domande_nuove([["c4_nives_debito", "E il mio debito?"], ["c4_nives_giusto", "Non è giusto."]])
+	if not asks.is_empty():
+		var c: int = await Ui.choose("Cosa rispondi?", asks.map(func(q: Array) -> String: return q[1]) + ["Voglio salire."], NIVES)
+		if c < asks.size():
+			var key := str(asks[c][0])
+			GameState.segna_chiesto(key)
+			if key == "c4_nives_debito":
+				GameState.flags["c4_nives_debito"] = true
+				await Ui.say(["Hai già provato a chiedere da dove viene?", "Non sei il primo."], NIVES, BADGE_CLERK)
+			else:
+				await Ui.say(["No.", "Ma è il prezzo. Il giusto e il prezzo lavorano in uffici diversi. Non si incontrano mai."], NIVES, BADGE_CLERK)
 	var d: int = await Ui.choose("Comprare il badge? Hai %s." % GameState.euros(GameState.money), ["Compra (%s)" % GameState.euros(cost), "Non ora"], NIVES)
 	if d != 0:
 		return

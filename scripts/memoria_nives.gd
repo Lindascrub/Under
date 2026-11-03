@@ -460,7 +460,7 @@ static func _olga_withdrawn() -> bool:
 # --- allo sportello: un ricordo per volta ------------------------------------------------------------
 
 ## Da chiamare all'inizio di ogni dialogo allo sportello dei badge (dal Fondo in su).
-## Al massimo una cosa per visita. Quelle facoltative si possono saltare: tornano al piano dopo.
+## Al massimo una cosa per visita. Quelle facoltative si possono saltare: poi non tornano più.
 static func at_booth(who: String) -> void:
 	# reazioni: le dice lei, una volta per partita
 	if _olga_withdrawn() and not _done("olga"):
@@ -493,11 +493,12 @@ static func at_booth(who: String) -> void:
 	elif distinct().size() >= 2 and _done("ricordo") and not _done("due_volte"):
 		key = "due_volte"
 		ask = two_times_ask()
-	if key == "" or _done("salta_%s_%s" % [key, GameState.floor_id]):
+	# chiesta o saltata, la domanda non torna più (né qui né ai piani dopo)
+	if key == "" or _done("salta_%s" % key):
 		return
+	_mark("salta_%s" % key)
 	var c: int = await Ui.choose("", [ask, "Niente, grazie."], who)
 	if c != 0:
-		_mark("salta_%s_%s" % [key, GameState.floor_id])
 		return
 	match key:
 		"rivelazione":

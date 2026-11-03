@@ -152,11 +152,18 @@ func _ada_room_offer() -> void:
 
 ## Ada robot nella Casa Comune: risponde alle domande come un volantino.
 func robot_talk_ada(_n: Npc) -> bool:
-	var c: int = await Ui.choose("Ada.", ["Com'è la libreria?", "Cosa volevi studiare?", "(Niente)"], "Ada")
-	match c:
-		0:
+	# le domande già fatte non tornano: finite quelle, risponde solo il volantino
+	var asks := GameState.domande_nuove([["ada_robot_libreria", "Com'è la libreria?"], ["ada_robot_studio", "Cosa volevi studiare?"]])
+	var c := asks.size()
+	if not asks.is_empty():
+		c = await Ui.choose("Ada.", asks.map(func(q: Array) -> String: return q[1]) + ["(Niente)"], "Ada")
+	var key := str(asks[c][0]) if c < asks.size() else ""
+	if key != "":
+		GameState.segna_chiesto(key)
+	match key:
+		"ada_robot_libreria":
 			await Ui.say(["ARREDAMENTO NON OTTIMIZZATO."], "Ada")
-		1:
+		"ada_robot_studio":
 			await Ui.say(["DOMANDA NON PREVISTA."], "Ada")
 		_:
 			await Ui.say([GameState.robot_line("ada")], "Ada")

@@ -76,6 +76,8 @@ var self_esteem := 0
 var player_name := "Tu"
 var money := 0
 var debt := START_DEBT
+## Di quanto è salito il debito nell'ultima notte: l'HUD lo mostra in rosso e poi lo rimette a 0.
+var debito_salito_stanotte := 0
 var energy := MAX_ENERGY
 var rank := 0
 var exploited := 0
@@ -269,6 +271,7 @@ func _new_day() -> void:
 	Quests.end_day()
 	var before := debt
 	debt += int(round(debt * interest_rate()))
+	debito_salito_stanotte = debt - before
 	day += 1
 	worked_today = false
 	met_today.clear()
@@ -404,9 +407,11 @@ func pay_debt(amount: int) -> int:
 
 func end_day(paid_minimum: bool) -> void:
 	Quests.end_day()
+	var before := debt
 	if not paid_minimum and debt > 0:
 		debt += LATE_FEE
 	debt += int(round(debt * interest_rate()))
+	debito_salito_stanotte = debt - before
 	day += 1
 	minutes = DAY_START
 	energy = MAX_ENERGY
@@ -806,6 +811,20 @@ func fmt(text: String) -> String:
 
 
 ## Le cifre enormi (il debito) scritte corte: "7,00 mld €".
+## Le domande già fatte a qualcuno non tornano nel menu la volta dopo (flag "chiesto_<chiave>").
+func chiesto(key: String) -> bool:
+	return bool(flags.get("chiesto_" + key, false))
+
+
+func segna_chiesto(key: String) -> void:
+	flags["chiesto_" + key] = true
+
+
+## Le domande di un menu che non hai ancora fatto: [[chiave, testo], ...] -> solo quelle nuove.
+func domande_nuove(domande: Array) -> Array:
+	return domande.filter(func(q: Array) -> bool: return not chiesto(str(q[0])))
+
+
 static func euros_short(n: int) -> String:
 	if absi(n) >= 1_000_000_000:
 		return ("%.2f mld €" % (n / 1e9)).replace(".", ",")
