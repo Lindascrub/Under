@@ -903,14 +903,19 @@ func _finish(success: bool, partial := false) -> void:
 	won = success
 	var who := str(cfg.get("name", ""))
 	var id := str(cfg.get("id", ""))
+	# rifarlo (npc.gd, _offer_replay) costa il tempo, ma l'aiuto c'è già stato
+	var rigioco: bool = cfg.get("rigioco", false)
+	var prima := int(cfg.get("stelle_prima", 0))
 	# di solito dare una mano conta anche se va male; per Leda e Amir conta solo se riesce (o a metà)
-	if success or not cfg.get("help_on_win_only", false) or (partial and cfg.get("help_on_partial", false)):
+	if rigioco:
+		GameState.spend(GameState.COST_HELP_TIME)
+	elif success or not cfg.get("help_on_win_only", false) or (partial and cfg.get("help_on_partial", false)):
 		GameState.help(id, "time", GameState.COST_HELP_TIME)
 	else:
 		GameState.spend(GameState.COST_HELP_TIME)
 	for f in cfg.get("win_flags" if success else ("partial_flags" if partial else "no_flags"), []):
 		GameState.flags[str(f)] = true
-	if cfg.has("quest"):
+	if cfg.has("quest") and not rigioco:
 		# Il giorno dopo chi te l'ha chiesto ti dirà com'è andata.
 		GameState.flags["quest_news_" + str(cfg["quest"])] = "done" if success else "fail"
 	# le stelline: dalla bravura (errori e tempo avanzato)
@@ -918,20 +923,31 @@ func _finish(success: bool, partial := false) -> void:
 	if success and _risposta and type in CON_STELLE:
 		quante = _risposta.stelle(misses, time_left / time_total if time_total > 0.0 else -1.0)
 		await _risposta.vittoria(quante, id)
+	# le sconfitte di fila con questa persona (per la "sgridata"); vincere le azzera
+	var persi := 0 if success else int(GameState.flags.get("persi_" + id, 0)) + 1
+	if type in CON_STELLE:
+		GameState.flags["persi_" + id] = persi
 	var lines: Array = []
 	if success:
 		Sound.sfx("spare")
 		var reward := int(cfg.get("reward", 10))
 		if quante > 0:
 			reward = _risposta.soldi(reward, quante)
+		if rigioco and prima > 0:
+			# solo la differenza col record: rifarlo non diventa un modo per fare soldi all'infinito
+			reward = maxi(0, reward - _risposta.soldi(int(cfg.get("reward", 10)), prima))
 		GameState.money += reward
 		GameState.changed.emit()
-		lines.append_array(cfg.get("win", ["Grazie!"]))
-		# una battuta per quante stelline hai preso ("battute_stelle": {"1": [...], "2": [...], "3": [...]})
-		if quante > 0:
-			lines.append_array((cfg.get("battute_stelle", {}) as Dictionary).get(str(quante), []))
+		if rigioco:
+			lines.append_array((cfg.get("rigioca", {}) as Dictionary).get("meglio" if quante > prima else "uguale", []))
+		else:
+			lines.append_array(cfg.get("win", ["Grazie!"]))
+			# una battuta per quante stelline hai preso ("battute_stelle": {"1": [...], "2": [...], "3": [...]})
+			if quante > 0:
+				lines.append_array((cfg.get("battute_stelle", {}) as Dictionary).get(str(quante), []))
 		if reward > 0:
-			lines.append("Tieni, non è molto, ma te li sei guadagnati.")
+			if not rigioco:
+				lines.append("Tieni, non è molto, ma te li sei guadagnati.")
 			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
 		if cfg.has("item"):
 			GameState.give_item(str(cfg["item"]))
@@ -940,9 +956,15 @@ func _finish(success: bool, partial := false) -> void:
 		Sound.sfx("select")
 		lines.append_array(cfg.get("partial", ["È andata a metà. Meglio di niente."]))
 	else:
-		lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
-		lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
-		if _risposta and type in CON_STELLE and _risposta.soldi_se_perdi > 0:
+		# dopo "sgridata_dopo" sconfitte di fila, ti sgrida (e il conto riparte)
+		if cfg.has("sgridata") and persi >= int(cfg.get("sgridata_dopo", 3)):
+			GameState.flags["persi_" + id] = 0
+			lines.append_array(cfg["sgridata"])
+		else:
+			lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
+			lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
+		# i soldi "per il disturbo" solo la prima volta
+		if not rigioco and _risposta and type in CON_STELLE and _risposta.soldi_se_perdi > 0:
 			GameState.money += _risposta.soldi_se_perdi
 			GameState.changed.emit()
 			lines.append("* %s ti dà %s lo stesso, per il disturbo." % [who, GameState.euros(_risposta.soldi_se_perdi)])
