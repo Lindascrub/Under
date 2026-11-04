@@ -4,7 +4,7 @@
 
 Verificati GDD, NARRATIVE_DESIGN, COHERENCE, documenti dei sei capitoli, ENDING_SYSTEM, asset/audio, autoload, stanze, minigiochi, input touch e prove esistenti. Il progetto usa Godot 4.6.3. Tutti e sei i capitoli sono presenti: le vecchie sezioni di pianificazione in NARRATIVE_DESIGN non descrivono lo stato attuale.
 
-Prima: C1/C2 telefonata generica e furto del lavoro; C3 rapporto 018 di Amir (1500 €), C4 rapporto 404 di Teo (3000 €), C5 progetto di Ada (6000 €), tutti con lo stesso gioco stealth e robotizzazione. C6 ha già tre cicli da 100 unità e un'offerta finale di attribuzione globale. Non occorre duplicare il gestionale.
+Prima: C1/C2 telefonata generica e furto del lavoro; C3 rapporto 018 di Amir (1500 €), C4 rapporto 404 di Teo (3000 €), C5 progetto di Ada (6000 €), tutti con lo stesso gioco stealth e robotizzazione. C6 aveva tre cicli da 100 unità, poi riuniti in un solo turno, e un'offerta finale di attribuzione globale. Non occorre duplicare il gestionale.
 
 Riutilizzabili: Room.show_pending, postazioni TURNO, terminali, Ui.say/choose, Router, GameState.flags, FocusShot, Sound, regole Direzione e motore dei finali. Conservare: B-4 e tritatura, scontrino, contratto mancante, protesta/vetrina/assemblea, tre famiglie finali, aiuti e mestieri, robot e premi pregressi.
 
@@ -21,7 +21,7 @@ Rischi: doppio premio al reload, nuove offerte sopra offerte legacy, terminali/r
 3. C1 regolatore di energia e C2 pratiche.
 4. C4 composizione contratto e conseguenze di Olga.
 5. C5 montaggio con fonti effettivamente ascoltate.
-6. C6 pressioni integrate nei tre cicli già esistenti.
+6. C6 pressioni integrate nel TURNO di Direzione (in seguito riunito in un solo schermo).
 7. Nives: annuncio, stacco musicale, camera, sportello; regressione ed economia.
 
 ## Contratto di persistenza
@@ -81,7 +81,7 @@ Sono simulazioni a paga base raggiunta, senza spese facoltative: non equivalgono
 
 - Prototipo Mercato: 22 verifiche, prezzi prima/dopo, paniere, condizioni, salvataggio a metà, nessun doppio premio, Amir umano e importazione legacy.
 - Regole: 721 verifiche; alternative C1/C2, 27 combinazioni di prestito con tre identità contabili ciascuna, fonti vere e timeline, effetto assemblea/rettifica, tutte le 64 combinazioni dei tre mandati e famiglie finali A/B/C.
-- Integrazione: 81 verifiche, telefonate reali e scene, mouse/tocco/tastiera a 1280×720 e 1000×800, uscita/rientro e caricamento, sportelli su cinque piani, tre cicli di Direzione e riepilogo finale.
+- Integrazione: 81 verifiche, telefonate reali e scene, mouse/tocco/tastiera a 1280×720 e 1000×800, uscita/rientro e caricamento, sportelli su cinque piani, decisioni del TURNO di Direzione e riepilogo finale. La prova ora le presenta in un solo turno.
 - Partite degli incarichi: 56 verifiche, tutte le cinque attività completate dall'interfaccia sia con premio sia con alternativa, prezzo e inquadratura dopo il Mercato, caricamento dopo premio, telefonate non ripetute, save senza versione, vecchi robot, recupero da backup dopo corruzione intenzionale del file di prova.
 - Biglietteria/corridoio: 109 verifiche, pavimento, una sola cyclette, ascensore, telecamere e attraversamento reale del corridoio; catture native esaminate.
 - Accesso e scale: 315 verifiche, camminati tutti e cinque i passaggi fra piani; nessun oggetto sopra la biglietteria.

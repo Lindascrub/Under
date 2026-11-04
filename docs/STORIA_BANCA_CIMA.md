@@ -252,7 +252,7 @@ Scelta: **[Contesto la registrazione.]** / **[Non adesso.]**
 
 Flag `c6_contestazione`. La scelta resta disponibile alla voce «Il debito, ancora.» **[ESISTENTE]** fino alla decisione finale.
 
-**Il Capo durante i cicli [NUOVO]:**
+**Il Capo prima del turno [NUOVO]:**
 > CAPO: «Togli cinque dai servizi. Mettili in riserva. La tua pratica la chiudiamo noi. Timbro e via.»
 
 ---
@@ -455,7 +455,7 @@ Le riparazioni dei capitoli precedenti restano vere in **tutti** i finali, anche
    - 6.02 con le tre versioni;
    - la stampante in 6.04;
    - verifica e contestazione (`c6_contestazione`);
-   - la battuta del Capo durante i cicli.
+   - la battuta del Capo prima del turno.
 6. `chapters/c6/finali.gd` e `docs/ENDING_SYSTEM.md`:
    - ordine A2 → A1 → A3, con A1 legato alla scelta consapevole;
    - cosa vale nella Torre per ogni finale;

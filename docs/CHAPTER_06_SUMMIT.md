@@ -22,7 +22,7 @@ Poi i finali, gli epiloghi "sei mesi dopo", il sogno, e la domanda: **Quanto cos
 Modifiche ai sistemi condivisi, piccole e compatibili con i capitoli 1-5:
 - `autoload/router.gd`: `CIMA`, `DIREZIONE`, `FINALE`; la Cima è una stanza del mondo (stelline, salvataggio).
 - `chapters/c5/citta_c5.gd`: le scale della città portano alla Cima nuova (prima: il vecchio ufficio del capo).
-- `autoload/ui.gd`: alla Cima la barra in alto dice "TURNO di Direzione: N cicli su 3" invece del turno del giorno.
+- `autoload/ui.gd`: alla Cima la barra in alto indica se il TURNO di Direzione è ancora da fare o è concluso.
 
 ## Mappa
 
@@ -50,7 +50,7 @@ Lo spazio vuoto è voluto: è il posto più ricco della Torre, e non c'è quasi 
 - **Ufficio** (22,4)-(45,19): finestra a nord, scrivania al centro (cartellina OBBLIGO DI ESISTENZA, lampadina,
   il TURNO), terminale a ovest (consultazioni), archivio del debito a est, tavolo della decisione a sud,
   caffè a sud-ovest, un salottino a sud-est con i cuscini ancora nella plastica.
-- **Arrivi:** `default` e `from_below` (3,11) nell'ascensore; `desk` (32,9) davanti alla scrivania, dopo ogni ciclo.
+- **Arrivi:** `default` e `from_below` (3,11) nell'ascensore; `desk` (32,9) davanti alla scrivania, dopo il turno.
 
 ## Scene
 

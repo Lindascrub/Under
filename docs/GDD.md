@@ -57,7 +57,8 @@ Il debito non si ripaga lavorando, e non deve: l'obiettivo è salire, e capire.
    che dipende da cosa hai fatto, poi il titolo del capitolo dopo.
 8. **Le stelline** salvano e fanno passare la notte. Ogni notte: interessi.
 
-Alla Cima il ciclo cambia: niente scale, niente badge, niente paga. Tre cicli del TURNO di Direzione, l'ultima
+Alla Cima il ciclo cambia: niente scale, niente badge, niente paga. Un solo TURNO di Direzione con bilancio,
+Casa Comune e regola dei debiti, poi l'ultima
 telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMIT.md)).
 
 ### La regola dei colori
@@ -167,7 +168,7 @@ Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre
 | Tempismo | Tocca quando il segno è nel verde | Ercole (tienilo sveglio) |
 | Raccolta | Trascina il cuore e raccogli tutto | (versione precedente: Ivo, Elsa) |
 | Scatole e scaffali | Tocca lo scaffale giusto (alimentari, igiene, scuola, casa) | Leda |
-| L'ultima consegna | Tocca l'incrocio vicino: strade sicure o il cantiere (corto, ma a volte no) | Amir |
+| L'ultima consegna | Guida il furgone come uno snake: raccogli sei pacchi e portali alle case illuminate senza urtare ostacoli o la tua coda | Amir |
 | Le rate mancanti | Tocca i 6 documenti dal più vecchio, poi la voce doppia dell'estratto conto | Olga |
 | La pratica impossibile | Per ogni pratica tocca il problema: in ordine, manca un documento, dati diversi, doppione, errore di registrazione | Teo |
 | Una stanza per tutti | Tocca un mobile, poi la stanza: ogni stanza deve avere quello che le serve (più soluzioni valide) | Ada |

@@ -39,7 +39,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 11
-text = "Piano -5  07:00  LV 1  Debito "
+text = "Piano -5  07:00  Livello 1  Debito "
 
 [node name="Debito" type="Label" parent="Hud"]
 layout_mode = 2

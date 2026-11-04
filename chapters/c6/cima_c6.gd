@@ -131,7 +131,7 @@ var _tw_targhetta: Tween
 var _targhetta_y := 0.0
 
 
-## C'è ancora il TURNO da fare alla Cima (dopo l'offerta della Presidente, finché i cicli non sono finiti).
+## C'è ancora il TURNO da fare alla Cima (dopo l'offerta della Presidente, finché il turno non è finito).
 static func turn_open() -> bool:
 	return bool(c6()["president"]["offer_received"]) and cycles_done() < 3
 
@@ -760,7 +760,7 @@ static func _clerk(n: int, sm: Dictionary) -> Array:
 	return ["Qualunque cosa decida, scriva perché. Noi i perché non li riceviamo mai."]
 
 
-## ASCOLTA GLI ABITANTI. Facoltativo dopo i primi due cicli; dopo il terzo almeno una voce (se non l'hai già fatto).
+## ASCOLTA GLI ABITANTI. Facoltativo dopo il turno; prima della decisione finale almeno una voce, se disponibile.
 func consult(n: int, required := false) -> void:
 	var d := c6()
 	var dt: Dictionary = d["director_turn"]

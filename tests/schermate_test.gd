@@ -518,27 +518,32 @@ func _gioca_inventario() -> void:
 	_check(int(g.get("misses")) == 0, "scatole e scaffali: errori %d" % int(g.get("misses")))
 
 
-## L'ULTIMA CONSEGNA: le strade sicure, senza cantiere (si arriva giusti col tempo).
+## L'ULTIMA CONSEGNA: avvia lo snake coi tasti, raccoglie un pacco e completa la sesta consegna.
+## Il test del tocco verifica separatamente scorrimento, ostacoli e consegna; qui serve fotografare il gioco
+## dentro il percorso narrativo senza conservare il riferimento alla scena dopo che Router l'ha liberata.
 func _gioca_consegne() -> void:
 	var g := await _in_gioco()
 	_shot("consegne_inizio")
-	# mattina: magazzino, Scala B, Piazza, Via dei Fiori. Pomeriggio: magazzino, Scuola, Via Roma, Ospedale
-	for tappa: Array in [[2, 5, 4], [2, 5, 6]]:
-		for dest: int in tappa:
-			while float(g.get("rt_k")) < 1.0:
-				await get_tree().process_frame
-			var nb: Array = g.call("_rt_neighbors", int(g.get("rt_at")))
-			var want := nb.find(dest)
-			while int(g.get("rt_sel")) != want:
-				_tap("move_right")
-				await get_tree().create_timer(0.12).timeout
-			await get_tree().create_timer(0.2).timeout
-			_tap("confirm")
-			await get_tree().create_timer(0.3).timeout
-		_shot("consegne_fine_giro")
-	while g.get("phase") == "play":
+	var start: Vector2i = (g.get("sn_body") as Array)[0]
+	g.set("sn_parcel", start + Vector2i(2, 0))
+	_tap("move_right")
+	for i in 300:
+		if int(g.get("sn_carry")) >= 0:
+			break
 		await get_tree().process_frame
-	_check(int(g.get("rt_total")) == 6, "l'ultima consegna: pacchi %d su 6" % int(g.get("rt_total")))
+	var casa := int(g.get("sn_carry"))
+	_check(casa >= 0, "l'ultima consegna: il furgone non ha raccolto il pacco")
+	if casa < 0:
+		return
+	var head: Vector2i = (g.get("sn_body") as Array)[0]
+	(g.get("cfg")["case"][casa] as Dictionary)["cella"] = [head.x + 2, head.y]
+	g.set("sn_done", 5)
+	_shot("consegne_pacco_a_bordo")
+	for i in 600:
+		if _scene_path() != Router.MINIGAME:
+			break
+		await get_tree().process_frame
+	_check(_scene_path() != Router.MINIGAME, "l'ultima consegna: il minigioco non è terminato")
 
 
 ## La Presidente, la prima volta, con le quattro richieste (arrivata, a mano, archiviata, nessuna).
@@ -636,7 +641,8 @@ func _finale_label(scene: Node) -> bool:
 
 func _shot(what: String) -> void:
 	_n += 1
-	var safe := what.to_lower().replace(" ", "_").validate_filename().left(30)
+	# I titoli finali possono contenere ritorni a capo: su Windows non sono validi nei nomi dei PNG.
+	var safe := what.to_lower().replace("\r", "_").replace("\n", "_").replace(" ", "_").validate_filename().left(30)
 	var path := _out + "%04d_%s_%s.png" % [_n, _section, safe]
 	get_viewport().get_texture().get_image().save_png(path)
 

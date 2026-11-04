@@ -1098,7 +1098,8 @@
         "title": "Le pratiche di Dario",
         "intro": [
           "* Le pratiche vanno timbrate in un ordine preciso.",
-          "* Guarda la sequenza di frecce e ripetila."
+          "* Guarda la sequenza di frecce e ripetila.",
+          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
         ],
         "reward": 10
       }
@@ -1287,7 +1288,8 @@
         "title": "I post-it di Giulia",
         "intro": [
           "* I post-it di Giulia vanno rimessi in ordine.",
-          "* Guarda la sequenza e ripetila con le frecce."
+          "* Guarda la sequenza e ripetila con le frecce.",
+          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
         ],
         "reward": 10
       }
@@ -1587,7 +1589,8 @@
         "title": "Il curriculum di Rocco",
         "intro": [
           "* Le pagine del curriculum vanno rimesse in ordine.",
-          "* Guarda la sequenza di frecce e ripetila."
+          "* Guarda la sequenza di frecce e ripetila.",
+          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
         ],
         "reward": 10
       }
@@ -1917,7 +1920,8 @@
         "title": "I fili di Mina",
         "intro": [
           "* Il pannello ha i fili staccati.",
-          "* Collega ogni filo a quello dello stesso colore: SU e GIÙ per scegliere, {ok} per collegare."
+          "* Trascina ogni filo fino a quello dello stesso colore.",
+          "* Con i tasti: SU e GIÙ per scegliere, {ok} per collegare."
         ],
         "time": 20,
         "rounds": 3,
@@ -1975,7 +1979,7 @@
         "title": "Le lampadine di Bulbo",
         "intro": [
           "* Una lampadina alla volta.",
-          "* Le buone a destra, le rotte a sinistra. Quelle che sfarfallano si avvitano su e giù."
+          "* Scorri il dito o usa le frecce: buone a destra, rotte a sinistra, sfarfallanti su e giù."
         ],
         "count": 10,
         "time": 25,
@@ -2038,7 +2042,8 @@
         "title": "Il copione di Tilde",
         "intro": [
           "* Ogni freccia è una frase del copione.",
-          "* Guarda l'ordine, poi ripetilo."
+          "* Guarda l'ordine, poi ripetilo.",
+          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
         ],
         "reward": 10
       }
@@ -2262,7 +2267,8 @@
         "title": "Le pratiche di Ines",
         "intro": [
           "* Ogni pratica va in un cassetto: su, giù, sinistra, destra.",
-          "* Ricorda l'ordine e ripetilo."
+          "* Ricorda l'ordine e ripetilo.",
+          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
         ],
         "reward": 10
       }
@@ -2369,7 +2375,8 @@
         "title": "Scatole e scaffali",
         "intro": [
           "* Una montagna di scatole. Ogni cosa ha il suo scaffale.",
-          "* Quasi ogni cosa."
+          "* Tocca lo scaffale giusto per ogni scatola.",
+          "* Con i tasti: FRECCE per scegliere, {ok} per sistemarla."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2421,7 +2428,7 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Amir ha sei pacchi, due giri (la mattina e il pomeriggio) e poco tempo. Il bonus è a una consegna di distanza.",
+      "ask": "Amir ha sei pacchi e poco tempo. Il bonus è a una consegna di distanza.",
       "yes": [
         "Aspetta. Ho finito?",
         "DICIOTTO!",
@@ -2443,8 +2450,9 @@
         "type": "consegne",
         "title": "L'ultima consegna",
         "intro": [
-          "* Il furgone di Amir. Prendi il pacco, poi portalo alla casa che si illumina prima che scada il tempo.",
-          "* Non sbattere contro i bordi, i cantieri, le altre case o il furgone stesso. Ogni pacco consegnato lo allunga."
+          "* Scorri il dito o usa le frecce per far partire e girare il furgone.",
+          "* Prendi il pacco, poi raggiungi la casa illuminata prima che scada il tempo.",
+          "* Evita bordi, cantieri, case sbagliate e la tua coda. Ogni consegna allunga il furgone."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2764,8 +2772,9 @@
         "type": "coincidenze",
         "title": "L'orario delle coincidenze",
         "intro": [
-          "* Il tabellone delle partenze. Nadir esce di casa alle 6:40, il lavoro comincia alle 8:00. In tasca ha 6 €.",
-          "* Scegli le corse una dopo l'altra: devono partire da dove si trova Nadir, dopo che è arrivato. Per cambiare servono 3 minuti."
+          "* La mappa delle linee. Nadir esce alle 6:40, lavora alle 8:00 e ha 6 €.",
+          "* Trascina da una fermata all'altra lungo una linea. Per cambiare servono 3 minuti.",
+          "* Con i tasti: FRECCE per scegliere, {ok} per viaggiare."
         ],
         "reward": 0,
         "fixed_reward": true,

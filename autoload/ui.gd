@@ -128,7 +128,7 @@ func _refresh_hud() -> void:
 		_debito_salito = GameState.debito_salito_stanotte
 		_debito_salito_t = secondi_debito_salito
 		GameState.debito_salito_stanotte = 0
-	_hud_prima.text = "%s  %s  LV %d  Debito " % [GameState.floor_name(), GameState.clock(), GameState.lv()]
+	_hud_prima.text = "%s  %s  Livello %d  Debito " % [GameState.floor_name(), GameState.clock(), GameState.lv()]
 	_hud_debito.text = GameState.euros_short(GameState.debt)
 	if _debito_salito_t > 0.0:
 		# sotto il numero, corto, se no la barra esce dallo schermo

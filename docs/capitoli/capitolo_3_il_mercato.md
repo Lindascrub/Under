@@ -88,15 +88,12 @@ Un prodotto alla volta (pane, sapone, matita, riso, quaderno, scopa…) va su un
 ALIMENTARI, IGIENE, SCUOLA, CASA. Si **tocca** lo scaffale (o si clicca col mouse; tastiera: SINISTRA/DESTRA e OK).
 8 prodotti, 35 secondi, 3 errori al massimo. Conta come aiuto **solo se riesce** (`help_on_win_only`).
 
-### L'ULTIMA CONSEGNA (Amir) — `minigame.gd`, type `route`
-Due giri, due mappe (`RT_MAPS`). Si tocca un incrocio vicino per andarci. Le strade grigie sono sicure; quelle
-rosse a tratti passano dal cantiere: brevi, ma una volta su due c'è da girare intorno (+40).
-- **Mattina**: sei incroci, tre pacchi (Scala B, Via dei Fiori, Piazza), 120 minuti. Strada sicura giusta:
-  Scala B → Piazza → Via dei Fiori, 110 minuti.
-- **Pomeriggio**: sette incroci, tre pacchi (Scuola, Via Roma, Ospedale), 150 minuti. Strada sicura giusta:
-  Scuola → Via Roma → Ospedale, 140 minuti.
-Finita la mattina (tutti i pacchi o niente più tempo) parte il pomeriggio. Sei su sei: bonus. Da uno a cinque:
-"diciassette e mezzo", conta come aiuto ma senza bonus. Zero: si riprova.
+### L'ULTIMA CONSEGNA (Amir) — `minigame.gd`, type `consegne`
+Il furgone si guida come uno snake con le frecce o scorrendo il dito. Si raccolgono sei pacchi, uno alla volta,
+e si portano alla casa illuminata prima che scada il tempo. Bordi, cantieri, case sbagliate e la propria coda
+fanno perdere un errore; ogni consegna allunga il furgone e lo rende più veloce.
+Tre errori terminano la prova. Sei pacchi tutti puntuali: bonus. Tutti consegnati con almeno un ritardo, oppure
+almeno tre consegnati prima della fine: conta come aiuto ma senza bonus. Meno di tre: si riprova.
 
 ### TURNO — La cassa — `work.gd`, game `cassa`
 L'articolo arriva sul nastro col cartellino giallo dello scaffale. Lo **tocchi** (lo scanner fa BIP), lo schermo dice
