@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="Script" path="res://world/thin_wall.gd" id="thin_wall"]
+[ext_resource type="Script" path="res://world/premio_aiuto.gd" id="premio_aiuto"]
 
 [sub_resource type="RectangleShape2D" id="muro_MuroTramezzo"]
 size = Vector2(6, 145)
@@ -772,6 +773,20 @@ size = Vector2(8, 7)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gul0e"]
 size = Vector2(16, 25)
 
+[sub_resource type="Gradient" id="Gradient_alone"]
+colors = PackedColorArray(1, 0.82, 0.5, 0.5, 1, 0.75, 0.4, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_alone"]
+gradient = SubResource("Gradient_alone")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_alone"]
+blend_mode = 1
+
 [node name="Fondo" type="Node2D" unique_id=1163209316]
 script = ExtResource("1_jee0l")
 room_music = "festa"
@@ -1475,3 +1490,65 @@ zoom = 1.875
 durata = 3.5
 
 [editable path="Mondo/UsaCycletteDinamo"]
+
+[node name="PremioMina" type="Node2D" parent="Mondo"]
+position = Vector2(104, 96)
+script = ExtResource("premio_aiuto")
+npc_id = "bulbo"
+
+[node name="Alone" type="Sprite2D" parent="Mondo/PremioMina"]
+position = Vector2(0, 14)
+material = SubResource("CanvasItemMaterial_alone")
+scale = Vector2(1.6, 1.6)
+texture = SubResource("GradientTexture2D_alone")
+
+[node name="Filo" type="Line2D" parent="Mondo/PremioMina"]
+points = PackedVector2Array(0, -40, 0, -5)
+width = 1.0
+default_color = Color(0.16, 0.15, 0.2, 1)
+
+[node name="Lampada" type="Sprite2D" parent="Mondo/PremioMina"]
+texture = ExtResource("lamp_png")
+
+[node name="PremioBulbo" type="Node2D" parent="Mondo"]
+script = ExtResource("premio_aiuto")
+npc_id = "mina"
+al_posto_di = Array[NodePath]([NodePath("../ScatolaLampadine1/Lampadina4"), NodePath("../ScatolaLampadine1/Lampadina5"), NodePath("../ScatolaLampadine1/Lampadina6"), NodePath("../ScatolaLampadine2/Lampadina4"), NodePath("../ScatolaLampadine2/Lampadina5"), NodePath("../ScatolaLampadine2/Lampadina6")])
+
+[node name="Alone" type="Sprite2D" parent="Mondo/PremioBulbo"]
+position = Vector2(305, 168)
+material = SubResource("CanvasItemMaterial_alone")
+scale = Vector2(1.3, 1.0)
+texture = SubResource("GradientTexture2D_alone")
+
+[node name="Ordinate1" type="Node2D" parent="Mondo/PremioBulbo"]
+position = Vector2(291, 174)
+scale = Vector2(0.625, 0.625)
+
+[node name="Ordinate2" type="Node2D" parent="Mondo/PremioBulbo"]
+position = Vector2(300, 194)
+scale = Vector2(0.625, 0.625)
+
+[node name="Lampadina1" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate1"]
+position = Vector2(8, -17)
+texture = ExtResource("lamp_png")
+
+[node name="Lampadina2" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate1"]
+position = Vector2(16, -17)
+texture = ExtResource("lamp_png")
+
+[node name="Lampadina3" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate1"]
+position = Vector2(24, -17)
+texture = ExtResource("lamp_png")
+
+[node name="Lampadina1" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate2"]
+position = Vector2(8, -17)
+texture = ExtResource("lamp_png")
+
+[node name="Lampadina2" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate2"]
+position = Vector2(16, -17)
+texture = ExtResource("lamp_png")
+
+[node name="Lampadina3" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate2"]
+position = Vector2(24, -17)
+texture = ExtResource("lamp_png")

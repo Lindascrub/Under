@@ -37,6 +37,15 @@ extends Node2D
 @export var durata_stelle := 2.2
 @export var scritte := PackedStringArray(["Ce l'hai fatta", "Bene!", "Benissimo!"])
 
+@export_group("Soldi")
+## Se perdi, chi hai aiutato ti dà lo stesso questi euro.
+@export var soldi_se_perdi := 5
+
+
+## Il premio secondo le stelline: 1 stellina = un terzo, 2 = due terzi, 3 = tutto.
+func soldi(premio: int, quante: int) -> int:
+	return int(round(premio * clampi(quante, 0, 3) / 3.0))
+
 @onready var _camera: Camera2D = $Camera
 @onready var _scintille: CPUParticles2D = $Scintille
 @onready var _coriandoli: CPUParticles2D = $Coriandoli

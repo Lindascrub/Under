@@ -922,11 +922,14 @@ func _finish(success: bool, partial := false) -> void:
 	if success:
 		Sound.sfx("spare")
 		var reward := int(cfg.get("reward", 10))
+		if quante > 0:
+			reward = _risposta.soldi(reward, quante)
 		GameState.money += reward
 		GameState.changed.emit()
 		lines.append_array(cfg.get("win", ["Grazie!"]))
-		if quante == 3:
-			lines.append_array(cfg.get("win_best", []))   # con tre stelline, una battuta in più
+		# una battuta per quante stelline hai preso ("battute_stelle": {"1": [...], "2": [...], "3": [...]})
+		if quante > 0:
+			lines.append_array((cfg.get("battute_stelle", {}) as Dictionary).get(str(quante), []))
 		if reward > 0:
 			lines.append("Tieni, non è molto, ma te li sei guadagnati.")
 			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
@@ -939,6 +942,10 @@ func _finish(success: bool, partial := false) -> void:
 	else:
 		lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
 		lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
+		if _risposta and type in CON_STELLE and _risposta.soldi_se_perdi > 0:
+			GameState.money += _risposta.soldi_se_perdi
+			GameState.changed.emit()
+			lines.append("* %s ti dà %s lo stesso, per il disturbo." % [who, GameState.euros(_risposta.soldi_se_perdi)])
 	# quello che il minigioco ha deciso (com'è diventata la Casa, che strada fa Nadir) viene prima
 	if success and cfg.has("_extra"):
 		lines = (cfg["_extra"] as Array) + lines

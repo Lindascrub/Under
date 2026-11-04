@@ -1921,6 +1921,7 @@
         "music": "aiuto_mina",
         "type": "wires",
         "title": "I fili di Mina",
+        "battute_stelle": {"3": ["Neanche una scintilla storta. Se di sopra ti assumono, non dirgli che ti ho insegnato io."]},
         "intro": [
           "* Il pannello ha i fili staccati.",
           "[TEL] * Trascina ogni filo fino a quello dello stesso colore.",
@@ -1981,6 +1982,7 @@
         "music": "aiuto_bulbo",
         "type": "bulbs",
         "title": "Le lampadine di Bulbo",
+        "battute_stelle": {"3": ["Tutte giuste! Neanche io ci riesco. Non dirlo a nessuno: le cose che funzionano, quaggiù, le mandano di sopra."]},
         "intro": [
           "* Una lampadina alla volta.",
           "[TEL] * Scorri il dito: buone a destra, rotte a sinistra, sfarfallanti su o giù.",
