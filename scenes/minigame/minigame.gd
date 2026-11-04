@@ -171,6 +171,14 @@ var cz_trail := PackedVector2Array()  # la strada che sta tracciando il dito (vu
 
 var _title: Label
 var _info: Label
+## la risposta ai colpi e le stelline (scenes/minigame/risposta.tscn, nodo Risposta)
+var _risposta: Risposta
+## i giochi che hanno già stelline e risposta ai colpi (gli altri arrivano capitolo per capitolo)
+const CON_STELLE := ["wires", "bulbs"]
+## i secondi all'inizio (per la barra del tempo e le stelline)
+var time_total := 0.0
+## true finché non hai fatto il primo gesto giusto: si vede come si gioca, senza leggere
+var guida := true
 
 
 func _ready() -> void:
@@ -185,6 +193,7 @@ func _ready() -> void:
 	for l: Label in [$Titolo, $Info, $TitoloPercorso, $InfoPercorso]:
 		l.visible = l == _title or l == _info
 	_title.text = str(cfg.get("title", "Dai una mano"))
+	_risposta = get_node_or_null("Risposta")
 	_info.text = ""
 	# ogni persona che aiuti ha la sua canzone (campo "music"); le altre, una per tutte
 	Sound.music(str(cfg.get("music", "aiuto")))
@@ -216,10 +225,12 @@ func _start() -> void:
 		"bulbs":
 			_info.text = "SCORRI: a destra buona, a sinistra rotta, su e giù aggiusta" if TouchControls.enabled else "DESTRA buona   SINISTRA rotta   SU/GIÙ aggiusta"
 			time_left = float(cfg.get("time", 25.0))
+			time_total = time_left
 			_new_bulb()
 		"wires":
-			_info.text = "Tocca un filo a sinistra, poi il suo posto a destra" if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore"
+			_info.text = "Trascina ogni filo sul suo colore" if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore"
 			time_left = float(cfg.get("time", 30.0))
+			time_total = time_left
 			_new_wires()
 		"inventory":
 			time_left = float(cfg.get("time", 35.0))
@@ -279,18 +290,26 @@ func _new_bulb() -> void:
 	bulb_t = 0.0
 
 
+## In alto: come si gioca finché non hai fatto il primo gesto, poi solo quante ne hai smistate.
+## Il tempo e gli errori si vedono nel gioco (la barra sotto, le lampadine a destra).
 func _bulb_info() -> void:
-	_info.text = "Tempo: %d   Smistate: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), bulb_done, int(cfg.get("count", 10)), misses, _max_misses()]
+	if guida:
+		return
+	_info.text = "Smistate %d di %d" % [bulb_done, int(cfg.get("count", 10))]
 
 
 func _bulb_answer(ok: bool) -> void:
 	if ok:
 		bulb_done += 1
-		Sound.sfx("blip", 1.3)
+		guida = false
+		# la scatola giusta: le rotte a sinistra, le buone (e quelle avvitate) a destra
+		var box := Vector2(BOX.position.x + 49, BOX.end.y - 34) if bulb == "rotta" else Vector2(BOX.end.x - 49, BOX.end.y - 34)
+		if _risposta: _risposta.giusto(box, "blip")
 	else:
 		misses += 1
 		flash = 0.3
-		Sound.sfx("deny")
+		if _risposta: _risposta.sbagliato()
+		else: Sound.sfx("deny")
 	_bulb_info()
 	if bulb_done >= int(cfg.get("count", 10)):
 		_finish(true)
@@ -323,7 +342,10 @@ func _new_wires() -> void:
 func _wire_connect() -> void:
 	if wire_right[wire_sel] == wire_pick:
 		wire_done.append(wire_pick)
-		Sound.sfx("coin")
+		guida = false
+		_info.text = ""
+		if _risposta: _risposta.giusto(Vector2(BOX.end.x - 40, BOX.position.y + 26 + wire_sel * (BOX.size.y - 52) / 3.0))
+		else: Sound.sfx("coin")
 		if wire_done.size() >= 4:
 			wire_round += 1
 			if wire_round >= _wire_rounds():
@@ -334,7 +356,8 @@ func _wire_connect() -> void:
 	else:
 		misses += 1
 		flash = 0.3
-		Sound.sfx("deny")
+		if _risposta: _risposta.sbagliato()
+		else: Sound.sfx("deny")
 		if misses >= _max_misses():
 			_finish(false)
 			return
@@ -640,8 +663,6 @@ func _process(delta: float) -> void:
 					# "per_bulb": ogni lampadina ha i suoi secondi; se ci pensi troppo, è un errore
 					if cfg.has("per_bulb") and bulb_t > float(cfg["per_bulb"]) and time_left > 0.0:
 						_bulb_answer(false)
-				else:
-					_info.text = "Tempo: %d   Pannello %d/%d   Errori: %d/%d" % [int(ceil(time_left)), wire_round + 1, _wire_rounds(), misses, _max_misses()]
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "rate":
@@ -892,6 +913,11 @@ func _finish(success: bool, partial := false) -> void:
 	if cfg.has("quest"):
 		# Il giorno dopo chi te l'ha chiesto ti dirà com'è andata.
 		GameState.flags["quest_news_" + str(cfg["quest"])] = "done" if success else "fail"
+	# le stelline: dalla bravura (errori e tempo avanzato)
+	var quante := 0
+	if success and _risposta and type in CON_STELLE:
+		quante = _risposta.stelle(misses, time_left / time_total if time_total > 0.0 else -1.0)
+		await _risposta.vittoria(quante, id)
 	var lines: Array = []
 	if success:
 		Sound.sfx("spare")
@@ -899,6 +925,8 @@ func _finish(success: bool, partial := false) -> void:
 		GameState.money += reward
 		GameState.changed.emit()
 		lines.append_array(cfg.get("win", ["Grazie!"]))
+		if quante == 3:
+			lines.append_array(cfg.get("win_best", []))   # con tre stelline, una battuta in più
 		if reward > 0:
 			lines.append("Tieni, non è molto, ma te li sei guadagnati.")
 			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
@@ -964,8 +992,10 @@ func _draw() -> void:
 				_heart(soul, RED)
 		"bulbs":
 			_draw_bulbs(font)
+			_draw_stato()
 		"wires":
 			_draw_wires(font)
+			_draw_stato()
 		"inventory":
 			_draw_inventory(font)
 		"route":
@@ -2003,7 +2033,51 @@ func _draw_wires(font: Font) -> void:
 		else:
 			Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
 			draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
-	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di %d" % [wire_round + 1, _wire_rounds()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
+	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di %d" % [mini(wire_round + 1, _wire_rounds()), _wire_rounds()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
+
+
+## Il tempo e gli errori, da vedere e non da leggere: una barra sotto il riquadro che si accorcia
+## (gialla, poi rossa che lampeggia) e a destra una lampadina per ogni errore che puoi fare:
+## a ogni errore se ne fulmina una.
+func _draw_stato() -> void:
+	if time_total > 0.0:
+		var bar := Rect2(BOX.position.x, BOX.end.y + 8, BOX.size.x, 6)
+		var k := clampf(time_left / time_total, 0.0, 1.0)
+		var col := GREEN if k > 0.5 else (YELLOW if k > 0.25 else RED)
+		draw_rect(bar.grow(1), Color("1a222b"))
+		if k > 0.25 or int(t_spin * 2.0) % 2 == 0:
+			draw_rect(Rect2(bar.position, Vector2(bar.size.x * k, bar.size.y)), col)
+	for i in _max_misses():
+		var ok := i < _max_misses() - misses
+		Art.bulb(self, Vector2(BOX.end.x + 18, BOX.position.y + 14 + i * 24), "buona" if ok else "rotta", 1, ok)
+	if guida and phase == "play":
+		_draw_guida()
+
+
+## Il primo giro mostra il gesto giusto, poi sparisce: un dito (o la freccia del mouse) che porta
+## il primo filo al suo posto; per le lampadine, una freccia verso la scatola giusta.
+func _draw_guida() -> void:
+	var a := 0.55 + 0.35 * sin(t_spin * 2.0)
+	if type == "bulbs":
+		var c := BOX.get_center() + Vector2(0, -6)
+		var dir := "up" if bulb == "fioca" else ("left" if bulb == "rotta" else "right")
+		var off: Vector2 = {"up": Vector2(0, -34), "left": Vector2(-62, 0), "right": Vector2(62, 0)}[dir]
+		_arrow(c + off + off.normalized() * 4.0 * sin(t_spin * 3.0), dir, 9.0, Color(1, 0.88, 0.3, a))
+		return
+	if wire_pick >= 0 or wire_right.size() < 4:
+		return
+	var y0 := BOX.position.y + 26
+	var gap := (BOX.size.y - 52) / 3.0
+	var from := Vector2(BOX.position.x + 40, y0)
+	var to := Vector2(BOX.end.x - 40, y0 + wire_right.find(0) * gap)
+	var k := fmod(bulb_t / 1.6, 1.0)
+	var p := from.lerp(to, ease(minf(k * 1.25, 1.0), -2.0))
+	if TouchControls.enabled:
+		draw_circle(p, 7.0, Color(1, 1, 1, a * 0.5))
+		draw_circle(p, 4.0, Color(1, 1, 1, a))
+	else:
+		var pts := PackedVector2Array([p, p + Vector2(0, 12), p + Vector2(3, 9), p + Vector2(6, 14), p + Vector2(8, 13), p + Vector2(5, 8), p + Vector2(9, 8)])
+		draw_colored_polygon(pts, Color(1, 1, 1, a))
 
 
 ## Freccia piena (triangolo) che punta in una direzione.
