@@ -2057,6 +2057,20 @@
         "type": "sequence",
         "title": "Il copione di Tilde",
         "stelle": true,
+        "battute_stelle": {
+          "1": ["Ce l'abbiamo fatta. La sua soddisfazione è importante per noi. ...La mia un po' meno."],
+          "2": ["Una frase storta sola. Al telefono nessuno se n'è accorto. Al telefono nessuno si accorge di niente."],
+          "3": ["Neanche una frase sbagliata. Le saltavi come se le conoscessi. ...Le conosci, vero? Anche tu."]
+        },
+        "lose": ["Non si preoccupi. Il suo errore è importante per noi. Lo mettiamo in attesa."],
+        "sgridata_dopo": 3,
+        "sgridata": ["Come è possibile? Sono quattro frasi! Ho capito che mi vuoi aiutare, ma mettici più impegno! Io le dico tutto il giorno. Anche nel sonno."],
+        "rigioca": {
+          "chiede": ["Vuoi rifarlo? Il copione nuovo è uguale a quello vecchio. Cambia solo la data."],
+          "tre_stelle": ["Le hai già fatte tutte giuste. Rifarlo non serve a niente. Qui dentro, di solito, è un buon motivo per rifarlo."],
+          "meglio": ["Meglio dell'altra volta! Ti do la differenza. Qui dentro la differenza non la paga mai nessuno."],
+          "uguale": ["Come l'altra volta. Grazie per la sua pazienza. Soldi, però, niente."]
+        },
         "rosse": [1, 2],
         "misses": 3,
         "intro": [
