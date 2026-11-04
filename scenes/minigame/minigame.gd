@@ -95,9 +95,19 @@ var seq: Array[String] = []
 var shown := 0
 var show_t := 0.0
 var typed: Array[String] = []
+## "rosse" (Tilde): quali frecce della sequenza sono frasi sbagliate del copione, da saltare
+var seq_rosse: Array[bool] = []
 var round_n := 0
 var show_len := 0.75
 ## Ogni direzione ha il suo suono, così si capisce anche a orecchio.
+## La X rossa sopra le frasi sbagliate del copione (Sains UI, icona 058).
+const CROCE := preload("res://assets/sains_ui/croce.png")
+const FRECCE := {
+	"up": preload("res://assets/sains_ui/freccia_su.png"),
+	"down": preload("res://assets/sains_ui/freccia_giu.png"),
+	"left": preload("res://assets/sains_ui/freccia_sinistra.png"),
+	"right": preload("res://assets/sains_ui/freccia_destra.png"),
+}
 const ARROW_PITCH := {"up": 1.5, "right": 1.25, "down": 0.75, "left": 1.0}
 
 # inventario (Leda)
@@ -175,6 +185,11 @@ var _info: Label
 var _risposta: Risposta
 ## i giochi che hanno già stelline e risposta ai colpi (gli altri arrivano capitolo per capitolo)
 const CON_STELLE := ["wires", "bulbs"]
+
+
+## Questo minigioco ha stelline, scintille e soldi a terzi? (fili, lampadine, o "stelle": true)
+func _con_stelle() -> bool:
+	return _risposta != null and (type in CON_STELLE or bool(cfg.get("stelle", false)))
 ## i secondi all'inizio (per la barra del tempo e le stelline)
 var time_total := 0.0
 ## true finché non hai fatto il primo gesto giusto: si vede come si gioca, senza leggere
@@ -308,7 +323,7 @@ func _bulb_answer(ok: bool) -> void:
 	else:
 		misses += 1
 		flash = 0.3
-		if _risposta: _risposta.sbagliato()
+		if _risposta: _risposta.sbagliato(BOX.get_center() + Vector2(0, -6))
 		else: Sound.sfx("deny")
 	_bulb_info()
 	if bulb_done >= int(cfg.get("count", 10)):
@@ -356,7 +371,7 @@ func _wire_connect() -> void:
 	else:
 		misses += 1
 		flash = 0.3
-		if _risposta: _risposta.sbagliato()
+		if _risposta: _risposta.sbagliato(Vector2(BOX.end.x - 40, BOX.position.y + 26 + wire_sel * (BOX.size.y - 52) / 3.0))
 		else: Sound.sfx("deny")
 		if misses >= _max_misses():
 			_finish(false)
@@ -629,6 +644,20 @@ func _next_round() -> void:
 	typed.clear()
 	for i in 3 + round_n:
 		seq.append(ARROWS[randi() % 4])
+	# "rosse": [quante nel 1° giro, quante nel 2°]: frecce in più, rosse, da non ripetere (mai la prima)
+	seq_rosse.clear()
+	seq_rosse.resize(seq.size())
+	seq_rosse.fill(false)
+	var rosse: Array = cfg.get("rosse", [])
+	var quante_rosse := 0 if rosse.is_empty() else int(rosse[clampi(round_n - 1, 0, rosse.size() - 1)])
+	for k in quante_rosse:
+		var at := randi_range(1, seq.size())
+		# diversa dalla freccia che viene dopo: se no ripeterla sembrerebbe giusto
+		var scelte: Array = ARROWS.duplicate()
+		if at < seq.size():
+			scelte.erase(seq[at])
+		seq.insert(at, scelte.pick_random())
+		seq_rosse.insert(at, true)
 	shown = 0
 	show_t = 0.8
 	phase = "show"
@@ -725,10 +754,16 @@ func _process(delta: float) -> void:
 				show_len = maxf(0.55, 0.85 - round_n * 0.1)
 				show_t = show_len
 				if shown <= seq.size():
-					Sound.sfx("blip", ARROW_PITCH[seq[shown - 1]])
+					if seq_rosse[shown - 1]:
+						Sound.sfx("deny", 0.8)   # la frase sbagliata: suona storta
+					else:
+						Sound.sfx("blip", ARROW_PITCH[seq[shown - 1]])
 				if shown > seq.size():
 					phase = "play"
-					_info.text = "Ora ripeti: tocca sopra, sotto, a sinistra o a destra!" if TouchControls.enabled else "Ora ripeti con le frecce!"
+					if seq_rosse.has(true):
+						_info.text = "Ripeti toccando sopra, sotto, a sinistra o a destra. Salta le rosse!" if TouchControls.enabled else "Ripeti con le frecce. Salta le rosse!"
+					else:
+						_info.text = "Ora ripeti: tocca sopra, sotto, a sinistra o a destra!" if TouchControls.enabled else "Ora ripeti con le frecce!"
 	queue_redraw()
 
 
@@ -876,24 +911,43 @@ func _unhandled_input(event: InputEvent) -> void:
 		for a: String in ARROWS:
 			if event.is_action_pressed("move_" + a):
 				typed.append(a)
-				Sound.sfx("blip", ARROW_PITCH[a])
-				if typed[typed.size() - 1] != seq[typed.size() - 1]:
+				var dire := _da_dire()
+				if typed[typed.size() - 1] != dire[typed.size() - 1]:
 					flash = 0.3
-					Sound.sfx("deny")
+					if _con_stelle(): _risposta.sbagliato(_seq_casella(typed.size() - 1, dire.size()))
+					else: Sound.sfx("deny")
 					misses += 1
-					if misses >= 2:
+					if misses >= int(cfg.get("misses", 2)):
 						_finish(false)
 					else:
 						round_n -= 1
 						_next_round()
 					return
-				if typed.size() == seq.size():
+				if _con_stelle():
+					_risposta.giusto(_seq_casella(typed.size() - 1, dire.size()), "blip")
+				else:
+					Sound.sfx("blip", ARROW_PITCH[a])
+				if typed.size() == dire.size():
 					if round_n >= 2:
 						_finish(true)
 					else:
 						Sound.sfx("select")
 						_next_round()
 				return
+
+
+## Le frecce da ripetere davvero (senza quelle rosse).
+func _da_dire() -> Array[String]:
+	var out: Array[String] = []
+	for i in seq.size():
+		if i >= seq_rosse.size() or not seq_rosse[i]:
+			out.append(seq[i])
+	return out
+
+
+## Dove sta la casella `i` di `n` mentre ripeti.
+func _seq_casella(i: int, n: int) -> Vector2:
+	return Vector2(BOX.get_center().x + (i - (n - 1) / 2.0) * 44.0, BOX.get_center().y)
 
 
 func _finish(success: bool, partial := false) -> void:
@@ -920,12 +974,12 @@ func _finish(success: bool, partial := false) -> void:
 		GameState.flags["quest_news_" + str(cfg["quest"])] = "done" if success else "fail"
 	# le stelline: dalla bravura (errori e tempo avanzato)
 	var quante := 0
-	if success and _risposta and type in CON_STELLE:
+	if success and _con_stelle():
 		quante = _risposta.stelle(misses, time_left / time_total if time_total > 0.0 else -1.0)
 		await _risposta.vittoria(quante, id)
 	# le sconfitte di fila con questa persona (per la "sgridata"); vincere le azzera
 	var persi := 0 if success else int(GameState.flags.get("persi_" + id, 0)) + 1
-	if type in CON_STELLE:
+	if _con_stelle():
 		GameState.flags["persi_" + id] = persi
 	var lines: Array = []
 	if success:
@@ -964,7 +1018,7 @@ func _finish(success: bool, partial := false) -> void:
 			lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
 			lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
 		# i soldi "per il disturbo" solo la prima volta
-		if not rigioco and _risposta and type in CON_STELLE and _risposta.soldi_se_perdi > 0:
+		if not rigioco and _con_stelle() and _risposta.soldi_se_perdi > 0:
 			GameState.money += _risposta.soldi_se_perdi
 			GameState.changed.emit()
 			lines.append("* %s ti dà %s lo stesso, per il disturbo." % [who, GameState.euros(_risposta.soldi_se_perdi)])
@@ -1033,17 +1087,22 @@ func _draw() -> void:
 			var cx := BOX.get_center()
 			# la freccia resta accesa per due terzi del tempo, poi si spegne: così si vede quando cambia
 			if phase == "show" and shown >= 1 and shown <= seq.size() and show_t > show_len * 0.33:
-				_arrow(cx, seq[shown - 1], 18.0, YELLOW)
+				if seq_rosse[shown - 1]:
+					# la frase sbagliata del copione: rossa e barrata
+					_arrow(cx, seq[shown - 1], 18.0, Color("e8434f"))
+					draw_texture_rect(CROCE, Rect2(cx + Vector2(2, 2), Vector2(32, 32)), false, Color("ff2a3a"))
+				else:
+					_arrow(cx, seq[shown - 1], 18.0, YELLOW)
 			if phase == "show" and shown >= 1 and shown <= seq.size():
 				draw_string(font, Vector2(BOX.position.x, BOX.end.y - 14), "%d / %d" % [shown, seq.size()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color("8a8494"))
 			elif phase == "play":
-				var n := seq.size()
+				var n := _da_dire().size()
 				for i in n:
-					var p := Vector2(cx.x + (i - (n - 1) / 2.0) * 34.0, cx.y)
+					var p := _seq_casella(i, n)
 					if i < typed.size():
-						_arrow(p, typed[i], 10.0, Color.WHITE)
+						_arrow(p, typed[i], 16.0, Color.WHITE)
 					else:
-						draw_rect(Rect2(p + Vector2(-8, 8), Vector2(16, 2)), Color("8a8494"))
+						draw_rect(Rect2(p + Vector2(-12, 14), Vector2(24, 2)), Color("8a8494"))
 	if flash > 0.0:
 		draw_rect(frame, Color(1, 0.2, 0.2, flash))
 
@@ -2110,12 +2169,11 @@ func _draw_guida() -> void:
 
 
 ## Freccia piena (triangolo) che punta in una direzione.
+## Una freccia (icone del pacchetto Sains UI in assets/sains_ui), grande circa 2r, colorata con `col`.
 func _arrow(c: Vector2, dir: String, r: float, col: Color) -> void:
-	var pts := PackedVector2Array([Vector2(0, -r), Vector2(r, r * 0.6), Vector2(-r, r * 0.6)])
-	var ang := {"up": 0.0, "right": PI / 2, "down": PI, "left": -PI / 2}[dir] as float
-	for i in pts.size():
-		pts[i] = c + pts[i].rotated(ang)
-	draw_colored_polygon(pts, col)
+	var t: Texture2D = FRECCE.get(dir)
+	var lato := maxf(16.0, roundf(r * 2.0 / 16.0) * 16.0)   # multipli di 16: i pixel restano netti
+	draw_texture_rect(t, Rect2(c - Vector2(lato, lato) / 2.0, Vector2(lato, lato)), false, col)
 
 
 func _heart(c: Vector2, col: Color) -> void:

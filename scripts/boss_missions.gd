@@ -6,7 +6,7 @@ const FLOORS := ["-5", "-4", "-3", "-2", "0", "cima"]
 const TITLES := {"-5": "ANCORA CINQUE MINUTI", "-4": "PRATICA RISOLTA", "-3": "OFFERTA IMPERDIBILE", "-2": "UN PICCOLO AIUTO", "0": "ASCOLTIAMO TUTTI", "cima": "OTTIMIZZAZIONE FINALE"}
 const PRIZES := {"-5": 600, "-4": 900, "-3": 1500, "-2": 3000, "0": 6000, "cima": 0}
 const INTRO := {
- "-5": ["La festa consuma. Fermo è già lì: bastano cinque minuti in più. Poi altri cinque.", "Regola intensità, durata e luci. Se tieni tutto acceso senza interrompere la produzione, ti premio."],
+ "-5": ["La festa consuma. Fermo è già lì: bastano cinque minuti in più. Poi altri cinque.", "C'è una leva. Tu tirala. Se la festa resta accesa, ti premio."],
  "-4": ["La coda delle pratiche cresce. Il numero delle pratiche risolte deve crescere più in fretta.", "Leggi i fascicoli. Una chiusura conta come una soluzione. Anche quando non la è."],
  "-3": ["Tre prodotti, tre cartellini. Quello grande deve essere lo sconto. Le condizioni possono stare altrove.", "Se il cliente scopre il costo alla cassa, intanto è già alla cassa. Il premio arriva fino a 1.500 euro."],
  "-2": ["Olga vorrebbe una rata più piccola. Noi vorremmo commissioni più grandi.", "Prepara una proposta. Durata, interessi e costo totale li puoi leggere tu. Decidi quanto far leggere a lei."],

@@ -2056,9 +2056,13 @@
         "music": "aiuto_tilde",
         "type": "sequence",
         "title": "Il copione di Tilde",
+        "stelle": true,
+        "rosse": [1, 2],
+        "misses": 3,
         "intro": [
           "* Ogni freccia è una frase del copione.",
           "* Guarda l'ordine, poi ripetilo.",
+          "* Le frasi ROSSE sono sbagliate: saltale.",
           "[PC] * Ripetila con le frecce della tastiera.",
           "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],

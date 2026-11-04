@@ -46,17 +46,21 @@ static func pixel(ci: CanvasItem, at: Vector2, pattern: Array, palette: Dictiona
 			if palette.has(key):
 				ci.draw_rect(Rect2(origin + Vector2(x, y) * unit, Vector2.ONE * unit), palette[key])
 
+## La lampadina: sempre l'immagine a pixel art/lampadina_cassetta.png (quella del Fondo), ingrandita
+## a pixel interi. Accesa = colori veri; spenta = scura; rotta = scura con la crepa.
+const LAMPADINA := preload("res://art/lampadina_cassetta.png")
+
 static func bulb(ci: CanvasItem, c: Vector2, state := "buona", unit := 2.0, lit := true) -> void:
-	var glass := Color("f4cc59") if lit else Color("8d93a3")
-	if state == "rotta": glass = Color("858895")
-	var pattern := [".....####.....", "...##hhhh##...", "..#hhhhhhhg#..", ".#hWWhhhhhhg#.", ".#hWhhhhhhhg#.", "#hhhhhhhhhhgs#", "#hhhhhhhhhhgs#", "#hhhffhffhhgs#", ".#hhhfFfhhgs#.", ".#hhhhFhhhgs#.", "..#hhhFhhgs#..", "...#hhFhgs#...", "...########...", "....#mmmm#....", "....#llll#....", "....#mmmm#....", "....#llll#....", ".....#mm#.....", "......##......"]
-	var colors := {"#": INK, "h": glass, "g": glass.darkened(0.17), "s": glass.darkened(0.34), "W": CREAM if lit else Color("b8c3cc"), "f": Color("a77640"), "F": CREAM if lit else INK, "m": STEEL, "l": Color("d2dce0")}
-	pixel(ci, c - Vector2(7, 9) * unit, pattern, colors, unit)
+	var k := maxf(1.0, roundf(unit * 2.0))
+	var size := Vector2(LAMPADINA.get_width(), LAMPADINA.get_height()) * k
+	var at := (c - size / 2.0).round()
+	var col := Color.WHITE if lit and state != "rotta" else (Color(0.38, 0.38, 0.44) if state == "rotta" else Color(0.55, 0.57, 0.65))
+	ci.draw_texture_rect(LAMPADINA, Rect2(at, size), false, col)
 	if state == "rotta":
-		ci.draw_polyline(PackedVector2Array([c + Vector2(-3, -5) * unit, c + Vector2(1, -2) * unit, c + Vector2(-1, 1) * unit, c + Vector2(3, 3) * unit]), INK, maxf(1, unit))
-	elif lit and unit >= 1.0:
+		ci.draw_polyline(PackedVector2Array([at + Vector2(1, 1) * k, at + Vector2(3, 2.5) * k, at + Vector2(2, 3.5) * k, at + Vector2(4.5, 5) * k]), INK, maxf(1, k * 0.6))
+	elif lit and state != "rotta" and k >= 2.0:
 		for side in [-1, 1]:
-			ci.draw_rect(Rect2(c + Vector2(side * 10 - 1, -3) * unit, Vector2(3, 1) * unit), GOLD)
+			ci.draw_rect(Rect2(c + Vector2(side * (size.x / 2.0 + k * 1.5) - k * 0.75, -size.y * 0.25), Vector2(k * 1.5, k * 0.5)), GOLD)
 
 static func carton(ci: CanvasItem, r: Rect2, label := GOLD, open := false) -> void:
 	ci.draw_rect(r, INK)

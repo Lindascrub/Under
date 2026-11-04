@@ -5,7 +5,7 @@ extends Node2D
 ##   di fila    (medio):   ogni `fila_ogni` giusti di fila compare "3 DI FILA!"
 ##   sbagliato  (medio):   scossa leggera, suono basso; la fila ricomincia da zero
 ##   vittoria   (grande):  un attimo fermo, scossa, coriandoli, poi le stelline una alla volta
-## Le stelline vengono dalla bravura (errori e tempo avanzato), non da quanto premi.
+## Le stelline vengono dalla bravura (gli errori; il tempo solo se tempo_per_3 > 0), non da quanto premi.
 ## Tutto si cambia nell'editor: i numeri qui sotto, e i nodi (Scintille, Coriandoli, Stelle...).
 
 @export_group("Scossa")
@@ -29,8 +29,8 @@ extends Node2D
 @export_group("Stelline")
 ## Tre stelline: al massimo questi errori...
 @export var errori_per_3 := 0
-## ...e almeno questa parte del tempo ancora da usare (0.3 = un terzo).
-@export_range(0.0, 1.0) var tempo_per_3 := 0.3
+## ...e almeno questa parte del tempo ancora da usare (0 = non conta: tutto perfetto = tre stelline).
+@export_range(0.0, 1.0) var tempo_per_3 := 0.0
 ## Due stelline: al massimo questi errori.
 @export var errori_per_2 := 1
 ## Quanto restano le stelline sullo schermo (si saltano con OK / un tocco).
@@ -93,11 +93,21 @@ func giusto(pos: Vector2, suono := "coin") -> void:
 		Sound.sfx("select", 1.2 + tono_per_colpo * mini(fila, 8))
 
 
-## Un errore: la fila ricomincia.
-func sbagliato() -> void:
+## Un errore: la fila ricomincia. Se dai `pos`, lì compare il divieto rosso (il nodo Divieto).
+func sbagliato(pos := Vector2.INF) -> void:
 	fila = 0
 	scuoti(scossa_sbagliato)
 	Sound.sfx("deny", 0.85)
+	if pos.is_finite():
+		var d: Sprite2D = $Divieto.duplicate()
+		add_child(d)
+		d.position = pos
+		d.visible = true
+		d.scale = Vector2(1.6, 1.6)
+		var tw := create_tween()
+		tw.tween_property(d, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(d, "modulate:a", 0.0, 0.3).set_delay(0.35)
+		tw.tween_callback(d.queue_free)
 
 
 ## Quante stelline (1-3): `errori`, e la parte di tempo che resta (0-1; -1 se il gioco non ha tempo).

@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/minigame/risposta.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sains_ui/stella.png" id="stella"]
+[ext_resource type="Texture2D" path="res://assets/sains_ui/divieto.png" id="divieto"]
 
 [sub_resource type="Curve" id="Curve_scintille"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -77,6 +79,10 @@ theme_override_font_sizes/font_size = 18
 text = "3 DI FILA!"
 horizontal_alignment = 1
 
+[node name="Divieto" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("divieto")
+
 [node name="Stelle" type="Node2D" parent="."]
 position = Vector2(320, 190)
 
@@ -88,20 +94,17 @@ offset_bottom = 52.0
 mouse_filter = 2
 color = Color(0.08, 0.1, 0.14, 0.92)
 
-[node name="Stella1" type="Polygon2D" parent="Stelle"]
+[node name="Stella1" type="Sprite2D" parent="Stelle"]
 position = Vector2(-48, -14)
-color = Color(1, 0.88, 0.3, 1)
-polygon = PackedVector2Array(0.0, -13.0, 3.2, -4.4, 12.4, -4.0, 5.2, 1.7, 7.6, 10.5, 0.0, 5.5, -7.6, 10.5, -5.2, 1.7, -12.4, -4.0, -3.2, -4.4)
+texture = ExtResource("stella")
 
-[node name="Stella2" type="Polygon2D" parent="Stelle"]
+[node name="Stella2" type="Sprite2D" parent="Stelle"]
 position = Vector2(0, -14)
-color = Color(1, 0.88, 0.3, 1)
-polygon = PackedVector2Array(0.0, -13.0, 3.2, -4.4, 12.4, -4.0, 5.2, 1.7, 7.6, 10.5, 0.0, 5.5, -7.6, 10.5, -5.2, 1.7, -12.4, -4.0, -3.2, -4.4)
+texture = ExtResource("stella")
 
-[node name="Stella3" type="Polygon2D" parent="Stelle"]
+[node name="Stella3" type="Sprite2D" parent="Stelle"]
 position = Vector2(48, -14)
-color = Color(1, 0.88, 0.3, 1)
-polygon = PackedVector2Array(0.0, -13.0, 3.2, -4.4, 12.4, -4.0, 5.2, 1.7, 7.6, 10.5, 0.0, 5.5, -7.6, 10.5, -5.2, 1.7, -12.4, -4.0, -3.2, -4.4)
+texture = ExtResource("stella")
 
 [node name="Scritta" type="Label" parent="Stelle"]
 offset_left = -110.0
