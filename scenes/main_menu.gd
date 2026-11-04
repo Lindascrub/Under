@@ -58,13 +58,15 @@ func _ask_name() -> String:
 	edit.text_changed.connect(func(t: String) -> void:
 		ok.text = "Comincia"
 		# solo lettere (anche accentate), spazi e apostrofi: numeri e simboli spariscono appena li scrivi
-		var clean := clean_name(t)
+		# e la prima lettera sempre maiuscola, anche mentre scrivi
+		var clean := GameState.capital(clean_name(t))
 		if clean != t:
 			var col := edit.caret_column - (t.length() - clean.length())
 			edit.text = clean
 			edit.caret_column = clampi(col, 0, clean.length())
-			reply.text = NO_DIGITS if _digits(t) > 0 else NO_SIGNS
-			Sound.sfx("deny"))
+			if clean.to_lower() != t.to_lower():
+				reply.text = NO_DIGITS if _digits(t) > 0 else NO_SIGNS
+				Sound.sfx("deny"))
 	var empty := 0
 	var rude := 0
 	var pending := ""
@@ -76,7 +78,7 @@ func _ask_name() -> String:
 			if name_override != "":
 				edit.text = name_override
 				done[0] = true
-		who = edit.text.strip_edges()
+		who = GameState.capital(edit.text.strip_edges())
 		if name_override != "":
 			break
 		if who == "":

@@ -927,7 +927,7 @@ func load_game() -> Dictionary:
 	motives_known.assign(d.get("motives_known", []))
 	floor_id = str(d.get("floor_id", "-5"))
 	badges.assign(d.get("badges", []))
-	player_name = str(d.get("player_name", "Tu"))
+	player_name = capital(str(d.get("player_name", "Tu")))
 	self_esteem = int(d.get("self_esteem", 0))
 	load("res://scripts/boss_missions.gd").migrate(int(d.get("save_version", 0)) < 2)
 	changed.emit()
@@ -941,3 +941,8 @@ func load_game() -> Dictionary:
 func delete_save() -> void:
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
+
+
+## Il nome comincia sempre con la maiuscola ("linda" -> "Linda"); il resto resta com'è.
+static func capital(t: String) -> String:
+	return t.left(1).to_upper() + t.substr(1) if t != "" else t
