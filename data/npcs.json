@@ -2133,14 +2133,16 @@
       ],
       "minigame": {
         "music": "aiuto_ercole",
-        "type": "timing",
+        "type": "ercole",
         "title": "Tieni sveglio Ercole",
+        "stelle": true,
+        "rigioca": {"chiede": ["Vuoi rifarlo?"], "tre_stelle": ["Vuoi rifarlo?"]},
         "intro": [
           "* Ogni volta che Ercole chiude gli occhi, dagli una gomitata.",
-          "* Le fasce verdi sono due e si accendono a turno: premi {ok} quando il segno è in quella ACCESA."
+          "[PC] * Tieni premuto INVIO o il mouse per caricare. Lascia quando chiude gli occhi.",
+          "[TEL] * Tieni premuto per caricare. Lascia quando chiude gli occhi.",
+          "* Troppo forte e l'ispettore si gira."
         ],
-        "zones": 2,
-        "swap": 1.4,
         "hits": 4,
         "reward": 10
       }

@@ -231,6 +231,12 @@ func _ready() -> void:
 func _start() -> void:
 	phase = "play"
 	match type:
+		"ercole":
+			_info.text = "Aspetta che chiuda gli occhi."
+			$ErcoleGomitata.colpo.connect(_ercole_colpo)
+			$ErcoleGomitata.errore.connect(_ercole_errore)
+			$ErcoleGomitata.finito.connect(_ercole_finito)
+			$ErcoleGomitata.avvia()
 		"timing":
 			_info.text = GameState.fmt("Premi {ok} quando il segno è nel verde")
 			_new_zone()
@@ -417,6 +423,12 @@ func touch_center() -> Vector2:
 
 
 func touch_point(pos: Vector2, step: int) -> void:
+	if type == "ercole":
+		if step == 0:
+			$ErcoleGomitata.premi("dito")
+		elif step == 2:
+			$ErcoleGomitata.lascia("dito")
+		return
 	if type == "rate" and step == 0:
 		if rate_phase == "order":
 			for k in rate_cards.size():
@@ -780,6 +792,10 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
 		return
+	if type == "ercole":
+		if $ErcoleGomitata.input_event(event):
+			get_viewport().set_input_as_handled()
+		return
 	# sul PC i giochi "a dito" si fanno anche col mouse
 	# la mappa di Nadir e i fili di Bulbo col mouse: si preme, si trascina, si lascia sul posto giusto
 	if type in ["coincidenze", "wires"] and not TouchControls.enabled:
@@ -960,10 +976,33 @@ func _seq_casella(i: int, n: int) -> Vector2:
 	return Vector2(BOX.get_center().x + (i - (n - 1) / 2.0) * 44.0, BOX.get_center().y)
 
 
+func _ercole_colpo(perfetto: bool) -> void:
+	hits = $ErcoleGomitata.riuscite
+	misses = $ErcoleGomitata.errori
+	if not perfetto:
+		_risposta.sbagliato()
+	_risposta.giusto($ErcoleGomitata.bersaglio.global_position, "blip")
+	guida = false
+
+
+func _ercole_errore() -> void:
+	misses = $ErcoleGomitata.errori
+	_risposta.sbagliato($ErcoleGomitata.bersaglio.global_position)
+
+
+func _ercole_finito(success: bool) -> void:
+	misses = $ErcoleGomitata.errori
+	await get_tree().create_timer(0.7).timeout
+	_finish(success)
+
+
 func _finish(success: bool, partial := false) -> void:
 	if phase == "done":
 		return
 	phase = "done"
+	if type == "ercole" and has_node("ErcoleGomitata"):
+		$ErcoleGomitata.attivo = false
+		$ErcoleGomitata.premuto = false
 	won = success
 	var who := str(cfg.get("name", ""))
 	var id := str(cfg.get("id", ""))
@@ -1040,6 +1079,8 @@ func _finish(success: bool, partial := false) -> void:
 
 
 func _draw() -> void:
+	if type == "ercole":
+		return
 	var font := Assets.font()
 	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze", "consegne"] else BOX))
 	if type == "route":

@@ -311,6 +311,15 @@ func interact() -> void:
 		if talks >= 3 or id in GameState.helped_ids:
 			await Ui.say(data["busy_line"], who)
 			return
+	# Anche chi non ha busy_line (Tilde, Ercole) può rifare il suo aiuto.
+	# Prima viene il ringraziamento, poi la scelta di rigiocare con il record precedente.
+	if not data.has("busy_line") and id in GameState.helped_ids and data.get("help", {}).get("minigame", {}).has("rigioca"):
+		if not GameState.flags.get("thanked_" + id, false):
+			GameState.flags["thanked_" + id] = true
+			await Ui.say(data.get("helped", ["Grazie."]), who)
+			return
+		if await _offer_replay(who):
+			return
 	await Ui.say(_lines(), who)
 	if id == "nico" and GameState.flags.get("coffee_day", 0) != GameState.day:
 		GameState.flags["coffee_day"] = GameState.day
