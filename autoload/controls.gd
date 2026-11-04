@@ -8,10 +8,14 @@ const BINDINGS := {
 	"move_left": [KEY_LEFT, KEY_A],
 	"move_right": [KEY_RIGHT, KEY_D],
 	"confirm": [KEY_Z, KEY_ENTER, KEY_SPACE],
-	"cancel": [KEY_X, KEY_SHIFT, KEY_ESCAPE],
+	"cancel": [KEY_X, KEY_SHIFT],
 	"menu": [KEY_C],
 	"fullscreen": [KEY_F11],
+	# ESC non salta il testo: chiude il gioco (due volte, scenes/chiudi_gioco.tscn)
+	"quit": [KEY_ESCAPE],
 }
+
+const CHIUDI_GIOCO := preload("res://scenes/chiudi_gioco.tscn")
 
 
 func _ready() -> void:
@@ -20,6 +24,7 @@ func _ready() -> void:
 			InputMap.add_action(action)
 		for key: int in BINDINGS[action]:
 			_add_key_binding(action, key)
+	add_child(CHIUDI_GIOCO.instantiate())
 	var cfg := ConfigFile.new()
 	if cfg.load(Sound.SETTINGS) == OK and bool(cfg.get_value("schermo", "intero", false)):
 		_apply_fullscreen(true)

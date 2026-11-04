@@ -86,7 +86,7 @@ Il gioco è pensato per telefono in orizzontale.
 - **Nel mondo:** joystick e pulsanti a schermo.
 - **Nei minigiochi:** si gioca direttamente sullo schermo (tocca, tieni giù, scorri, trascina).
   Le istruzioni dicono "tocca", mai "premi".
-- **Su PC:** frecce, Invio/Z, Esc/X.
+- **Su PC:** frecce, Invio/Z, X/Shift (Esc due volte chiude il gioco).
 - **Dialoghi:** le frasi lunghe vanno a pagine; un tocco mostra subito tutta la frase, un altro va avanti.
 - **In alto:** la barra con piano, ora, debito ("7,00 mld €"), soldi, energia, autostima.
 - **La telecamera** resta sempre dentro i muri: il giocatore non deve mai vedere il "fuori mappa".
