@@ -186,6 +186,16 @@ var _risposta: Risposta
 ## i giochi che hanno già stelline e risposta ai colpi (gli altri arrivano capitolo per capitolo)
 const CON_STELLE := ["wires", "bulbs"]
 
+@export_group("Barra del tempo")
+## Il pieno della barra del tempo.
+@export var barra_pieno := Color("3f7fd8")
+## Il pieno quando il tempo sta per finire (lampeggia).
+@export var barra_finisce := Color("d8434f")
+## Il fondo vuoto della barra.
+@export var barra_fondo := Color("c9a676")
+## Il bordo della barra.
+@export var barra_bordo := Color("3a2a1e")
+
 
 ## Questo minigioco ha stelline, scintille e soldi a terzi? (fili, lampadine, o "stelle": true)
 func _con_stelle() -> bool:
@@ -2129,17 +2139,30 @@ func _draw_wires(font: Font) -> void:
 ## a ogni errore se ne fulmina una.
 func _draw_stato() -> void:
 	if time_total > 0.0:
-		var bar := Rect2(BOX.position.x, BOX.end.y + 8, BOX.size.x, 6)
+		# la barra del tempo: bordo scuro arrotondato, fondo sabbia, pieno blu (rosso che lampeggia alla fine)
+		var bar := Rect2(BOX.position.x, BOX.end.y + 6, BOX.size.x, 12)
 		var k := clampf(time_left / time_total, 0.0, 1.0)
-		var col := GREEN if k > 0.5 else (YELLOW if k > 0.25 else RED)
-		draw_rect(bar.grow(1), Color("1a222b"))
-		if k > 0.25 or int(t_spin * 2.0) % 2 == 0:
-			draw_rect(Rect2(bar.position, Vector2(bar.size.x * k, bar.size.y)), col)
+		draw_style_box(_barra_stile(barra_fondo, barra_bordo, 2), bar)
+		var pieno := Rect2(bar.position + Vector2(2, 2), Vector2((bar.size.x - 4) * k, bar.size.y - 4))
+		if pieno.size.x >= 2.0 and (k > 0.25 or int(t_spin * 2.0) % 2 == 0):
+			var col := barra_pieno if k > 0.25 else barra_finisce
+			draw_style_box(_barra_stile(col, col, 0), pieno)
+			draw_rect(Rect2(pieno.position + Vector2(2, 1), Vector2(maxf(0.0, pieno.size.x - 4), 2)), col.lightened(0.35))
 	for i in _max_misses():
 		var ok := i < _max_misses() - misses
 		Art.bulb(self, Vector2(BOX.end.x + 18, BOX.position.y + 14 + i * 24), "buona" if ok else "rotta", 1, ok)
 	if guida and phase == "play":
 		_draw_guida()
+
+
+func _barra_stile(fondo: Color, bordo: Color, spessore: int) -> StyleBoxFlat:
+	var st := StyleBoxFlat.new()
+	st.bg_color = fondo
+	st.border_color = bordo
+	st.set_border_width_all(spessore)
+	st.set_corner_radius_all(4)
+	st.anti_aliasing = false   # pixel netti
+	return st
 
 
 ## Il primo giro mostra il gesto giusto, poi sparisce: un dito (o la freccia del mouse) che porta
