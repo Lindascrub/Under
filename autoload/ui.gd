@@ -206,7 +206,8 @@ func _pages(text: String) -> Array[String]:
 	return out
 
 
-func choose(prompt: String, options: Array, speaker: String = "") -> int:
+## `start`: la voce già selezionata all'apertura (di solito la prima).
+func choose(prompt: String, options: Array, speaker: String = "", start := 0) -> int:
 	busy = true
 	_box.visible = true
 	_name.text = speaker
@@ -215,7 +216,7 @@ func choose(prompt: String, options: Array, speaker: String = "") -> int:
 	_text.text = GameState.fmt(prompt)
 	_text.visible_characters = -1
 	_options = options
-	_sel = 0
+	_sel = clampi(start, 0, options.size() - 1)
 	_render_choices()
 	_choice_box.visible = true
 	_mode = "choose"
@@ -277,6 +278,8 @@ const FORGET := "Dimentica le partite"
 ## ricomincia dal massimo). Lo schermo intero non è nel menu: sul computer resta il tasto F11.
 ## Dalla schermata iniziale (from_title) anche "Dimentica le partite", se Nives si ricorda qualcosa.
 func settings_menu(from_title := false) -> void:
+	# dopo ogni cambio il menu si riapre sulla stessa voce (non torna su Musica)
+	var last := 0
 	while true:
 		var m := Sound.volume("Music")
 		var s := Sound.volume("SFX")
@@ -284,7 +287,8 @@ func settings_menu(from_title := false) -> void:
 		if from_title and MemoriaNives.count() > 0:
 			options.append(FORGET)
 		options.append("Fatto")
-		var c: int = await choose("Impostazioni (scegli per cambiare)", options, "Impostazioni")
+		var c: int = await choose("Impostazioni (scegli per cambiare)", options, "Impostazioni", last)
+		last = c
 		var picked := options[c]
 		if c == 0:
 			Sound.set_volume("Music", _next_vol(m))
