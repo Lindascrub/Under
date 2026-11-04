@@ -163,7 +163,7 @@ func _agenda() -> void:
 		GameState.flags["c2_b4"] = true
 		await Ui.say([
 			"Oh! Qualcuno che sale dal Fondo! {name}, vero? Ho già il suo nome sul registro. Ce li ho tutti.",
-			"Benvenuto al piano -4! Io sono la Signora Agenda. Sportello B-4.",
+			"Benvenuti al piano -4! Io sono la Signora Agenda. Sportello B-4.",
 			"Il badge per il Mercato si compra allo sportello lì accanto. Ma prima serve il Modulo B-4. Compilato, firmato, timbrato!",
 		], who)
 		Sound.sfx("stamp", 1.3)
@@ -206,7 +206,7 @@ func _hand_in(who: String) -> void:
 		await _stamp(who)
 		return
 	if GameState.flags.get("c2_firma", false):
-		await Ui.say(["Firma dell'archivio! Bravissimo. Adesso manca solo il timbro del responsabile.",
+		await Ui.say(["Firma dell'archivio! Perfetto. Adesso manca solo il timbro del responsabile.",
 			"Il responsabile non riceve. Il responsabile è al telefono. Da dodici anni, più o meno.",
 			"Se mi chiama lui e mi dice \"timbra\", io timbro. Funziona così: con una voce, si fa tutto."], who)
 		return

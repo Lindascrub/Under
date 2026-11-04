@@ -209,7 +209,7 @@ static func result_lines(floor: String) -> Array:
   if int(r.get("decor", 2)) < 2: lines.append("* Una parte delle luci della festa resta spenta. I servizi essenziali continuano a funzionare.")
  if floor == "-4":
   if bool(r.get("ercole_closed", false)):
-   lines.append_array(["* E-27: RISOLTA. Manca ancora il registro dei turni. Ora il fascicolo non è più inoltrabile.", "Ercole: Ma io non ho ricevuto una risposta. Hanno soltanto smesso di aspettarla.", "* Per contestarla servirà aprire una nuova procedura. Il B-4 del protagonista segue il suo iter abituale."])
+   lines.append_array(["* E-27: RISOLTA. Manca ancora il registro dei turni. Ora il fascicolo non è più inoltrabile.", "Ercole: Ma io una risposta non l'ho avuta. Hanno solo chiuso la domanda.", "* Per contestarla servirà aprire una nuova procedura. Il B-4 del protagonista segue il suo iter abituale."])
   else:
    lines.append_array(["* E-27: IN ATTESA DI INTEGRAZIONE. Richiesto il registro all'archivio del personale.", "Ercole: Quindi non mi hanno riconosciuto niente, ancora? Almeno la richiesta esiste."])
  if floor == "-2":

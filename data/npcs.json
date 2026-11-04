@@ -2032,7 +2032,8 @@
     ],
     "days": [
       [
-        "Il copione cambia ogni lunedì. Le parole sono diverse, il senso è lo stesso: \"non possiamo fare niente\"."
+        "Il copione cambia ogni lunedì. Le parole sono diverse, il senso è lo stesso: \"non possiamo fare niente\".",
+        "...Posso esserle utile in altro?"
       ],
       [
         "Ho sognato un telefono che squillava. Mi sono svegliata e ho risposto alla sveglia. Le ho chiesto di restare in linea."
@@ -2110,7 +2111,7 @@
       "kind": "time",
       "ask": "Ercole sta per addormentarsi in piedi e fra poco passa l'ispettore dell'archivio.",
       "yes": [
-        "Sveglio! Sono sveglio! ...Grazie, ragazzo. Non dirlo a nessuno."
+        "Sveglio! Sono sveglio! ...Grazie, giovane. Questa la archivio sotto «favori»."
       ],
       "minigame": {
         "music": "aiuto_ercole",
@@ -2130,7 +2131,7 @@
     "reveal_flag": "c2_rivelazione",
     "reveal": [
       "Hai sentito? Il tritacarte. Lo sento tutte le notti, da quarant'anni.",
-      "L'archivio è vuoto, ragazzo. Gli scaffali sono pieni di cartelline vuote. Le riempio io, la mattina, con fogli bianchi. Così sembra pieno.",
+      "L'archivio è vuoto, giovane. Gli scaffali sono pieni di cartelline vuote. Le riempio io, la mattina, con fogli bianchi. Così sembra pieno.",
       "Mi pagano per custodire niente. Ma lo custodisco benissimo.",
       "Tu però non restare a custodire niente anche tu. Sali. E se lassù ti danno un modulo, guardalo bene prima di riempirlo."
     ]
