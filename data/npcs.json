@@ -1899,12 +1899,12 @@
     ],
     "intro": [
       "Ehi, ehi. Piano coi piedi: qui per terra ci sono i fili.",
-      "Mi chiamo Mina. Quarant'anni da elettricista. Le lampadine di sopra le ho avvitate tutte io.",
-      "Adesso le cambio qui sotto. Quelle fulminate tornano sempre giù. Come noi."
+      "Mi chiamo Mina. Quarant'anni da elettricista. Ho preso più scosse io di tutta la torre.",
+      "I fili di sopra li ho tirati io. Adesso li aggiusto qui sotto. Il lavoro è uguale: è la corrente che va da un'altra parte."
     ],
     "days": [
       [
-        "Scusa, ragazzo, non ho molto tempo. Devo mantenere il mio colore."
+        "Non posso chiacchierare, {name}. Devo mantenere il mio colore. Si scarica, come le pile."
       ]
     ],
     "helped": [
@@ -1913,9 +1913,9 @@
     "emote": "note",
     "help": {
       "kind": "time",
-      "ask": "Mina ha un pannello con i fili tutti staccati, e gli tremano le mani.",
+      "ask": "Mina ha un pannello con i fili tutti staccati. Ci scherza sopra, ma gli tremano le mani.",
       "yes": [
-        "Bravo! Rosso, blu, giallo... tu hai le dita giuste. Io avevo le dita giuste, una volta."
+        "Ecco! Rosso, blu, giallo... hai le dita giuste. Le avevo anch'io. Poi le ho date in affitto alla torre."
       ],
       "minigame": {
         "music": "aiuto_mina",
@@ -1933,14 +1933,14 @@
       }
     },
     "busy_line": [
-      "Ora lasciami stare, ragazzo. Devo lavorare, sennò perdo il mio colore.",
+      "Ora lasciami lavorare. Un filo staccato e perdo il mio colore.",
       "* Mina torna ai suoi fili. Fischietta, e stona."
     ],
     "reveal": [
       "Ah. Si è spenta. Succede sempre, prima o poi, a chi guarda bene.",
       "Li ho attaccati io, quei fili, quarant'anni fa. Tutti portano in alto. Nessuno porta giù.",
       "Per questo qui sotto è buio, quando smetti: la luce che fai tu la usano di sopra.",
-      "Non dirlo in giro, ragazzo. Ma non dimenticartelo."
+      "Non dirlo in giro, {name}. Ma non dimenticartelo."
     ]
   },
   "mina": {
@@ -1957,17 +1957,18 @@
       }
     ],
     "intro": [
+      "* Una ragazza ti sorride. Ha diciannove anni e un sorriso da quaranta.",
       "Non calpestare le lampadine. Sono rotte, ma sono mie.",
       "Mi chiamo Bulbo. Smisto le lampadine fulminate: queste si buttano, queste si aggiustano, queste si fingono buone.",
       "Le ultime le rimandano di sopra. Nessuno se ne accorge mai."
     ],
     "days": [
       [
-        "Scusa, non posso parlare tanto. Devo mantenere il mio colore."
+        "Scusa, scusa! Non posso parlare tanto. Devo mantenere il mio colore."
       ]
     ],
     "helped": [
-      "Mi hai aiutata a raccogliere tutto. Te ne devo una. Al Fondo i debiti veri sono questi."
+      "Mi hai aiutata a smistarle tutte. Te ne devo una. Al Fondo i debiti veri sono questi."
     ],
     "emote": "dots",
     "help": {
@@ -1991,7 +1992,7 @@
       }
     },
     "busy_line": [
-      "Ora lasciami stare, devo lavorare. Se smetto, perdo il mio colore.",
+      "Torno alle mie lampadine! Se smetto, perdo il mio colore.",
       "* Bulbo torna alle sue lampadine. Sorride, ma non a te."
     ],
     "reveal": [
