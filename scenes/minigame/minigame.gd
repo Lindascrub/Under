@@ -201,7 +201,7 @@ func _start() -> void:
 			_info.text = GameState.fmt("Premi {ok} quando il segno è nel verde")
 			_new_zone()
 		"collect":
-			_info.text = "Raccogli tutto con le frecce ed evita le cose rosse"
+			_info.text = GameState.fmt("Raccogli tutto con le frecce ed evita le cose rosse")
 			soul = BOX.get_center()
 			for i in int(cfg.get("count", 10)):
 				items.append(Vector2(randf_range(BOX.position.x + 12, BOX.end.x - 12), randf_range(BOX.position.y + 12, BOX.end.y - 12)))
@@ -218,7 +218,7 @@ func _start() -> void:
 			time_left = float(cfg.get("time", 25.0))
 			_new_bulb()
 		"wires":
-			_info.text = "Tocca un filo a sinistra, poi il suo posto a destra" if TouchControls.enabled else "SU/GIÙ scegli il filo, %s per collegarlo" % GameState.fmt("{ok}")
+			_info.text = "Tocca un filo a sinistra, poi il suo posto a destra" if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore"
 			time_left = float(cfg.get("time", 30.0))
 			_new_wires()
 		"inventory":
@@ -255,7 +255,7 @@ func _start() -> void:
 					var tmp: int = rate_cards[i]
 					rate_cards[i] = rate_cards[j]
 					rate_cards[j] = tmp
-			rate_msg = "Tocca i documenti dal più vecchio al più recente."
+			rate_msg = "Tocca i documenti dal più vecchio al più recente." if TouchControls.enabled else "Clicca i documenti dal più vecchio al più recente."
 		"pratiche":
 			pr_i = 0
 			pr_msg = ""
@@ -715,8 +715,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
 		return
 	# sul PC i giochi "a dito" si fanno anche col mouse
-	# la mappa di Nadir col mouse: si preme su una fermata, si trascina, si lascia sull'altra
-	if type == "coincidenze" and not TouchControls.enabled:
+	# la mappa di Nadir e i fili di Bulbo col mouse: si preme, si trascina, si lascia sul posto giusto
+	if type in ["coincidenze", "wires"] and not TouchControls.enabled:
 		if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 			touch_point((event as InputEventMouseButton).position, 0 if (event as InputEventMouseButton).pressed else 2)
 			return
@@ -1047,7 +1047,7 @@ func _rate_pick(k: int) -> void:
 		if rate_placed.size() == rate_cards.size():
 			rate_phase = "find"
 			rate_sel = 0
-			rate_msg = "Stesso ritardo, stessa commissione: tocca una delle due righe."
+			rate_msg = "Stesso ritardo, stessa commissione: tocca una delle due righe." if TouchControls.enabled else "Stesso ritardo, stessa commissione: clicca una delle due righe."
 		else:
 			for i in rate_cards.size():
 				if int(rate_cards[i]) not in rate_placed:
@@ -1626,7 +1626,7 @@ func _cz_touch(pos: Vector2, step: int) -> void:
 		if i != cz_at and pos.distance_to(_cz_stop_pos(i)) <= CZ_GRAB:
 			dest = i
 	if dest < 0:
-		cz_msg = "Porta il dito fino a un'altra fermata."
+		cz_msg = "Porta la linea fino a un'altra fermata."
 		return
 	# tra le linee che vanno lì, quella che il dito ha seguito di più
 	var best: Dictionary = {}

@@ -102,7 +102,8 @@ func _intro() -> void:
 	await Ui.say(situation(1), PRES)
 	if not _dt().get("rules_seen", false):
 		_dt()["rules_seen"] = true
-		await Ui.say(["Cento unità. Quattro voci. Tocca più o meno, poi CONFERMA.",
+		await Ui.say(["[TEL] Cento unità. Quattro voci. Tocca più o meno, poi CONFERMA.",
+			"[PC] Cento unità. Quattro voci. Clicca più o meno, o usa le frecce, poi CONFERMA.",
 			"Sotto ogni numero c'è scritto cosa succede. Io lo leggo sempre. Quasi sempre."], PRES)
 
 

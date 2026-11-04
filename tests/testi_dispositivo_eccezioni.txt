@@ -1,0 +1,21 @@
+# Frasi che contengono una parola "vietata" ma vanno bene: un pezzo della frase | perché
+# (con = davanti vale solo la frase intera)
+il tabellone fa clic | un rumore, non il mouse
+Clic. Clic. Clic. | un rumore, non il mouse
+Il telefono ha un solo tasto: FONDO | il telefono della storia
+Tasto FONDO | il telefono della storia
+Premi un tasto. Ora dice: ATTENDERE | un tasto della macchina nella storia
+C'è un solo pulsante: SU | il pulsante dell'ascensore
+sequenza di frecce | le frecce disegnate sullo schermo
+Ogni freccia è una frase del copione | le frecce disegnate sullo schermo
+Tocca a me | "è il mio turno"
+Tocca a te | "è il tuo turno"
+Non toccare quella | nella storia
+Per toccare i debiti | "cambiare i debiti"
+Se tocchi i debiti | "cambiare i debiti"
+Il salvataggio non si tocca | "non cambia"
+Lo tocchi. È reale | nella storia
+le dita giuste | nella storia
+Hai le dita | nella storia
+=SINISTRA | pedalare: i due lati dello schermo, scritti in basso
+=DESTRA | pedalare: i due lati dello schermo, scritti in basso

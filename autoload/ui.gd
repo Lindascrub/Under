@@ -175,7 +175,10 @@ func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 	_pitch = 1.0 if speaker == "" else 0.75 + float(absi(speaker.hash()) % 50) / 100.0
 	for line: Variant in lines:
 		# una frase troppo lunga per il riquadro diventa più pagine
-		for page in _pages(GameState.fmt(str(line))):
+		var t := GameState.fmt(str(line))
+		if t == "":
+			continue   # frase solo per l'altro dispositivo ([PC] / [TEL])
+		for page in _pages(t):
 			await _type(_text, page)
 	_box.visible = false
 	busy = false
@@ -234,7 +237,9 @@ func narrate(lines: Array) -> void:
 	_pitch = 0.6
 	_narr.visible = true
 	for line: Variant in lines:
-		await _type(_narr, GameState.fmt(str(line)))
+		var t := GameState.fmt(str(line))
+		if t != "":
+			await _type(_narr, t)
 	_narr.visible = false
 	busy = false
 

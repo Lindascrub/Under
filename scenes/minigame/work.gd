@@ -203,6 +203,7 @@ func _rules() -> String:
 				return "* Leggi la pratica. Se i documenti ci sono e dicono la stessa cosa, tocca APPROVA. Se manca qualcosa, se due dati non tornano o c'è un doppione, tocca RICHIEDI VERIFICA. Verificare ci mette un po' di più."
 			"smistamento":
 				return "* Leggi la richiesta e tocca dove va: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA. Se il sistema propone un posto diverso da quello scritto dal mittente, puoi CONFERMARE, VERIFICARE (più lento) o SEGNALARE la discrepanza."
+	# (solo PC) da qui in giù: il telefono è già tornato sopra
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."

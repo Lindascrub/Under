@@ -1099,7 +1099,8 @@
         "intro": [
           "* Le pratiche vanno timbrate in un ordine preciso.",
           "* Guarda la sequenza di frecce e ripetila.",
-          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
+          "[PC] * Ripetila con le frecce della tastiera.",
+          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],
         "reward": 10
       }
@@ -1288,8 +1289,9 @@
         "title": "I post-it di Giulia",
         "intro": [
           "* I post-it di Giulia vanno rimessi in ordine.",
-          "* Guarda la sequenza e ripetila con le frecce.",
-          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
+          "* Guarda la sequenza e ripetila.",
+          "[PC] * Ripetila con le frecce della tastiera.",
+          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],
         "reward": 10
       }
@@ -1590,7 +1592,8 @@
         "intro": [
           "* Le pagine del curriculum vanno rimesse in ordine.",
           "* Guarda la sequenza di frecce e ripetila.",
-          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
+          "[PC] * Ripetila con le frecce della tastiera.",
+          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],
         "reward": 10
       }
@@ -1920,8 +1923,8 @@
         "title": "I fili di Mina",
         "intro": [
           "* Il pannello ha i fili staccati.",
-          "* Trascina ogni filo fino a quello dello stesso colore.",
-          "* Con i tasti: SU e GIÙ per scegliere, {ok} per collegare."
+          "[TEL] * Trascina ogni filo fino a quello dello stesso colore.",
+          "[PC] * Trascina ogni filo col mouse fino a quello dello stesso colore."
         ],
         "time": 20,
         "rounds": 3,
@@ -1979,7 +1982,8 @@
         "title": "Le lampadine di Bulbo",
         "intro": [
           "* Una lampadina alla volta.",
-          "* Scorri il dito o usa le frecce: buone a destra, rotte a sinistra, sfarfallanti su e giù."
+          "[TEL] * Scorri il dito: buone a destra, rotte a sinistra, sfarfallanti su o giù.",
+          "[PC] * Con le frecce: buone a DESTRA, rotte a SINISTRA, sfarfallanti SU o GIÙ."
         ],
         "count": 10,
         "time": 25,
@@ -2043,7 +2047,8 @@
         "intro": [
           "* Ogni freccia è una frase del copione.",
           "* Guarda l'ordine, poi ripetilo.",
-          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
+          "[PC] * Ripetila con le frecce della tastiera.",
+          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],
         "reward": 10
       }
@@ -2268,7 +2273,8 @@
         "intro": [
           "* Ogni pratica va in un cassetto: su, giù, sinistra, destra.",
           "* Ricorda l'ordine e ripetilo.",
-          "* Sul telefono, tocca sopra, sotto, a sinistra o a destra."
+          "[PC] * Ripetila con le frecce della tastiera.",
+          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
         ],
         "reward": 10
       }
@@ -2375,8 +2381,8 @@
         "title": "Scatole e scaffali",
         "intro": [
           "* Una montagna di scatole. Ogni cosa ha il suo scaffale.",
-          "* Tocca lo scaffale giusto per ogni scatola.",
-          "* Con i tasti: FRECCE per scegliere, {ok} per sistemarla."
+          "[TEL] * Tocca lo scaffale giusto per ogni scatola.",
+          "[PC] * Clicca lo scaffale giusto per ogni scatola. Oppure FRECCE e {ok}."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2450,7 +2456,8 @@
         "type": "consegne",
         "title": "L'ultima consegna",
         "intro": [
-          "* Scorri il dito o usa le frecce per far partire e girare il furgone.",
+          "[TEL] * Scorri il dito per far partire e girare il furgone.",
+          "[PC] * Le frecce fanno partire e girare il furgone.",
           "* Prendi il pacco, poi raggiungi la casa illuminata prima che scada il tempo.",
           "* Evita bordi, cantieri, case sbagliate e la tua coda. Ogni consegna allunga il furgone."
         ],
@@ -2553,7 +2560,7 @@
         "intro": [
           "* Sei documenti sparsi sul tavolino della sala d'attesa.",
           "* Prima mettili in ordine di data, dal più vecchio.",
-          "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Tocca la riga di troppo."
+          "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Trova la riga di troppo."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2773,8 +2780,9 @@
         "title": "L'orario delle coincidenze",
         "intro": [
           "* La mappa delle linee. Nadir esce alle 6:40, lavora alle 8:00 e ha 6 €.",
-          "* Trascina da una fermata all'altra lungo una linea. Per cambiare servono 3 minuti.",
-          "* Con i tasti: FRECCE per scegliere, {ok} per viaggiare."
+          "[TEL] * Trascina il dito da una fermata all'altra, lungo una linea.",
+          "[PC] * Trascina col mouse da una fermata all'altra, lungo una linea. Oppure FRECCE e {ok}.",
+          "* Per cambiare linea servono 3 minuti."
         ],
         "reward": 0,
         "fixed_reward": true,

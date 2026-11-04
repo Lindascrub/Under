@@ -258,7 +258,7 @@ func _station(j: Dictionary) -> void:
 			return
 	if GameState.worked_today:
 		await Ui.say(["* " + str(j.get("station_text", "Un posto di lavoro.")),
-			"* (Per oggi hai già dato. Il prossimo turno è domani: tocca una stellina e scegli di lasciar passare la notte.)"])
+			"* (Per oggi hai già dato. Il prossimo turno è domani: vai a una stellina e scegli di lasciar passare la notte.)"])
 		return
 	var c: int = await Ui.choose(str(j.get("station_text", "")) + "\nIniziare il turno? (10 ore)", ["Inizia", "Non ancora"])
 	if c != 0:

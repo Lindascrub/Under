@@ -15,7 +15,7 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not event.is_action_pressed("quit"):
+	if TouchControls.enabled or not event.is_action_pressed("quit"):
 		return
 	get_viewport().set_input_as_handled()
 	if _resta > 0.0:

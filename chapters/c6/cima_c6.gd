@@ -410,7 +410,7 @@ func read_contract() -> void:
 	var sections := ["1. Registrazione", "2. Importo", "3. Consenso"]
 	var seen := 0
 	while seen < 3:
-		var c: int = await Ui.choose("OBBLIGO DI ESISTENZA — tocca una sezione.", [sections[seen], "Chiudi la cartellina"])
+		var c: int = await Ui.choose("OBBLIGO DI ESISTENZA — scegli una sezione.", [sections[seen], "Chiudi la cartellina"])
 		if c == 1:
 			break
 		match seen:

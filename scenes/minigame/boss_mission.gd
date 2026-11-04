@@ -62,7 +62,7 @@ func _draw() -> void:
  if floor == "-2": _draw_contract()
  if floor == "0": _draw_news()
  if msg != "": _wrap_text(msg, Rect2(24, 291, 592, 28), 8, GOLD)
- text_line("FRECCE: SCEGLI   INVIO: USA   /   CLIC O TOCCO", 24, 350, 8, Color("abb9c7"))
+ text_line("TOCCA PER SCEGLIERE E USARE" if TouchControls.enabled else "FRECCE: SCEGLI   INVIO O CLIC: USA", 24, 350, 8, Color("abb9c7"))
  button(Rect2(462, 320, 154, 22), "SALVA ED ESCI", "exit")
 
 func _draw_market() -> void:

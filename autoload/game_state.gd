@@ -794,7 +794,18 @@ func nico_lines() -> Array:
 
 # --- testo ------------------------------------------------------------------
 
+## Una frase che comincia con [PC] si vede solo sul computer, con [TEL] solo sul telefono
+## (la scritta tra parentesi non compare). Per l'altro dispositivo torna "".
+static func per_dispositivo(text: String) -> String:
+	for tag: String in ["[PC]", "[TEL]"]:
+		if text.begins_with(tag):
+			var mio := (tag == "[TEL]") == TouchControls.enabled
+			return text.substr(tag.length()).strip_edges(true, false) if mio else ""
+	return text
+
+
 func fmt(text: String) -> String:
+	text = per_dispositivo(text)
 	if TouchControls.enabled:
 		# sul telefono si gioca col dito: le vecchie istruzioni da tastiera diventano tocchi
 		text = text.replace("Premi {ok}", "Tocca lo schermo").replace("premi {ok}", "tocca lo schermo") 			.replace("con le frecce", "col dito")

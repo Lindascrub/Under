@@ -192,6 +192,7 @@ func rules() -> String:
 				return "* Un, due, tre, stella. Tieni il dito sullo schermo per avvicinarti a %s, e tienilo ancora per copiare %s. Quando si gira (vedi \"?\"), STACCA il dito: se ti vede muovere, ti rimanda indietro. C'è poco tempo." % [st_name if st_name != "" else "il collega", st_item if st_item != "" else "il suo lavoro"]
 			"pong":
 				return "* Trascina il dito su e giù per muovere la tua racchetta. Rimanda la moneta al Signor Tasso: se gli passa, è un punto per te."
+	# (solo PC) da qui in giù: il telefono è già tornato sopra
 	match game:
 		"snake":
 			return "* Muovi il mocio con le frecce. Ogni macchia pulita lo allunga. Non sbattere contro i muri o contro te stesso."

@@ -113,7 +113,7 @@ func _ask_name() -> String:
 			continue
 		if SPECIAL_NAMES.has(key) and pending != key:
 			# un commento, e la seconda volta vale come un sì
-			reply.text = SPECIAL_NAMES[key] + "\n(Tocca di nuovo per tenerlo.)"
+			reply.text = SPECIAL_NAMES[key] + ("\n(Tocca di nuovo per tenerlo.)" if TouchControls.enabled else "\n(Premi di nuovo INVIO per tenerlo.)")
 			Sound.sfx("select")
 			pending = key
 			ok.text = "Sì, è questo"
