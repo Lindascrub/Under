@@ -1,7 +1,7 @@
 extends Node2D
 ## L'inizio: sei dentro l'ascensore della Torre CHEAP e scendi. -1, -2, -3, -4...
 ## Sul display c'è il tuo debito. Al -5 l'ascensore si blocca, la luce salta,
-## le porte si aprono a metà sul buio.
+## le porte si aprono a metà sulle luci del Fondo.
 ## La scena è fatta di nodi (scenes/world/elevator_intro.tscn): cabina, pareti, display, pulsantiera,
 ## porte e giocatore si spostano nell'editor. Qui c'è solo la sequenza.
 
@@ -49,8 +49,8 @@ var _t := 0.0
 func _ready() -> void:
 	Ui.show_hud(false)
 	Ui.cutscene = true
-	# musica da ascensore: rilassante, aziendale, finché l'ascensore non si rompe
-	Sound.music("ascensore")
+	_cabin.visible = false
+	_player.visible = false
 	_player.play("idle_up")
 	_number.text = _floor_text
 	_door_w = _door_l.size.x
@@ -61,15 +61,36 @@ func _ready() -> void:
 
 
 func _sequence() -> void:
+	await Ui.narrate([
+		"Una mattina ti sei svegliato per abitudine e sei andato in cucina, ma stavolta era tutto sottosopra.",
+		"Sul tavolo c'era solo un biglietto: «Mi dispiace», firmato papà.",
+		"Senza una lira, ti ha lasciato lì, con una lettera aperta accanto che diceva solo: «Si presenti alla CHEAP per saldare il debito.»",
+	])
+	_cabin.visible = true
+	_player.visible = true
+	Sound.music("ascensore")
 	await _wait(0.8)
-	await Ui.say(["* L'ascensore della Torre CHEAP. Odora di metallo e di gente che ci ha pianto dentro.",
-		"* Una musichetta allegra esce da un altoparlante. Una voce registrata: \"Benvenuto nella Torre CHEAP! Il futuro costa poco!\""])
+	await Ui.say([
+		"* L'ascensore della Torre CHEAP odora di metallo.",
+		"* Si sente quell'odore stantio intriso della tristezza altrui, un odore che riconosceresti a occhi chiusi grazie a tuo padre e alle sue manie di ludopatia.",
+		"* La musica, però, è diversa da quella degli altri ascensori: è più allegra del solito, di un'allegria artificiale che ti fa salire un nodo d'ansia in gola.",
+		"* Una voce registrata, una di quelle generate da un'intelligenza artificiale a cui hanno impostato l'empatia al minimo storico, cinguetta:",
+		"«Benvenuto nella CHEAP. Il futuro costa poco.»",
+	])
+	_floor_text = "7 MLD"
+	await Ui.say([
+		"* Il display si illumina. Sei stato riconosciuto. Il tuo debito è di 7 miliardi.",
+		"* Una cifra così rotonda che sembra quasi uno scherzo, se non fosse per gli zeri.",
+	])
 	for f in ["-1", "-2", "-3"]:
 		await _wait(0.9)
 		_floor_text = f
 		Sound.sfx("ding", 0.9)
 	await _wait(0.6)
-	await Ui.say(["* Più scende, più la luce diventa gialla. Come un dente."])
+	await Ui.say([
+		"* Mentre scendi, stranamente le luci sfarfallano.",
+		"* Ogni piano che passi sembra una sventura, ma non sai se è l'edificio che sta cadendo a pezzi o se, ora che conosci il peso di quel debito, ti senti semplicemente in trappola, senza via d'uscita.",
+	])
 	# al -4 la luce comincia a tremare
 	await _wait(0.5)
 	_floor_text = "-4"
@@ -100,16 +121,17 @@ func _sequence() -> void:
 		await _wait(0.35)
 	_display_on = true
 	_light = 0.12
-	await Ui.say(["* L'ascensore si è fermato. Il display lampeggia: -5.",
-		"* Premi tutti i pulsanti. Nessuno si accende. Nemmeno l'allarme."])
+	await Ui.say(["* L'ascensore si ferma e il display lampeggia: -5.",
+		"* Premi tutti i pulsanti ma non se ne accende nessuno.",
+		"* Nemmeno quello dell'allarme, che a quanto pare qui dentro è considerato un optional per ottimisti."])
 	await _wait(0.6)
 	Sound.sfx("door", 0.7)
 	var tw := create_tween()
 	tw.tween_property(self, "_doors", 0.45, 1.4).set_trans(Tween.TRANS_SINE)
 	await tw.finished
 	await _wait(0.4)
-	await Ui.say(["* Le porte si aprono a metà, poi si incastrano.",
-		"* Fuori è buio. Da qualche parte, laggiù, c'è una piccola luce."])
+	await Ui.say(["* Poi, con un gemito metallico, le porte si aprono a metà e si incastrano.",
+		"* Fuori inizi già a intravedere delle luci fin troppo abbaglianti."])
 	var walk := create_tween()
 	walk.tween_property(_player, "position", _exit.position, 1.3)
 	_player.play("walk_down")

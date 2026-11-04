@@ -98,12 +98,12 @@ mouse_filter = 2
 color = Color(0.1647, 0.149, 0.1961, 1)
 
 [node name="Display" type="Node2D" parent="Cabina"]
-position = Vector2(72, 12)
+position = Vector2(60, 12)
 
 [node name="Cornice" type="ColorRect" parent="Cabina/Display"]
 offset_left = -2
 offset_top = -2
-offset_right = 50
+offset_right = 74
 offset_bottom = 28
 mouse_filter = 2
 color = Color(0.102, 0.08627, 0.1333, 1)
@@ -111,13 +111,13 @@ color = Color(0.102, 0.08627, 0.1333, 1)
 [node name="Schermo" type="ColorRect" parent="Cabina/Display"]
 offset_left = 0
 offset_top = 0
-offset_right = 48
+offset_right = 72
 offset_bottom = 26
 mouse_filter = 2
 color = Color(0.04706, 0.03922, 0.06275, 1)
 
 [node name="Numero" type="Label" parent="Cabina/Display"]
-offset_right = 48.0
+offset_right = 72.0
 offset_bottom = 26.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.9098, 0.2706, 0.2275, 1)
