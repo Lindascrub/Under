@@ -847,7 +847,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if bulb_fix >= int(cfg.get("fix", 2)):
 					bulb = "buona"
 					bulb_fixed = true
-			else:
+			elif not bulb_fixed:   # una girata in più su quella già avvitata non è un errore
 				_bulb_answer(false)
 	elif type == "wires":
 		var free_left: Array[int] = []
