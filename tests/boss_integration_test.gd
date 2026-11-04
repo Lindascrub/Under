@@ -23,12 +23,24 @@ func _ready() -> void:
   if not is_instance_valid(current) or current.scene_file_path != B.SCENE: break
   await frames(8)
   auto_dialogue = false
-  check(current.buttons.size() >= 5, "Comandi visibili " + floor)
+  check(current.buttons.size() >= 5 or current.dinamo != null, "Comandi visibili " + floor)
   check(B.active(floor), "Stato attivo " + floor)
   # Real mouse and touch coordinates, including non-16:9 window transforms.
   for size: Vector2i in [Vector2i(1280, 720), Vector2i(1000, 800)]:
    get_window().size = size
    await frames(4)
+   if floor == "-5":
+    # il -5 ha la leva (scenes/minigame/capo_dinamo.tscn): tutta giù col mouse, tutta su col dito
+    var bin: Rect2 = (current.dinamo.get_node("Leva/Binario") as Control).get_global_rect()
+    TouchControls.enabled = false
+    await click(Vector2(bin.get_center().x, bin.end.y - 1))
+    check(int(current.p["intensity"]) == 3 and int(current.p["extra"]) == 10, "Mouse trasformato -5" + str(size))
+    TouchControls.enabled = true
+    await frames(4)
+    await touch(Vector2(bin.get_center().x, bin.position.y + 1))
+    check(int(current.p["intensity"]) == 2 and int(current.p["extra"]) == 0, "Touch trasformato -5" + str(size))
+    TouchControls.enabled = false
+    continue
    TouchControls.enabled = false
    var key: String = {"-5": "intensity", "-4": "document", "-3": "rate", "-2": "months", "0": "source"}[floor]
    var old_value: int = int(current.p[key])
@@ -54,7 +66,10 @@ func _ready() -> void:
    check(int(current.selected) == 2, "Vaschette: su rientra nella scrivania")
   current.selected = 0
   var old_value: int = int(current.p.get("intensity", current.p.get("rate", current.p.get("months", current.p.get("source", 0)))))
-  await action("confirm")
+  if floor == "-5":
+   await action("move_down"); await action("move_down")
+  else:
+   await action("confirm")
   if floor != "-4": check(int(current.p.get("intensity", current.p.get("rate", current.p.get("months", current.p.get("source", 0))))) != old_value, "Tastiera " + floor)
   # Checkpoint and actual exit restore the saved world position.
   var progress_copy: Dictionary = current.p.duplicate(true)

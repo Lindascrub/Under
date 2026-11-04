@@ -5,6 +5,9 @@ const BG := Color("171e2a")
 const PAPER := Color("f3eddc")
 const INK := Color("302d3c")
 const GOLD := Color("ffe14d")
+## Il -5 ha una scena sua, con la leva e Fermo (scenes/minigame/capo_dinamo.tscn).
+const DINAMO := preload("res://scenes/minigame/capo_dinamo.tscn")
+var dinamo: Node = null
 var floor := "-3"
 var p: Dictionary = {}
 var buttons: Array = []
@@ -20,7 +23,29 @@ func _ready() -> void:
  p = B.progress(floor)
  if str(B.state(floor).get("status")) == "done":
   _return_world()
+ elif floor == "-5":
+  dinamo = DINAMO.instantiate()
+  add_child(dinamo)
+  dinamo.imposta(p)
+  dinamo.cambiato.connect(_dinamo_cambiato)
+  dinamo.confermato.connect(_dinamo_confermato)
+  dinamo.esci.connect(_dinamo_esci)
  queue_redraw()
+
+func _dinamo_cambiato(s: Dictionary) -> void:
+ p.merge(s, true)
+ B.checkpoint(floor)
+
+func _dinamo_confermato(s: Dictionary) -> void:
+ _dinamo_cambiato(s)
+ msg = B.finish_energy()
+ if msg != "": dinamo.avviso(msg); return
+ dinamo.visible = false
+ _finish()
+
+func _dinamo_esci() -> void:
+ B.checkpoint(floor)
+ _return_world()
 
 func text_line(t: String, x: float, y: float, size := 10, col := PAPER) -> void:
  draw_string(FONT, Vector2(x, y), t, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
@@ -56,8 +81,9 @@ func _draw() -> void:
   text_line("INCARICO CONSEGNATO", 28, 110, 20, GOLD)
   _wrap_text("Il lavoro è stato consegnato. Al piano restano le persone che ne sentiranno gli effetti.", Rect2(28, 132, 530, 65), 11)
   return
+ if dinamo != null and dinamo.visible: return
  if floor == "-3": _draw_market()
- if floor == "-5": _draw_energy()
+ if floor == "-5" and dinamo == null: _draw_energy()
  if floor == "-4": _draw_documents()
  if floor == "-2": _draw_contract()
  if floor == "0": _draw_news()
@@ -85,12 +111,14 @@ func _draw_market() -> void:
 func touch_scheme() -> String:
  return "point" if not finishing else ""
 func touch_point(pos: Vector2, step: int) -> void:
+ if dinamo != null and dinamo.visible and not finishing and not Ui.busy:
+  dinamo.punta(pos, step); return
  if step != 0 or finishing or Ui.busy: return
  for i in buttons.size():
   if (buttons[i]["rect"] as Rect2).has_point(pos):
    selected = i; _act(str(buttons[i]["action"])); return
 func _unhandled_input(event: InputEvent) -> void:
- if Ui.busy or finishing: return
+ if Ui.busy or finishing or dinamo != null: return
  if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
   touch_point(event.position, 0)
  elif floor == "-4" and selected <= 4 and (event.is_action_pressed("move_up") or event.is_action_pressed("move_down") \
