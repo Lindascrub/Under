@@ -78,6 +78,10 @@ I log includono avvisi ObjectDB/risorse ancora presenti all'uscita. I test di re
 
 Le schermate sono prodotte da finestre fuori schermo. Banca, Città, Presidente e otto finali: 1.131 immagini PC senza testo fuori dal riquadro. La Presidente nel formato telefono 20:9: 530 immagini, senza testo fuori dal riquadro. Nuovi aiuti, incarichi e mandato: immagini per entrambi i dispositivi, con controllo delle varianti nascoste.
 
-Il controllo PC ha raggiunto camminando dodici interazioni in Città; per il dialogo `_bilanci` ha usato la chiamata diretta. Quella prova verifica i testi, senza certificare il percorso fisico fino ai bilanci. Le righe più basse delle scelte ordinarie misurano circa 24–25 pixel su 360: la comodità del tocco rimane da provare su un telefono vero. Le nuove schede del mandato sono alte 63 pixel.
+Il controllo PC iniziale ha raggiunto camminando dodici interazioni in Città; per `_bilanci` aveva usato la chiamata diretta prima dell'apertura dell'archivio. Il successivo `bilanci_accesso_test` verifica il percorso fisico dall'ingresso, l'interazione e la chiusura del rapporto, con comandi PC e joystick touch simulati: 32 controlli OK. Prima della protesta la porta blocca correttamente il passaggio; dopo la protesta e dopo l'assemblea il terminale è raggiungibile. Non sono state necessarie modifiche agli oggetti o alle collisioni.
 
-I test narrativi fanno avanzare i dialoghi e pilotano gli esiti: non sono una partita umana e non misurano quanto un primo giocatore capisce o si diverte. Non è stato collegato un telefono fisico e questa revisione non produce automaticamente una nuova APK.
+Le righe più basse delle scelte ordinarie misurano circa 24–25 pixel su 360: la comodità del tocco rimane da provare su un telefono vero. Le nuove schede del mandato sono alte 63 pixel.
+
+I test narrativi fanno avanzare i dialoghi e pilotano gli esiti: non sono una partita umana e non misurano quanto un primo giocatore capisce o si diverte. Non è stato collegato un telefono fisico.
+
+APK aggiornata prodotta il 5 novembre: `build/Cheap_5novembre.apk`, disponibile identica anche come `build/Cheap.apk`. Build per le prove, Android ARM64, versione 0.3/codice 3, stessa firma dell'APK precedente. Integrità ZIP, firma, risorse nuove ed esclusione dei file di test verificati; avvio del menu e caricamento delle scene verificati dalle risorse effettivamente esportate. Dettagli e limiti in `docs/BILANCI_APK_20261105.md`.
