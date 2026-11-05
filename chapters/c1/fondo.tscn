@@ -1357,7 +1357,7 @@ script = ExtResource("12_20qjt")
 npc_id = "mina"
 activity = "idle_left"
 
-[node name="NonnoMina" type="Node2D" parent="Mondo" unique_id=721324341]
+[node name="Mina" type="Node2D" parent="Mondo" unique_id=721324341]
 position = Vector2(104, 142)
 script = ExtResource("12_20qjt")
 npc_id = "bulbo"
@@ -1528,7 +1528,7 @@ durata = 3.5
 [editable path="Mondo/UsaCycletteDinamo"]
 
 [node name="PremioMina" type="Node2D" parent="Mondo"]
-position = Vector2(104, 96)
+position = Vector2(122, 120)
 script = ExtResource("premio_aiuto")
 npc_id = "bulbo"
 
@@ -1539,7 +1539,7 @@ scale = Vector2(1.6, 1.6)
 texture = SubResource("GradientTexture2D_alone")
 
 [node name="Filo" type="Line2D" parent="Mondo/PremioMina"]
-points = PackedVector2Array(0, -40, 0, -5)
+points = PackedVector2Array(0, -24, 0, -5)
 width = 1.0
 default_color = Color(0.16, 0.15, 0.2, 1)
 

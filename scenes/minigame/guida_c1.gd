@@ -3,6 +3,8 @@ extends Node2D
 signal finita
 @export var durata := 4.2
 @export var durata_riprova := 1.0
+## Nel gioco dei fili di Mina la freccia che scorre lungo il filo non serve: basta il filo che si disegna.
+@export var freccia_nei_fili := false
 @export var colori_fili: Array[Color] = [Color("d23b3b"), Color("39b6ff"), Color("ffe14d"), Color("3ddc84")]
 @onready var testo: Label = $Testo
 @onready var lampadina: Sprite2D = $Lampadina
@@ -27,6 +29,7 @@ func mostra(gioco: String, colori: Array) -> void:
 	tempo = 0.0
 	demo = true
 	visible = true
+	puntatore.visible = gioco == "bulbs" or freccia_nei_fili
 
 
 func aggiorna(gioco: String, stato: String, colori: Array, fatti: Array) -> void:
@@ -43,6 +46,7 @@ func aggiorna(gioco: String, stato: String, colori: Array, fatti: Array) -> void
 	cavo.visible = false
 	if riprova_t > 0.0:
 		return
+	puntatore.visible = tipo == "bulbs" or freccia_nei_fili
 	if tipo == "bulbs":
 		match stato:
 			"fioca": testo.text = "Scorri su o giù finché resta accesa." if TouchControls.enabled else "Premi SU o GIÙ finché resta accesa."
@@ -71,6 +75,7 @@ func _process(delta: float) -> void:
 		var k := minf(1.0, fmod(tempo / durata, 1.0) * 1.4)
 		puntatore.position = da.lerp(a, k)
 		puntatore.rotation = (a - da).angle()
+		puntatore.visible = freccia_nei_fili
 		if demo:
 			cavo.visible = true
 			cavo.points = PackedVector2Array([da, puntatore.position])

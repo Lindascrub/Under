@@ -334,7 +334,7 @@ func _people() -> void:
 	mina.position = Vector2(17 * T + 8, 11 * T - 2)
 	_add(mondo, mina)
 	var bulbo := NpcSpot.new()
-	bulbo.name = "NonnoMina"
+	bulbo.name = "Mina"
 	bulbo.npc_id = "bulbo"
 	bulbo.activity = "idle_down"
 	bulbo.position = Vector2(6 * T + 8, 9 * T - 2)
