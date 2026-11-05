@@ -7,7 +7,6 @@ const MAPPE := {
 	"mercato": "res://chapters/c3/mercato.tscn", "banca": "res://chapters/c4/banca.tscn",
 	"citta": "res://chapters/c5/citta.tscn", "casa_comune": "res://chapters/c5/casa_comune.tscn",
 	"cima": "res://chapters/c6/cima.tscn",
-	"ufficio_capo": "res://scenes/world/boss_office.tscn",
 }
 
 var frame := 0

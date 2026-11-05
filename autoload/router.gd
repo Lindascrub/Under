@@ -1,18 +1,10 @@
 extends Node
 ## Cambia scena con una dissolvenza e ricorda in che punto far comparire il giocatore.
-## Spostarsi tra le stanze del mondo fa passare 10 minuti; a mezzanotte si torna a casa per forza.
+## Spostarsi tra le stanze del mondo fa passare 10 minuti.
 
 const MENU := "res://scenes/main_menu.tscn"
-const HOME := "res://scenes/world/home.tscn"
-const STREET := "res://scenes/world/street.tscn"
-const OFFICE := "res://scenes/world/office.tscn"
 const CITY := "res://chapters/c5/citta.tscn"
 const CASA_COMUNE := "res://chapters/c5/casa_comune.tscn"
-const PARK := "res://scenes/world/park.tscn"
-const SHELTER := "res://scenes/world/shelter.tscn"
-const BOSS := "res://scenes/world/boss_office.tscn"
-const PRESIDENCY := "res://scenes/world/presidency.tscn"
-const FALL := "res://scenes/world/fall.tscn"
 const SOTTOUFFICIO := "res://chapters/c2/sottoufficio.tscn"
 const MERCATO := "res://chapters/c3/mercato.tscn"
 const BANCA := "res://chapters/c4/banca.tscn"
@@ -21,13 +13,11 @@ const FONDO := "res://chapters/c1/fondo.tscn"
 const MINIGAME := "res://scenes/minigame/minigame.tscn"
 const WORK := "res://scenes/minigame/work.tscn"
 const BATTLE := "res://scenes/battle/battle.tscn"
-const ENDING := "res://scenes/endings/ending.tscn"
-const ENDING_CITY := "res://scenes/endings/city_below.tscn"
 ## Il capitolo 6: la Cima, il TURNO di Direzione, il finale (con epiloghi e titoli di coda).
 const CIMA := "res://chapters/c6/cima.tscn"
 const DIREZIONE := "res://chapters/c6/direzione.tscn"
 const FINALE := "res://chapters/c6/finale.tscn"
-const WORLD: Array[String] = [HOME, STREET, OFFICE, CITY, PARK, SHELTER, BOSS, PRESIDENCY, SOTTOUFFICIO, MERCATO, BANCA, FONDO, CASA_COMUNE, CIMA]
+const WORLD: Array[String] = [FONDO, SOTTOUFFICIO, MERCATO, BANCA, CITY, CASA_COMUNE, CIMA]
 
 ## Nome del punto di arrivo nella prossima stanza (vedi Room.spawns).
 var spawn := ""

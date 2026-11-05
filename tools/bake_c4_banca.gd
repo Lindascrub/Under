@@ -355,7 +355,7 @@ func _features() -> void:
 	_feature("PostoSportello", "station", Vector2i(14, 4), {"job": "sportello_banca"})
 	_feature("SportelloBadge", "badge", Vector2i(32, 3))
 	# le scale per il Piano Terra (la Città)
-	_feature("ScaleSu", "stairs_up", Vector2i(36, 3), {"target": "res://scenes/world/office.tscn", "spawn": "from_below", "need": "0"})
+	_feature("ScaleSu", "stairs_up", Vector2i(36, 3), {"target": "res://chapters/c5/citta.tscn", "spawn": "from_below", "need": "0"})
 	_feature("ScaleGiu", "stairs_down", Vector2i(13, 15), {"target": "res://chapters/c3/mercato.tscn", "spawn": "from_above"})
 	_feature("Stellina", "save", Vector2i(24, 13))
 

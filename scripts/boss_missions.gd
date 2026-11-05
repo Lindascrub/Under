@@ -51,7 +51,7 @@ static func active(floor: String) -> bool:
 static func checkpoint(floor: String) -> void:
  var s := state(floor)
  var p: Array = s.get("return_pos", [])
- GameState.save_game(str(s.get("return", "res://scenes/world/home.tscn")), Vector2(float(p[0]), float(p[1])) if p.size() == 2 else Vector2.INF)
+ GameState.save_game(str(s.get("return", Router.FONDO)), Vector2(float(p[0]), float(p[1])) if p.size() == 2 else Vector2.INF)
 
 static func offer(room: Node) -> void:
  var floor: String = GameState.floor_id

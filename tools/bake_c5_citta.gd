@@ -192,7 +192,7 @@ func _features() -> void:
 	_feature("PostoTurno", "station", Vector2i(23, 10), {"job": "comunicazioni_citta"})
 	_feature("SportelloBadge", "badge", Vector2i(6, 9))
 	# la scala esterna della Torre porta alla Cima: in cima la stanza fa lo sguardo indietro
-	_feature("ScaleSu", "stairs_up", Vector2i(10, 9), {"target": "res://scenes/world/boss_office.tscn", "spawn": "default", "need": "cima"})
+	_feature("ScaleSu", "stairs_up", Vector2i(10, 9), {"target": "res://chapters/c6/cima.tscn", "spawn": "default", "need": "cima"})
 	_feature("Stellina", "save", Vector2i(13, 16))
 
 

@@ -422,7 +422,7 @@ offset = Vector2(0, -144)
 
 [node name="ScaleSu" parent="Decori" unique_id=734276343 instance=ExtResource("stairs_up_tscn")]
 position = Vector2(192, 136)
-target = "res://scenes/world/boss_office.tscn"
+target = "res://chapters/c6/cima.tscn"
 spawn = "default"
 need = "cima"
 

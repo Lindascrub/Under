@@ -6,7 +6,6 @@ extends Node
 ## Esegui:  Godot --headless --path . res://tools/bake_footprints.tscn
 
 const SCENES := [
-	"res://scenes/world/office.tscn",
 	"res://chapters/c1/fondo.tscn",
 	"res://chapters/c2/sottoufficio.tscn",
 	"res://chapters/c3/mercato.tscn",

@@ -351,8 +351,11 @@ func finish_hard_job(pay: int) -> void:
 	hard_work += 1
 	flags["fail_streak"] = 0
 	flags["boss_call_day"] = day
-	worked_today = true
+	# prima passano le 10 ore, poi si segna il turno: se il turno finisce dopo mezzanotte,
+	# conta per il giorno nuovo (prima il giorno nuovo cancellava il segno e si lavorava due volte)
 	spend(COST_HARD_JOB)
+	worked_today = true
+	changed.emit()
 
 
 func refuse_work() -> void:
@@ -860,7 +863,7 @@ func has_save() -> bool:
 
 
 ## Salva tutto: anche stanza, posizione e ora (punti di salvataggio e letto).
-func save_game(room := "res://scenes/world/home.tscn", pos := Vector2.INF) -> void:
+func save_game(room := "res://chapters/c1/fondo.tscn", pos := Vector2.INF) -> void:
 	var data := {
 		"save_version": 2, "day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
 		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
@@ -944,7 +947,7 @@ func load_game() -> Dictionary:
 	changed.emit()
 	var pos: Array = d.get("pos", [])
 	return {
-		"room": str(d.get("room", "res://scenes/world/home.tscn")),
+		"room": str(d.get("room", "res://chapters/c1/fondo.tscn")),
 		"pos": Vector2(float(pos[0]), float(pos[1])) if pos.size() == 2 else Vector2.INF,
 	}
 

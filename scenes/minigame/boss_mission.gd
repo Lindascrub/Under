@@ -249,7 +249,7 @@ func _return_world() -> void:
  var s := B.state(floor)
  var pos: Array = s.get("return_pos", [])
  GameState.minigame = {"return_pos": Vector2(float(pos[0]), float(pos[1])) if pos.size() == 2 else Vector2.INF}
- Router.goto(str(s.get("return", "res://scenes/world/home.tscn")), "_mg")
+ Router.goto(str(s.get("return", Router.FONDO)), "_mg")
 
 func _draw_energy() -> void:
  var v := B.energy_preview(p)

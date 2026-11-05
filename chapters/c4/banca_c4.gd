@@ -19,7 +19,7 @@ const ROBOT_STAMP := "res://chapters/c4/timbro_robot.tscn"
 
 ## Dove portano le scale: la Città se esiste già, se no il Piano Terra di prima.
 static func next_scene() -> String:
-	return CITY if ResourceLoader.exists(CITY) else Router.OFFICE
+	return CITY
 
 
 ## Un po' di spazio sopra il muro: l'insegna e il display dei numeri non finiscono sotto la barra in alto.

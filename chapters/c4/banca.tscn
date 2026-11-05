@@ -6940,7 +6940,7 @@ script = ExtResource("Script_numero_servito")
 
 [node name="ScaleSu" parent="Decori" unique_id=941719658 instance=ExtResource("stairs_up_tscn")]
 position = Vector2(560, 53)
-target = "res://scenes/world/office.tscn"
+target = "res://chapters/c5/citta.tscn"
 need = "0"
 
 [node name="LettoreBadge" type="Sprite2D" parent="Decori" unique_id=1760759737]

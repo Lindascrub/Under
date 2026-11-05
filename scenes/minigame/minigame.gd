@@ -1174,7 +1174,7 @@ func _finish(success: bool, partial := false) -> void:
 	if success and cfg.has("_extra"):
 		lines = (cfg["_extra"] as Array) + lines
 	await Ui.say(lines, who)
-	Router.goto(str(cfg.get("return", Router.STREET)), "_mg")
+	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
 
 
 func _draw() -> void:

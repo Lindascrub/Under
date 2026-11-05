@@ -9,10 +9,10 @@ const MAPPE := {
 	"fondo": "res://chapters/c1/fondo.tscn", "sottoufficio": "res://chapters/c2/sottoufficio.tscn",
 	"mercato": "res://chapters/c3/mercato.tscn", "banca": "res://chapters/c4/banca.tscn",
 	"citta": "res://chapters/c5/citta.tscn", "casa_comune": "res://chapters/c5/casa_comune.tscn",
-	"cima": "res://chapters/c6/cima.tscn", "ufficio_capo": "res://scenes/world/boss_office.tscn",
+	"cima": "res://chapters/c6/cima.tscn",
 }
-## Le uscite che restano chiuse apposta: l'ufficio del capo porta al vecchio ufficio, che non c'è più.
-const USCITE_CHIUSE := {"ufficio_capo": [0]}
+## Le uscite che restano chiuse apposta (nessuna, per ora).
+const USCITE_CHIUSE := {}
 ## Le spinte con la tastiera: dritte e in diagonale, contro spigoli e angoli.
 const SPINTE := [["move_up"], ["move_down"], ["move_left"], ["move_right"], ["move_up", "move_left"],
 	["move_up", "move_right"], ["move_down", "move_left"], ["move_down", "move_right"]]
