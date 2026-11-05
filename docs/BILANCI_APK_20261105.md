@@ -20,7 +20,9 @@ Non sono state necessarie modifiche a muri, oggetti, collisioni o storia. Le imm
 - Dimensione: 154.701.575 byte, circa 148 MiB.
 - Identificativo: `com.lindascrub.cheap`; versione 0.3, codice 3; architettura ARM64.
 - Build di debug per le prove, con la stessa firma Android della build precedente. Non è una pubblicazione su uno store.
-- SHA-256: `2288a2a83d94f7898da71ac19b053d635fdf72ab515c00b4801033791bce7d3d`.
+- SHA-256: `338010cf8a549b0408ebc8fa6271fcacf29d4900d21e7063a0710b2c56a538c9`.
+
+Ultimo aggiornamento del 5 novembre: la musica del menu viene interrotta all'avvio dell'introduzione narrativa in cucina. Il brano dell'ascensore parte ancora quando compare la cabina. APK rigenerata e contenuto compilato dell'intro verificato.
 
 Verificati firma con `apksigner`, integrità ZIP, manifest identico alla build precedente e presenza delle nuove configurazioni di Amir, Olga, Teo e Ada. Il preset esclude test, report, backup, strumenti e addon dell'editor. L'avvio del menu e il caricamento delle scene sono stati verificati con Godot sulle risorse estratte dall'APK: non è un'installazione o una prova su telefono fisico.
 

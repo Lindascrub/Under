@@ -47,6 +47,7 @@ var _t := 0.0
 
 
 func _ready() -> void:
+	Sound.music("")
 	Ui.show_hud(false)
 	Ui.cutscene = true
 	_cabin.visible = false
