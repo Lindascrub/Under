@@ -1308,7 +1308,7 @@ texture = ExtResource("lamp_png")
 [node name="GuardaScatole" type="Node2D" parent="Mondo" unique_id=199750411]
 position = Vector2(301, 168)
 script = ExtResource("7_i6r6f")
-lines = PackedStringArray("* Scatole piene di lampadine. Alcune accese, alcune rotte, alcune che non hanno ancora deciso.")
+lines = PackedStringArray("* Scatole piene di lampadine. Alcune accese, alcune rotte. Una lampeggia ancora.")
 lines_after = PackedStringArray()
 
 [node name="GuardaCavi" type="Node2D" parent="Mondo" unique_id=908535381]

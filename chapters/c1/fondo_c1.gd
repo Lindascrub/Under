@@ -182,6 +182,14 @@ func _look_back_line() -> String:
 		return "Laggiù, Fermo sorride.\nÈ l'unica luce rimasta accesa. L'hai accesa tu, col suo quaderno."
 	if GameState.flags.get("c1_sbarrato", false):
 		return "Laggiù è tutto grigio, e tu non sai perché.\nNon ti sei voltato. Adesso, voltarsi non serve più."
+	# Le partite nuove ricordano la leva. Nei salvataggi vecchi non si inventa un incarico.
+	var incarico: Dictionary = GameState.flags.get("boss_missions", {}).get("-5", {})
+	if str(incarico.get("status", "")) == "done" and Storia.torto("fermo"):
+		if Storia.riparato("fermo"):
+			return "Prima gli hai chiesto uno sforzo in più. Poi hai pedalato al suo posto.\nFermo si è tenuto quei quindici minuti. Li ha contati tutti."
+		if int(GameState.flags.get("boss_fermo_extra", 0)) > 0:
+			return "Laggiù, Fermo pedala ancora.\nIl tuo premio è arrivato. La sua pausa no."
+		return "Laggiù, Fermo ha smesso di pedalare.\nSta ancora riprendendo fiato. Il premio l'hai preso tu."
 	if int(GameState.flags.get("c1_extra", 0)) >= EXTRA_PAY.size():
 		return "Laggiù, la cyclette gira ancora un po' da sola.\nHai riacceso la festa tre volte. Nessuno ti ha detto grazie."
 	var truths := 0
@@ -218,7 +226,7 @@ func _talk_fermo() -> void:
 			"La festa la fanno per chi arriva. Così, i primi giorni, non guardi dove sei.",
 			"I colori li accendiamo noi, pedalando. Ogni palloncino gonfio è un'ora di qualcuno. Spesso la mia.",
 			"E il badge... il badge ti porta dove si pedala di meno e si guarda di più. Lassù i colori sono più belli. E più cari.",
-			"Le uniche cose che restano colorate sono quelle che vogliono qualcosa da te. Ricordatelo, quando sali."], who)
+			"La cyclette è ancora accesa. Puoi anche avere il badge: lei un altro turno te lo farebbe fare."], who)
 		return
 	if GameState.flags.get("pity_fermo", false) and not GameState.flags.get("fermo_pity_line", false):
 		GameState.flags["fermo_pity_line"] = true
@@ -398,8 +406,8 @@ func _revelation() -> void:
 	var fade := create_tween()
 	fade.tween_method(func(v: float) -> void: _off_mat.set_shader_parameter("amount", v), 0.0, 1.0, 3.0)
 	await fade.finished
-	await Ui.say(["* La festa si è spenta. Restano accese solo la cyclette e lo sportello dei badge.",
-		"* La cyclette, anzi, ronza ancora. Come se ti aspettasse."])
+	await Ui.say(["* La festa ha perso colore. La cyclette è ancora accesa.",
+		"* Ronza ancora. Come se ti aspettasse."])
 	if GameState.is_robot("fermo"):
 		await Ui.say(["* ...Ma Fermo sta sorridendo. È l'unica cosa, qui, che non si è spenta. E non è sua."])
 	elif _helped_here():

@@ -1982,14 +1982,14 @@
       "kind": "time",
       "ask": "Bulbo ha delle lampadine da smistare prima del controllo, e non ce la fa da sola.",
       "yes": [
-        "Grazie! Le buone restano accese, le rotte vanno via. Come le persone, quaggiù."
+        "Grazie! Finito un carico. Il prossimo lo lascio aspettare un minuto."
       ],
       "minigame": {
         "music": "aiuto_bulbo",
         "type": "bulbs",
         "title": "Le lampadine di Bulbo",
         "prima_prova": true,
-        "battute_stelle": {"1": ["Finite! Evviva! Qualcuna è nella scatola sbagliata, ma sorride lo stesso. Come me."], "2": ["Quasi tutte giuste! Una l'ho spostata io, prima che la vedessero. Non è successo niente."], "3": ["Tutte giuste! Neanche io ci riesco. Non dirlo a nessuno: le cose che funzionano, quaggiù, le mandano di sopra."]},
+        "battute_stelle": {"1": ["Finite! Quasi tutte al posto giusto. Quella no. Aspetta, la sposto io."], "2": ["Quasi tutte giuste! Una l'ho spostata io, prima che la vedessero. Non è successo niente."], "3": ["Tutte giuste! Neanche io ci riesco. Non dirlo a nessuno: le cose che funzionano, quaggiù, le mandano di sopra."]},
         "lose": ["Non fa niente! Davvero! Le rimettiamo in fila e ricominciamo da capo... come ogni giorno."],
         "sgridata_dopo": 3,
         "sgridata": ["Come è possibile? Sono lampadine! Le buone di qua, le rotte di là!", "Lo so che vuoi aiutarmi, ma mettici più impegno, per favore... io il sorriso lo devo tenere su per tutte e due."],

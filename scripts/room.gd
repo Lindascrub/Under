@@ -434,7 +434,13 @@ func _floor_gift() -> void:
 			await _badge_booth.walk_to(point)
 		var delta: Vector2 = player.global_position - _badge_booth.clerk.global_position
 		_badge_booth.clerk.play("idle_" + ("right" if delta.x > 0 else "left") if absf(delta.x) > absf(delta.y) else "idle_" + ("down" if delta.y > 0 else "up"))
-	if first_friend:
+	if first_friend and floor_id == "-5":
+		await Ui.say(["* L'addetta dello sportello ti viene incontro con un badge in mano.",
+			"Ho visto. Hai dato una mano a tutti, qui.",
+			"Io sono rimasta allo sportello a guardare.",
+			"Tieni. Questo lo pago io.",
+			"Mi chiamo Nives. Quando ripassi, puoi salutarmi anche senza comprare niente."], who, BADGE_CLERK)
+	elif first_friend:
 		await Ui.say(["* L'addetta dello sportello ti viene incontro con un badge in mano.",
 			"Ho sentito. Hai dato una mano a tutti, qui. A tutti.",
 			"Sai quante persone l'hanno fatto, in vent'anni? Nessuna. Io, per esempio, no.",
@@ -1150,6 +1156,10 @@ func _badge_machine() -> void:
 		price_said = await MemoriaNives.return_scene(who)
 	else:
 		await MemoriaNives.at_booth(who)
+	if GameState.floor_id != "-5" and not GameState.flags.get("badge_clerk_same_face", false) \
+			and (GameState.flags.get("badge_clerk_intro", false) or GameState.flags.get("gift_-5", false)):
+		GameState.flags["badge_clerk_same_face"] = true
+		await Ui.say(["Un'addetta per piano. Stessa faccia, prezzi diversi."], who, BADGE_CLERK)
 	if GameState.has_badge(need):
 		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
 		return
@@ -1162,8 +1172,7 @@ func _badge_machine() -> void:
 	elif not GameState.flags.get("badge_clerk_intro", false):
 		GameState.flags["badge_clerk_intro"] = true
 		first_fondo = GameState.floor_id == "-5"
-		await Ui.say(["Sportello badge. Senza badge il tornello non ti fa salire le scale.",
-			"Sì, ci sono io su ogni piano. Siamo una per piano. Siamo tutte uguali. Non chiedere."], who, BADGE_CLERK)
+		await Ui.say(["Sportello badge. Per salire serve il badge del piano di sopra."], who, BADGE_CLERK)
 	if first_fondo:
 		# la prima volta al Fondo il prezzo lo dice così (Fermo ha già spiegato che è una rata del debito)
 		if not price_said:
