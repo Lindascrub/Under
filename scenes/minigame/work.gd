@@ -76,12 +76,20 @@ var finger := Vector2(-1, -1)
 ## Le chiamate, dalla più gentile alla più cattiva: [cliente, copione, sincera, sgarbata].
 const CALLS := [
 	["Vorrei parlare con un essere umano!", "La sua chiamata è importante per noi.", "Anch'io. Ma qui non ce ne sono.", "Allora richiami quando ne trova uno."],
+	["Pronto? Mi sente? Pronto?", "La sentiamo forte e chiaro!", "La sento. È tutto il resto che non funziona.", "No."],
 	["È la quarta volta che chiamo!", "Grazie per la sua pazienza.", "Lo so. Le vedo tutte. Nessuno le legge.", "E chiami una quinta, allora."],
+	["Ho premuto 1, poi 3, poi di nuovo 1…", "Ottima scelta! Prema 1 per tornare all'inizio.", "Il menù gira in tondo. Anch'io, da un po'.", "Provi con lo 0. O con un martello."],
 	["Lei è un robot, vero?", "Sono qui per aiutarla!", "Non ancora.", "Bip."],
+	["Il sito dice che sono già vostro cliente. Io non mi sono mai iscritto.", "Benvenuto nella famiglia CHEAP!", "Succede. Qui si entra anche senza volerlo.", "Allora si goda la famiglia."],
 	["Sono in attesa da due ore!", "Resti in linea, la sua chiamata è importante.", "Anch'io sono in attesa. Da anni.", "Altre due e vince un premio."],
+	["Mi avete messo in attesa con la stessa canzone per un'ora!", "È la nostra musica preferita!", "Io la sento dieci ore al giorno. Ormai la canto.", "Gliela fischio, se vuole."],
+	["Voglio disdire.", "La disdetta richiede il modulo blu, in tre copie.", "Non si può. Ci ho provato anch'io.", "Intanto disdica la chiamata."],
 	["Voglio parlare col suo responsabile!", "Il responsabile la richiamerà entro 48 ore.", "Non l'ho mai visto. Forse non esiste.", "Il responsabile è lei, a quanto pare."],
+	["La bolletta è più alta del mio stipendio.", "Ha valutato la rateizzazione Comodità?", "Anche la mia. Sa come la pago? Non la pago.", "Cambi stipendio."],
 	["Mi avete addebitato tremila euro!", "Le propongo l'offerta Serenità Plus.", "Mi dispiace. Qui succede a tutti.", "Li ha spesi bene, almeno?"],
 	["Perché mi chiamate alle sei di mattina?", "Per offrirle un'occasione unica!", "Perché a quell'ora nessuno riattacca.", "Perché lei era sveglio."],
+	["Mio figlio ha firmato un contratto a nove anni.", "Il contratto è valido dalla nascita.", "Lo so. Anch'io ne avevo uno, a nove anni.", "Precoce, il ragazzo."],
+	["Mi avete pignorato il frigorifero. Dentro c'era il latte di mia figlia.", "Il latte è incluso nella procedura.", "Mi dispiace. Non dovrebbe succedere a nessuno.", "Lo beva caldo, allora."],
 	["Mia madre è morta. Voglio chiudere il suo contratto.", "Serve il modulo D-12 firmato dal titolare.", "Mi dispiace tanto. Lo chiudo io, adesso.", "Deve chiamare lei, però."],
 ]
 const HD_KINDS := ["copione", "sincera", "sgarbata"]
@@ -94,6 +102,8 @@ var hd_sel := 0
 var hd_done := 0
 var hd_honest := 0
 var hd_last := ""
+## Le ultime chiamate uscite: non tornano subito (mai la stessa due volte di fila).
+var hd_recent: Array[int] = []
 ## Negli ultimi secondi del turno squillano tutti i telefoni della sala.
 const HD_FINALE := 12.0
 
@@ -653,13 +663,28 @@ func _hd_pick_up(k: int) -> void:
 		return
 	# i clienti diventano più cattivi man mano che il turno va avanti (e più sali)
 	var worst := clampi(3 + hd_done + int(d * 3.0), 3, CALLS.size())
-	hd_call = CALLS[randi() % worst]
+	hd_call = CALLS[_hd_pick_call(worst)]
 	hd_order = [0, 1, 2]
 	hd_order.shuffle()
 	hd_sel = 0
 	hd_phase = "talk"
 	hd_t = maxf(3.5, 7.0 - d * 3.0)
 	Sound.sfx("arcade/select_2", 1.0, 4.0)
+
+
+## Pesca una chiamata a caso tra le prime `worst`, ma non una di quelle uscite da poco:
+## mai la stessa due volte di fila, e se ce ne sono abbastanza nemmeno le ultime due.
+func _hd_pick_call(worst: int) -> int:
+	var keep := mini(2, worst - 1)
+	while hd_recent.size() > keep:
+		hd_recent.pop_front()
+	var pool: Array[int] = []
+	for i in worst:
+		if i not in hd_recent:
+			pool.append(i)
+	var i: int = pool.pick_random()
+	hd_recent.append(i)
+	return i
 
 
 func _hd_answer(k: int) -> void:
