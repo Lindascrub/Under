@@ -25,3 +25,6 @@ __pycache__/
 /assets/farm_rpg/
 /assets/ui/
 /Conference_Hall_Singles_60.png*
+
+# prove usa e getta dei test (foto, log, scene di prova): restano solo sul computer
+/tests/collisioni/tmp/
