@@ -8,8 +8,8 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##   type "collect":  muovi il cuore e raccogli tutto prima che scada il tempo (foglie, croccantini)
 ##   type "sequence": ricorda e ripeti la sequenza di frecce (pratiche, post-it, curriculum)
 ##   type "bulbs":    smista le lampadine: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla
-##                    si aggiusta con SU o GIÙ (Mina)
-##   type "wires":    collega i fili dello stesso colore, come in Among Us (Nonno Bulbo)
+##                    si aggiusta con SU o GIÙ (Bulbo, il nonno delle lampadine)
+##   type "wires":    collega i fili dello stesso colore, come in Among Us (Mina, l'elettricista)
 ##   type "inventory": ogni prodotto sul suo scaffale (Leda: SCATOLE E SCAFFALI)
 ##   type "route":    due giri (mattina e pomeriggio), tre pacchi ciascuno: scegli le strade (Amir: L'ULTIMA CONSEGNA)
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
@@ -253,7 +253,7 @@ func _start() -> void:
 	prima_prova = bool(cfg.get("prima_prova", false)) and not bool(cfg.get("rigioco", false)) and not GameState.flags.get("c1_prova_" + type, false)
 	match type:
 		"ercole":
-			_info.text = "Aspetta che chiuda gli occhi."
+			_info.text = "Forza nel verde. Lascia prima che si addormenti."
 			$ErcoleGomitata.prova_libera = prima_prova
 			$ErcoleGomitata.colpo.connect(_ercole_colpo)
 			$ErcoleGomitata.errore.connect(_ercole_errore)
@@ -863,7 +863,7 @@ func _process(delta: float) -> void:
 				if shown > seq.size():
 					phase = "play"
 					if seq_rosse.has(true):
-						_info.text = "Ripeti toccando sopra, sotto, a sinistra o a destra. Salta le rosse!" if TouchControls.enabled else "Ripeti con le frecce. Salta le rosse!"
+						_info.text = "Tocca sopra, sotto, a sinistra o a destra, nello stesso ordine. Salta i segni con la X." if TouchControls.enabled else "Ripeti con le frecce. Salta i segni con la X."
 					else:
 						_info.text = "Ora ripeti: tocca sopra, sotto, a sinistra o a destra!" if TouchControls.enabled else "Ora ripeti con le frecce!"
 	queue_redraw()

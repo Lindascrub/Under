@@ -301,7 +301,7 @@ func _armadio() -> void:
 		"* VALUTAZIONE OPPORTUNITÀ — DIREZIONE CHEAP.",
 		"* \"La cessazione delle attività gratuite aumenta il potenziale commerciale dell'immobile.\"",
 		"* \"La conversione a centro a pagamento è economicamente preferibile per CHEAP.\""])
-	await Ui.say(["* Non c'è nessun complotto. Solo un conto fatto da un'altra parte del tavolo.",
+	await Ui.say(["* Per chi studia qui, chiudere è un problema. Nel documento CHEAP, è un modo per guadagnare di più.",
 		"* La stessa chiusura: un problema per chi studia qui. Un'opportunità per chi l'ha scritta."])
 
 

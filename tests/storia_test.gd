@@ -103,7 +103,7 @@ func _test_banca() -> void:
 	_check(f.get("c4_olga_corretta", false) and not Storia.olga_torto_aperto() and GameState.money == 3000, "ritirata alle scale: corretta, il premio non torna indietro")
 	_check(f.get("c4_ricevuta_copia", false), "anche con l'inganno Teo fa la copia (completa)")
 	var fixed: String = m.call("look_back_line")
-	_check(fixed != helped and fixed.contains("piegato"), "corretta: lo sguardo indietro riconosce la correzione senza dimenticare il foglio (%s)" % fixed)
+	_check(fixed != helped and fixed.contains("ritirato") and fixed.contains("nascosto"), "corretta: lo sguardo indietro riconosce la correzione senza dimenticare il foglio (%s)" % fixed)
 	# salvare e ricaricare conserva scelte e ordine
 	GameState.save_game(Router.BANCA, m.player.position)
 	var seq := int(f.get("seq", 0))

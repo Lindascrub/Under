@@ -9,7 +9,7 @@ const INTRO := {
  "-5": ["La festa ha bisogno di corrente. Fermo è già sulla cyclette.", "Le chiedo solo di regolare una leva.", "Per uno sforzo in più di Fermo, ci sono seicento euro per lei."],
  "-4": ["Le pratiche risolte devono aumentare.", "Quella di Ercole aspetta un registro. Se la chiude adesso, per noi è risolta."],
  "-3": ["Tre prodotti, tre cartellini. Quello grande deve essere lo sconto. Le condizioni possono stare altrove.", "Se il cliente scopre il costo alla cassa, intanto è già alla cassa. Il premio arriva fino a 1.500 euro."],
- "-2": ["Olga vorrebbe una rata più piccola. Noi vorremmo commissioni più grandi.", "Prepara una proposta. Durata, interessi e costo totale li puoi leggere tu. Decidi quanto far leggere a lei."],
+ "-2": ["Olga paga già un mutuo. Le proponiamo un altro prestito: 1.200 euro, con una rata entro 65 euro al mese.", "Tu controlli il costo totale. Poi decidi quanto far leggere a Olga."],
  "0": ["La piazza parla da tutte le parti. Noi abbiamo sessanta secondi di notiziario.", "Le parole sono le loro. Il montaggio è nostro. Gli ascolti premiano lo scontro."],
 }
 
@@ -217,7 +217,7 @@ static func result_lines(floor: String) -> Array:
   if not bool(r["visible"]):
    lines.append_array(["Olga: La rata sembra possibile. Per quanti mesi, però? E quel foglio piccolo?", "* Il Capo accredita il premio per la proposta. Olga chiede la copia completa prima di firmare: il prestito è in attesa, nessuna rata è ancora addebitata."])
   else:
-   lines.append_array(["Olga: Una rata più piccola può servirmi. Ma i mesi sono miei: prima confronto il totale.", "* Olga prende il riepilogo. La proposta è leggibile; non è ancora una firma."])
+   lines.append_array(["Olga: Questo prestito si aggiunge al mutuo. Prima di accettare voglio confrontare il totale.", "* Olga prende il riepilogo. La proposta è leggibile; non è ancora una firma."])
   if not GameState.is_robot("teo"):
    lines.append("Teo: La durata non è una trappola da sola. Guarda il costo totale e la commissione, poi chiedi a chi paga.")
  if floor == "0":
@@ -242,7 +242,7 @@ static func npc_lines(id: String) -> Array:
   var r: Dictionary = state("-2").get("result", {})
   if GameState.day > int(GameState.flags.get("boss_olga_offer_day", GameState.day)):
    return ["Ho letto la copia: %d mesi, %s in tutto." % [int(r["months"]), cash(int(r["total"]))], "Ho chiesto un confronto scritto. Finché non chiariscono costi e commissioni non firmo." if not bool(r["visible"]) else "Sto confrontando le alternative. Una proposta chiara mi permette anche di dire: non mi conviene."]
-  return ["La rata mi lascia respirare, sulla carta. Prima di accettare devo capire per quanti mesi."]
+  return ["Prima di aggiungere un debito a quello che ho già, voglio leggere tutto."]
  if id == "fermo" and str(state("-5").get("status")) == "done":
   return ["Ah. Pensavo fosse finito. Ancora cinque minuti." if int(GameState.flags.get("boss_fermo_extra", 0)) > 0 else ("Il ritmo è più forte. Sto usando la pausa per riprendere fiato." if int(GameState.flags.get("boss_fermo_intensity", 2)) == 3 else "I miei quindici minuti sono ancora qui. Non li avevo mai visti tutti insieme.")]
  if id == "ercole" and str(state("-4").get("status")) == "done":
@@ -270,7 +270,7 @@ static func finish_energy() -> String:
 
 const DOCUMENTS := [
  {"id": "R-12", "title": "RIMBORSO TRASPORTI", "body": "Rimborso già accreditato. Ricevuta e conferma del richiedente presenti. Nessun documento mancante.", "correct": 3},
- {"id": "E-27", "title": "ERCOLE / ANZIANITÀ E PAUSE", "body": "Ercole chiede il riconoscimento degli anni in archivio e delle pause previste. Firma presente. Manca il registro dei turni: è custodito dal Personale. Nessuna decisione è stata emessa. Non è il Modulo B-4.", "correct": 2},
+ {"id": "E-27", "title": "ERCOLE / ANZIANITÀ E PAUSE", "body": "Ercole chiede anzianità e pause. Domanda firmata, senza risposta. Manca il registro dei turni, custodito dal Personale. Non è il B-4.", "correct": 2},
  {"id": "T-08", "title": "CAMBIO TURNO", "body": "Domanda completa e firmata da entrambi i lavoratori. Serve l'autorizzazione dell'ufficio del Personale prima dello scambio.", "correct": 1},
  {"id": "F-03", "title": "RIMBORSO LAMPADINE", "body": "Acquisto dichiarato, ma manca la fattura. Il fornitore può inviarne una copia. Non risulta alcun pagamento.", "correct": 2},
 ]
@@ -372,3 +372,27 @@ static func finish_news() -> String:
  commit("0", {"cuts": cuts, "reward": cuts * 2000, "clips": p["clips"], "facts": p["facts"], "seconds": news_time(p)})
  return ""
 
+
+
+## Istruzioni delle scene attuali, mostrate una volta per incarico.
+static func instructions(floor: String) -> Array:
+ return {
+ "-4": [
+  "Leggi il fascicolo e scegli come procedere. Se manca un documento, richiedilo.",
+  "SEGNA RISOLTA chiude la pratica: non produce il documento né la risposta che manca."
+ ],
+ "-3": [
+  "Scegli lo sconto e il prezzo su cui calcolarlo: quello di oggi o quello futuro.",
+  "Controlla quantità minima e condizioni. Confronta il cartellino con ALLA CASSA."
+ ],
+ "-2": [
+  "Prepara una proposta con una rata entro 65 € al mese. È un nuovo prestito, aggiuntivo al mutuo di Olga.",
+  "Controlla durata, ultima rata, commissione e totale. Poi scegli se Olga li può leggere tutti.",
+  "Inviare la proposta non significa che Olga abbia firmato."
+ ],
+ "0": [
+  "Monta tre fonti diverse entro 60 secondi.",
+  "Per ogni registrazione scegli se tenere il contesto o usare il taglio con il titolo.",
+  "Il cartello FATTI VERIFICATI occupa 10 secondi. Poi scegli TRASMETTI."
+ ]
+}.get(floor, [])

@@ -63,36 +63,47 @@ func _ready() -> void:
 
 func _sequence() -> void:
 	await Ui.narrate([
-		"Una mattina ti sei svegliato per abitudine e sei andato in cucina, ma stavolta era tutto sottosopra.",
-		"Sul tavolo c'era solo un biglietto: «Mi dispiace», firmato papà.",
-		"Senza una lira, ti ha lasciato lì, con una lettera aperta accanto che diceva solo: «Si presenti alla CHEAP per saldare il debito.»",
+		"La sveglia è suonata, come ogni mattina. Ti sei alzato dal lato sbagliato del letto. Ultimamente succedeva spesso.",
+		"Sei sceso in cucina per fare colazione. Di fretta, naturalmente. Sembrava che il mondo intero avesse fretta, e tu cercavi di stargli dietro.",
+		"Ma stavolta era tutto sottosopra.",
+		"Hai chiamato tuo padre. Una volta, due, tre. Nessuna risposta.",
+		"Sei andato a cercarlo in camera sua. Hai trovato soltanto un biglietto:",
+		"«Mi dispiace.» Firmato: papà.",
+		"Accanto, una lettera già aperta:",
+		"«Si presenti alla CHEAP per saldare il suo debito.»",
+		"Tuo padre se n’era andato. Tu eri rimasto senza una lira, con quella lettera in mano.",
+		"TORRE CHEAP",
 	])
 	_cabin.visible = true
 	_player.visible = true
 	Sound.music("ascensore")
 	await _wait(0.8)
 	await Ui.say([
-		"* L'ascensore della Torre CHEAP odora di metallo.",
-		"* Si sente quell'odore stantio intriso della tristezza altrui, un odore che riconosceresti a occhi chiusi grazie a tuo padre e alle sue manie di ludopatia.",
-		"* La musica, però, è diversa da quella degli altri ascensori: è più allegra del solito, di un'allegria artificiale che ti fa salire un nodo d'ansia in gola.",
-		"* Una voce registrata ti dà il benvenuto. Sembra contentissima di vederti.",
-		"«Benvenuto nella CHEAP. Il futuro costa poco.»",
+		"* Questo ascensore è diverso dagli altri.",
+		"* C’è il solito odore di metallo, ma più forte. E sotto, qualcosa che conosci.",
+		"* Lo stesso odore che riempiva casa quando tuo padre giocava. Non hai mai saputo dargli un nome. Tristezza, forse.",
+		"* Anche la musica è diversa. Negli altri ascensori quelle musichette provavano almeno a tranquillizzarti.",
+		"* Questa è lenta, triste. Ti mette addosso un’ansia che non sai spiegare.",
+		"* Una voce registrata interrompe la musica. Acuta, contentissima. Cerca di sembrare umana. Si sente quanto si sta sforzando.",
 	])
+	await Ui.say(["Benvenuto alla CHEAP. Il futuro costa poco."], "Voce CHEAP")
+	await Ui.say(["* Sul display scompare il numero del piano."])
 	_floor_text = "7 MLD"
-	await Ui.say([
-		"* Sul display compare il tuo debito: sette miliardi.",
-		"* Una cifra così rotonda che sembra quasi uno scherzo, se non fosse per gli zeri.",
-	])
+	await Ui.say(["Che vuol dire?"], GameState.player_name)
+	await Ui.say(["Lavoratore riconosciuto.", "Debito registrato: sette miliardi di euro."], "Voce CHEAP")
+	await Ui.say(["* La voce pronuncia la cifra con la stessa allegria del benvenuto."])
+	await Ui.say(["Sette miliardi?"], GameState.player_name)
+	await Ui.say(["* Una cifra così rotonda che sembra quasi uno scherzo.",
+		"* Provi a contare gli zeri. Perdi il conto.",
+		"* Che cosa aveva fatto tuo padre? Come aveva potuto lasciare un debito del genere?",
+		"* L’ascensore continua a scendere."])
 	for f in ["-1", "-2", "-3"]:
 		await _wait(0.9)
 		_floor_text = f
 		Sound.sfx("ding", 0.9)
-	await _wait(0.6)
-	await Ui.say([
-		"* Mentre scendi, stranamente le luci sfarfallano.",
-		"* Ogni piano che passi sembra una sventura, ma non sai se è l'edificio che sta cadendo a pezzi o se, ora che conosci il peso di quel debito, ti senti semplicemente in trappola, senza via d'uscita.",
-	])
-	# al -4 la luce comincia a tremare
+	await Ui.say(["* Uno scatto. Poi un altro. Le luci sfarfallano e ti aggrappi al corrimano.",
+		"* Sta davvero cadendo a pezzi, o sei tu che hai cominciato a sentire ogni rumore?",
+		"* Ti manca l’aria. Guardi la porta chiusa."])
 	await _wait(0.5)
 	_floor_text = "-4"
 	Sound.sfx("ding", 0.8)
@@ -100,10 +111,8 @@ func _sequence() -> void:
 		_light = 0.35 if i % 2 == 0 else 0.9
 		await _wait(0.08 + randf() * 0.12)
 	_light = 0.85
-	# la musica rallenta, come un disco che si scarica
 	Sound.music_pitch(0.55, 0.9)
 	await _wait(1.0)
-	# -5: lo schianto
 	_floor_text = "-5"
 	Sound.music("")
 	Sound.sfx("clunk")
@@ -122,23 +131,25 @@ func _sequence() -> void:
 		await _wait(0.35)
 	_display_on = true
 	_light = 0.12
-	await Ui.say(["* L'ascensore si ferma e il display lampeggia: -5.",
-		"* Premi tutti i pulsanti ma non se ne accende nessuno.",
-		"* Nemmeno quello dell'allarme, che a quanto pare qui dentro è considerato un optional per ottimisti."])
+	await Ui.say(["* L’ascensore si ferma di colpo.", "* Sul display lampeggia: −5.",
+		"* Premi un pulsante. Poi tutti gli altri. Nessuno si illumina.",
+		"* Premi quello per aprire le porte.", "* Niente.", "* Alla fine premi l’allarme.",
+		"* Per un momento non succede nulla."])
 	await _wait(0.6)
 	Sound.sfx("door", 0.7)
 	var tw := create_tween()
 	tw.tween_property(self, "_doors", 0.45, 1.4).set_trans(Tween.TRANS_SINE)
 	await tw.finished
 	await _wait(0.4)
-	await Ui.say(["* Poi, con un gemito metallico, le porte si aprono a metà e si incastrano.",
-		"* Fuori inizi già a intravedere delle luci fin troppo abbaglianti."])
+	await Ui.say(["* Poi uno stridio metallico. Le porte si aprono e si bloccano a metà.",
+		"* La fessura è larga abbastanza per farti passare. Appena abbastanza.",
+		"* Dall’altra parte arrivano luci fin troppo abbaglianti."])
 	var walk := create_tween()
 	walk.tween_property(_player, "position", _exit.position, 1.3)
 	_player.play("walk_down")
 	await walk.finished
 	Ui.cutscene = false
-	Router.goto(Router.FONDO, "elevator")
+	Router.goto(Router.FONDO, "elevator", ["CAPITOLO 1", "IL FONDO", "Piano −5."])
 
 
 func _wait(s: float) -> void:

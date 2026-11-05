@@ -15,12 +15,12 @@ func aggiorna(p: Dictionary, messaggio: String) -> void:
 			azioni.assign(["doc_0", "doc_1", "doc_2", "doc_3", "exit"])
 			var i := mini(3, int(p["document"]))
 			var d: Dictionary = B.DOCUMENTS[i]
-			$Stato.text = "Richiedi ciò che manca oppure chiudi una pratica già conclusa."
+			$Stato.text = "Leggi il fascicolo e scegli come procedere."
 			$Documento/Contenuto.text = "%s · %d/4\n%s\n\n%s" % [d["id"], i + 1, d["title"], d["body"]]
 		"-3":
 			azioni.assign(["rate", "reference", "units", "visible", "submit", "exit"])
 			var v := B.market_preview(p)
-			$Stato.text = "Etichetta %d/3 · Decidi cosa legge il cliente." % (int(p["round"]) + 1)
+			$Stato.text = "Etichetta %d/3 · Controlla sconto, quantità e condizioni." % (int(p["round"]) + 1)
 			$Acqua.visible = str(v["product"]) == "acqua"
 			$Prodotto.visible = not $Acqua.visible
 			if $Prodotto.visible: $Prodotto.texture = PRODOTTI.texture(str(v["product"]))
@@ -34,8 +34,8 @@ func aggiorna(p: Dictionary, messaggio: String) -> void:
 		"-2":
 			azioni.assign(["months", "apr", "fee", "visible", "proposal", "exit"])
 			var v := B.contract_preview(p)
-			$Stato.text = "Decidi quanto far leggere a Olga. Questo foglio è una proposta."
-			$Interno/Dati.text = "COPIA INTERNA\n1.200 € · budget 65 €/mese\nRata %s · %d mesi\nUltima %s\nInteressi %s\nCommissione %d €\nTOTALE %s" % [B.cash(int(v["monthly"])), int(v["months"]), B.cash(int(v["last"])), B.cash(int(v["interest"])), int(p["fee"]), B.cash(int(v["total"]))]
+			$Stato.text = "Controlla rata e totale. È una proposta, non una firma."
+			$Interno/Dati.text = "PRESTITO · COPIA INTERNA\n1.200 € · max 65 €/mese\nRata %s · %d mesi\nUltima %s\nInteressi %s\nCommissione %d €\nTOTALE %s" % [B.cash(int(v["monthly"])), int(v["months"]), B.cash(int(v["last"])), B.cash(int(v["interest"])), int(p["fee"]), B.cash(int(v["total"]))]
 			if messaggio != "": $Stato.text = ""
 			$Olga/Dati.text = "OLGA LEGGE\nRata %s\n%d mesi" % [B.cash(int(v["monthly"])), int(v["months"])]
 			$Olga/Condizioni.text = "Interessi %s\nCommissione %d €\nTotale %s" % [B.cash(int(v["interest"])), int(p["fee"]), B.cash(int(v["total"]))]
@@ -51,7 +51,7 @@ func aggiorna(p: Dictionary, messaggio: String) -> void:
 				$Intera/Testo.text = "Prima raccogli le registrazioni in piazza."
 				return
 			var s: Dictionary = fonti[posmod(int(p["source"]), fonti.size())]
-			$Stato.text = "Scegli cosa resta dei sessanta secondi."
+			$Stato.text = "Tre fonti diverse, entro 60 secondi. Decidi cosa va in onda."
 			if messaggio != "": $Stato.text = ""
 			$Intera/Testo.text = "REGISTRAZIONE · %s\n«%s»\n\nCONTESTO: %s" % [s["who"], s["quote"], s["context"]]
 			$Televisore/Testo.text = ("IN ONDA · " + B.cut_headline(str(s["id"])) + "\n«" + B.cut_quote(s) + "»\nCONTESTO ESCLUSO") if bool(p["cut"]) else ("IN ONDA · " + str(s["who"]) + "\n«" + str(s["quote"]) + "»\n" + str(s["context"]))

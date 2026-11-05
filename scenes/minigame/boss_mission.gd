@@ -42,6 +42,12 @@ func _ready() -> void:
   add_child(visuale)
   _sync_visuale()
  queue_redraw()
+ if visuale != null and not bool(B.state(floor).get("instructions_seen", false)):
+  if Ui.transitioning:
+   await Ui.faded_in
+  await Ui.say(B.instructions(floor))
+  B.state(floor)["instructions_seen"] = true
+  B.checkpoint(floor)
 
 func _sync_visuale() -> void:
  if visuale == null: return

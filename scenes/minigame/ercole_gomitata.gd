@@ -46,7 +46,7 @@ var prova_libera := false
 
 
 func _ready() -> void:
-	aiuto.text = "Tieni premuto, poi lascia: una gomitata leggera." if TouchControls.enabled else "Tieni premuto INVIO o il mouse, poi lascia."
+	aiuto.text = "Carica nel verde, poi lascia quando gli occhi si chiudono." if TouchControls.enabled else "Tieni INVIO o il mouse: forza nel verde. Lascia prima che dorma."
 	if get_parent() == get_tree().root:
 		avvia()
 

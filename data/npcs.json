@@ -1914,7 +1914,7 @@
     "emote": "note",
     "help": {
       "kind": "time",
-      "ask": "Mina ha un pannello con i fili tutti staccati. Ci scherza sopra, ma gli tremano le mani.",
+      "ask": "Mina ha un pannello con i fili tutti staccati. Ci scherza sopra, ma le tremano le mani.",
       "prima": ["Tienimi fermo questo filo. Oggi ho già preso abbastanza scosse."],
       "yes": [
         "Grazie per i fili."
@@ -1924,15 +1924,17 @@
         "type": "wires",
         "title": "I fili di Mina",
         "prima_prova": true,
-        "battute_stelle": {"1": ["Acceso è acceso, {name}. Per quanto, non chiederlo a me."], "2": ["Una scintilla sola. Alla tua età io ne facevo dieci al giorno, e mi chiamavano «il promettente»."], "3": ["Neanche una scintilla storta. Se di sopra ti assumono, non dirgli che ti ho insegnato io."]},
+        "battute_stelle": {"1": ["Acceso è acceso, {name}. Per quanto, non chiederlo a me."], "2": ["Una scintilla sola. Alla tua età io ne facevo dieci al giorno, e mi chiamavano «la promettente»."], "3": ["Neanche una scintilla storta. Se di sopra ti assumono, non dirgli che ti ho insegnato io."]},
         "lose": ["Lascia stare, {name}. Anche la corrente, certi giorni, non ha voglia di lavorare."],
         "sgridata_dopo": 3,
-        "sgridata": ["{name}, come fai a sbagliare così? Rosso col rosso, blu col blu.", "Ho capito che mi vuoi aiutare, ma mettici più impegno! Da solo prendevo meno scosse."],
-        "rigioca": {"chiede": ["Ancora qui, {name}? Se vuoi rifare i fili, li stacco. Tanto si staccano da soli."], "tre_stelle": ["Hai già fatto tutto perfetto. Rifarlo è come ripassare un filo che funziona: o sei pignolo o ti annoi."], "meglio": ["Meglio dell'altra volta. Ti pago la differenza: sono un elettricista, non una banca."], "uguale": ["Come l'altra volta. I soldi dell'altra volta però li hai già presi."]},
+        "sgridata": [
+          "Aspetta, {name}. Ripartiamo da un filo: rosso sul rosso. Poi il prossimo."
+        ],
+        "rigioca": {"chiede": ["Ancora qui, {name}? Se vuoi rifare i fili, li stacco. Tanto si staccano da soli."], "tre_stelle": ["Hai già fatto tutto perfetto. Rifarlo è come ripassare un filo che funziona: o sei pignolo o ti annoi."], "meglio": ["Meglio dell'altra volta. Ti pago la differenza: sono un'elettricista, non una banca."], "uguale": ["Come l'altra volta. I soldi dell'altra volta però li hai già presi."]},
         "intro": [
           "* Il pannello ha i fili staccati.",
-          "[TEL] * Trascina ogni filo fino a quello dello stesso colore.",
-          "[PC] * Trascina ogni filo col mouse fino a quello dello stesso colore."
+          "[TEL] * Trascina un filo sul contatto dello stesso colore e lascia il dito. Collega tutte le coppie.",
+          "[PC] * Trascina un filo sul contatto dello stesso colore e rilascia. Collega tutte le coppie."
         ],
         "time": 20,
         "rounds": 3,
@@ -1965,7 +1967,7 @@
       }
     ],
     "intro": [
-      "* Una ragazza mette una lampadina nella scatola. Ti vede e raddrizza subito il sorriso.",
+      "* Un uomo anziano mette una lampadina nella scatola. Ti vede e raddrizza subito il sorriso.",
       "Io sono Bulbo. Quelle accese di qua.",
       "Quelle rotte di là.",
       "Questa sembra rotta, ma si aggiusta. Aspetta, te lo faccio vedere."
@@ -1976,12 +1978,12 @@
       ]
     ],
     "helped": [
-      "Mi hai aiutata a smistarle tutte. Te ne devo una. Al Fondo i debiti veri sono questi."
+      "Mi hai aiutato a smistarle tutte. Te ne devo una. Al Fondo i debiti veri sono questi."
     ],
     "emote": "dots",
     "help": {
       "kind": "time",
-      "ask": "Bulbo ha delle lampadine da smistare prima del controllo, e non ce la fa da sola.",
+      "ask": "Bulbo ha delle lampadine da smistare prima del controllo, e non ce la fa da solo.",
       "yes": [
         "Grazie! Finito un carico. Il prossimo lo lascio aspettare un minuto."
       ],
@@ -1993,10 +1995,14 @@
         "battute_stelle": {"1": ["Finite! Quasi tutte al posto giusto. Quella no. Aspetta, la sposto io."], "2": ["Quasi tutte giuste! Una l'ho spostata io, prima che la vedessero. Non è successo niente."], "3": ["Tutte giuste! Neanche io ci riesco. Non dirlo a nessuno: le cose che funzionano, quaggiù, le mandano di sopra."]},
         "lose": ["Non fa niente! Davvero! Le rimettiamo in fila e ricominciamo da capo... come ogni giorno."],
         "sgridata_dopo": 3,
-        "sgridata": ["Come è possibile? Sono lampadine! Le buone di qua, le rotte di là!", "Lo so che vuoi aiutarmi, ma mettici più impegno, per favore... io il sorriso lo devo tenere su per tutte e due."],
+        "sgridata": [
+          "Aspetta, te lo faccio rivedere. Buone a destra, rotte a sinistra. Se lampeggia, prima l'aggiustiamo."
+        ],
         "rigioca": {"chiede": ["Vuoi rifarlo? Ne arrivano sempre di nuove! Sempre. Tutti i giorni."], "tre_stelle": ["Le hai già fatte tutte giuste! Rifarlo è solo per divertirti. Io non lo faccio per divertirmi."], "meglio": ["Meglio di prima! Ecco quello che mancava. Di più no, se no di sopra se ne accorgono."], "uguale": ["Uguale a prima! Che bello, le cose uguali! ...Soldi niente, però. Scusa."]},
         "intro": [
-          "* Se lampeggia, aggiustala finché resta accesa. Poi mettila con le buone."
+          "* Metti le lampadine accese nelle BUONE, a destra. Quelle rotte nelle ROTTE, a sinistra.",
+          "[PC] * Se lampeggia, premi SU o GIÙ più volte finché resta accesa. Poi premi DESTRA.",
+          "[TEL] * Se lampeggia, scorri su o giù più volte finché resta accesa. Poi scorri a destra."
         ],
         "count": 10,
         "time": 25,
@@ -2011,7 +2017,7 @@
       "...Lo sapevo. Lo sapevo e sorridevo lo stesso.",
       "Se smetti di sorridere, ti notano. E se ti notano, ti chiedono perché non lavori.",
       "I colori sono nostri, sai? Solo che non li vediamo mai addosso a noi. Li vediamo sulle pareti, sui palloncini. Su di loro.",
-      "Adesso che sono grigia... è strano. Mi sento più io."
+      "Adesso che sono grigio... è strano. Mi sento più io."
     ]
   },
   "tilde": {
@@ -2066,7 +2072,9 @@
         },
         "lose": ["Non si preoccupi. Il suo errore è importante per noi. Lo mettiamo in attesa."],
         "sgridata_dopo": 3,
-        "sgridata": ["Come è possibile? Sono quattro frasi! Ho capito che mi vuoi aiutare, ma mettici più impegno! Io le dico tutto il giorno. Anche nel sonno."],
+        "sgridata": [
+          "Piano: prima guarda, poi ripeti. Quelli con la X li lasciamo in attesa."
+        ],
         "rigioca": {
           "chiede": ["Vuoi rifarlo? Il copione nuovo è uguale a quello vecchio. Cambia solo la data."],
           "tre_stelle": ["Le hai già fatte tutte giuste. Rifarlo non serve a niente. Qui dentro, di solito, è un buon motivo per rifarlo."],
@@ -2144,10 +2152,10 @@
         "sgridata": ["Giovane, questa era la terza prova. Al prossimo controllo mi archiviano."],
         "rigioca": {"chiede": ["Un'altra ispezione. Vuoi darmi una mano anche stavolta?"], "tre_stelle": ["Vuoi riprovare? Il mio turno, purtroppo, continua."], "meglio": ["Meglio. Ti pago la differenza. Il riposo me lo devono ancora."], "uguale": ["Come prima. Il compenso, però, te l'ho già dato."]},
         "intro": [
-          "* Una gomitata leggera, quando gli occhi cominciano a chiudersi.",
-          "[PC] * Tieni premuto INVIO o il mouse. Lascia quando comincia a chiudere gli occhi.",
-          "[TEL] * Tieni premuto. Lascia quando comincia a chiudere gli occhi.",
-          "* Troppo forte e l'ispettore si gira."
+          "* Tieni sveglio Ercole con quattro gomitate leggere. Devi controllare sia i suoi occhi sia la barra della forza.",
+          "[PC] * Tieni premuto INVIO o il pulsante del mouse per caricare. Lascia con la forza nel verde, quando gli occhi cominciano a chiudersi.",
+          "[TEL] * Tieni premuto per caricare. Lascia con la forza nel verde, quando gli occhi cominciano a chiudersi.",
+          "* Troppo forte e l’ispettore si gira."
         ],
         "hits": 4,
         "reward": 10
@@ -2417,7 +2425,8 @@
         "prima_prova": true,
         "title": "Scatole e scaffali",
         "intro": [
-          "* Una montagna di scatole. Ogni cosa ha il suo scaffale.",
+          "* Sistema ogni prodotto nello scaffale giusto: ALIMENTARI, IGIENE, SCUOLA o CASA.",
+          "* Guarda anche gli oggetti già sullo scaffale: ti aiutano a scegliere.",
           "[TEL] * Tocca lo scaffale giusto per ogni scatola.",
           "[PC] * Clicca lo scaffale giusto per ogni scatola. Oppure FRECCE e {ok}."
         ],
@@ -2481,7 +2490,7 @@
       ],
       "partial": [
         "Diciassette. E mezzo, diciamo.",
-        "Il pacco in ritardo è arrivato lo stesso. Il bonus no.",
+        "I pacchi che hai consegnato sono arrivati. Il bonus no.",
         "Grazie lo stesso. Se vuoi, ci riproviamo. Il terminale non dimentica, ma neanche io."
       ],
       "lose": [
@@ -2495,9 +2504,9 @@
         "title": "L'ultima consegna",
         "intro": [
           "* Sei pacchi, sei porte illuminate. Ogni lancio consuma un pacco.",
-          "[TEL] * Scorri in verticale per cambiare corsia. Tocca una porta per lanciare.",
-          "[PC] * SU e GIÙ cambiano corsia. INVIO o clic su una porta lancia il pacco.",
-          "* La linea chiara mostra dove arriva il pacco: aspetta che la porta raggiunga quel punto.",
+          "[TEL] * Scorri su o giù per cambiare corsia. Tocca una porta per lanciare dalla corsia scelta.",
+          "[PC] * Prima scegli la corsia con SU e GIÙ. INVIO, oppure un clic su una porta, lancia dalla corsia scelta.",
+          "* La linea chiara mostra dove arriverà il pacco. Lancia poco prima che la porta raggiunga quel punto.",
           "* Sei consegne, almeno quattro precise: bonus. Da tre consegne in su: aiuto parziale."
         ],
         "reward": 0,
@@ -2599,8 +2608,8 @@
         "title": "La commissione doppia",
         "intro": [
           "* Il contratto prevede una commissione di 35 € per il ritardo della rata 63.",
-          "* Nell'estratto conto quel ritardo è stato addebitato due volte: il 18 e il 19 giugno.",
-          "[TEL] * Scorri il foglio e tocca una delle due commissioni. Le date restano consultabili.",
+          "* Cerca due commissioni che si riferiscono allo stesso ritardo. Il contratto ne consente una sola.",
+          "[TEL] * Scorri il foglio e tocca una commissione che ritieni duplicata.",
           "[PC] * SU/GIÙ scelgono la voce, INVIO la indica. Puoi anche cliccarla.",
           "* Qui trovi la prova. Il rimborso va ancora chiesto alla Banca."
         ],
@@ -2671,7 +2680,9 @@
         "title": "La pratica impossibile",
         "intro": [
           "* Sei pratiche di credito, una alla volta.",
-          "* Confronta originale e copia. Indica il dettaglio che dimostra l'anomalia. Se tutto torna, scegli NESSUNA ANOMALIA.",
+          "* Confronta il documento originale con la copia. Scegli la voce che non torna. Se coincidono, scegli NESSUNA ANOMALIA.",
+          "[PC] * SU e GIÙ scelgono la voce. INVIO conferma. Puoi anche cliccare la voce nei due fogli.",
+          "[TEL] * Tocca la voce diversa in uno dei due fogli, oppure NESSUNA ANOMALIA.",
           "* Non decidi chi merita i soldi. Controlli le prove che il sistema preferisce non guardare."
         ],
         "reward": 0,
@@ -2698,8 +2709,8 @@
     "reveal_flag": "c4_rivelazione",
     "reveal": [
       "Hai visto il display sulle scale? Nessun contratto.",
-      "Io firmo dieci contratti all'ora. E il tuo, quello grosso, non l'ha firmato nessuno.",
-      "Lo disegnerò. Un supereroe che cerca un foglio che non esiste."
+      "Io firmo dieci contratti all'ora. E il tuo, quello grosso, non riescono nemmeno a trovarlo.",
+      "Lo disegnerò. Un supereroe che cerca il proprio contratto. Primo nemico: l'archivio."
     ]
   },
   "ada": {
@@ -2753,10 +2764,11 @@
         "title": "Volantinaggio",
         "intro": [
           "* In piazza, davanti alla Casa Comune. Ada ha un pacco di volantini: STUDIO, LABORATORIO, INCONTRI. TUTTO GRATIS. ANCORA PER POCO.",
-          "* Chi ha ? mostra anche il proprio interesse: libro, attrezzo o incontri. Aspetta che sia davanti ad Ada, nella zona chiara.",
-          "[TEL] * Trascina dalla persona alla pila corrispondente.",
-          "[PC] * SINISTRA, SU e DESTRA scelgono una pila. INVIO consegna alla persona davanti ad Ada. Oppure clicca sulla persona.",
-          "* Non insistere con chi ha fretta (!!), è al telefono (...) o fa la guardia CHEAP."
+          "* Fai leggere otto volantini prima che finisca il tempo. Cerca le persone con ? e guarda il loro interesse.",
+          "[PC] * Scegli la pila con SINISTRA, SU o DESTRA, oppure cliccala. Quando la persona è nella zona chiara, premi INVIO o clicca sulla persona.",
+          "[TEL] * Quando la persona con ? è nella zona chiara, trascina dalla persona alla pila del suo interesse.",
+          "* Chi ha !!, ... o CHEAP non vuole il volantino. Lascialo passare.",
+          "* Tre errori fanno finire la prova."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2827,10 +2839,10 @@
         "prima_prova": true,
         "title": "L'orario delle coincidenze",
         "intro": [
-          "* La mappa delle linee. Nadir esce alle 6:40, lavora alle 8:00 e ha 6 €.",
+          "* Porta Nadir da CASA alla ZONA INDUSTRIALE entro le 8:00. Parte alle 6:40 e può spendere al massimo 6 €.",
           "[TEL] * Trascina il dito da una fermata all'altra, lungo una linea.",
           "[PC] * Trascina col mouse da una fermata all'altra, lungo una linea. Oppure FRECCE e {ok}.",
-          "* Per cambiare linea servono 3 minuti."
+          "* Quando cambi linea devi avere almeno 3 minuti fra l'arrivo e la partenza successiva. Controlla anche corse soppresse e badge richiesti."
         ],
         "reward": 0,
         "fixed_reward": true,

@@ -46,7 +46,7 @@ La verifica del regolamento è diversa dal consenso del giocatore. La contestazi
 
 ## Personaggi e finali
 
-- Gli ID storici restano invariati: `bulbo` è Mina, elettricista; `mina` è Bulbo, ragazza delle lampadine.
+- Gli ID storici restano invariati: `bulbo` è Mina, un'elettricista donna; `mina` è Bulbo, il nonno delle lampadine.
 - Le battute del protagonista restano quelle concordate; il protagonista è maschile.
 - La conclusione di ogni piano considera anche il torto del nuovo incarico, la riparazione e la presenza visibile della persona.
 - Finale B: casa, lavoro, riepilogo e invito provengono dalle rispettive fonti. Nessuna offerta appare senza il dialogo che la propone.
@@ -62,3 +62,12 @@ Le istruzioni mostrano soltanto i comandi del dispositivo in uso. Le prime prove
 Amir, Olga, Teo e Ada usano le scene in `scenes/minigame/rifatti/` quando la configurazione ha `visivo: true`. I tipi e i metodi precedenti restano compatibili con vecchie configurazioni e prove; la partita corrente non apre lo Snake di Amir.
 
 Le scene del Capo -4/-3/-2/0 sono modificabili nell'editor. I conti e gli stati restano in `boss_missions.gd`; le scene non inventano premi o esiti.
+
+## Revisione dei dialoghi approvata da Linda (5 novembre 2026)
+
+- L'apertura passa dalla sveglia alla cucina e alla camera del padre. Il titolo TORRE CHEAP precede la cabina. La voce CHEAP ha battute separate dalla narrazione.
+- Fermo spiega il turno di dieci ore, la stellina (salvataggio oppure notte), gli interessi e l'acquisto dei badge. Indica Mina, donna elettricista, e Bulbo, nonno delle lampadine.
+- Alla Banca Teo constata che il contratto non si trova; l'assenza del consenso e l'origine della quota sono chiarite alla Cima. Il protagonista può quindi distinguere la propria registrazione dal debito che attribuiva al padre.
+- La proposta da 1.200 euro a Olga è un prestito aggiuntivo al mutuo, non la rinegoziazione del mutuo. L'invio non equivale a firma o addebito.
+- Un solo turno di Direzione: gli avvisi riguardano conseguenze future, senza promettere altri turni da giocare. Le vecchie consultazioni restano per compatibilità dei salvataggi.
+- Le istruzioni complete degli incarichi sono mostrate alla prima apertura; le scene conservano promemoria brevi.

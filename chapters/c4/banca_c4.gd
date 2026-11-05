@@ -957,7 +957,7 @@ func look_back_line() -> String:
 		return "Avevi una richiesta in viaggio, un indirizzo e nessuna risposta. Era già più di prima."
 	if _f("c4_olga_contestazione") and _f("c4_teo_aiutato") and not Storia.olga_torto_aperto():
 		if Storia.olga_ingannata():
-			return "Non avevi cancellato i debiti. Avevi aiutato qualcuno, e avevi riaperto il foglio che le avevi piegato."
+			return "Non avevi cancellato i debiti. Avevi aiutato qualcuno. E ritirato una proposta di cui avevi nascosto le condizioni."
 		return "Non avevi cancellato i debiti. Avevi aiutato qualcuno a non affrontarli da solo."
 	if _f("c4_anomalia"):
 		return "Per la prima volta, non eri sicuro di dovere davvero ciò che ti chiedevano."

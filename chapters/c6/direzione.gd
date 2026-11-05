@@ -102,9 +102,10 @@ func _intro() -> void:
 	await Ui.say(situation(1), PRES)
 	if not _dt().get("rules_seen", false):
 		_dt()["rules_seen"] = true
-		await Ui.say(["[TEL] Cento unità. Quattro voci. Tocca più o meno, poi CONFERMA.",
-			"[PC] Cento unità. Quattro voci. Clicca più o meno, o usa le frecce, poi CONFERMA.",
-			"Sotto ogni numero c'è scritto cosa succede. Io lo leggo sempre. Quasi sempre."], PRES)
+		await Ui.say(["* Dividi 100 unità fra STIPENDI, SERVIZI, MANUTENZIONE e RISERVE. Se vuoi aumentare una voce e le unità sono finite, togline da un'altra.",
+			"[PC] * SU e GIÙ scelgono la voce; SINISTRA e DESTRA cambiano il numero. Puoi anche cliccare + e −. Seleziona CONFERMA e premi INVIO per proseguire.",
+			"[TEL] * Tocca + e − per cambiare i numeri. Poi tocca CONFERMA.",
+			"* È un solo turno: dopo il bilancio scegli la Casa Comune e la regola dei debiti."], PRES)
 
 
 # --- disegno -----------------------------------------------------------------------------------------
@@ -306,7 +307,7 @@ func _nudge(i: int, d: int) -> void:
 func _show_rules() -> void:
 	await Ui.say(["STIPENDI: sotto 30 non si coprono i contratti. Un aumento è per sempre. Al -3 i prezzi sono saliti di un terzo: con 55 l'aumento li copre.",
 		"SERVIZI: sotto 15 diventano a pagamento, da 25 si allargano. Più persone li usano, più si consumano: +5 alla manutenzione che serve dopo.",
-		"MANUTENZIONE: ne servono 25. Quello che manca diventa arretrato. Con 10 di arretrato un guasto è annunciato, e si paga al ciclo dopo.",
+		"MANUTENZIONE: servono 25 unità. Quello che manca diventa lavoro arretrato. Con 10 di arretrato è previsto un guasto dopo questa prova.",
 		"RISERVE: restano in cassa. Coprono le spese annunciate. Quando non bastano, si prende dai servizi."])
 
 
@@ -324,7 +325,7 @@ func _confirm() -> void:
 			["Mantieni le tutele", "Rispetti i minimi per stipendi e servizi. Nessuna tariffa aggiunta ai lavoratori."],
 			["Tariffe ai lavoratori", "Le riserve ricevono 5 unità. A pagarle sono i lavoratori."],
 			["Firma unica", "Sposti 5 dai servizi alle riserve. Decidi senza i rappresentanti."],
-			["Decisione condivisa", "I rappresentanti partecipano prima dell'applicazione. Coordinarsi costa 5 unità."]])
+			["Decisione con i rappresentanti", "I rappresentanti partecipano prima dell'applicazione. Coordinarsi costa 5 unità."]])
 		st["mandate"] = ["tutele", "tariffe", "accentrata", "condivisa"][mode]
 		var issue := RULES.invalid(st, alloc)
 		if issue != "":

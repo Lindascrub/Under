@@ -34,8 +34,8 @@ func enter() -> void:
 		await Ui.say([
 			"* Le porte si aprono su una festa.",
 			"* Festoni, coriandoli per terra, tutto e di più. E sempre la stessa voce finta e radiosa:",
-			"«Benvenuto al Fondo! Il posto più felice della torre.»",
 		])
+		await Ui.say(["Benvenuto al Fondo! Il posto più felice della torre."], "Voce CHEAP")
 		# dietro di te le porte si chiudono, e l'ascensore crolla
 		await _lift.close()
 		await get_tree().create_timer(0.3).timeout
@@ -46,8 +46,8 @@ func enter() -> void:
 		await get_tree().create_timer(0.6).timeout
 		await Ui.say([
 			"* Dietro di te, uno schianto. Le porte dell'ascensore si chiudono brutalmente e si piegano, quasi come se fosse tutto programmato apposta per rinchiuderti.",
-			"* Nessuno però si gira. Sembra la normalità. Solo una persona ti nota. L'unico fermo.",
-			"* È seduto accanto a una cassetta, grigio in mezzo a colori abbaglianti. L'unico che non sorride.",
+			"* Nessuno però si gira. Sembra la normalità. Solo una persona ti nota. L’unico che non sorride.",
+			"* È seduto accanto a una cassetta, grigio in mezzo a colori abbaglianti.",
 		])
 		Ui.cutscene = false
 	# dopo uno straordinario la festa si riaccende per un momento (anche se il turno è andato male)
@@ -253,26 +253,41 @@ func _first_talk() -> void:
 	var who := "Fermo"
 	GameState.flags["met_fermo"] = true
 	await Ui.say(["* Fermo sospira."])
-	await Ui.say(["Ancora. Un'altra persona.",
-		"Se te lo stai chiedendo, la festa non è per te. È per l'azienda. La fanno ogni volta che arriva qualcuno."], who)
-	await Ui.say(["* Ti squadra da capo a piedi."])
-	await Ui.say(["Io sono Fermo. Di nome e di fatto. Facile da ricordare: basta che getti un occhio su di me e comprendi.",
-		"Almeno, tutti quelli che mi vedono lo pensano subito. Loro ridono, io no. E tu?"], who)
+	await Ui.say(["Ancora. Un’altra persona.",
+		"Se te lo stai chiedendo, la festa non è per te. È per l’azienda. La fanno ogni volta che arriva qualcuno."], who)
+	await Ui.say(["* Ti guarda da capo a piedi."])
+	await Ui.say(["Io sono Fermo. Di nome e di fatto.", "Tu come ti chiami?"], who)
 	await Ui.say(["* Sussurri il tuo nome: {name}."])
-	await Ui.say(["Bel nome. Tienitelo stretto, quaggiù i nomi si svalutano molto facilmente.",
-		"Quanto ti hanno messo di debito?"], who)
+	await Ui.say(["Bel nome. Tienitelo stretto, quaggiù i nomi si svalutano molto facilmente.", "Quanto ti hanno messo di debito?"], who)
 	await Ui.say(["Sette miliardi."], GameState.player_name)
-	await Ui.say(["Io ho iniziato con nove. Ora ne devo undici.",
+	await Ui.say(["Oh. Una cosetta.", "Io ho iniziato con nove. Ora ne devo undici.",
 		"Ogni notte aggiungono gli interessi. Quelli non saltano mai un turno."], who)
-	await Ui.say(["* Indica un angolo buio."])
-	await Ui.say(["Vedi la cyclette? È il lavoro di oggi. Pedali e ti pagano.",
-		"Ma chissenefrega di salire."], who)
+	await Ui.say(["* Indica la cyclette nell’angolo."])
+	await Ui.say(["Vedi quella? È collegata a una dinamo. Tu pedali, loro prendono la corrente e ti pagano.",
+		"Avvicinati dove c’è scritto TURNO, se vuoi cominciare. Sono dieci ore. Della tua giornata, naturalmente."], who)
+	await Ui.say(["E poi?"], GameState.player_name)
+	await Ui.say(["Poi, per oggi, hai lavorato.",
+		"Se vuoi fare un altro turno, devi aspettare domani. Vedi quella stellina?"], who)
+	await Ui.say(["* Ti indica il punto luminoso."])
+	await Ui.say(["Lì puoi salvare la partita e recuperare le energie.",
+		"Se scegli ‘Salva e lascia passare la notte’, ti riposi e comincia un altro giorno. Così puoi lavorare di nuovo.",
+		"Però nel frattempo aumentano anche i soldi che devi. Gli interessi funzionano così: tu dormi, loro lavorano."], who)
+	await Ui.say(["Quindi devo continuare a pedalare?"], GameState.player_name)
+	await Ui.say(["Puoi. Io lo faccio da undici anni. Ormai il sellino sa più cose di me.", "Oppure puoi provare a salire."], who)
 	await Ui.say(["Salire?"], GameState.player_name)
-	await Ui.say(["Sì, salire qua. Questo posto almeno dice che è fatto per la meritocrazia.",
-		"Con i soldi compri da Nives il badge per salire. È vicino alle scale.",
-		"Il prezzo te lo dice lei."], who)
-	await Ui.say(["* Abbassa lo sguardo, sistemandosi sulla cassetta."])
-	await Ui.say(["Stavo pensando... e poi cosa faccio, con le mani?"], who)
+	await Ui.say(["Al piano di sopra. Per passare dalle scale ti serve un badge.",
+		"Lo vende Nives, vicino alle scale. Il prezzo te lo dice lei.",
+		"Una parte dei soldi che devi alla CHEAP gliela dai così. Loro ti lasciano salire e la chiamano meritocrazia."], who)
+	await Ui.say(["E sopra cosa c’è?"], GameState.player_name)
+	await Ui.say(["Un altro piano. Un altro lavoro. Un altro badge da comprare.",
+		"Magari trovi anche qualcuno che ti spiega perché devi tutti quei soldi. Io qui sotto non l’ho trovato."], who)
+	await Ui.say(["* Guarda verso il resto della sala."])
+	await Ui.say(["Prima di andartene, puoi parlare anche con gli altri.",
+		"Mina è l’elettricista, quella dei fili. Bulbo è il nonno con le lampadine. Hanno sempre qualcosa da sistemare.",
+		"Magari riesci a dargli una mano. O almeno vi fate compagnia mentre lavorate."], who)
+	await Ui.say(["* Si risistema sulla cassetta."])
+	await Ui.say(["Ecco. Cyclette per lavorare. Stellina per salvare e far passare la notte. Nives per il badge. Scale per salire.",
+		"Io sono quello sulla cassetta. Se ti perdi, almeno me mi ritrovi."], who)
 	GameState.flags["fermo_talked"] = true
 
 

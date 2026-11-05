@@ -17,7 +17,7 @@ var porte: Array[Node] = []
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	for p in $Porte.get_children(): porte.append(p)
-	$Aiuto.text = "Scorri in verticale per la corsia. Tocca la porta per lanciare." if TouchControls.enabled else "SU/GIÙ: corsia. INVIO o clic su una porta: lancia."
+	$Aiuto.text = "Scorri su o giù: corsia. Tocca una porta: lancia dalla tua corsia." if TouchControls.enabled else "SU/GIÙ: corsia. INVIO o clic: lancia dalla tua corsia."
 	_aggiorna()
 func _process(dt: float) -> void:
 	if not attivo or Ui.busy: return
@@ -71,7 +71,7 @@ func lancia() -> void:
 		Sound.sfx("coin")
 	else:
 		errori += 1
-		$Esito.text = "Pacco a terra. Avvicina la porta alla fine della traiettoria."
+		$Esito.text = "Pacco a terra. Controlla la corsia e anticipa un poco il passaggio della porta."
 		Sound.sfx("deny")
 	_aggiorna()
 	if rimasti == 0: _termina()

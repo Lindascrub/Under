@@ -48,7 +48,7 @@ offset_bottom = 78.0
 theme_override_colors/font_color = Color(0.953, 0.929, 0.863, 1)
 theme_override_fonts/font = ExtResource("2")
 theme_override_font_sizes/font_size = 11
-text = "La leva decide quanto deve pedalare Fermo. Guarda la sua pausa e le luci prima di confermare."
+text = "Sposta la leva e guarda cosa cambia: luci, fatica e pausa di Fermo. Quando hai deciso, conferma."
 autowrap_mode = 3
 
 [node name="Fermo" type="Node2D" parent="."]

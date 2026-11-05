@@ -23,7 +23,7 @@ const MIN_WAGES := 30
 const MAINT_NEED := 25
 const BILL := 15
 const BREAKDOWN_AT := 10
-const POLICY_NAMES := {"tutele": "Tutele nei contratti", "tariffe": "Costi ai lavoratori", "accentrata": "Firma unica", "condivisa": "Consultazione vincolante"}
+const POLICY_NAMES := {"tutele": "Tutele nei contratti", "tariffe": "Costi ai lavoratori", "accentrata": "Firma unica", "condivisa": "Decisione con i rappresentanti"}
 
 const QUESTIONS := {
 	1: "QUANTO VALE IL LAVORO?",
@@ -147,7 +147,7 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 	if int(cover["from_services"]) > 0:
 		vs += " (Ne restano %d: %d vanno a coprire le spese.)" % [v_eff, int(cover["from_services"])]
 	if v_eff >= 25:
-		vs += " Più persone li usano: +5 alla manutenzione che serve dal ciclo dopo."
+		vs += " Più persone useranno i servizi: in seguito serviranno 5 unità in più per la manutenzione."
 	out.append(vs)
 	var need := maint_need(st)
 	var backlog_after := maxi(0, int(st["backlog"]) - (int(st["backlog"]) if st.get("breakdown_due", false) else 0) + need - m)
@@ -155,7 +155,7 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 		out.append("MANUTENZIONE %d: basta (ne servono %d)." % [m, need] + (" Arretrato: %d." % backlog_after if backlog_after > 0 else ""))
 	else:
 		out.append("MANUTENZIONE %d: ne servono %d. L'arretrato sale a %d." % [m, need, backlog_after]
-			+ (" Con 10 di arretrato, al ciclo dopo si annuncia un guasto." if backlog_after >= BREAKDOWN_AT else ""))
+			+ (" Con 10 di arretrato, è previsto un guasto dopo questa prova." if backlog_after >= BREAKDOWN_AT else ""))
 	out.append("RISERVE %d: in cassa ne resteranno %d." % [r, int(cover["reserve_after"])])
 	return out
 
@@ -196,7 +196,7 @@ static func apply(st: Dictionary, a: Dictionary) -> Array:
 	st["backlog"] = maxi(0, int(st["backlog"]) + need - int(a["manutenzione"]))
 	if int(st["backlog"]) >= BREAKDOWN_AT:
 		st["breakdown_due"] = true
-		out.append("Arretrato di manutenzione: %d. Al prossimo ciclo un guasto è sicuro: è annunciato adesso." % int(st["backlog"]))
+		out.append("Arretrato di manutenzione: %d. Dopo questa prova è previsto un guasto: viene segnalato adesso." % int(st["backlog"]))
 	if v_eff >= 25:
 		st["expanded"] = int(st["expanded"]) + 1
 	if s > int(st["wage_floor"]) and s > 40:
@@ -212,7 +212,7 @@ static func policy_hint(mode: String) -> String:
 	match mode:
 		"tutele": return "TUTELE: turni protetti; minimo 40 stipendi e 20 servizi. Meno margine da spostare alle riserve."
 		"tariffe": return "TARIFFE: +5 alle riserve, pagati dai lavoratori fuori dalle 100 unità. Il servizio resta, costa a chi lo usa."
-		"accentrata": return "FIRMA UNICA: 5 dai servizi alle riserve. Meno servizi e nessun veto dei rappresentanti in questo ciclo. Due cicli accentrano il potere."
+		"accentrata": return "FIRMA UNICA: sposti 5 unità dai servizi alle riserve. Per questo bilancio decidi senza il veto dei rappresentanti."
 		"condivisa": return "CONSULTAZIONE: i rappresentanti partecipano; 5 di coordinamento pagati da riserve, poi servizi. Meno risorse per il resto."
 	return ""
 

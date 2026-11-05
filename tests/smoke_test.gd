@@ -751,7 +751,7 @@ func _test_chapter6() -> void:
 	_check(rules.minimum(st, "stipendi") == 60 and int(rules.start_alloc(st)["stipendi"]) == 60 and rules.total(rules.start_alloc(st)) == 100, "26: un aumento è per sempre (anche nella distribuzione di partenza)")
 	var c2 := {"stipendi": 60, "servizi": 25, "manutenzione": 15, "riserve": 0}
 	var hints: Array = rules.hints(st, c2)
-	_check(rules.due(st) == 15 and "15 vanno a coprire le spese" in str(hints) and "si annuncia un guasto" in str(hints), "la bolletta e il guasto sono scritti prima di confermare")
+	_check(rules.due(st) == 15 and "15 vanno a coprire le spese" in str(hints) and "è previsto un guasto" in str(hints), "la bolletta e il guasto sono scritti prima di confermare")
 	rules.apply(st, c2)
 	_check(bool(st["breakdown_due"]) and int(st["backlog"]) == 15 and int(st["reserve"]) == 0 and int((st["log"] as Array)[1]["services_eff"]) == 10, "la bolletta presa dai servizi, il guasto annunciato")
 	_check(rules.due(st) == 15, "al ciclo 3 si paga l'arretrato annunciato (non una catastrofe a sorpresa)")

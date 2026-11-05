@@ -472,6 +472,11 @@ func _origin() -> void:
 			2:
 				await Ui.say(["Secondo il regolamento della Torre, sì.", "Se mi chiedi se sia giusto…",
 					"Questa è una decisione che il regolamento non sa prendere."], PRES)
+	if not _f("c6_padre_chiarito"):
+		GameState.flags["c6_padre_chiarito"] = true
+		await Ui.say(["Pensavo di essere qui per il debito di mio padre."], GameState.player_name)
+		await Ui.say(["Su questo fascicolo c'è il tuo nome. Il suo non c'è.",
+			"Non hai ereditato questo debito da lui. È la quota che assegnano a chi viene registrato."], PRES)
 	d["president"]["origin_explained"] = true
 	await _verification()
 
@@ -965,7 +970,7 @@ static func panorama_lines(floor: String) -> Array:
 		"-4":
 			out.append("* Il Sottoufficio. Pile di moduli che salgono più in fretta di chiunque.")
 			if f.get("c2_b4", false):
-				out.append("* Il Modulo B-4 è ancora lì. Qualcuno l'ha incorniciato. Non per affetto.")
+				out.append("* Il tritacarte è ancora al suo posto. Il tuo B-4 no.")
 		"-3":
 			out.append("* Il Mercato. Il tabellone dei prezzi cambia ogni minuto. Da quassù sembra un'insegna di Natale.")
 			if f.get("c3_leda_ordini", false):

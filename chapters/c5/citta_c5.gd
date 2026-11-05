@@ -438,7 +438,7 @@ func _rina_window() -> void:
 func _rina_after_assembly() -> String:
 	match str(GameState.flags.get("c5_esito", "")):
 		"comunitaria":
-			return "Mi hanno messo nei turni del sabato. Io il sabato lavoro. Allora ci vado la domenica. Si fa."
+			return "Mi avevano messo il sabato. Ho scambiato con una domenica. Il sabato la bottega apre: qualcuno dovrà pur vendervelo, il pane."
 		"riconversione":
 			return "Il centro nuovo avrà un bar interno. Indovina chi non ci comprerà più il pane."
 		_:
@@ -777,7 +777,7 @@ func _three_proposals() -> void:
 		"A: la ristrutturazione CHEAP. Pagano loro manutenzione e attrezzature. Alcuni servizi diventano a pagamento. Restano borse di studio e qualche attività gratuita.",
 		"B: la gestione comunitaria. Cerchiamo fondi, ci organizziamo noi. L'accesso resta quasi tutto gratuito. Servono soldi, accordi, e gente che si prende delle responsabilità.",
 		"C: chiediamo un rinvio della chiusura. Tempo per una revisione indipendente dei costi e per cercare finanziamenti. È una soluzione temporanea."], who)
-	var c: int = await Ui.choose("Tu cosa sostieni?", ["Sostengo A", "Sostengo B", "Sostengo C", "Non prendo posizione"], who)
+	var c: int = await Ui.choose("Tu cosa sostieni?", ["Ristrutturazione CHEAP: accesso in parte a pagamento.", "Gestione comunitaria: organizzarci e cercare fondi.", "Rinvio: rivedere i costi e cercare finanziamenti.", "Non prendo posizione"], who)
 	var key: String = ["A", "B", "C", "nessuna"][c]
 	GameState.flags["c5_proposta"] = key
 	match key:
@@ -834,7 +834,7 @@ func _giornalista() -> void:
 		1:
 			await Ui.say(["Annoto. Il danno c'è, e l'ha pagato una persona. Chi l'ha fatto, non lo so. Non lo scrivo, finché non lo so."], who)
 		2:
-			await Ui.say(["Grazie. È la dichiarazione più onesta di oggi. Non la userò: non dice niente. Ma grazie."], who)
+			await Ui.say(["Lo annoto: non hai visto chi è stato. Il vetro è rotto; il responsabile, per ora, non lo sappiamo."], who)
 		_:
 			await Ui.say(["Anche il silenzio è una dichiarazione. Ma non si può citare."], who)
 
@@ -1069,7 +1069,7 @@ func _teo() -> void:
 func assembly() -> void:
 	var who := organizer()
 	if GameState.flags.get("boss_news_divisive", false) and not GameState.flags.get("boss_news_rectified", false):
-		await Ui.say(["Dopo il notiziario qualcuno non vuole venire. Pensa che stiamo discutendo contro chi ha un negozio.", "Possiamo mostrare le registrazioni complete, ma serve il tempo per ricontattare le persone. Senza rettifica serve una risorsa in più per organizzare la gestione."], who)
+		await Ui.say(["Dopo il notiziario qualcuno non vuole venire. Pensa che stiamo discutendo contro chi ha un negozio.", "Possiamo diffondere le registrazioni complete e ricontattare le persone. Ci vorrà mezz'ora.", "Se non rettifichiamo, per organizzare la gestione servirà una collaborazione in più: trasporti, raccolte, ordini o consegne."], who)
 		var fix: int = await Ui.choose("Prima dell'assemblea:", ["Rettifica pubblica e ricontatta (30 minuti)", "Procedi con chi è presente", "Torno più tardi"], who)
 		if fix == 2:
 			return
@@ -1100,7 +1100,7 @@ func assembly() -> void:
 	if prev != "":
 		ask += " (In piazza avevi detto: %s.)" % ("nessuna posizione" if prev == "nessuna" else prev)
 	await Ui.say(["* Puoi sostenere una proposta. Gli altri porteranno i loro bisogni e quello che possono mettere a disposizione."])
-	var v: int = await Ui.choose(ask, ["Sostengo A: ristrutturazione CHEAP", "Sostengo B: gestione comunitaria", "Sostengo C: rinvio", "Mi astengo"], who)
+	var v: int = await Ui.choose(ask, ["Ristrutturazione CHEAP: accesso in parte a pagamento.", "Gestione comunitaria: organizzarci e cercare fondi.", "Rinvio: rivedere i costi e cercare finanziamenti.", "Mi astengo"], who)
 	var support: String = ["A", "B", "C", "nessuna"][v]
 	GameState.flags["c5_sostegno"] = support
 	var res := outcome(support)
@@ -1222,7 +1222,7 @@ func _outcome_reaction(esito: String) -> String:
 		"comunitaria":
 			return "Non abbiamo trovato una soluzione perfetta. Abbiamo deciso di continuare a cercarla insieme."
 		"riconversione":
-			return "Va bene. Il tetto sarà riparato. Noi resteremo fuori a guardarlo. Proveremo a entrare con le borse di studio."
+			return "Il tetto sarà riparato. Per studiare come prima dovremo ottenere una borsa o pagare. Io chiedo la borsa. E se non me la danno, ne riparliamo."
 		_:
 			return "Abbiamo guadagnato tempo. Adesso bisogna usarlo. Il tempo non si recupera, c'era scritto sul cartello."
 

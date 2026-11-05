@@ -166,7 +166,7 @@ func _ready() -> void:
 		await _sportello_intro()
 	elif game == "smistamento":
 		await _smistamento_intro()
-	await Ui.say([_rules()])
+	await Ui.say(_rules().split("\n"))
 	_start()
 
 
@@ -196,13 +196,13 @@ func _rules() -> String:
 			"deliver":
 				return "* Tocca la corsia dove vuoi andare. Evita le auto, prendi i pacchi."
 			"helpdesk":
-				return "* Quando un telefono squilla, toccalo. Poi tocca la risposta. Il copione paga. La sincerità no, ma ti resta. Se sei sgarbato, ti richiamano."
+				return "* Tocca il telefono che squilla. Poi tocca la risposta.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 			"cassa":
-				return "* Tocca l'articolo sul nastro per passarlo allo scanner. Poi guarda lo schermo e il cartellino: tocca CONFERMA, oppure CORREGGI se il prezzo è sbagliato. Correggere ci mette un po' di più."
+				return "* Prima tocca l’articolo per scansionarlo. Poi confronta schermo e cartellino: tocca CONFERMA se coincidono, CORREGGI se il prezzo è sbagliato.\n* Correggere richiede più tempo."
 			"sportello":
-				return "* Leggi la pratica. Se i documenti ci sono e dicono la stessa cosa, tocca APPROVA. Se manca qualcosa, se due dati non tornano o c'è un doppione, tocca RICHIEDI VERIFICA. Verificare ci mette un po' di più."
+				return "* Controlla i documenti. APPROVA significa che i fogli sono completi e coerenti; il prestito lo decide un altro ufficio.\n* Tocca APPROVA se tutto torna. Altrimenti tocca RICHIEDI VERIFICA.\n* La verifica richiede più tempo."
 			"smistamento":
-				return "* Leggi la richiesta e tocca dove va: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA. Se il sistema propone un posto diverso da quello scritto dal mittente, puoi CONFERMARE, VERIFICARE (più lento) o SEGNALARE la discrepanza."
+				return "* Manda la richiesta al posto indicato dal mittente: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA.\n* Tocca la destinazione.\n* Se il sistema propone un posto diverso: CONFERMA accetta la proposta; VERIFICA chiama il mittente e richiede tempo; SEGNALA lascia la richiesta ferma in attesa di controllo."
 	# (solo PC) da qui in giù: il telefono è già tornato sopra
 	match game:
 		"pedal":
@@ -218,13 +218,13 @@ func _rules() -> String:
 		"deliver":
 			return "* SU e GIÙ per cambiare corsia. Evita le auto, prendi i pacchi."
 		"helpdesk":
-			return "* Quando un telefono squilla, premi la sua freccia (SINISTRA, SU, DESTRA). Poi scegli la risposta con SU e GIÙ e {ok}. Il copione paga. La sincerità no, ma ti resta."
+			return "* Rispondi al telefono che squilla con la sua freccia. Poi scegli una risposta con SU e GIÙ e conferma con {ok}.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 		"cassa":
-			return "* Premi {ok} per passare l'articolo allo scanner. Poi SINISTRA conferma il prezzo, DESTRA lo corregge (se lo schermo non dice quello che dice il cartellino). Correggere ci mette un po' di più."
+			return "* Prima premi {ok} per scansionare l’articolo. Poi confronta schermo e cartellino: SINISTRA conferma, DESTRA corregge il prezzo sbagliato.\n* Correggere richiede più tempo."
 		"sportello":
-			return "* Leggi la pratica. SINISTRA la approva (i documenti ci sono e dicono la stessa cosa), DESTRA richiede una verifica (manca qualcosa, due dati non tornano, c'è un doppione). Verificare ci mette un po' di più."
+			return "* Controlla i documenti. APPROVA significa che i fogli sono completi e coerenti; il prestito lo decide un altro ufficio.\n* SINISTRA approva. DESTRA richiede una verifica se manca un documento, due dati sono diversi o c’è un doppione.\n* La verifica richiede più tempo."
 		"smistamento":
-			return "* Leggi la richiesta. SINISTRA e DESTRA scelgono la destinazione, {ok} la manda. Se il sistema propone un posto diverso da quello scritto dal mittente: CONFERMA, VERIFICA (più lento) o SEGNALA."
+			return "* Manda la richiesta al posto indicato dal mittente: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA.\n* SINISTRA e DESTRA scelgono la destinazione. {ok} conferma.\n* Se il sistema propone un posto diverso: CONFERMA accetta la proposta; VERIFICA chiama il mittente e richiede tempo; SEGNALA lascia la richiesta ferma in attesa di controllo."
 	return "* Lavora."
 
 
@@ -831,7 +831,6 @@ func _sportello_intro() -> void:
 	if turns == 0:
 		await Ui.say(["Benvenuto nel settore fiducia!", "Qui prendiamo decisioni importanti.",
 			"Per questo ti chiediamo di prenderle velocemente."], "Sportello")
-		await Ui.say(["* APPROVA vuol dire che i fogli superano il controllo. Il prestito lo decide qualcun altro, più in alto."])
 	elif turns >= int((cfg.get("job", {}) as Dictionary).get("short_after", 2)):
 		await Ui.say(["* Turno breve: ormai il timbro lo sai usare. La paga è la stessa. Anche la fila."])
 

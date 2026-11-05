@@ -264,7 +264,7 @@ func family_scene() -> void:
 static func final_line(variant: String) -> String:
 	match variant:
 		"A1":
-			return "Avevi comprato la libertà. Adesso dovevi trovare il tempo per usarla."
+			return "Il tuo debito era finito. La stampante aveva già trovato il prossimo nome."
 		"A2":
 			return "Avevi cambiato molte regole. Restava da capire chi avrebbe potuto cambiarle dopo di te."
 		"A3":
@@ -694,7 +694,7 @@ func epilogue_for(id: String) -> Dictionary:
 		return {"lines": ["DINAMO IN FUNZIONE. ENERGIA GARANTITA."]}
 	if id == "bulbo":
 		return {"lines": ["Quando ero giovane pensavo che a quest'età avrei avuto un sacco di tempo libero.", "Devo aver sbagliato calendario."], "speaker": nm}
-	return {"lines": ["* %s cambia una lampadina. Poi un'altra. Al Fondo le lampadine durano poco, e lei di più." % nm]}
+	return {"lines": ["* %s cambia una lampadina. Poi un'altra. Al Fondo le lampadine durano poco, e lui di più." % nm]}
 
 
 # --- passo 6: Nives ----------------------------------------------------------------------------------
@@ -742,9 +742,9 @@ static func dream_line(dream: String, family: String) -> String:
 		"studiare":
 			return "* %s Un libro preso in prestito. \"Restituzione: quando puoi.\"" % when
 		"viaggiare":
-			return "* %s Un biglietto per un posto senza torri. Solo andata, per ora." % when
+			return ("* %s Un biglietto per un posto senza torri. Solo andata, per ora." if family == "B" else "* %s Un biglietto di andata e ritorno per un posto senza torri.") % when
 		"qualcuno":
-			return "* %s Un messaggio: \"Ci sei stasera?\". Rispondi subito. Non hai turni." % when
+			return "* %s Un messaggio: «Ci sei stasera?». Rispondi subito. Trovi un momento per vedervi." % when
 		"tempo":
 			return "* %s Un pomeriggio intero, senza un prezzo. Non sai cosa farci. Lo impari." % when
 	return "* %s Non lo sai ancora. Per la prima volta, nessuno te lo chiede entro le nove." % when
@@ -778,7 +778,7 @@ func _credits() -> void:
 		"Comparse", "LimeZu — Modern Interiors, versione RPG Maker", "",
 		"Grafica personalizzata", "segnaposto, in attesa dei disegni veri", "",
 		"%s, da %s di debito." % [GameState.player_name, GameState.euros(GameState.START_DEBT)],
-		"Grazie per essere salito. E per esserti voltato.",
+		"Grazie per essere arrivato fin qui.",
 	]
 	var roll := _label("\n".join(credits), Vector2(80, 380), Vector2(480, 640), 13, Color.WHITE)
 	roll.vertical_alignment = VERTICAL_ALIGNMENT_TOP

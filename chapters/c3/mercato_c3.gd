@@ -174,7 +174,7 @@ func talk_leda(_npc_node: Npc) -> bool:
 	elif GameState.flags.get("c3_prezzi", false) and not GameState.flags.get("c3_leda_seconda", false):
 		await _leda_second()
 	elif not GameState.flags.get("c3_leda_inventario", false):
-		await Ui.say([["Le scatole sono ancora lì. Mi guardano. Io le guardo. Nessuna delle due si muove.",
+		await Ui.say([["Le scatole sono ancora lì. Ci fissiamo da un po’. Per ora stanno vincendo loro.",
 			"Il sapone è ancora tra i biscotti. Ormai sono amici."].pick_random()], "Leda")
 		await _leda_offer()
 	else:
@@ -314,7 +314,7 @@ func _leda_second() -> void:
 				GameState.flags["c3_leda_ordini"] = true
 				GameState.flags["c3_leda_seconda"] = true
 				await Ui.say(["Ordini condivisi? Con la ferramenta e il fruttivendolo?", "Se compriamo insieme, la commissione la paghiamo una volta sola invece di tre...",
-					"Non risolve niente. Però è la prima idea che non mi costa niente.", "Ne parlo con gli altri. Domani. Oggi ho la fattura da guardare male."], who)
+					"Non risolve tutto. Però è la prima idea che non mi costa niente.", "Ne parlo con gli altri. Domani. Oggi ho la fattura da guardare male."], who)
 			"no":
 				GameState.flags["c3_leda_seconda"] = true
 				await Ui.say(["Lo capisco. Hai anche tu dei conti da pagare."], who)
@@ -334,7 +334,7 @@ func talk_amir(_npc_node: Npc) -> bool:
 	elif GameState.flags.get("c3_amir_aiutato", false) and not GameState.flags.get("c3_amir_sogno", false):
 		await _amir_dream()
 	elif not GameState.flags.get("c3_amir_bonus", false):
-		await Ui.say([["Diciassette. Il numero preferito di nessuno.", "La quarta consegna è sempre più in ritardo. Come me."].pick_random()], who)
+		await Ui.say([["Diciassette. Il numero preferito di nessuno.", "Sei porte. Il terminale continua a chiamarle «un giro»."].pick_random()], who)
 		await _offer("amir", who)
 	else:
 		await Ui.say([["Diciotto. Lo ripeto ogni tanto, per sentire com'è.", "Il treno parte sabato. Mia sorella ha già comprato il riso. Io porto la pentola.",
@@ -351,7 +351,7 @@ func _amir_first() -> void:
 	await Ui.say(["Mi manca un giro per il bonus. Sei pacchi.",
 		"Sullo schermo sembra una riga sola. In strada sono sei porte."], who)
 	Sound.sfx("blip", 1.4)
-	await Ui.say(["* Il terminale delle consegne lampeggia:", "* GIRI COMPLETATI: 17.", "* GIRI RICHIESTI PER IL BONUS: 18.", "* TEMPO RIMASTO: 02:00."])
+	await Ui.say(["* Il terminale delle consegne lampeggia:", "* GIRI COMPLETATI: 17.", "* GIRI RICHIESTI PER IL BONUS: 18.", "* ULTIMO GIRO: SEI PACCHI DA CONSEGNARE."])
 	await Ui.say(["Con il bonus potrei prendere il treno e andare a trovare mia sorella questo fine settimana."], who)
 	await _offer("amir", who)
 
@@ -378,7 +378,7 @@ func _offer_water() -> void:
 	GameState.flags["c3_acqua_amir"] = true
 	GameState.changed.emit()
 	Sound.sfx("heal")
-	await Ui.say(["Acqua? Per me?", "Dieci euro d'acqua. È il regalo più costoso che mi abbiano fatto questa settimana.",
+	await Ui.say(["Acqua per me? Con quello che costa qui, è un regalo importante.",
 		"...Grazie. La bevo piano. Così dura di più."], "Amir")
 
 
