@@ -1245,6 +1245,32 @@ offset = Vector2(0, -32)
 metadata/prop_talk_skip = true
 metadata/footprint_applied = true
 
+[node name="Buone" type="Label" parent="Mondo/ScatolaLampadine1"]
+offset_left = -2.0
+offset_top = -43.0
+offset_right = 62.0
+offset_bottom = -25.0
+scale = Vector2(1.6, 1.6)
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.32, 1, 0.5, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 8
+text = "BUONE"
+
+[node name="Rotte" type="Label" parent="Mondo/ScatolaLampadine2"]
+offset_left = -2.0
+offset_top = -43.0
+offset_right = 62.0
+offset_bottom = -25.0
+scale = Vector2(1.6, 1.6)
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.48, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 8
+text = "ROTTE"
+
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ScatolaLampadine2" unique_id=607541979]
 
 [node name="@CollisionShape2D@31" type="CollisionShape2D" parent="Mondo/ScatolaLampadine2/Collisione" unique_id=184510837]
@@ -1482,6 +1508,16 @@ position = Vector2(504, 94)
 metadata/facing = "down"
 
 [node name="Inquadrature" type="Node2D" parent="." unique_id=1407782813]
+
+[node name="BulboScatole" type="Marker2D" parent="Inquadrature"]
+position = Vector2(294, 208)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.55
+durata_ritorno = 0.45
+
+[node name="OffsetDialogo" type="Marker2D" parent="Inquadrature/BulboScatole"]
+position = Vector2(0, 32)
 
 [node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=1994448893]
 position = Vector2(190, 112)

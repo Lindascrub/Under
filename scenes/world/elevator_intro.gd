@@ -74,12 +74,12 @@ func _sequence() -> void:
 		"* L'ascensore della Torre CHEAP odora di metallo.",
 		"* Si sente quell'odore stantio intriso della tristezza altrui, un odore che riconosceresti a occhi chiusi grazie a tuo padre e alle sue manie di ludopatia.",
 		"* La musica, però, è diversa da quella degli altri ascensori: è più allegra del solito, di un'allegria artificiale che ti fa salire un nodo d'ansia in gola.",
-		"* Una voce registrata, una di quelle generate da un'intelligenza artificiale a cui hanno impostato l'empatia al minimo storico, cinguetta:",
+		"* Una voce registrata ti dà il benvenuto. Sembra contentissima di vederti.",
 		"«Benvenuto nella CHEAP. Il futuro costa poco.»",
 	])
 	_floor_text = "7 MLD"
 	await Ui.say([
-		"* Il display si illumina. Sei stato riconosciuto. Il tuo debito è di 7 miliardi.",
+		"* Sul display compare il tuo debito: sette miliardi.",
 		"* Una cifra così rotonda che sembra quasi uno scherzo, se non fosse per gli zeri.",
 	])
 	for f in ["-1", "-2", "-3"]:

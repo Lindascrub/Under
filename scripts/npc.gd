@@ -391,6 +391,8 @@ func _offer_help(who: String) -> void:
 	var choice: int = await Ui.choose(str(h.get("ask", "Ti chiede una mano.")), ["Dai una mano (1 ora)", "Non ora"], who)
 	if choice != 0:
 		return
+	if h.has("prima"):
+		await Ui.say(h["prima"], who)
 	GameState.met_today.append(id)
 	Router.minigame(Npc.minigame_cfg(id, who, h, get_tree().current_scene.scene_file_path,
 		(get_tree().get_first_node_in_group("player") as Node2D).global_position))

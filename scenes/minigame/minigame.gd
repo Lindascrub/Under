@@ -204,6 +204,8 @@ func _con_stelle() -> bool:
 var time_total := 0.0
 ## true finché non hai fatto il primo gesto giusto: si vede come si gioca, senza leggere
 var guida := true
+## La prima dimostrazione e il primo gesto non consumano tempo né contano errori.
+var prima_prova := false
 
 
 func _ready() -> void:
@@ -230,6 +232,7 @@ func _ready() -> void:
 
 func _start() -> void:
 	phase = "play"
+	prima_prova = bool(cfg.get("prima_prova", false)) and not bool(cfg.get("rigioco", false)) and not GameState.flags.get("c1_prova_" + type, false)
 	match type:
 		"ercole":
 			_info.text = "Aspetta che chiuda gli occhi."
@@ -312,10 +315,28 @@ func _start() -> void:
 			_cz_restart()
 			time_left = float(_cz_data().get("tempo", 75))
 			cz_msg = "Trascina il dito da una fermata all'altra, lungo una linea, fino al lavoro." if TouchControls.enabled else "Trascina col mouse da una fermata all'altra. Oppure FRECCE e %s." % GameState.fmt("{ok}")
+	if prima_prova and type in ["bulbs", "wires"]:
+		phase = "demo"
+		_info.text = "Prima guarda l'esempio."
+		$GuidaC1.finita.connect(_fine_dimostrazione, CONNECT_ONE_SHOT)
+		$GuidaC1.mostra(type, wire_right)
+
+
+func _fine_dimostrazione() -> void:
+	if phase == "demo":
+		phase = "play"
+		_info.text = "Ora prova: tempo fermo, nessuna penalità."
+
+
+func _fine_prima_prova() -> void:
+	if prima_prova:
+		prima_prova = false
+		GameState.flags["c1_prova_" + type] = true
+		_info.text = ""
 
 
 func _new_bulb() -> void:
-	bulb = ["buona", "rotta", "fioca"].pick_random()
+	bulb = "fioca" if prima_prova else ["buona", "rotta", "fioca"].pick_random()
 	bulb_fix = 0
 	bulb_fixed = false
 	bulb_t = 0.0
@@ -330,7 +351,11 @@ func _bulb_info() -> void:
 
 
 func _bulb_answer(ok: bool) -> void:
+	if prima_prova and not ok:
+		$GuidaC1.riprova()
+		return
 	if ok:
+		_fine_prima_prova()
 		bulb_done += 1
 		guida = false
 		# la scatola giusta: le rotte a sinistra, le buone (e quelle avvitate) a destra
@@ -372,6 +397,7 @@ func _new_wires() -> void:
 ## Il filo di sinistra `wire_pick` va al posto di destra `wire_sel`: giusto o sbagliato?
 func _wire_connect() -> void:
 	if wire_right[wire_sel] == wire_pick:
+		_fine_prima_prova()
 		wire_done.append(wire_pick)
 		guida = false
 		_info.text = ""
@@ -385,6 +411,10 @@ func _wire_connect() -> void:
 			_new_wires()
 			return
 	else:
+		if prima_prova:
+			$GuidaC1.riprova()
+			wire_pick = -1
+			return
 		misses += 1
 		flash = 0.3
 		if _risposta: _risposta.sbagliato(Vector2(BOX.end.x - 40, BOX.position.y + 26 + wire_sel * (BOX.size.y - 52) / 3.0))
@@ -708,11 +738,14 @@ func _process(delta: float) -> void:
 					marker_dir = -marker_dir
 			elif type == "bulbs" or type == "wires":
 				bulb_t += delta
-				time_left -= delta
+				if not prima_prova:
+					time_left -= delta
+				if cfg.get("prima_prova", false):
+					$GuidaC1.aggiorna(type, bulb, wire_right, wire_done)
 				if type == "bulbs":
 					_bulb_info()
 					# "per_bulb": ogni lampadina ha i suoi secondi; se ci pensi troppo, è un errore
-					if cfg.has("per_bulb") and bulb_t > float(cfg["per_bulb"]) and time_left > 0.0:
+					if not prima_prova and cfg.has("per_bulb") and bulb_t > float(cfg["per_bulb"]) and time_left > 0.0:
 						_bulb_answer(false)
 				if time_left <= 0.0:
 					_finish(false)
@@ -1000,6 +1033,8 @@ func _finish(success: bool, partial := false) -> void:
 	if phase == "done":
 		return
 	phase = "done"
+	if has_node("GuidaC1"):
+		$GuidaC1.visible = false
 	if type == "ercole" and has_node("ErcoleGomitata"):
 		$ErcoleGomitata.attivo = false
 		$ErcoleGomitata.premuto = false
@@ -1168,10 +1203,11 @@ func _draw_bulbs(font: Font) -> void:
 	Art.bulb(self, Vector2(BOX.position.x + 45, BOX.end.y - 33), "rotta", 1, false)
 	Art.bulb(self, Vector2(BOX.end.x - 50, BOX.end.y - 33), "buona", 1)
 	var lit := bulb == "buona" or (bulb == "fioca" and int(bulb_t * 9) % 3 != 0)
-	Art.bulb(self, c, bulb, 3, lit)
-	if bulb == "fioca":
+	if phase != "demo":
+		Art.bulb(self, c, bulb, 3, lit)
+	if bulb == "fioca" and not cfg.get("prima_prova", false):
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/%d)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
-	elif bulb_fixed and phase == "play":
+	elif bulb_fixed and phase == "play" and not cfg.get("prima_prova", false):
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), "Avvitata! Ora mettila nelle BUONE >", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, GREEN)
 
 
@@ -2209,6 +2245,8 @@ func _barra_stile(fondo: Color, bordo: Color, spessore: int) -> StyleBoxFlat:
 ## Il primo giro mostra il gesto giusto, poi sparisce: un dito (o la freccia del mouse) che porta
 ## il primo filo al suo posto; per le lampadine, una freccia verso la scatola giusta.
 func _draw_guida() -> void:
+	if cfg.get("prima_prova", false):
+		return
 	var a := 0.55 + 0.35 * sin(t_spin * 2.0)
 	if type == "bulbs":
 		var c := BOX.get_center() + Vector2(0, -6)

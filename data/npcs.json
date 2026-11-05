@@ -1914,13 +1914,15 @@
     "help": {
       "kind": "time",
       "ask": "Mina ha un pannello con i fili tutti staccati. Ci scherza sopra, ma gli tremano le mani.",
+      "prima": ["Tienimi fermo questo filo. Oggi ho già preso abbastanza scosse."],
       "yes": [
-        "Ecco! Rosso, blu, giallo... hai le dita giuste. Le avevo anch'io. Poi le ho date in affitto alla torre."
+        "Grazie per i fili."
       ],
       "minigame": {
         "music": "aiuto_mina",
         "type": "wires",
         "title": "I fili di Mina",
+        "prima_prova": true,
         "battute_stelle": {"1": ["Acceso è acceso, {name}. Per quanto, non chiederlo a me."], "2": ["Una scintilla sola. Alla tua età io ne facevo dieci al giorno, e mi chiamavano «il promettente»."], "3": ["Neanche una scintilla storta. Se di sopra ti assumono, non dirgli che ti ho insegnato io."]},
         "lose": ["Lascia stare, {name}. Anche la corrente, certi giorni, non ha voglia di lavorare."],
         "sgridata_dopo": 3,
@@ -1962,10 +1964,10 @@
       }
     ],
     "intro": [
-      "* Una ragazza ti sorride. Ha diciannove anni e un sorriso da quaranta.",
-      "Non calpestare le lampadine. Sono rotte, ma sono mie.",
-      "Mi chiamo Bulbo. Smisto le lampadine fulminate: queste si buttano, queste si aggiustano, queste si fingono buone.",
-      "Le ultime le rimandano di sopra. Nessuno se ne accorge mai."
+      "* Una ragazza mette una lampadina nella scatola. Ti vede e raddrizza subito il sorriso.",
+      "Io sono Bulbo. Quelle accese di qua.",
+      "Quelle rotte di là.",
+      "Questa sembra rotta, ma si aggiusta. Aspetta, te lo faccio vedere."
     ],
     "days": [
       [
@@ -1978,7 +1980,7 @@
     "emote": "dots",
     "help": {
       "kind": "time",
-      "ask": "Bulbo ha tre scatole di lampadine da smistare prima del controllo, e non ce la fa da sola.",
+      "ask": "Bulbo ha delle lampadine da smistare prima del controllo, e non ce la fa da sola.",
       "yes": [
         "Grazie! Le buone restano accese, le rotte vanno via. Come le persone, quaggiù."
       ],
@@ -1986,15 +1988,14 @@
         "music": "aiuto_bulbo",
         "type": "bulbs",
         "title": "Le lampadine di Bulbo",
+        "prima_prova": true,
         "battute_stelle": {"1": ["Finite! Evviva! Qualcuna è nella scatola sbagliata, ma sorride lo stesso. Come me."], "2": ["Quasi tutte giuste! Una l'ho spostata io, prima che la vedessero. Non è successo niente."], "3": ["Tutte giuste! Neanche io ci riesco. Non dirlo a nessuno: le cose che funzionano, quaggiù, le mandano di sopra."]},
         "lose": ["Non fa niente! Davvero! Le rimettiamo in fila e ricominciamo da capo... come ogni giorno."],
         "sgridata_dopo": 3,
         "sgridata": ["Come è possibile? Sono lampadine! Le buone di qua, le rotte di là!", "Lo so che vuoi aiutarmi, ma mettici più impegno, per favore... io il sorriso lo devo tenere su per tutte e due."],
         "rigioca": {"chiede": ["Vuoi rifarlo? Ne arrivano sempre di nuove! Sempre. Tutti i giorni."], "tre_stelle": ["Le hai già fatte tutte giuste! Rifarlo è solo per divertirti. Io non lo faccio per divertirmi."], "meglio": ["Meglio di prima! Ecco quello che mancava. Di più no, se no di sopra se ne accorgono."], "uguale": ["Uguale a prima! Che bello, le cose uguali! ...Soldi niente, però. Scusa."]},
         "intro": [
-          "* Una lampadina alla volta.",
-          "[TEL] * Scorri il dito: buone a destra, rotte a sinistra, sfarfallanti su o giù.",
-          "[PC] * Con le frecce: buone a DESTRA, rotte a SINISTRA, sfarfallanti SU o GIÙ."
+          "* Se lampeggia, aggiustala finché resta accesa. Poi mettila con le buone."
         ],
         "count": 10,
         "time": 25,

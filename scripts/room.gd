@@ -733,6 +733,10 @@ func use_save_point(star: Stellina) -> void:
 ## lavorare di nuovo). La notte però costa: gli interessi corrono. `here`: dove ti ritrovi.
 func _save_here(here: Vector2) -> void:
 	GameState.restore(GameState.MAX_ENERGY)
+	if GameState.floor_id == "-5" and not GameState.flags.get("c1_stellina_spiegata", false):
+		GameState.flags["c1_stellina_spiegata"] = true
+		await Ui.say(["* Qui puoi salvare la partita e recuperare energia.",
+			"* Se lasci passare la notte, domani puoi lavorare di nuovo. Il debito aumenta per gli interessi."])
 	var c: int = await Ui.choose("* (Una stellina brilla a mezz'aria. Guardarla ti fa tornare la voglia di andare avanti.)",
 		["Salva", "Salva e lascia passare la notte", "Lascia stare"])
 	if c == 2:

@@ -252,24 +252,52 @@ func _first_talk() -> void:
 		"Almeno, tutti quelli che mi vedono lo pensano subito. Loro ridono, io no. E tu?"], who)
 	await Ui.say(["* Sussurri il tuo nome: {name}."])
 	await Ui.say(["Bel nome. Tienitelo stretto, quaggiù i nomi si svalutano molto facilmente.",
-		"Con quanto sei stato riconosciuto?"], who)
+		"Quanto ti hanno messo di debito?"], who)
 	await Ui.say(["Sette miliardi."], GameState.player_name)
-	await Ui.say(["Vabbè, non è un debito troppo alto.",
-		"Io ho iniziato con nove. Ora ne devo undici. Non so come, ma stranamente funziona così.",
-		"Chiedi agli altri, anche loro hanno cifre come le nostre. Credo che solo quelli che rientrano nel miliardo possano entrare a far parte del club."], who)
+	await Ui.say(["Io ho iniziato con nove. Ora ne devo undici.",
+		"Ogni notte aggiungono gli interessi. Quelli non saltano mai un turno."], who)
 	await Ui.say(["* Indica un angolo buio."])
-	await Ui.say(["Vedi quella cyclette? Se vuoi puoi salirci su, ti fai il tuo turno giornaliero e poi casomai vai sulla stellina che ti fa passare la notte.",
-		"Però stai attento che corrono gli interessi.",
-		"Se dormi troppo come ho fatto io all'inizio, finisci come me: anche se lavoro fino alla morte mi rimarranno magari tre giorni per fare qualcosa per me.",
+	await Ui.say(["Vedi la cyclette? È il lavoro di oggi. Pedali e ti pagano.",
 		"Ma chissenefrega di salire."], who)
 	await Ui.say(["Salire?"], GameState.player_name)
 	await Ui.say(["Sì, salire qua. Questo posto almeno dice che è fatto per la meritocrazia.",
-		"Se vai nell'altra strada c'è un'addetta, Nives, che dà i badge. Il prezzo te lo dice lei.",
-		"Praticamente le paghi il badge e con quello sali le scale.",
-		"Fattelo spiegare da lei, ma onestamente è solo un'altra rata del tuo debito. A nessuno frega davvero premiarti per qualcosa, qua."], who)
+		"Con i soldi compri da Nives il badge per salire. È vicino alle scale.",
+		"Il prezzo te lo dice lei."], who)
 	await Ui.say(["* Abbassa lo sguardo, sistemandosi sulla cassetta."])
 	await Ui.say(["Stavo pensando... e poi cosa faccio, con le mani?"], who)
 	GameState.flags["fermo_talked"] = true
+
+
+## La prima presentazione di Bulbo indica le due scatole vere, prima di offrire il minigioco.
+func talk_mina(npc: Npc) -> bool:
+	if GameState.flags.get("met_mina", false):
+		return false
+	GameState.flags["met_mina"] = true
+	var prima := Ui.cutscene
+	Ui.cutscene = true
+	var ripresa: Dictionary = await FocusShot.begin(self, $Inquadrature/BulboScatole as Inquadratura)
+	# Il dialogo occupa il fondo dello schermo: le scatole restano nella parte visibile.
+	player.camera.offset = $Inquadrature/BulboScatole/OffsetDialogo.position
+	var righe: Array = npc.data["intro"]
+	await Ui.say([righe[0]])
+	for i in 2:
+		var scatola := get_node("Mondo/ScatolaLampadine%d" % (i + 1)) as Sprite2D
+		npc.face("up" if scatola.global_position.y < npc.global_position.y else "down")
+		var colore := scatola.modulate
+		scatola.modulate = Color(1.0, 0.88, 0.45)
+		await Ui.say([righe[i + 1]], "Bulbo")
+		scatola.modulate = colore
+	await Ui.say([righe[3]], "Bulbo")
+	npc.call("_face_player")
+	var ritorno_offset := create_tween()
+	ritorno_offset.tween_property(player.camera, "offset", ripresa["offset"], float(ripresa["back"]))
+	await FocusShot.restore(self, ripresa)
+	# I due tween finiscono nello stesso fotogramma: nessuno deve riscrivere l'offset ripristinato.
+	ritorno_offset.kill()
+	player.camera.offset = ripresa["offset"]
+	Ui.cutscene = prima
+	await npc.call("_offer_help", "Bulbo")
+	return true
 
 
 # --- la rivelazione: i colori li fai tu ------------------------------------------

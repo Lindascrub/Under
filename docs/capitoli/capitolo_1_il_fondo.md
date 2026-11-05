@@ -31,8 +31,8 @@ Dopo un finale, alla partita nuova, ti riconosce: "Oh. Sei tornato." (docs/NIVES
 1. **La cucina e l'ascensore (testo di Linda, 5/11).** Prima la cucina sottosopra, il biglietto del padre e la lettera della CHEAP; poi l'ascensore, la voce registrata e il riconoscimento del debito di sette miliardi (il display mostra 7 MLD). Le porte incastrate lasciano intravedere le luci abbaglianti del Fondo.
 2. **Arrivo al Fondo: la festa.** Le porte si aprono su festoni, palloncini, coriandoli, una torta "AUGURI ALLA CHEAP".
 3. **Lo schianto.** Dietro di te l'ascensore crolla: rumore, scossa, porte piegate, luce spenta. La musica della festa non si ferma.
-4. **Fermo (testo di Linda, 5/11).** Primo dialogo lineare, con il nome scelto dal giocatore. Fermo ha iniziato con nove miliardi e ora ne deve undici. Indica cyclette e stellina, avverte degli interessi e manda da Nives per badge e prezzo. Chiude con «Stavo pensando... e poi cosa faccio, con le mani?». Le vecchie scelte e spiegazioni del primo incontro sono sostituite.
-5. **Bulbo e Mina.** Ti chiedono una mano (i due minigiochi). Dal secondo dialogo: "devo mantenere il mio colore".
+4. **Fermo (testo di Linda e revisione approvata, 5/11).** Primo dialogo lineare, con il nome scelto dal giocatore. Fermo ha iniziato con nove miliardi e ora ne deve undici. Spiega gli interessi, indica la cyclette e manda da Nives vicino alle scale per badge e prezzo. Sonno e salvataggio si spiegano alla prima stellina. Chiude con «Stavo pensando... e poi cosa faccio, con le mani?». Le vecchie scelte e spiegazioni del primo incontro sono sostituite.
+5. **Bulbo e Mina.** Ti chiedono una mano (i due minigiochi). Bulbo indica le due scatole, con etichette BUONE/ROTTE e una ripresa che le tiene visibili sopra il dialogo. Mina scherza sulle scosse prima di iniziare il lavoro. La prima volta, fili e lampadine mostrano il gesto; poi lo provi senza consumare tempo né errori. I comandi cambiano fra PC e telefono. Dal secondo dialogo: "devo mantenere il mio colore".
 6. **Il primo turno: la cyclette.** Il gioco della lancetta: si tocca lo schermo a sinistra e a destra, alternando, per restare nel verde.
 7. **La telefonata del capo.** Ti propone di prenderti il merito del **quaderno di Fermo**: un, due, tre, stella. Tieni il dito sullo schermo per avvicinarti mentre ti dà le spalle, e ancora per copiare; quando si gira, stacchi il dito. Se ti vede muovere, ti rimanda indietro. Tempo limite visibile. Se lo fai, Fermo sorride come i poster.
 8. **La rivelazione, sul primo gradino.** Col badge, appena metti il piede sulle scale la festa si spegne: palloncini sgonfi, festoni caduti, tutto grigio tranne le cose finte (cyclette, sportello). Il grigio è malinconico (hai aiutato), grottesco (hai rubato) o neutro (hai solo lavorato). Nessuna domanda: decidi coi piedi.
@@ -48,7 +48,7 @@ La scena si genera con `tools/bake_c1_fondo.gd` (la mappa è scritta in `ROWS`).
 
 | Stanza | Dove | Cosa c'è |
 |---|---|---|
-| La festa | a sinistra (1-22, 3-12), pavimento a piastrelle colorate | l'ascensore (11,1), Fermo sulla cassetta (14,4), la cyclette della palestra LimeZu col TURNO (3-4,6), Bulbo coi cavi, Mina con le scatole di lampadine, il tavolo con la torta e i regali, i palloncini, la stellina (5,11) |
+| La festa | a sinistra (1-22, 3-12), pavimento a piastrelle colorate | l'ascensore (11,1), Fermo sulla cassetta (14,4), la cyclette della palestra LimeZu col TURNO (3-4,6), Mina coi cavi, Bulbo con le scatole di lampadine, il tavolo con la torta e i regali, i palloncini, la stellina (5,11) |
 | L'ufficio badge | a destra (24-33, 3-12), porta a (23, 9-10) | lo sportello dei badge (26,3), la bacheca coi prezzi (28,2), le sedie d'attesa (25-28, 8), il divano, le scale per il -4 (31,3); chi scende dal -4 arriva a (31,5) |
 
 ## Comandi: tutto col dito
