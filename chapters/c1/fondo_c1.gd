@@ -143,7 +143,7 @@ func _relight() -> void:
 	await off.finished
 	await Ui.say([[
 		"* Per cinque secondi la festa è tornata. Ti è costata un turno di gambe.",
-		"* Stavolta i cinque secondi sembravano meno. Forse sei tu che guardi più forte.",
+		"* La festa è rimasta accesa cinque secondi. Stavolta ti sono sembrati ancora meno.",
 		"* Tre volte l'hai riaccesa. Tre volte si è spenta. Laggiù nessuno ha alzato la testa.",
 	][clampi(n - 1, 0, 2)]])
 	Ui.cutscene = false
@@ -188,7 +188,7 @@ func _look_back_line() -> String:
 		if Storia.riparato("fermo"):
 			return "Prima gli hai chiesto uno sforzo in più. Poi hai pedalato al suo posto.\nFermo si è tenuto quei quindici minuti. Li ha contati tutti."
 		if int(GameState.flags.get("boss_fermo_extra", 0)) > 0:
-			return "Laggiù, Fermo pedala ancora.\nIl tuo premio è arrivato. La sua pausa no."
+			return "Laggiù, Fermo è ancora in attesa.\nIl tuo premio è arrivato. La sua pausa no."
 		return "Laggiù, Fermo ha smesso di pedalare.\nSta ancora riprendendo fiato. Il premio l'hai preso tu."
 	if int(GameState.flags.get("c1_extra", 0)) >= EXTRA_PAY.size():
 		return "Laggiù, la cyclette gira ancora un po' da sola.\nHai riacceso la festa tre volte. Nessuno ti ha detto grazie."

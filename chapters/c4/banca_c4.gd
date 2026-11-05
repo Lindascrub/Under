@@ -709,7 +709,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 		await Ui.choose("", ["Lo so. Non c'era."])
 		await Ui.say(["Confermiamo."], TERMINAL)
 	await Ui.choose("", ["Allora perché devo pagare?"])
-	await Ui.say(["Questa filiale è autorizzata a riscuotere. Non a modificare l'origine dell'obbligazione."], TERMINAL)
+	await Ui.say(["Questa filiale è autorizzata a riscuotere. Non a cambiare il motivo per cui il debito è stato aperto."], TERMINAL)
 	await Ui.choose("", ["E chi la modifica?"])
 	await Ui.say(["La Direzione."], TERMINAL)
 	var c: int = await Ui.choose("Al lettore di badge.", ["Chiedo una verifica.", "Ritiro la ricevuta e salgo."], TERMINAL)
@@ -917,7 +917,7 @@ func _farewell_deceived() -> void:
 		0:
 			if not fixed:
 				await _withdraw_offer()
-			await Ui.say(["L'ho vista. Adesso la proposta è giusta. Te lo riconosco.", "Per fidarmi di nuovo serve più di un foglio."], who)
+			await Ui.say(["Adesso posso leggerla tutta. Questo te lo riconosco.", "Per fidarmi di nuovo serve più di un foglio."], who)
 		1:
 			GameState.flags["c4_olga_ammesso"] = true
 			await Ui.say(["Lo so. Mi fa piacere che lo sappia anche tu."], who)

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/minigame/risposta.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/minigame/ercole_gomitata.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/minigame/guida_c1.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_1.png" id="scatola"]
 
 [node name="Minigame" type="Node2D"]
 script = ExtResource("1")
@@ -58,6 +59,14 @@ text = "Spesa: 0 €   Arrivo: 8:00   Errori: 0/3"
 horizontal_alignment = 1
 
 [node name="Risposta" parent="." instance=ExtResource("2")]
+
+[node name="ScatolaLeda" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(158, 157)
+texture = ExtResource("scatola")
+
+[node name="Merce" type="Sprite2D" parent="ScatolaLeda"]
+position = Vector2(0, -8)
 
 [node name="GuidaC1" parent="." instance=ExtResource("4")]
 

@@ -140,6 +140,8 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 	var r := int(a["riserve"])
 	out.append("STIPENDI %d: %s." % [s, wage_label(s)] + (" Un aumento è per sempre: dopo non si scende sotto %d." % s if s > maxi(40, minimum(st, "stipendi")) else ""))
 	var cover := _cover(st, a)
+	if int(cover["cost"]) > 0:
+		out.append("Spese della prova: %d. Dalle riserve: %d. Dai servizi: %d." % [int(cover["cost"]), int(cover["from_reserve"]), int(cover["from_services"])])
 	var v_eff := v - int(cover["from_services"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0)
 	var vs := "SERVIZI %d: %s." % [v, service_label(v_eff)]
 	if int(cover["from_services"]) > 0:

@@ -380,11 +380,11 @@ static func verification_done() -> bool:
 func _verification() -> void:
 	if Storia.richiesta() == "archivio":
 		await Ui.say(["* La Presidente apre un cassetto, sfoglia, tira fuori un foglio con il timbro ARCHIVIATA."])
-		await Ui.say(["Ripresa. La verifica è fatta. Per il regolamento, la registrazione è valida."], PRES)
+		await Ui.say(["Ripresa. Ho controllato la registrazione. Il regolamento della Torre la considera valida anche senza firma."], PRES)
 	elif verification_done():
-		await Ui.say(["La verifica è fatta. Per il regolamento, la registrazione è valida."], PRES)
+		await Ui.say(["Ho controllato la registrazione. Il regolamento della Torre la considera valida anche senza firma."], PRES)
 	else:
-		await Ui.say(["Non hai chiesto una verifica. Te la faccio qui, gratis. Valida."], PRES)
+		await Ui.say(["Non hai chiesto una verifica. Te la faccio qui, gratis.", "Ho controllato la registrazione. Il regolamento della Torre la considera valida anche senza firma."], PRES)
 	await _contest_choice()
 
 
@@ -406,6 +406,7 @@ func read_contract() -> void:
 	Sound.sfx("flap")
 	await Ui.say(["* La Presidente apre un cassetto ed estrae una cartellina rosa.",
 		"* OBBLIGO DI ESISTENZA. IMPORTO ORIGINARIO: 7.000.000.000 €."])
+	await Ui.say(["È il fascicolo della tua registrazione. Non il contratto che cercavi."], PRES)
 	# le sezioni si leggono in ordine, una alla volta
 	var sections := ["1. Registrazione", "2. Importo", "3. Consenso"]
 	var seen := 0
@@ -416,6 +417,7 @@ func read_contract() -> void:
 		match seen:
 			0:
 				await Ui.say(["* SEZIONE 1 — REGISTRAZIONE.", "* Titolare: {name}.",
+					"* Sul fascicolo c'è il tuo nome. Non quello di tuo padre.",
 					"* Data di apertura: precedente alla registrazione del titolare.", "* Causale: obbligo di esistenza.",
 					"* Il soggetto viene registrato come beneficiario dei servizi generali della Torre."])
 			1:
@@ -490,7 +492,8 @@ func _offer() -> void:
 	await Ui.say(["Non devi rispondere adesso. Il timbro aspetta. È abituato.",
 		"Prima di decidere, vuoi vedere come funziona il mio lavoro?",
 		"Un turno di bilancio. È una prova: le tue decisioni valgono per quel turno, e si vedranno.",
-		"Dopo, se resti, diventano tue. Se te ne vai, torna tutto sulla mia scrivania. Come prima."], PRES)
+		"Le decisioni di questa prova non sono ancora riforme della Torre.",
+		"Diventano effettive se assumi l'incarico, oppure se una gestione condivisa riesce ad attuarle."], PRES)
 	var t: int = await Ui.choose("Vuoi vedere come funziona?", ["Sì, fammi vedere.", "Non adesso."], PRES)
 	if t == 0:
 		await Ui.say(["La scrivania è quella. Si chiama TURNO anche qui. Mi dispiace: il nome l'ha scelto il quarto Consiglio."], PRES)
@@ -895,7 +898,7 @@ func final_choice() -> void:
 				await Ui.say(["* Diventi responsabile della Torre. Il tuo debito personale viene cancellato.",
 					"* Le decisioni del turno restano. Quelle dopo, le prendi tu."])
 			"B":
-				await Ui.say(["* Rifiuti l'incarico. Lasci la Torre.", "* Il debito resta registrato, o contestato se hai le prove per farlo."])
+				await Ui.say(["* Rifiuti l'incarico. Lasci la Torre.", "* Il debito non viene cancellato. Resta CONTESTATO se hai registrato una contestazione; altrimenti resta REGISTRATO."])
 			"C":
 				await Ui.say(["Interessante.", "Ma se lo annunci tu, da quella sedia, hai deciso da solo per tutti. Di nuovo."], PRES)
 				await Ui.say(["* Proponi, non annunci. Non è detto che accettino: le persone hanno un lavoro, orari, paura.",
@@ -1060,7 +1063,17 @@ func _boss_review() -> void:
 	GameState.save_game(scene_file_path, player.global_position)
 	await Ui.say(["Il turno. Tariffe ai lavoratori: %d. Firme uniche: %d. Decisioni condivise: %d." % [int(st.get("worker_costs", 0)), int(st.get("centralized", 0)), int(st.get("shared", 0))]], "La Presidente")
 	await Ui.say(["Hai visto? Il problema non è trovare cento unità. È decidere di chi sono i cinque che mancano.", "È tutto molto semplice!"], BOSS)
-	await Ui.say(["* Ora la frase pesa più del bilancio. Nel turno qualcuno ha potuto parlare. O qualcuno ha pagato per non essere ascoltato.", "* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo."])
+	var fatti: Array = []
+	if int(st.get("worker_costs", 0)) > 0:
+		fatti.append("* Hai chiesto ai lavoratori di pagare una parte dei servizi.")
+	if int(st.get("centralized", 0)) > 0:
+		fatti.append("* Hai concentrato le firme e saltato i rappresentanti.")
+	if int(st.get("shared", 0)) > 0:
+		fatti.append("* La consultazione ha avuto un costo. I rappresentanti hanno potuto intervenire.")
+	if fatti.is_empty():
+		fatti.append("* Hai mantenuto le tutele. Il bilancio resta sulla scrivania.")
+	fatti.append("* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo.")
+	await Ui.say(fatti)
 	_remove(president)
 	president = _person("Presidente", PRES_SHEET, _posto("Tavolo"), "idle_left", talk_president, true)
 	GameState.save_game(scene_file_path, player.global_position)

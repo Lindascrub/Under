@@ -1,0 +1,408 @@
+[gd_scene load_steps=6 format=3]
+[ext_resource type="Script" path="res://scenes/minigame/rifatti/consegne.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/props/porta_legno.png" id="porta"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_1.png" id="pacco"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="char"]
+[sub_resource type="StyleBoxFlat" id="carta"]
+bg_color = Color(0.94, 0.90, 0.79, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.46, 0.34, 1)
+content_margin_left = 8.0
+content_margin_right = 8.0
+[node name="Gioco" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.16, 0.20, 0.25, 1)
+
+[node name="Titolo" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 4.0
+offset_right = 624.0
+offset_bottom = 29.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
+theme_override_font_sizes/font_size = 18
+text = "AMIR · LE SEI PORTE"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Aiuto" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 31.0
+offset_right = 624.0
+offset_bottom = 66.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Stato" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 65.0
+offset_right = 624.0
+offset_bottom = 90.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Esito" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 325.0
+offset_right = 624.0
+offset_bottom = 357.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
+theme_override_font_sizes/font_size = 12
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Strada" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 94.0
+offset_right = 624.0
+offset_bottom = 321.0
+mouse_filter = 2
+color = Color(0.28, 0.31, 0.35, 1)
+
+[node name="Corsia0" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 137.0
+offset_right = 624.0
+offset_bottom = 139.0
+mouse_filter = 2
+color = Color(0.7, 0.69, 0.58, 1)
+
+[node name="Corsia1" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 210.0
+offset_right = 624.0
+offset_bottom = 212.0
+mouse_filter = 2
+color = Color(0.7, 0.69, 0.58, 1)
+
+[node name="Corsia2" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 283.0
+offset_right = 624.0
+offset_bottom = 285.0
+mouse_filter = 2
+color = Color(0.7, 0.69, 0.58, 1)
+
+[node name="Porte" type="Node2D" parent="."]
+
+[node name="Porta0" type="Node2D" parent="Porte"]
+position = Vector2(550, 210)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta0"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta0"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta0"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta0"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "1"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta0"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_02"
+
+[node name="Porta1" type="Node2D" parent="Porte"]
+position = Vector2(970, 137)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta1"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta1"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta1"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta1"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "2"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta1"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_03"
+
+[node name="Porta2" type="Node2D" parent="Porte"]
+position = Vector2(1390, 283)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta2"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta2"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta2"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta2"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "3"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta2"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_04"
+
+[node name="Porta3" type="Node2D" parent="Porte"]
+position = Vector2(1810, 137)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta3"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta3"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta3"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta3"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "4"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta3"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_05"
+
+[node name="Porta4" type="Node2D" parent="Porte"]
+position = Vector2(2230, 283)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta4"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta4"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta4"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta4"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "5"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta4"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_06"
+
+[node name="Porta5" type="Node2D" parent="Porte"]
+position = Vector2(2650, 210)
+
+[node name="Facciata" type="ColorRect" parent="Porte/Porta5"]
+offset_left = -28.0
+offset_top = -46.0
+offset_right = 28.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.62, 0.52, 0.43, 1)
+
+[node name="Luce" type="ColorRect" parent="Porte/Porta5"]
+offset_left = -26.0
+offset_top = -45.0
+offset_right = 26.0
+offset_bottom = 16.0
+mouse_filter = 2
+color = Color(1, 0.87, 0.36, 0.8)
+
+[node name="Porta" type="Sprite2D" parent="Porte/Porta5"]
+position = Vector2(0, -9)
+texture = ExtResource("porta")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 24)
+scale = Vector2(2, 2)
+
+[node name="Numero" type="Label" parent="Porte/Porta5"]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+offset_bottom = -30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "6"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Destinatario" type="AnimatedSprite2D" parent="Porte/Porta5"]
+visible = false
+position = Vector2(8, 5)
+script = ExtResource("char")
+sheet = "char_07"
+
+[node name="Bici" type="Node2D" parent="."]
+position = Vector2(150, 235)
+[node name="RuotaA" type="Polygon2D" parent="Bici"]
+polygon = PackedVector2Array(-20, 0, -15, -5, -10, 0, -15, 5)
+color = Color(0.08, 0.1, 0.13, 1)
+[node name="RuotaB" type="Polygon2D" parent="Bici"]
+polygon = PackedVector2Array(5, 0, 10, -5, 15, 0, 10, 5)
+color = Color(0.08, 0.1, 0.13, 1)
+[node name="Telaio" type="Line2D" parent="Bici"]
+points = PackedVector2Array(-15, 0, -7, -12, 3, 0, -15, 0, -4, -5, 10, 0, 5, -16, 11, -16)
+width = 2.0
+default_color = Color(0.94, 0.64, 0.2, 1)
+[node name="Amir" type="AnimatedSprite2D" parent="Bici"]
+position = Vector2(-3, -6)
+script = ExtResource("char")
+sheet = "cheap_amir"
+anim = "sit_right"
+[node name="Mira" type="Marker2D" parent="."]
+position = Vector2(265, 210)
+
+[node name="Bersaglio" type="ColorRect" parent="Mira"]
+offset_left = -6.0
+offset_top = -4.0
+offset_right = 6.0
+offset_bottom = 4.0
+mouse_filter = 2
+color = Color(1, 0.88, 0.3, 0.85)
+
+[node name="Limite" type="Marker2D" parent="."]
+position = Vector2(92, 0)
+[node name="Traiettoria" type="Line2D" parent="."]
+width = 1.5
+default_color = Color(1, 0.9, 0.5, 0.8)
+[node name="Pacco" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("pacco")
+scale = Vector2(0.7, 0.7)

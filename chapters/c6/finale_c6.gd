@@ -267,6 +267,8 @@ static func final_line(variant: String) -> String:
 			return "Avevi comprato la libertà. Adesso dovevi trovare il tempo per usarla."
 		"A2":
 			return "Avevi cambiato molte regole. Restava da capire chi avrebbe potuto cambiarle dopo di te."
+		"A3":
+			return "Il tuo debito era finito.\nIl telefono no."
 		"B2":
 			return "Non avevi guadagnato tutto quello che volevi. Avevi ricominciato a fare qualcosa che desideravi."
 		"C1":
@@ -323,7 +325,7 @@ const WORK_TEXT := {"nadir": "del turno corto alla zona industriale", "leda": "d
 func _departure_lines() -> Array:
 	var lines: Array = ["* In tasca: %s." % GameState.euros(GameState.money)]
 	if str(out.get("debt_status", "")) == "contestato":
-		lines.append("* Nella borsa, la contestazione registrata dalla Presidente. Il debito resta, sospeso fino alla risposta.")
+		lines.append("* Nella borsa, la contestazione registrata dalla Presidente. Il debito non è cancellato. Aspetti una risposta.")
 	else:
 		lines.append("* Il debito viene con te: %s." % GameState.euros(GameState.debt))
 	var b := FINALI.bonds()
@@ -506,7 +508,7 @@ func _c3_scene() -> void:
 	for r: String in ["conti", "servizi", "turni"]:
 		if _role(r) != "":
 			names.append(_name(_role(r)))
-	await Ui.say(["* Una stanza con sei sedie. Ne avete portate due.",
+	await Ui.say(["* Una stanza. Servirebbero sei sedie. Ne avete portate due.",
 		"* Sul foglio dei ruoli: CONTI, SERVIZI, TURNI. " + (", ".join(names) + ", il resto è vuoto." if not names.is_empty() else "Il resto è vuoto."),
 		"* Il tuo fascicolo è ancora nella borsa. " + debt_lines()[0].trim_prefix("* ")])
 	var who := NIVES
@@ -624,7 +626,7 @@ func epilogue_for(id: String) -> Dictionary:
 			if robot:
 				return {"lines": ["* Ada sistema le sedie della sala. Sempre nello stesso ordine.", "ARREDAMENTO OTTIMIZZATO."], "speaker": ""}
 			if RULES.casa_open(str(sm["casa"])):
-				return {"lines": ["Mi dai una mano?", "Aspetta.", "Forse dovrei imparare a sistemarla da sola."], "speaker": "Ada"}
+				return {"lines": ["Mi dai una mano con la libreria?", "Aspetta: prima tolgo i libri. Stavolta ci ho pensato."], "speaker": "Ada"}
 			return {"lines": ["* Ada studia al tavolo di una cucina non sua. Il vecchio avviso di chiusura è attaccato al frigo.",
 				"Per ricordarmi da dove vengo. E dove non voglio tornare."], "speaker": "Ada"}
 		"nadir":
@@ -667,14 +669,14 @@ func epilogue_for(id: String) -> Dictionary:
 		"amir":
 			if robot:
 				return {"lines": ["CONSEGNA COMPLETATA.", "CLIENTE SODDISFATTO."]}
-			if f.get("c3_amir_sogno", false) and (sm["wages_cover"] or fam == "C" or RULES.casa_open(str(sm["casa"]))):
+			if f.get("c3_amir_sogno", false) and RULES.casa_open(str(sm["casa"])):
 				return {"lines": ["* Amir ha un fornello in un angolo della Casa Comune. Due tavoli, sei sedie spaiate.", "Vuoi assaggiare?",
 					"Avevo detto che ero bravo."], "speaker": "Amir"}
 			return {"lines": ["* Amir fa ancora le consegne. Nella borsa termica, sotto i pacchi, un quaderno di ricette."]}
 		"tilde":
 			if robot:
 				return {"lines": ["MODULO COMPILATO. MODULO SUCCESSIVO."]}
-			if fam == "C" or str(sm["debt_rule"]) == "revisione":
+			if str(out.get("variant", "")) == "C2" or str(sm["debt_rule"]) == "revisione":
 				return {"lines": ["* Al -4 hanno tolto metà dei timbri. Tilde ne ha tenuto uno, per ricordo.",
 					"Le procedure sono cambiate. Mi sento quasi disoccupata. Di moduli."], "speaker": "Tilde"}
 			return {"lines": ["Ho inventato un modulo nuovo.", "Serve a chiedere di eliminare i moduli inutili.", "È di quarantadue pagine."], "speaker": "Tilde"}
@@ -692,7 +694,7 @@ func epilogue_for(id: String) -> Dictionary:
 		return {"lines": ["DINAMO IN FUNZIONE. ENERGIA GARANTITA."]}
 	if id == "bulbo":
 		return {"lines": ["Quando ero giovane pensavo che a quest'età avrei avuto un sacco di tempo libero.", "Devo aver sbagliato calendario."], "speaker": nm}
-	return {"lines": ["* %s cambia una lampadina. Poi un'altra. Al Fondo le lampadine durano poco, e lui di più." % nm]}
+	return {"lines": ["* %s cambia una lampadina. Poi un'altra. Al Fondo le lampadine durano poco, e lei di più." % nm]}
 
 
 # --- passo 6: Nives ----------------------------------------------------------------------------------

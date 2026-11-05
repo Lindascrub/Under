@@ -347,14 +347,12 @@ func _amir_first() -> void:
 	var who := "Amir"
 	GameState.flags["c3_amir"] = true
 	GameState.flags["met_amir"] = true
-	await Ui.say(["Aspetta.", "Tu sembri uno che sa contare fino a tre.", "Io ci riuscivo, prima di lavorare qui."], who)
-	await Ui.say(["* Vicino a lui ci sono tre scatole."])
-	await Ui.say(["Ho quattro consegne da fare."], who)
-	await get_tree().create_timer(0.6).timeout
-	await Ui.say(["Sì. Esatto.", "Una è già in ritardo."], who)
+	await Ui.say(["* Amir controlla l'elenco dei pacchi sul terminale."])
+	await Ui.say(["Mi manca un giro per il bonus. Sei pacchi.",
+		"Sullo schermo sembra una riga sola. In strada sono sei porte."], who)
 	Sound.sfx("blip", 1.4)
-	await Ui.say(["* Il terminale delle consegne lampeggia:", "* CONSEGNE COMPLETATE: 17.", "* CONSEGNE RICHIESTE PER IL BONUS: 18.", "* TEMPO RIMASTO: 02:00."])
-	await Ui.say(["Mi manca una consegna per il bonus.", "Con quello potrei prendere il treno e andare a trovare mia sorella questo fine settimana."], who)
+	await Ui.say(["* Il terminale delle consegne lampeggia:", "* GIRI COMPLETATI: 17.", "* GIRI RICHIESTI PER IL BONUS: 18.", "* TEMPO RIMASTO: 02:00."])
+	await Ui.say(["Con il bonus potrei prendere il treno e andare a trovare mia sorella questo fine settimana."], who)
 	await _offer("amir", who)
 
 
@@ -469,7 +467,7 @@ func _terminale_inner() -> void:
 				await Ui.say(["* Premi ANNULLA. Il terminale chiede tre volte se sei sicuro. Tre volte, sì."])
 		return
 	var done := 18 if GameState.flags.get("c3_amir_bonus", false) else 17
-	await Ui.say(["* Il terminale delle consegne di Amir.", "* CONSEGNE COMPLETATE: %d. CONSEGNE RICHIESTE PER IL BONUS: 18." % done])
+	await Ui.say(["* Il terminale delle consegne di Amir.", "* GIRI COMPLETATI: %d. GIRI RICHIESTI PER IL BONUS: 18." % done])
 
 
 ## La scelta al terminale (dopo che sei arrivato senza farti vedere). Si può riprendere dopo un caricamento.
@@ -811,6 +809,11 @@ func look_back_line() -> String:
 	var amir: bool = GameState.flags.get("c3_amir_aiutato", false)
 	if GameState.is_robot("amir"):
 		return "Il Mercato era più efficiente di quando eri arrivato."
+	var incarico: Dictionary = GameState.flags.get("boss_missions", {}).get("-3", {})
+	if str(incarico.get("status", "")) == "done" and Storia.torto("leda"):
+		if Storia.riparato("leda"):
+			return "I cartellini erano di nuovo chiari.\nLe discussioni alla cassa di prima, Leda le ricordava ancora."
+		return "Leda rispondeva dei tuoi cartellini.\nIl premio, invece, era già tuo."
 	if GameState.flags.get("c3_leda_ordini", false):
 		return "Per la prima volta, qualcuno aveva smesso di fare i conti da solo."
 	if leda and amir:
@@ -818,6 +821,8 @@ func look_back_line() -> String:
 	if leda or amir:
 		if leda:
 			return "Laggiù Leda ti saluta con la mano.\nIl Mercato non se n'era accorto. Lei sì."
+		if GameState.flags.get("c3_amir_bonus", false):
+			return "Amir era partito per trovare sua sorella.\nIl Mercato continuava a contare le consegne."
 		return "Laggiù Amir ti saluta con la mano.\nIl Mercato non se n'era accorto. Lui sì."
 	if int(GameState.flags.get("c3_turni", 0)) > 0:
 		return "Il Mercato non aveva bisogno di sapere chi fossi per continuare a funzionare."

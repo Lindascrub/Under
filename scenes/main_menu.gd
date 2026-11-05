@@ -2,12 +2,6 @@ extends Control
 ## Schermata del titolo (scenes/main_menu.tscn): Titolo, Voci (il menu), Persone,
 ## e SceltaNome (Velo, Domanda, Campo, Ok, Risposta), nascosta finché non scegli "Nuova partita".
 
-const INTRO := [
-	"Tuo padre se n'è andato in silenzio, come faceva tutto.",
-	"Ti ha lasciato una casa vuota e un debito di {debt}.",
-	"La lettera della banca diceva solo:\n\"Si presenti alla Torre CHEAP. Piano -5.\"",
-]
-
 ## Dopo tre nomi vuoti, quanti secondi resta la risposta prima di chiamarti "Tu".
 @export var attesa_nome_vuoto := 2.2
 
@@ -317,7 +311,7 @@ func _choose(option: String) -> void:
 			GameState.flags["run_id"] = MemoriaNives.new_run_id()
 			GameState.player_name = who
 			GameState.delete_save()
-			Router.goto(Router.ELEVATOR, "", INTRO)
+			Router.goto(Router.ELEVATOR)
 		"Impostazioni":
 			# dalla schermata iniziale c'è anche "Dimentica le partite" (se Nives si ricorda qualcosa)
 			await Ui.settings_menu(true)

@@ -172,6 +172,8 @@ func _agenda() -> void:
 			"La firma la mette l'archivio. Il timbro lo mette il responsabile. Semplicissimo!",
 			"Solo una cosina: l'archivio firma solo moduli già timbrati. E il responsabile timbra solo moduli già firmati.",
 			"...Lo so! È fatto benissimo. Così nessuno sbaglia l'ordine.",
+			"Per la firma vada da Ercole, il custode dell'archivio. È laggiù a destra.",
+			"Per il timbro torni qui. Sempre che nel frattempo abbia trovato la firma.",
 			"Se ha fretta, c'è la procedura d'urgenza: %s, e il B-4 glielo timbro io. Subito. Con un sorriso." % GameState.euros(URGENZA),
 		], who)
 		return
@@ -381,6 +383,11 @@ func on_stairs_top(p: Player) -> bool:
 func _look_back_line() -> String:
 	if GameState.is_robot("tilde"):
 		return "Laggiù, Tilde sorride al telefono, come gli altri.\nIl suo copione, adesso, ha il tuo nome sopra. Lei continua a dire grazie."
+	var incarico: Dictionary = GameState.flags.get("boss_missions", {}).get("-4", {})
+	if str(incarico.get("status", "")) == "done" and Storia.torto("ercole"):
+		if Storia.riparato("ercole"):
+			return "La domanda di Ercole era di nuovo aperta.\nUna risposta, ancora no."
+		return "Il tuo B-4 ti aveva fatto salire.\nLa domanda di Ercole era rimasta chiusa."
 	if GameState.flags.get("c2_pagato", false):
 		return "Laggiù il tritacarte ronza ancora.\nHai pagato trecento euro per un foglio. Il foglio non c'è più. Il debito sì."
 	if GameState.flags.get("c2_timbro", false):

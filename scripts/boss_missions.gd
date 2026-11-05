@@ -7,7 +7,7 @@ const TITLES := {"-5": "ANCORA CINQUE MINUTI", "-4": "PRATICA RISOLTA", "-3": "O
 const PRIZES := {"-5": 600, "-4": 900, "-3": 1500, "-2": 3000, "0": 6000, "cima": 0}
 const INTRO := {
  "-5": ["La festa ha bisogno di corrente. Fermo è già sulla cyclette.", "Le chiedo solo di regolare una leva.", "Per uno sforzo in più di Fermo, ci sono seicento euro per lei."],
- "-4": ["La coda delle pratiche cresce. Il numero delle pratiche risolte deve crescere più in fretta.", "Leggi i fascicoli. Una chiusura conta come una soluzione. Anche quando non la è."],
+ "-4": ["Le pratiche risolte devono aumentare.", "Quella di Ercole aspetta un registro. Se la chiude adesso, per noi è risolta."],
  "-3": ["Tre prodotti, tre cartellini. Quello grande deve essere lo sconto. Le condizioni possono stare altrove.", "Se il cliente scopre il costo alla cassa, intanto è già alla cassa. Il premio arriva fino a 1.500 euro."],
  "-2": ["Olga vorrebbe una rata più piccola. Noi vorremmo commissioni più grandi.", "Prepara una proposta. Durata, interessi e costo totale li puoi leggere tu. Decidi quanto far leggere a lei."],
  "0": ["La piazza parla da tutte le parti. Noi abbiamo sessanta secondi di notiziario.", "Le parole sono le loro. Il montaggio è nostro. Gli ascolti premiano lo scontro."],

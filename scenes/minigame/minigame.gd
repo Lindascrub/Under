@@ -42,6 +42,13 @@ var cfg: Dictionary = {}
 var type := "timing"
 var phase := "intro"
 var won := false
+var visivo: Node = null
+const SCENE_VISIVE := {
+	"consegne": preload("res://scenes/minigame/rifatti/consegne.tscn"),
+	"rate": preload("res://scenes/minigame/rifatti/commissione.tscn"),
+	"pratiche": preload("res://scenes/minigame/rifatti/pratiche.tscn"),
+	"volantini": preload("res://scenes/minigame/rifatti/volantini.tscn"),
+}
 
 # timing
 var marker := 0.0
@@ -206,6 +213,7 @@ var time_total := 0.0
 var guida := true
 ## La prima dimostrazione e il primo gesto non consumano tempo né contano errori.
 var prima_prova := false
+@export var durata_scatola_leda := 0.28
 
 
 func _ready() -> void:
@@ -232,10 +240,21 @@ func _ready() -> void:
 
 func _start() -> void:
 	phase = "play"
+	if bool(cfg.get("visivo", false)) and SCENE_VISIVE.has(type):
+		_title.visible = false
+		_info.visible = false
+		visivo = SCENE_VISIVE[type].instantiate()
+		add_child(visivo)
+		visivo.finito.connect(func(success: bool, partial: bool):
+			misses = visivo.errori
+			_finish(success, partial))
+		visivo.avvia(cfg)
+		return
 	prima_prova = bool(cfg.get("prima_prova", false)) and not bool(cfg.get("rigioco", false)) and not GameState.flags.get("c1_prova_" + type, false)
 	match type:
 		"ercole":
 			_info.text = "Aspetta che chiuda gli occhi."
+			$ErcoleGomitata.prova_libera = prima_prova
 			$ErcoleGomitata.colpo.connect(_ercole_colpo)
 			$ErcoleGomitata.errore.connect(_ercole_errore)
 			$ErcoleGomitata.finito.connect(_ercole_finito)
@@ -268,6 +287,7 @@ func _start() -> void:
 			_new_wires()
 		"inventory":
 			time_left = float(cfg.get("time", 35.0))
+			if prima_prova: _info.text = "Prova una scatola: tempo fermo, nessuna penalità."
 			var goods := INV_GOODS.duplicate()
 			goods.shuffle()
 			inv_queue = goods.slice(0, int(cfg.get("count", 8)))
@@ -313,6 +333,7 @@ func _start() -> void:
 			_vl_ada()
 		"coincidenze":
 			_cz_restart()
+			if prima_prova: cz_msg = "Prima tratta gratuita. Poi, a ogni cambio, aggiungi 3 minuti."
 			time_left = float(_cz_data().get("tempo", 75))
 			cz_msg = "Trascina il dito da una fermata all'altra, lungo una linea, fino al lavoro." if TouchControls.enabled else "Trascina col mouse da una fermata all'altra. Oppure FRECCE e %s." % GameState.fmt("{ok}")
 	if prima_prova and type in ["bulbs", "wires"]:
@@ -434,6 +455,7 @@ func _wire_connect() -> void:
 func touch_scheme() -> String:
 	if phase != "play":
 		return ""
+	if visivo != null: return "point"
 	match type:
 		"timing":
 			return "tap"
@@ -453,6 +475,9 @@ func touch_center() -> Vector2:
 
 
 func touch_point(pos: Vector2, step: int) -> void:
+	if visivo != null:
+		if phase == "play" and not Ui.busy: visivo.punta(pos, step)
+		return
 	if type == "ercole":
 		if step == 0:
 			$ErcoleGomitata.premi("dito")
@@ -542,6 +567,14 @@ func _inv_place(k: int) -> void:
 		return
 	var g: Array = inv_queue[0]
 	if int(g[1]) == k:
+		_fine_prima_prova()
+		var scatola := $ScatolaLeda.duplicate()
+		add_child(scatola)
+		scatola.get_node("Merce").texture = load("res://scripts/product_art.gd").texture(str(g[0]))
+		scatola.visible = true
+		var sposta := create_tween()
+		sposta.tween_property(scatola, "position", _inv_shelf(k).get_center(), durata_scatola_leda).set_trans(Tween.TRANS_QUAD)
+		sposta.tween_callback(scatola.queue_free)
 		inv_queue.pop_front()
 		inv_done += 1
 		inv_msg = ""
@@ -551,6 +584,9 @@ func _inv_place(k: int) -> void:
 			_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done, misses, int(cfg.get("misses", 3))]
 			_finish(true)
 	else:
+		if prima_prova:
+			inv_msg = "Guarda gli oggetti sullo scaffale: quale contiene " + str(g[0]) + "?"
+			return
 		misses += 1
 		flash = 0.3
 		Sound.sfx("arcade/blocked", 1.0, 4.0)
@@ -691,6 +727,15 @@ func _swap_zones() -> void:
 
 
 func _next_round() -> void:
+	if prima_prova:
+		seq.assign(["up", "down"])
+		seq_rosse.assign([false, true])
+		typed.clear()
+		shown = 0
+		show_t = 0.8
+		phase = "show"
+		_info.text = "Esempio: ripeti il primo segno. Quello con la X si salta."
+		return
 	round_n += 1
 	seq.clear()
 	typed.clear()
@@ -720,6 +765,7 @@ var t_spin := 0.0
 
 
 func _process(delta: float) -> void:
+	if visivo != null: return
 	flash = maxf(0.0, flash - delta)
 	t_spin += delta * 4.0
 	rt_k = minf(1.0, rt_k + delta * 2.0)
@@ -761,13 +807,14 @@ func _process(delta: float) -> void:
 			elif type == "consegne":
 				_sn_process(delta)
 			elif type == "coincidenze":
-				time_left -= delta
+				if not prima_prova: time_left -= delta
 				_info.text = "Tempo: %d   Ore %s   Spesa: %d €   Errori: %d/3" % [int(ceil(time_left)), _clock(cz_now), _cz_cost(), misses]
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "inventory":
-				time_left -= delta
+				if not prima_prova: time_left -= delta
 				_info.text = "Tempo: %d   Sistemati: %d/%d   Errori: %d/%d" % [int(ceil(time_left)), inv_done, inv_done + inv_queue.size(), misses, int(cfg.get("misses", 3))]
+				if prima_prova: _info.text = "Prima scatola: tempo fermo, nessuna penalità."
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "collect":
@@ -824,6 +871,14 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != "play":
+		return
+	if visivo != null:
+		if Ui.busy: return
+		if not TouchControls.enabled and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			visivo.punta(event.position, 0 if event.pressed else 2)
+		elif not TouchControls.enabled and event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+			visivo.punta(event.position, 1)
+		else: visivo.input_event(event)
 		return
 	if type == "ercole":
 		if $ErcoleGomitata.input_event(event):
@@ -972,6 +1027,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				typed.append(a)
 				var dire := _da_dire()
 				if typed[typed.size() - 1] != dire[typed.size() - 1]:
+					if prima_prova:
+						_next_round()
+						return
 					flash = 0.3
 					if _con_stelle(): _risposta.sbagliato(_seq_casella(typed.size() - 1, dire.size()))
 					else: Sound.sfx("deny")
@@ -987,6 +1045,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				else:
 					Sound.sfx("blip", ARROW_PITCH[a])
 				if typed.size() == dire.size():
+					if prima_prova:
+						_fine_prima_prova()
+						_next_round()
+						return
 					if round_n >= 2:
 						_finish(true)
 					else:
@@ -1010,6 +1072,7 @@ func _seq_casella(i: int, n: int) -> Vector2:
 
 
 func _ercole_colpo(perfetto: bool) -> void:
+	_fine_prima_prova()
 	hits = $ErcoleGomitata.riuscite
 	misses = $ErcoleGomitata.errori
 	if not perfetto:
@@ -1033,6 +1096,7 @@ func _finish(success: bool, partial := false) -> void:
 	if phase == "done":
 		return
 	phase = "done"
+	if visivo != null: visivo.ferma()
 	if has_node("GuidaC1"):
 		$GuidaC1.visible = false
 	if type == "ercole" and has_node("ErcoleGomitata"):
@@ -1114,6 +1178,7 @@ func _finish(success: bool, partial := false) -> void:
 
 
 func _draw() -> void:
+	if visivo != null: return
 	if type == "ercole":
 		return
 	var font := Assets.font()
@@ -1932,6 +1997,7 @@ func _cz_act(what: String) -> void:
 	if _cz_cost() > int(d.get("budget", 6)):
 		_cz_miss("%d € al giorno. Nadir ne ha %d." % [_cz_cost(), int(d.get("budget", 6))])
 		return
+	_fine_prima_prova()
 	if cz_at == (d["fermate"] as Array).size() - 1:
 		if cz_now > _cz_min(str(d.get("entrata", "8:00"))):
 			_cz_miss("Arriva alle %s. Si entra alle %s." % [_clock(cz_now), str(d.get("entrata", "8:00"))])
@@ -1943,6 +2009,10 @@ func _cz_act(what: String) -> void:
 
 
 func _cz_miss(msg: String) -> void:
+	if prima_prova:
+		cz_msg = msg + " Riprova: il tempo è fermo."
+		_cz_restart()
+		return
 	misses += 1
 	flash = 0.3
 	Sound.sfx("deny")

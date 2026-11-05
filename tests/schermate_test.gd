@@ -22,11 +22,16 @@ var _seen_labels := {}
 var _problemi: Array[String] = []
 var _section := "inizio"
 var _min_row := 1000.0
+var _slot := "user://schermate_revisione.json"
 
 
 func _ready() -> void:
 	for a: String in OS.get_cmdline_user_args():
-		if a.begins_with("--out="):
+		if a == "--touch":
+			TouchControls.enabled = true
+		elif a.begins_with("--save="):
+			_slot = a.trim_prefix("--save=")
+		elif a.begins_with("--out="):
 			_out = a.trim_prefix("--out=").trim_suffix("/") + "/"
 		elif a.begins_with("--solo="):
 			_solo = Array(a.trim_prefix("--solo=").split(","))
@@ -42,6 +47,7 @@ func _want(name: String) -> bool:
 
 
 func _run() -> void:
+	GameState.save_path = _slot
 	if _want("banca"):
 		_section = "banca"
 		await _test_banca()
@@ -83,7 +89,7 @@ func _run() -> void:
 		print("SCHERMATE: PROBLEMI\n- " + "\n- ".join(_problemi))
 	if not _failures.is_empty():
 		print("SCHERMATE: controlli falliti\n- " + "\n- ".join(_failures))
-	get_tree().quit(0)
+	get_tree().quit(0 if _problemi.is_empty() and _failures.is_empty() else 1)
 
 
 ## Quando si cammina i comandi col dito si vedono: Banca vicino alle scale, Cima, schermo della Direzione.
@@ -649,6 +655,15 @@ func _shot(what: String) -> void:
 
 ## Il testo sta nel riquadro? Le scelte stanno nello schermo e non coprono il testo?
 func _check_ui() -> void:
+	var descritta: Control = Ui.get("_described")
+	if is_instance_valid(descritta):
+		for l: Label in descritta.find_children("*", "Label", true, false):
+			if l.is_visible_in_tree() and l.text != "":
+				if l.get_line_count() * l.get_line_height() > l.size.y + 2:
+					_problemi.append("Mandato: testo fuori dal riquadro: " + l.text)
+				if not VIEW.encloses(l.get_global_rect()):
+					_problemi.append("Mandato: testo fuori dallo schermo: " + l.text)
+		return
 	var t: Label = Ui.get("_text")
 	var line_h := t.get_line_height() + t.get_theme_constant("line_spacing")
 	var max_lines := maxi(1, int((t.size.y + 2.0) / line_h))

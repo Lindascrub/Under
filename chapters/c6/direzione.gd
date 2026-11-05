@@ -319,10 +319,12 @@ func _confirm() -> void:
 		return
 	if B.uses("cima"):
 		phase = "mandate"
-		await Ui.say(["Prima della conferma scegli chi sostiene i costi e chi partecipa. Il bilancio resta di cento unità.",
-			"Tariffe: +5 riserve, ma 5 sono pagati dai lavoratori. Firma unica: sposti 5 dai servizi alle riserve e salti i rappresentanti.",
-			"Tutele: almeno 40 stipendi e 20 servizi effettivi. Consultazione: 5 di coordinamento, pagati dalle riserve e poi dai servizi."], "La Presidente")
-		var mode: int = await Ui.choose("Mandato di questo ciclo", ["Mantieni le tutele", "Tariffe ai lavoratori (+5 riserve)", "Firma unica (servizi -5, riserve +5)", "Decisione condivisa (costo 5)"])
+		await Ui.say(["Prima della conferma scegli chi sostiene i costi e chi partecipa. Il bilancio resta di cento unità."], "La Presidente")
+		var mode: int = await Ui.choose_described("Chi paga e chi decide?", [
+			["Mantieni le tutele", "Rispetti i minimi per stipendi e servizi. Nessuna tariffa aggiunta ai lavoratori."],
+			["Tariffe ai lavoratori", "Le riserve ricevono 5 unità. A pagarle sono i lavoratori."],
+			["Firma unica", "Sposti 5 dai servizi alle riserve. Decidi senza i rappresentanti."],
+			["Decisione condivisa", "I rappresentanti partecipano prima dell'applicazione. Coordinarsi costa 5 unità."]])
 		st["mandate"] = ["tutele", "tariffe", "accentrata", "condivisa"][mode]
 		var issue := RULES.invalid(st, alloc)
 		if issue != "":

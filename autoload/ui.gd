@@ -231,6 +231,31 @@ func choose(prompt: String, options: Array, speaker: String = "", start := 0) ->
 	return idx
 
 
+## Stesso contratto di choose(), con spiegazioni nei quattro pulsanti della scheda.
+var _described: Control
+func choose_described(prompt: String, options: Array) -> int:
+	busy = true
+	_box.hide()
+	_choice_box.hide()
+	_text.text = prompt
+	_text.visible_characters = -1
+	_label = _text
+	_options = options.map(func(o: Array) -> String: return str(o[0]))
+	_sel = 0
+	_mode = "choose"
+	_described = preload("res://scenes/ui/scelta_descritta.tscn").instantiate()
+	add_child(_described)
+	_described.imposta(prompt, options)
+	_described.puntata.connect(func(i: int) -> void: _sel = i)
+	_described.scelta.connect(func(i: int) -> void: _sel = i; _chosen.emit(i))
+	var idx: int = await _chosen
+	_mode = ""
+	_described.queue_free()
+	_described = null
+	busy = false
+	return idx
+
+
 ## Testo centrato su schermo nero (intro, cambio giorno, finali). Usalo dopo fade_out().
 func narrate(lines: Array) -> void:
 	busy = true
@@ -338,6 +363,9 @@ func _type(label: Label, text: String) -> void:
 
 
 func _render_choices() -> void:
+	if is_instance_valid(_described):
+		_described.seleziona(_sel)
+		return
 	var lines: Array[String] = []
 	for i in _options.size():
 		lines.append(("> " if i == _sel else "   ") + GameState.fmt(str(_options[i])))
@@ -390,6 +418,12 @@ func _touch(event: InputEventScreenTouch) -> bool:
 			_advance.emit()
 		return true
 	if _mode == "choose":
+		if is_instance_valid(_described):
+			var found: int = _described.indice_a(event.position)
+			if found >= 0:
+				_sel = found
+				_chosen.emit(found)
+			return true
 		var r := Rect2(_choice_box.position, _choice_box.size)
 		if r.has_point(event.position):
 			# l'altezza vera di una riga scritta, non quella del riquadro: se no le voci in basso sbagliano

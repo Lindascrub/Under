@@ -135,7 +135,7 @@ func _ada_after_assembly() -> String:
 		"comunitaria":
 			return "Ho messo il mio nome sul foglio dei turni. Il martedì apro io. Il mercoledì la libreria mi odia di nuovo."
 		"riconversione":
-			return "Ho fatto domanda per la borsa di studio. Per entrare dove studiavo già. Che frase tristissima. Un'altra maglietta."
+			return "Ho fatto domanda per la borsa di studio. Per entrare dove studiavo già."
 		_:
 			return "Abbiamo tempo. Non molto. Abbastanza per sbagliare con calma."
 
@@ -269,7 +269,8 @@ func _bilanci() -> void:
 		"* Canone servizi CHEAP: %s." % GameState.euros(fee),
 		"* Oneri amministrativi: %s." % GameState.euros(admin),
 		"* Entrate disponibili: %s." % GameState.euros(income),
-		"* Disavanzo previsto: %s." % GameState.euros(CITY_LOGIC.deficit())])
+		"* Soldi che mancano: %s." % GameState.euros(CITY_LOGIC.deficit())])
+	await Ui.say(["* Il tetto va riparato. Il canone CHEAP è aumentato. Sono due problemi diversi."])
 	var c: int = await Ui.choose("Il rapporto dei bilanci.", ["Leggi le note", "Basta così"])
 	if c != 0:
 		return

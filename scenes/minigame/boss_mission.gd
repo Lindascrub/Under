@@ -14,6 +14,13 @@ var buttons: Array = []
 var selected := 0
 var msg := ""
 var finishing := false
+var visuale: Node = null
+const VISIVI := {
+ "-4": preload("res://scenes/minigame/rifatti/capo_documenti.tscn"),
+ "-3": preload("res://scenes/minigame/rifatti/capo_cartellino.tscn"),
+ "-2": preload("res://scenes/minigame/rifatti/capo_contratto.tscn"),
+ "0": preload("res://scenes/minigame/rifatti/capo_notiziario.tscn"),
+}
 
 func _ready() -> void:
  mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -30,7 +37,21 @@ func _ready() -> void:
   dinamo.cambiato.connect(_dinamo_cambiato)
   dinamo.confermato.connect(_dinamo_confermato)
   dinamo.esci.connect(_dinamo_esci)
+ elif VISIVI.has(floor):
+  visuale = VISIVI[floor].instantiate()
+  add_child(visuale)
+  _sync_visuale()
  queue_redraw()
+
+func _sync_visuale() -> void:
+ if visuale == null: return
+ visuale.aggiorna(p, msg)
+ buttons = visuale.bersagli()
+ selected = clampi(selected, 0, maxi(0, buttons.size() - 1))
+ visuale.evidenzia(selected)
+
+func _process(_dt: float) -> void:
+ if visuale != null: visuale.evidenzia(selected)
 
 func _dinamo_cambiato(s: Dictionary) -> void:
  p.merge(s, true)
@@ -72,6 +93,7 @@ func _style(c: Color) -> StyleBoxFlat:
  return s
 
 func _draw() -> void:
+ if visuale != null and visuale.visible: return
  buttons.clear()
  draw_rect(Rect2(0, 0, 640, 360), BG)
  draw_rect(Rect2(16, 14, 4, 30), GOLD)
@@ -119,6 +141,7 @@ func touch_point(pos: Vector2, step: int) -> void:
    selected = i; _act(str(buttons[i]["action"])); return
 func _unhandled_input(event: InputEvent) -> void:
  if Ui.busy or finishing or dinamo != null: return
+ if event is InputEventKey and event.echo: return
  if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
   touch_point(event.position, 0)
  elif floor == "-4" and selected <= 4 and (event.is_action_pressed("move_up") or event.is_action_pressed("move_down") \
@@ -144,6 +167,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _act(action: String) -> void:
  if finishing: return
+ if visuale != null and action.begins_with("doc_"):
+  var i := int(p.get("document", 0))
+  var scelta := action.trim_prefix("doc_").to_int()
+  if i < B.DOCUMENTS.size() and (scelta == int(B.DOCUMENTS[i]["correct"]) or (i == 1 and scelta == 3)):
+   visuale.anima(action)
+ elif visuale != null and action == "submit" and bool(B.market_preview(p)["valid"]):
+  visuale.anima(action)
  if action == "exit":
   B.checkpoint(floor); _return_world(); return
  if floor == "-5":
@@ -190,11 +220,13 @@ func _act(action: String) -> void:
     if int(p["round"]) == 3:
      B.finish_market(); _finish(); return
  B.checkpoint(floor)
+ _sync_visuale()
  Sound.sfx("arcade/computer_1" if floor == "-4" else "blip")
  queue_redraw()
 
 func _finish() -> void:
  finishing = true
+ if visuale != null: visuale.visible = false
  Sound.sfx("arcade/chime", 1.0, 2.0)
  queue_redraw()
  if floor == "0":

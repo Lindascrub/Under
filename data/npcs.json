@@ -1095,6 +1095,7 @@
       ],
       "minigame": {
         "type": "sequence",
+        "prima_prova": true,
         "title": "Le pratiche di Dario",
         "intro": [
           "* Le pratiche vanno timbrate in un ordine preciso.",
@@ -2075,11 +2076,10 @@
         "rosse": [1, 2],
         "misses": 3,
         "intro": [
-          "* Ogni freccia è una frase del copione.",
-          "* Guarda l'ordine, poi ripetilo.",
-          "* Le frasi ROSSE sono sbagliate: saltale.",
-          "[PC] * Ripetila con le frecce della tastiera.",
-          "[TEL] * Tocca sopra, sotto, a sinistra o a destra dello schermo."
+          "* Ogni segno è una frase del copione.",
+          "* Guarda l'ordine dei segni. Ripeti solo quelli senza la X.",
+          "[PC] * Ripeti con le frecce, saltando i segni con la X.",
+          "[TEL] * Ripeti nelle stesse posizioni, saltando i segni con la X."
         ],
         "reward": 10
       }
@@ -2089,7 +2089,7 @@
     "reveal": [
       "...L'hai sentito anche tu, il silenzio? Dodici anni, ed è la prima volta che la musica si ferma.",
       "I moduli finiscono nel tritacarte. Lo so da sempre. Una volta ci ho infilato la mano per riprenderne uno: era il mio.",
-      "Il B-4 non serve a salire. Serve a farti girare. Chi gira non ha tempo di chiedersi perché.",
+      "Il B-4 serve a farti girare da uno sportello all'altro. Finché sei in fila, non fai domande.",
       "Adesso che lo sai, la musica ripartirà. E tu farai finta di niente. Come me. Ma almeno, noi due, lo sappiamo."
     ]
   },
@@ -2135,13 +2135,18 @@
       "minigame": {
         "music": "aiuto_ercole",
         "type": "ercole",
+        "prima_prova": true,
         "title": "Tieni sveglio Ercole",
         "stelle": true,
-        "rigioca": {"chiede": ["Vuoi rifarlo?"], "tre_stelle": ["Vuoi rifarlo?"]},
+        "battute_stelle": {"1": ["Sveglio. Un po' storto, ma sveglio."], "2": ["Quattro gomitate. Un richiamo. Può andare."], "3": ["Neanche un richiamo. Quarant'anni di servizio e il merito è del tuo gomito."]},
+        "lose": ["L'ispettore ha preso nota. Di me."],
+        "sgridata_dopo": 3,
+        "sgridata": ["Giovane, questa era la terza prova. Al prossimo controllo mi archiviano."],
+        "rigioca": {"chiede": ["Un'altra ispezione. Vuoi darmi una mano anche stavolta?"], "tre_stelle": ["Vuoi riprovare? Il mio turno, purtroppo, continua."], "meglio": ["Meglio. Ti pago la differenza. Il riposo me lo devono ancora."], "uguale": ["Come prima. Il compenso, però, te l'ho già dato."]},
         "intro": [
-          "* Ogni volta che Ercole chiude gli occhi, dagli una gomitata.",
-          "[PC] * Tieni premuto INVIO o il mouse per caricare. Lascia quando chiude gli occhi.",
-          "[TEL] * Tieni premuto per caricare. Lascia quando chiude gli occhi.",
+          "* Una gomitata leggera, quando gli occhi cominciano a chiudersi.",
+          "[PC] * Tieni premuto INVIO o il mouse. Lascia quando comincia a chiudere gli occhi.",
+          "[TEL] * Tieni premuto. Lascia quando comincia a chiudere gli occhi.",
           "* Troppo forte e l'ispettore si gira."
         ],
         "hits": 4,
@@ -2401,9 +2406,7 @@
       "ask": "Leda ha un camion di scatole da mettere a posto, e nessuno che sappia dove va il sapone.",
       "yes": [
         "Sei più bravo della macchina che ho pagato trecento euro per fare questo lavoro.",
-        "Tieni. Biscotti. Scadono domani. Sono ancora buoni.",
-        "Credo.",
-        "Se diventano verdi, fammelo sapere. Sto cercando un nuovo colore per l'insegna."
+        "Tieni. Biscotti. Scadono domani. Sono ancora buoni. Credo."
       ],
       "lose": [
         "Non preoccuparti. L'ultima volta ho trovato il sapone nello scaffale dei biscotti."
@@ -2411,6 +2414,7 @@
       "minigame": {
         "music": "aiuto_leda",
         "type": "inventory",
+        "prima_prova": true,
         "title": "Scatole e scaffali",
         "intro": [
           "* Una montagna di scatole. Ogni cosa ha il suo scaffale.",
@@ -2467,7 +2471,7 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Amir ha sei pacchi e poco tempo. Il bonus è a una consegna di distanza.",
+      "ask": "Amir deve consegnare sei pacchi per finire l'ultimo giro e ottenere il bonus.",
       "yes": [
         "Aspetta. Ho finito?",
         "DICIOTTO!",
@@ -2481,18 +2485,20 @@
         "Grazie lo stesso. Se vuoi, ci riproviamo. Il terminale non dimentica, ma neanche io."
       ],
       "lose": [
-        "Zero su sei. Però la bici è intera. Anche tu.",
-        "Riproviamo quando vuoi. Le scatole non scappano. Purtroppo."
+        "Non è bastato per il bonus. Ma sei tornato intero.",
+        "Riproviamo quando vuoi. I pacchi sono ancora qui."
       ],
       "minigame": {
         "music": "aiuto_amir",
         "type": "consegne",
+        "visivo": true,
         "title": "L'ultima consegna",
         "intro": [
-          "[TEL] * Scorri il dito per far partire e girare il furgone.",
-          "[PC] * Le frecce fanno partire e girare il furgone.",
-          "* Prendi il pacco, poi raggiungi la casa illuminata prima che scada il tempo.",
-          "* Evita bordi, cantieri, case sbagliate e la tua coda. Ogni consegna allunga il furgone."
+          "* Sei pacchi, sei porte illuminate. Ogni lancio consuma un pacco.",
+          "[TEL] * Scorri in verticale per cambiare corsia. Tocca una porta per lanciare.",
+          "[PC] * SU e GIÙ cambiano corsia. INVIO o clic su una porta lancia il pacco.",
+          "* La linea chiara mostra dove arriva il pacco: aspetta che la porta raggiunga quel punto.",
+          "* Sei consegne, almeno quattro precise: bonus. Da tre consegne in su: aiuto parziale."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2539,8 +2545,8 @@
     "reveal_flag": "c3_rivelazione",
     "reveal": [
       "Hai sentito il clank? È la cassa che fa i conti della giornata.",
-      "Io i miei li faccio col riso: un pugno per ogni consegna. Stasera mangio tanto.",
-      "Scherzo. Stasera mangio diciassette."
+      "Io faccio i conti anche sulla spesa.",
+      "Quando cucino, almeno, decido io cosa mettere nella pentola."
     ]
   },
   "olga": {
@@ -2571,7 +2577,7 @@
       ]
     ],
     "helped": [
-      "Ho rimesso le ricevute in ordine di data. Per la prima volta, mi guardano loro con rispetto."
+      "Ho trovato le due commissioni. Adesso so quali ricevute portare allo sportello."
     ],
     "emote": "dots",
     "grey": true,
@@ -2579,8 +2585,8 @@
       "kind": "time",
       "ask": "Olga ha una borsa piena di ricevute e un estratto conto che non torna.",
       "yes": [
-        "Quindi non ero impazzita.",
-        "Che peccato. Avevo già trovato un cappello adatto."
+        "Un ritardo. Due commissioni.",
+        "Adesso voglio una risposta scritta."
       ],
       "lose": [
         "Le date non scappano. Sono l'unica cosa qui dentro che resta ferma.",
@@ -2589,11 +2595,14 @@
       "minigame": {
         "music": "aiuto_olga",
         "type": "rate",
-        "title": "Le rate mancanti",
+        "visivo": true,
+        "title": "La commissione doppia",
         "intro": [
-          "* Sei documenti sparsi sul tavolino della sala d'attesa.",
-          "* Prima mettili in ordine di data, dal più vecchio.",
-          "* Poi si apre l'estratto conto: la Banca le ha fatto pagare DUE volte la stessa commissione per un solo ritardo. Trova la riga di troppo."
+          "* Il contratto prevede una commissione di 35 € per il ritardo della rata 63.",
+          "* Nell'estratto conto quel ritardo è stato addebitato due volte: il 18 e il 19 giugno.",
+          "[TEL] * Scorri il foglio e tocca una delle due commissioni. Le date restano consultabili.",
+          "[PC] * SU/GIÙ scelgono la voce, INVIO la indica. Puoi anche cliccarla.",
+          "* Qui trovi la prova. Il rimborso va ancora chiesto alla Banca."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2658,10 +2667,11 @@
       "minigame": {
         "music": "aiuto_teo",
         "type": "pratiche",
+        "visivo": true,
         "title": "La pratica impossibile",
         "intro": [
           "* Sei pratiche di credito, una alla volta.",
-          "* Leggile riga per riga e indica quella che dimostra l'anomalia. Se il fascicolo è pulito, scegli NESSUNA ANOMALIA.",
+          "* Confronta originale e copia. Indica il dettaglio che dimostra l'anomalia. Se tutto torna, scegli NESSUNA ANOMALIA.",
           "* Non decidi chi merita i soldi. Controlli le prove che il sistema preferisce non guardare."
         ],
         "reward": 0,
@@ -2726,7 +2736,7 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Ada ha già diviso la Casa Comune in tre stanze: studio, laboratorio, incontri. Ma fuori non lo sa nessuno.",
+      "ask": "Le stanze sono pronte. Ada ha bisogno che qualcuno venga a usarle. Ti dà un pacco di volantini.",
       "yes": [
         "Otto persone sanno che esistiamo.",
         "Una ha chiesto se c'è il wifi. C'è. Più o meno.",
@@ -2739,10 +2749,14 @@
       "minigame": {
         "music": "aiuto_ada",
         "type": "volantini",
+        "visivo": true,
         "title": "Volantinaggio",
         "intro": [
           "* In piazza, davanti alla Casa Comune. Ada ha un pacco di volantini: STUDIO, LABORATORIO, INCONTRI. TUTTO GRATIS. ANCORA PER POCO.",
-          "* Dai il volantino a chi ti guarda (?). Non a chi ha fretta (!!), non a chi è al telefono (...), e mai alla guardia CHEAP."
+          "* Chi ha ? mostra anche il proprio interesse: libro, attrezzo o incontri. Aspetta che sia davanti ad Ada, nella zona chiara.",
+          "[TEL] * Trascina dalla persona alla pila corrispondente.",
+          "[PC] * SINISTRA, SU e DESTRA scelgono una pila. INVIO consegna alla persona davanti ad Ada. Oppure clicca sulla persona.",
+          "* Non insistere con chi ha fretta (!!), è al telefono (...) o fa la guardia CHEAP."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -2810,6 +2824,7 @@
       "minigame": {
         "music": "aiuto_nadir",
         "type": "coincidenze",
+        "prima_prova": true,
         "title": "L'orario delle coincidenze",
         "intro": [
           "* La mappa delle linee. Nadir esce alle 6:40, lavora alle 8:00 e ha 6 €.",

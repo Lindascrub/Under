@@ -280,7 +280,7 @@ func _nadir_after() -> void:
 	if not _f("offerta_nadir"):
 		GameState.flags["offerta_nadir"] = true
 		Storia.segna("offerta_nadir")
-		await Ui.say(["Alla zona industriale cercano gente per il turno corto. Con la tratta che hai trovato, ci arrivi anche tu. Sei euro esatti."], "Nadir")
+		await Ui.say(["Alla zona industriale cercano gente per il turno corto. Con la tratta che hai trovato, ci arrivi anche tu."], "Nadir")
 	if _f("c5_ada") and not _f("c5_nadir_rete"):
 		var c: int = await Ui.choose("Hai un'idea.", ["E se i pendolari si organizzassero?", "Niente"], "Nadir")
 		if c == 0:
@@ -501,7 +501,7 @@ func _request_switchboard() -> void:
 	Sound.sfx("blip", 1.4)
 	await Ui.say(["* Sul pannello del centralino lampeggia una pratica che conosci: RICHIESTA DI VERIFICA — {name}.",
 		"* DESTINAZIONE PROPOSTA DAL SISTEMA: ARCHIVIO."])
-	var c: int = await Ui.choose("La tua richiesta.", ["CONFERMA", "VERIFICA", "SEGNALA"])
+	var c: int = await Ui.choose("La tua richiesta.", ["CONFERMA — archivia", "VERIFICA — manda alla Direzione", "SEGNALA — la porto io"])
 	GameState.flags["c5_richiesta"] = ["archivio", "direzione", "a_mano"][c]
 	Storia.segna("c5_richiesta")
 	match c:
@@ -1099,6 +1099,7 @@ func assembly() -> void:
 	var ask := "Si vota. Tu cosa sostieni?"
 	if prev != "":
 		ask += " (In piazza avevi detto: %s.)" % ("nessuna posizione" if prev == "nessuna" else prev)
+	await Ui.say(["* Puoi sostenere una proposta. Gli altri porteranno i loro bisogni e quello che possono mettere a disposizione."])
 	var v: int = await Ui.choose(ask, ["Sostengo A: ristrutturazione CHEAP", "Sostengo B: gestione comunitaria", "Sostengo C: rinvio", "Mi astengo"], who)
 	var support: String = ["A", "B", "C", "nessuna"][v]
 	GameState.flags["c5_sostegno"] = support

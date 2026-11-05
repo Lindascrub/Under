@@ -1,0 +1,224 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://scenes/minigame/rifatti/incarico.gd" id="1"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="char"]
+[sub_resource type="StyleBoxFlat" id="carta"]
+bg_color = Color(0.93, 0.9, 0.82, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.51, 0.47, 0.37, 1)
+content_margin_left = 8.0
+content_margin_right = 8.0
+[node name="Incarico" type="Node2D"]
+script = ExtResource("1")
+piano = "-2"
+
+[node name="Fondo" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.09, 0.12, 0.17, 1)
+
+[node name="Titolo" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 6.0
+offset_right = 624.0
+offset_bottom = 32.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "CAPO · UN PICCOLO AIUTO"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Stato" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 33.0
+offset_right = 624.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Esito" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 33.0
+offset_right = 624.0
+offset_bottom = 76.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Aiuto" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 333.0
+offset_right = 624.0
+offset_bottom = 357.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Interno" type="Panel" parent="."]
+offset_left = 16.0
+offset_top = 76.0
+offset_right = 311.0
+offset_bottom = 240.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("carta")
+
+[node name="Dati" type="Label" parent="Interno"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 287.0
+offset_bottom = 160.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Olga" type="Panel" parent="."]
+offset_left = 320.0
+offset_top = 76.0
+offset_right = 624.0
+offset_bottom = 240.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("carta")
+
+[node name="Dati" type="Label" parent="Olga"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 296.0
+offset_bottom = 72.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Condizioni" type="Label" parent="Olga"]
+offset_left = 8.0
+offset_top = 73.0
+offset_right = 296.0
+offset_bottom = 149.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = ""
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Copertura" type="ColorRect" parent="Olga"]
+offset_left = 6.0
+offset_top = 75.0
+offset_right = 298.0
+offset_bottom = 160.0
+mouse_filter = 2
+color = Color(0.25, 0.25, 0.29, 1)
+
+[node name="Avviso" type="Label" parent="Olga/Copertura"]
+offset_left = 8.0
+offset_top = 0.0
+offset_right = 284.0
+offset_bottom = 87.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Riepilogo soltanto\nnella copia interna."
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Azioni" type="Control" parent="."]
+mouse_filter = 2
+
+[node name="A0" type="Button" parent="Azioni"]
+offset_left = 16.0
+offset_top = 246.0
+offset_right = 211.0
+offset_bottom = 286.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "Durata"
+autowrap_mode = 2
+
+[node name="A1" type="Button" parent="Azioni"]
+offset_left = 217.0
+offset_top = 246.0
+offset_right = 412.0
+offset_bottom = 286.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "Tasso"
+autowrap_mode = 2
+
+[node name="A2" type="Button" parent="Azioni"]
+offset_left = 418.0
+offset_top = 246.0
+offset_right = 624.0
+offset_bottom = 286.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "Commissione"
+autowrap_mode = 2
+
+[node name="A3" type="Button" parent="Azioni"]
+offset_left = 16.0
+offset_top = 291.0
+offset_right = 310.0
+offset_bottom = 331.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "Riepilogo"
+autowrap_mode = 2
+
+[node name="A4" type="Button" parent="Azioni"]
+offset_left = 318.0
+offset_top = 291.0
+offset_right = 482.0
+offset_bottom = 331.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "INVIA PROPOSTA"
+autowrap_mode = 2
+
+[node name="A5" type="Button" parent="Azioni"]
+offset_left = 488.0
+offset_top = 291.0
+offset_right = 624.0
+offset_bottom = 331.0
+mouse_filter = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("carta")
+text = "SALVA ED ESCI"
+autowrap_mode = 2

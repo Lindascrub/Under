@@ -319,7 +319,8 @@ func _run() -> void:
 
 	# --- Amir, LE CONSEGNE: il furgone (snake); si scorre per girare, si prende il pacco, si porta alla casa giusta
 	var amir_mg: Dictionary = (GameState.npc_data("amir")["help"]["minigame"] as Dictionary).duplicate(true)
-	amir_mg.merge({"kind": "help", "id": "amir", "name": "Amir", "intro": ["* Prova."], "return": Router.FONDO, "seed": 5, "passo": 0.05, "accelera": 0.0, "partenza": [3, 9]}, true)
+	# Compatibilità: una vecchia configurazione continua ad aprire lo Snake.
+	amir_mg.merge({"visivo": false, "kind": "help", "id": "amir", "name": "Amir", "intro": ["* Prova."], "return": Router.FONDO, "seed": 5, "passo": 0.05, "accelera": 0.0, "partenza": [3, 9]}, true)
 	GameState.minigame = amir_mg
 	Router.goto(Router.MINIGAME)
 	await _wait_scene(Router.MINIGAME)
@@ -345,6 +346,22 @@ func _run() -> void:
 		await _frames(1)
 	_check(int(m.get("sn_done")) == 6 and bool(m.get("won")), "il sesto pacco puntuale alla casa giusta: consegna finita, con il bonus (pacchi %d, errori %d, %s)" % [int(m.get("sn_done")), int(m.get("misses")), str(m.get("sn_msg"))])
 	await _idle()
+
+	# --- Amir attuale: lo scorrimento cambia corsia; soltanto il tocco lancia.
+	amir_mg["visivo"] = true
+	GameState.minigame = amir_mg
+	Router.goto(Router.MINIGAME)
+	await _wait_scene(Router.MINIGAME)
+	m = await _wait_play()
+	var bici: Node = m.visivo
+	bici.set_process(false)
+	await _swipe(Vector2(200, 230), Vector2(200, 140))
+	_check(bici.corsia == 0 and bici.rimasti == 6, "lo scorrimento verticale cambia corsia e non lancia")
+	var porta: Node = bici.porte[0]
+	porta.position = Vector2(bici.get_node("Mira").position.x + bici.velocita * bici.durata_lancio, bici.corsie[0])
+	await _tap_at(porta.position)
+	await get_tree().create_timer(0.4).timeout
+	_check(bici.consegnati == 1 and bici.rimasti == 5, "il tocco sulla porta lancia e consegna un solo pacco")
 
 	# --- la cassa del Mercato: tocca l'articolo, poi CORREGGI il prezzo sbagliato
 	w = await _work("cassa", {"job": {"pay_max": 160, "duration": 40}})

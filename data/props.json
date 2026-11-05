@@ -2,19 +2,19 @@
   "_info": "Le cose della mappa con cui si può interagire anche senza un esame scritto a mano (world/prop_talk.gd). Chiave: il file della texture (dopo assets/limezu/ o art/), con @x,y se è un pezzo di un foglio. lines = cosa si legge; repeat = cosa si legge dalla seconda volta; seats = posti dove sedersi [x, y, dir, lift] dall'angolo in basso a sinistra dello sprite; solid = pixel solidi in basso se l'oggetto non ne ha. footprint = [x, y, larghezza, altezza] nello sprite: ingombro fisico che sostituisce le collisioni ai piedi.",
   "_fallbacks": {
     "container": [
-      ["* Una scatola senza etichetta. La scuoti piano: dentro c'è soprattutto carta."],
+      ["* Una scatola senza etichetta."],
       ["* Una cassa vuota. Sul fondo: \"RENDERE PIENA ENTRO FINE TURNO\"."],
       ["* Imballaggio CHEAP. Più resistente di ciò che protegge."]
     ],
     "sign": [
-      ["* Una promessa stampata a colori. Le condizioni, come sempre, sono in piccolo."],
+      ["* Un cartello con il marchio CHEAP."],
       ["* Un cartello CHEAP. Usa tre punti esclamativi per dire una cosa che non consola."],
       ["* L'avviso è nuovo. Il nastro adesivo che lo copre è ancora più nuovo."]
     ],
     "plant": [
-      ["* Una pianta. È qui da più tempo di quasi tutti i dipendenti."],
-      ["* Le foglie sono state spolverate. La terra no: quella non si vede nelle foto."],
-      ["* Una pianta aziendale. Cresce storta, ma senza fare reclamo."]
+      ["* Una pianta in un vaso."],
+      ["* Qualche foglia è impolverata."],
+      ["* La terra nel vaso è asciutta."]
     ],
     "seat": [
       ["* Un posto per fermarsi un momento. Il momento non è compreso nell'orario."],
@@ -22,9 +22,9 @@
       ["* Una sedia libera. Qualcuno ha già lasciato la forma della propria schiena."]
     ],
     "desk": [
-      ["* Un piano di lavoro pulito. Nei graffi si vede quante persone ci hanno lavorato prima."],
+      ["* Un piano di lavoro segnato dai graffi."],
       ["* Un tavolo CHEAP. Un angolo traballa; sotto c'è un modulo piegato quattro volte."],
-      ["* Una scrivania senza cassetti personali. Personale, qui, è solo un reparto."]
+      ["* Una scrivania. Il bordo è consumato."]
     ],
     "fridge": [
       ["* Un frigorifero CHEAP. Le etichette si rinnovano più spesso dei prodotti."],
@@ -32,13 +32,13 @@
       ["* Il motore ronza senza pause. Un dipendente modello."]
     ],
     "storage": [
-      ["* Raccoglitori in ordine alfabetico. La lettera più piena è R: reclami."],
+      ["* Raccoglitori pieni di fogli."],
       ["* Un mobile d'archivio. Qualcuno ha scritto \"NON PERDERE\" su tre cartelle già perse."],
       ["* Scaffali pieni. Ogni cosa ha un posto; quasi nessuna persona ce l'ha."]
     ],
     "machine": [
       ["* Lo schermo dice: ATTENDERE. Non specifica quanto."],
-      ["* Una macchina CHEAP. Ha un pulsante verde e tre modi diversi per dire di no."],
+      ["* Una macchina CHEAP. Il pannello è acceso."],
       ["* Il cursore lampeggia. Sembra impaziente anche lui."]
     ],
     "light": [
@@ -52,9 +52,9 @@
       ["* Il display mostra il prezzo e, sotto, la possibilità di pagarlo a rate."]
     ],
     "door": [
-      ["* Una porta CHEAP. Dal lato opposto c'è sempre qualcuno che può aprirla."],
+      ["* Una porta."],
       ["* La maniglia è lucida nei punti toccati da migliaia di mani."],
-      ["* Sopra la porta: USCITA. Sotto, un lettore di badge."]
+      ["* La porta ha una maniglia di metallo."]
     ],
     "trash": [
       ["* Un cestino pieno di bozze. Tutte cominciano con \"Gentile cliente\"."],
@@ -94,17 +94,17 @@
   "_repeats": {
     "container": [["* La scuoti di nuovo. Il contenuto mantiene il segreto."]],
     "sign": [["* Lo rileggi. Le lettere piccole non diventano più grandi."]],
-    "plant": [["* La foglia non reagisce. È la risposta più sincera ricevuta oggi."]],
-    "seat": [["* È ancora una sedia. È già più affidabile di molte promesse."]],
-    "desk": [["* Sotto non è comparso nessun cassetto segreto. Solo una gomma da masticare."]],
+    "plant": [["* Le foglie sono immobili."]],
+    "seat": [["* Il posto è ancora libero."]],
+    "desk": [["* Gli stessi graffi sul bordo."]],
     "fridge": [["* Il ronzio continua. Il prezzo probabilmente è già cambiato."]],
-    "storage": [["* I fascicoli sono ancora lì. Anche quello col tuo nome."]],
-    "machine": [["* Premi un tasto. Ora dice: ATTENDERE..."]],
+    "storage": [["* I fascicoli sono ancora al loro posto."]],
+    "machine": [["* Il pannello è ancora acceso."]],
     "light": [["* Sfarfalla una volta, come se avesse capito."]],
     "vending": [["* Lo snack economico è ancora bloccato."]],
-    "door": [["* La porta non si sente più aperta di prima."]],
+    "door": [["* La stessa maniglia di metallo."]],
     "trash": [["* Non trovi niente di nuovo. Qualcuno, invece, ha trovato posto per un'altra richiesta."]],
-    "default": [["* Lo guardi ancora. Questa volta è lui a sembrare perplesso."]]
+    "default": [["* È come prima."]]
   },
   "_seat_lines": {
     "office": [["* La sedia gira mezzo giro più del necessario.", "* Questa volta la fermi con un piede."]],

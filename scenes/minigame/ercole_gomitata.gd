@@ -42,6 +42,7 @@ var riuscite := 0
 var errori := 0
 var pausa := 0.0
 var esito_t := 0.0
+var prova_libera := false
 
 
 func _ready() -> void:
@@ -54,6 +55,7 @@ func avvia() -> void:
 	riuscite = 0
 	errori = 0
 	sonno = sonno_iniziale
+	if prova_libera: sonno = occhi_si_chiudono
 	carica = 0.0
 	pausa = 0.0
 	attivo = true
@@ -79,7 +81,7 @@ func passo(delta: float) -> void:
 	if pausa > 0.0:
 		pausa = maxf(0.0, pausa - delta)
 	else:
-		sonno += delta * sqrt(1.0 + riuscite * 0.18) / maxf(0.1, secondi_per_addormentarsi)
+		if not prova_libera: sonno += delta * sqrt(1.0 + riuscite * 0.18) / maxf(0.1, secondi_per_addormentarsi)
 		if premuto:
 			carica += delta / maxf(0.1, durata_carica)
 			if carica > forza_massima + 0.18:
@@ -109,6 +111,14 @@ func lascia(origine := "tasto") -> void:
 		return
 	var utile := carica >= forza_minima and sonno >= colpo_utile
 	var perfetto := utile and sonno >= occhi_si_chiudono
+	if prova_libera and not utile:
+		carica = 0.0
+		risultato.text = "Riprova: carica fino alla zona verde, poi lascia."
+		esito_t = 1.5
+		return
+	if prova_libera:
+		prova_libera = false
+		perfetto = true
 	var tw := create_tween()
 	tw.tween_property(braccio, "rotation_degrees", inclinazione_colpo, 0.06)
 	tw.tween_property(braccio, "rotation_degrees", 0.0, 0.18).set_trans(Tween.TRANS_BACK)
@@ -137,6 +147,13 @@ func lascia(origine := "tasto") -> void:
 
 
 func _troppo_forte() -> void:
+	if prova_libera:
+		premuto = false
+		fonte = ""
+		carica = 0.0
+		risultato.text = "Troppo forte. Riprova: lascia nella zona verde."
+		esito_t = 1.5
+		return
 	errori += 1
 	ispettore.flip_h = true
 	corpo.rotation_degrees = -inclinazione_sonno
