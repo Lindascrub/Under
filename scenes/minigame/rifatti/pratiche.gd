@@ -4,12 +4,15 @@ var indice := 0
 var selezione := 0
 var in_attesa := false
 var pratiche: Array = []
+var scelte_escluse: Array[int] = []
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	pratiche = GameState.bank.get("teo", {}).get("pratiche", [])
-	$Aiuto.text = "Confronta i due documenti. Indica il dettaglio che non torna."
+	$Aiuto.text = "Tocca il dettaglio che non torna." if TouchControls.enabled else "FRECCE: confronta le righe. INVIO o clic: segnala."
 	_mostra()
 func _mostra() -> void:
+	scelte_escluse.clear()
+	$Esito.text = ""
 	var p: Dictionary = pratiche[indice]
 	var tipo := int(p.get("tipo", 0))
 	var righe: Array = p.get("righe", [])
@@ -38,15 +41,19 @@ func _mostra() -> void:
 	_evidenzia()
 func _evidenzia() -> void:
 	for i in 4:
-		$Destra/Campi.get_child(i).modulate = Color("ffe49d") if i == selezione and not TouchControls.enabled else Color.WHITE
+		var focused := i == selezione and not TouchControls.enabled
+		$Sinistra/Campi.get_child(i).modulate = Color("ffe49d") if focused else Color.WHITE
+		$Destra/Campi.get_child(i).modulate = Color("ffb0a0") if i in scelte_escluse else (Color("ffe49d") if focused else Color.WHITE)
 	$Nessuna.modulate = Color("ffe49d") if selezione == 4 and not TouchControls.enabled else Color.WHITE
 func scegli(k: int) -> void:
-	if not attivo or in_attesa: return
+	if not attivo or in_attesa or k < 0 or k > 4 or k in scelte_escluse: return
 	var corretto := int(pratiche[indice].get("riga", -1))
 	var scelto := -1 if k == 4 else k
 	if scelto != corretto:
+		scelte_escluse.append(k)
 		errori += 1
-		$Esito.text = "Confronta la stessa voce nei due fogli."
+		$Esito.text = "Questa scelta non prova un errore. Confronta date, importi e allegati."
+		_evidenzia()
 		Sound.sfx("deny")
 		if errori >= int(configurazione.get("misses", 2)): chiudi(false)
 		return
@@ -65,6 +72,7 @@ func scegli(k: int) -> void:
 	if indice == pratiche.size(): chiudi(true)
 	else: _mostra()
 func input_event(e: InputEvent) -> void:
+	if not attivo or in_attesa: return
 	if e is InputEventKey and e.echo: return
 	if e.is_action_pressed("move_up") or e.is_action_pressed("move_left"):
 		selezione = posmod(selezione - 1, 5)

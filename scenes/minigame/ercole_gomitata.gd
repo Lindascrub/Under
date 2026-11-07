@@ -186,6 +186,15 @@ func _aggiorna() -> void:
 	if pausa == 0.0:
 		corpo.modulate = Color.WHITE
 	stato.text = "Sveglio: %d/%d" % [riuscite, gomitate_richieste]
+	if attivo and esito_t <= 0.0 and pausa <= 0.0:
+		if not premuto:
+			risultato.text = "Carica: sta chiudendo gli occhi." if sonno >= 0.48 else "Aspetta che gli venga sonno."
+		elif carica < forza_minima:
+			risultato.text = "Tieni premuto fino al verde."
+		elif carica <= forza_massima:
+			risultato.text = "LASCIA ORA!" if sonno >= occhi_si_chiudono else "Forza giusta. Gli occhi sono ancora aperti."
+		else:
+			risultato.text = "Troppa forza: l'ispettore ti sente!"
 
 
 func _notification(what: int) -> void:

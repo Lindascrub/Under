@@ -22,14 +22,27 @@ var ultima: Control = null
 var timbrati := 0
 var doppi := 0
 var prova_trovata := false
+var selezionata: Control = null
+var guida := false
+var riferimento: Label
+var stile_normale: StyleBoxFlat
+var stile_scelto: StyleBoxFlat
 
 
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	voci = GameState.bank.get("olga", {}).get("nastro", [])
+	guida = bool(c.get("prima_prova", false)) and not bool(GameState.flags.get("prova_rate", false)) and not bool(c.get("rigioco", false))
+	riferimento = Label.new()
+	riferimento.position = Vector2(16, 276)
+	riferimento.size = Vector2(540, 44)
+	riferimento.add_theme_font_size_override("font_size", 12)
+	riferimento.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	riferimento.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(riferimento)
 	for i in voci.size():
 		if _doppia(i): doppi += 1
-	$Aiuto.text = "Tocca la ricevuta doppia prima che esca dal nastro." if TouchControls.enabled else "Clicca la ricevuta doppia prima che esca dal nastro."
+	$Aiuto.text = "Tocca la ricevuta doppia. Sotto trovi la voce precedente." if TouchControls.enabled else "SINISTRA/DESTRA: ricevuta. INVIO o clic: timbra il doppio."
 	_aggiorna()
 
 
@@ -46,6 +59,12 @@ func velocita() -> float:
 func _process(dt: float) -> void:
 	if not attivo or Ui.busy or voci.is_empty(): return
 	var v := velocita()
+	if guida:
+		for r in ricevute:
+			if r.get_meta("doppia") and not r.get_meta("timbrata") and r.position.x <= 400:
+				dt = 0.0
+				$Esito.text = "Primo doppio: confronta le due voci. Il nastro aspetta."
+				break
 	# i rulli girano: si vede che il nastro corre
 	for r: Control in $Nastro/Rulli.get_children():
 		r.position.x = fposmod(r.position.x - v * dt, 680.0) - 20.0
@@ -55,10 +74,12 @@ func _process(dt: float) -> void:
 		r.position.x -= v * dt
 		if r.position.x < $Uscita.position.x:
 			ricevute.erase(r)
+			if selezionata == r: selezionata = null
 			if r.get_meta("doppia") and not r.get_meta("timbrata"):
 				_scappata(r)
 			r.queue_free()
 			if not attivo: return
+	_focus_valido()
 	if prossima >= voci.size() and ricevute.is_empty():
 		chiudi(prova_trovata)
 
@@ -72,11 +93,17 @@ func crea_ricevuta() -> Control:
 	r.get_node("Voce").text = str(voci[i][1])
 	var euro := int(voci[i][2])
 	r.get_node("Importo").text = ("+%d €" if euro > 0 else "%d €") % euro
+	r.set_meta("indice", i)
+	r.set_meta("errata", false)
 	r.set_meta("doppia", _doppia(i))
 	r.set_meta("prova", (voci[i] as Array).size() > 3 and str(voci[i][3]) == "prova")
 	r.set_meta("timbrata", false)
 	ricevute.append(r)
 	ultima = r
+	if stile_normale == null:
+		stile_normale = r.get_theme_stylebox("panel")
+		stile_scelto = stile_normale.duplicate()
+		stile_scelto.border_color = Color("ffe14d")
 	prossima += 1
 	return r
 
@@ -86,9 +113,11 @@ func _aggiorna() -> void:
 
 
 func timbra(r: Control) -> void:
-	if not attivo or r == null or r.get_meta("timbrata"): return
+	if not attivo or r == null or r.get_meta("timbrata") or r.get_meta("errata", false): return
 	if not r.get_meta("doppia"):
-		errori += 1
+		if not guida:
+			r.set_meta("errata", true)
+			errori += 1
 		$Esito.text = "Questa voce è una sola. Timbra solo quella uguale alla precedente."
 		Sound.sfx("deny")
 		var tw := create_tween()
@@ -101,6 +130,8 @@ func timbra(r: Control) -> void:
 		if errori >= errori_max: chiudi(false)
 		return
 	r.set_meta("timbrata", true)
+	guida = false
+	GameState.flags["prova_rate"] = true
 	timbrati += 1
 	var t: Label = r.get_node("Timbro")
 	t.visible = true
@@ -136,6 +167,51 @@ func ricevuta_al_punto(pos: Vector2) -> Control:
 	return null
 
 
-## Solo mouse e dito: si timbra appena si preme.
+func _disponibili() -> Array[Control]:
+	var out: Array[Control] = []
+	for r in ricevute:
+		if not r.get_meta("timbrata") and r.position.x >= 44 and r.position.x + r.size.x <= 640:
+			out.append(r)
+	out.sort_custom(func(a: Control, b: Control): return a.position.x < b.position.x)
+	return out
+
+
+func _focus_valido() -> void:
+	var disponibili := _disponibili()
+	if selezionata == null or selezionata not in disponibili:
+		seleziona(disponibili[0] if not disponibili.is_empty() else null)
+
+
+func seleziona(r: Control) -> void:
+	if is_instance_valid(selezionata): selezionata.add_theme_stylebox_override("panel", stile_normale)
+	selezionata = r
+	if r == null:
+		riferimento.text = "La voce precedente resta qui, anche quando esce dal nastro."
+		return
+	r.add_theme_stylebox_override("panel", stile_scelto)
+	var i := int(r.get_meta("indice"))
+	if i == 0:
+		riferimento.text = "PRIMA VOCE DEL MESE · Non ha una voce precedente."
+	else:
+		var voce: Array = voci[i - 1]
+		riferimento.text = "VOCE PRECEDENTE · %s · %s · %d EUR" % [voce[0], voce[1], int(voce[2])]
+
+
+func input_event(e: InputEvent) -> void:
+	if not attivo or (e is InputEventKey and e.echo): return
+	_focus_valido()
+	var disponibili := _disponibili()
+	if disponibili.is_empty(): return
+	if e.is_action_pressed("move_left") or e.is_action_pressed("move_right"):
+		var step := -1 if e.is_action_pressed("move_left") else 1
+		seleziona(disponibili[posmod(disponibili.find(selezionata) + step, disponibili.size())])
+	elif e.is_action_pressed("confirm"): timbra(selezionata)
+
+
+## Mouse e dito conservano il gesto diretto.
 func punta(pos: Vector2, step: int) -> void:
-	if step == 0: timbra(ricevuta_al_punto(pos))
+	if step == 0:
+		var r := ricevuta_al_punto(pos)
+		if r != null:
+			seleziona(r)
+			timbra(r)

@@ -44,16 +44,21 @@
         "sgridata": [
           "Aspetta, {name}. Ripartiamo da un filo: rosso sul rosso. Poi il prossimo."
         ],
-        "rigioca": {"chiede": ["Ancora qui, {name}? Se vuoi rifare i fili, li stacco. Tanto si staccano da soli."], "tre_stelle": ["Hai già fatto tutto perfetto. Rifarlo è come ripassare un filo che funziona: o sei pignolo o ti annoi."], "meglio": ["Meglio dell'altra volta. Ti pago la differenza: sono un'elettricista, non una banca."], "uguale": ["Come l'altra volta. I soldi dell'altra volta però li hai già presi."]},
+        "rigioca": {"chiede": ["Ancora qui, {name}? Se vuoi rifare i fili, li stacco. Tanto si staccano da soli."], "tre_stelle": ["Hai già fatto tutto perfetto. Rifarlo è come ripassare un filo che funziona: o sei pignolo o ti annoi."], "meglio": ["Meglio dell'altra volta. Ti pago la differenza: sono un'elettricista, non una banca."], "uguale": ["Come l'altra volta. I soldi dell'altra volta però li hai già presi."],
+          "peggio": [
+            "L'altra volta hai fatto meglio. Capita anche ai fili: ieri funzionavano."
+          ]},
         "intro": [
-          "* Il pannello ha i fili staccati.",
-          "[TEL] * MANUTENZIONE RICHIESTA: trascina ogni filo scoperto sul connettore del suo stesso colore e lascia il dito. Completa tutti i circuiti prima che il piano resti al buio.",
-          "[PC] * MANUTENZIONE RICHIESTA: trascina ogni filo scoperto sul connettore del suo stesso colore e rilascia. Completa tutti i circuiti prima che il piano resti al buio."
+          "* Tre pannelli da riparare. Collega i fili con lo stesso colore e la stessa lettera.",
+          "[PC] * Trascina col mouse. Oppure scegli con SU/GIÙ e premi INVIO per prendere il filo e collegarlo. SINISTRA lo lascia.",
+          "[TEL] * Trascina da un capo a sinistra al connettore giusto a destra. Puoi anche toccare i due capi.",
+          "* Il primo collegamento è una prova: il tempo è fermo e puoi riprovare."
         ],
         "time": 20,
         "rounds": 3,
-        "misses": 2,
-        "reward": 10
+        "misses": 3,
+        "reward": 10,
+        "stelle": true
       }
     },
     "busy_line": [
@@ -118,7 +123,10 @@
         "sgridata": [
           "Aspetta, te lo faccio rivedere. Buone a destra, rotte a sinistra. Se lampeggia, prima l'aggiustiamo."
         ],
-        "rigioca": {"chiede": ["Vuoi rifarlo? Ne arrivano sempre di nuove! Sempre. Tutti i giorni."], "tre_stelle": ["Le hai già fatte tutte giuste! Rifarlo è solo per divertirti. Io non lo faccio per divertirmi."], "meglio": ["Meglio di prima! Ecco quello che mancava. Di più no, se no di sopra se ne accorgono."], "uguale": ["Uguale a prima! Che bello, le cose uguali! ...Soldi niente, però. Scusa."]},
+        "rigioca": {"chiede": ["Vuoi rifarlo? Ne arrivano sempre di nuove! Sempre. Tutti i giorni."], "tre_stelle": ["Le hai già fatte tutte giuste! Rifarlo è solo per divertirti. Io non lo faccio per divertirmi."], "meglio": ["Meglio di prima! Ecco quello che mancava. Di più no, se no di sopra se ne accorgono."], "uguale": ["Uguale a prima! Che bello, le cose uguali! ...Soldi niente, però. Scusa."],
+          "peggio": [
+            "L'altra volta erano venute meglio! Il record lo teniamo. Le rotte le tengo io."
+          ]},
         "intro": [
           "* Metti le lampadine accese nelle BUONE, a destra. Quelle rotte nelle ROTTE, a sinistra.",
           "[PC] * Se lampeggia, premi SU o GIÙ più volte finché resta accesa. Poi premi DESTRA.",
@@ -126,7 +134,8 @@
         ],
         "count": 10,
         "time": 25,
-        "reward": 10
+        "reward": 10,
+        "stelle": true
       }
     },
     "busy_line": [
@@ -199,17 +208,22 @@
           "chiede": ["Vuoi rifarlo? Il copione nuovo è uguale a quello vecchio. Cambia solo la data."],
           "tre_stelle": ["Le hai già fatte tutte giuste. Rifarlo non serve a niente. Qui dentro, di solito, è un buon motivo per rifarlo."],
           "meglio": ["Meglio dell'altra volta! Ti do la differenza. Qui dentro la differenza non la paga mai nessuno."],
-          "uguale": ["Come l'altra volta. Grazie per la sua pazienza. Soldi, però, niente."]
+          "uguale": ["Come l'altra volta. Grazie per la sua pazienza. Soldi, però, niente."],
+          "peggio": [
+            "L'altra volta era andata meglio. Nessun problema: questa chiamata non è registrata. Spero."
+          ]
         },
         "rosse": [1, 2],
         "misses": 3,
         "intro": [
-          "* Ogni segno è una frase del copione.",
-          "* Guarda l'ordine dei segni. Ripeti solo quelli senza la X.",
-          "[PC] * Ripeti con le frecce, saltando i segni con la X.",
-          "[TEL] * Ripeti nelle stesse posizioni, saltando i segni con la X."
+          "* Prima ascolta il copione: si illuminano i quattro riquadri.",
+          "* Ripeti lo stesso ordine, saltando i segni con la X.",
+          "[PC] * Usa le FRECCE oppure clicca i tasti sul pannello.",
+          "[TEL] * Tocca i riquadri sul pannello nello stesso ordine.",
+          "* Se sbagli, Tilde ripete lo stesso copione. Il primo esempio è senza penalità."
         ],
-        "reward": 10
+        "reward": 10,
+        "prima_prova": true
       }
     },
     "grey": true,
@@ -270,7 +284,10 @@
         "lose": ["L'ispettore ha preso nota. Di me."],
         "sgridata_dopo": 3,
         "sgridata": ["Giovane, questa era la terza prova. Al prossimo controllo mi archiviano."],
-        "rigioca": {"chiede": ["Un'altra ispezione. Vuoi darmi una mano anche stavolta?"], "tre_stelle": ["Vuoi riprovare? Il mio turno, purtroppo, continua."], "meglio": ["Meglio. Ti pago la differenza. Il riposo me lo devono ancora."], "uguale": ["Come prima. Il compenso, però, te l'ho già dato."]},
+        "rigioca": {"chiede": ["Un'altra ispezione. Vuoi darmi una mano anche stavolta?"], "tre_stelle": ["Vuoi riprovare? Il mio turno, purtroppo, continua."], "meglio": ["Meglio. Ti pago la differenza. Il riposo me lo devono ancora."], "uguale": ["Come prima. Il compenso, però, te l'ho già dato."],
+          "peggio": [
+            "L'altra ispezione era andata meglio. Sarà la stanchezza. La mia, di sicuro."
+          ]},
         "intro": [
           "* ISPEZIONE IN CORSO: tieni sveglio Ercole con quattro gomitate. Carica e lascia quando la forza è nel verde e gli occhi cominciano a chiudersi. Troppo forte, e l'ispettore si gira.",
           "[PC] * Tieni premuto INVIO o il pulsante del mouse per caricare.",
@@ -339,10 +356,11 @@
         "prima_prova": true,
         "title": "Scatole e scaffali",
         "intro": [
-          "* Sistema ogni prodotto nello scaffale giusto: ALIMENTARI, IGIENE, SCUOLA o CASA.",
-          "* Guarda anche gli oggetti già sullo scaffale: ti aiutano a scegliere.",
-          "[TEL] * Tocca lo scaffale giusto per ogni scatola.",
-          "[PC] * Clicca lo scaffale giusto per ogni scatola. Oppure FRECCE e {ok}."
+          "* Otto prodotti da sistemare: ALIMENTARI, IGIENE, SCUOLA e CASA.",
+          "* Gli oggetti già esposti mostrano cosa va in ogni scaffale.",
+          "[PC] * Trascina il prodotto sullo scaffale. Puoi anche cliccare lo scaffale o sceglierlo con le FRECCE e INVIO.",
+          "[TEL] * Trascina il prodotto sullo scaffale giusto. Puoi anche toccare lo scaffale.",
+          "* La prima scatola è una prova: tempo fermo, nessuna penalità."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -350,7 +368,18 @@
         "help_on_win_only": true,
         "win_flags": [
           "c3_leda_inventario"
-        ]
+        ],
+        "battute_stelle": {
+          "1": [
+            "Tutto sistemato. Il sapone ha fatto un giro panoramico, ma è arrivato."
+          ],
+          "2": [
+            "Un prodotto fuori posto. L'ho recuperato prima che diventasse un'offerta speciale."
+          ],
+          "3": [
+            "Tutto al primo colpo. Ti assumerei, ma dovrei pagarti."
+          ]
+        }
       }
     },
     "reveal_flag": "c3_rivelazione",
@@ -394,17 +423,16 @@
     "grey": true,
     "help": {
       "kind": "time",
-      "ask": "Amir deve consegnare sei pacchi per finire l'ultimo giro e ottenere il bonus.",
+      "ask": "Amir deve finire l'ultimo giro di consegne per ottenere il bonus.",
       "yes": [
         "Aspetta. Ho finito?",
-        "DICIOTTO!",
+        "IL BONUS!",
         "Mi sono appena emozionato per un numero su uno schermo.",
         "Che vita meravigliosa.",
         "Grazie. Davvero."
       ],
       "partial": [
-        "Diciassette. E mezzo, diciamo.",
-        "I pacchi che hai consegnato sono arrivati. Il bonus no.",
+        "I pacchi consegnati sono arrivati. Il bonus si è perso per strada.",
         "Grazie lo stesso. Se vuoi, ci riproviamo. Il terminale non dimentica, ma neanche io."
       ],
       "lose": [
@@ -452,7 +480,18 @@
           {"nome": "VIOLA", "colore": "#a060d0", "cella": [17, 11]},
           {"nome": "ARANCIONE", "colore": "#e08a3a", "cella": [30, 10]}
         ],
-        "cantieri": [[10, 3, 2, 5], [22, 4, 2, 5]]
+        "cantieri": [[10, 3, 2, 5], [22, 4, 2, 5]],
+        "battute_stelle": {
+          "1": [
+            "Il bonus c'è. Se chiedono come ho guidato, tu eri a piedi."
+          ],
+          "2": [
+            "Un errore solo. L'app ci ha tolto una stella; il cliente ha aggiunto un punto esclamativo."
+          ],
+          "3": [
+            "Tutte le porte giuste. L'app cerca ancora un motivo per pagarmi meno."
+          ]
+        }
       }
     },
     "robot_lines": [
@@ -524,12 +563,12 @@
         "visivo": true,
         "title": "La commissione doppia",
         "intro": [
-          "* Il contratto prevede una commissione di 35 € per il ritardo della rata 63.",
-          "* Le ricevute di Olga passano sul nastro. Se una è uguale a quella appena prima, è un addebito doppio.",
-          "[TEL] * Tocca la ricevuta doppia prima che esca dal nastro.",
-          "[PC] * Clicca la ricevuta doppia prima che esca dal nastro.",
-          "* Timbrare una voce giusta è un errore. Anche lasciar scappare un doppio.",
-          "* Qui trovi la prova. Il rimborso va ancora chiesto alla Banca."
+          "* Le ricevute scorrono sul nastro. Due voci consecutive con lo stesso nome e importo sono un doppio: timbra la seconda.",
+          "* La data può cambiare. La voce precedente resta scritta sotto il nastro.",
+          "[PC] * Scegli la ricevuta con SINISTRA/DESTRA e premi INVIO. Puoi anche cliccarla.",
+          "[TEL] * Tocca la ricevuta doppia prima che finisca in archivio.",
+          "* Il primo doppio è una prova: il nastro aspetta. Trova soprattutto la commissione ripetuta da 35 EUR della rata 63.",
+          "* Qui raccogli la prova. Il rimborso va ancora richiesto."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -537,7 +576,19 @@
         "win_flags": [
           "c4_olga_ordinati",
           "c4_olga_doppia"
-        ]
+        ],
+        "prima_prova": true,
+        "battute_stelle": {
+          "1": [
+            "Ci abbiamo messo un po', ma la prova c'è. Loro ci hanno messo un attimo ad addebitare."
+          ],
+          "2": [
+            "Una ricevuta ci ha fatto inciampare. Quella da 35 euro, invece, l'abbiamo fermata."
+          ],
+          "3": [
+            "Trovata senza sbagliare. Ora vediamo quanto ci mettono a non trovarla loro."
+          ]
+        }
       }
     },
     "reveal_flag": "c4_rivelazione",
@@ -589,7 +640,7 @@
         "Non sapevo si potessero fare entrambe le cose."
       ],
       "lose": [
-        "Due errori. Il sistema dice che è normale.",
+        "Qualcosa non torna. Il sistema dice che è normale.",
         "Io dico che possiamo riprovare. Il sistema non mi ascolta, ma tu sì."
       ],
       "minigame": {
@@ -598,10 +649,11 @@
         "visivo": true,
         "title": "La pratica impossibile",
         "intro": [
-          "* Sei pratiche di credito, una alla volta.",
-          "[PC] * CONTROLLO QUALITÀ: trova l'errore. Confronta la copia con l'originale. Clicca l'unica riga che non coincide (o sceglila con le frecce e premi INVIO). Se il sistema è stato onesto, seleziona NESSUNA ANOMALIA.",
-          "[TEL] * CONTROLLO QUALITÀ: trova l'errore. Confronta la copia con l'originale e tocca l'unica riga che non coincide. Se il sistema è stato onesto, seleziona NESSUNA ANOMALIA.",
-          "* Non decidi chi merita i soldi. Controlli le prove che il sistema preferisce non guardare."
+          "* Sei pratiche da controllare. Confronta il documento originale con la copia.",
+          "* Cerca allegati mancanti, doppioni, date e importi che non tornano. Una sola voce per pratica.",
+          "[PC] * Con le FRECCE evidenzi la stessa voce nei due fogli. INVIO o clic per segnalarla.",
+          "[TEL] * Tocca la voce che non torna. Puoi toccarla su uno qualsiasi dei due fogli.",
+          "* Se va tutto bene, scegli NESSUNA ANOMALIA. Hai tre errori; non c’è un conto alla rovescia."
         ],
         "reward": 0,
         "fixed_reward": true,
@@ -609,7 +661,19 @@
         "win_flags": [
           "c4_teo_aiutato"
         ],
-        "misses": 2
+        "misses": 3,
+        "stelle": true,
+        "battute_stelle": {
+          "1": [
+            "Ci è voluto qualche tentativo. Qui avrebbero timbrato anche il tavolo, pur di finire."
+          ],
+          "2": [
+            "Un errore. L'abbiamo corretto, invece di dargli un numero di protocollo."
+          ],
+          "3": [
+            "Abbiamo letto tutto. Mi sento quasi fuori procedura."
+          ]
+        }
       }
     },
     "robot_lines": [
@@ -681,19 +745,31 @@
         "visivo": true,
         "title": "Volantinaggio",
         "intro": [
-          "* In piazza, davanti alla Casa Comune. Ada ha un pacco di volantini: STUDIO, LABORATORIO, INCONTRI. TUTTO GRATIS. ANCORA PER POCO.",
-          "* Fai leggere otto volantini prima che finisca il tempo. Cerca le persone con ? e guarda il loro interesse.",
-          "[PC] * Scegli la pila con SINISTRA, SU o DESTRA, oppure cliccala. Quando la persona è nella zona chiara, premi INVIO o clicca sulla persona.",
-          "[TEL] * Quando la persona con ? è nella zona chiara, trascina dalla persona alla pila del suo interesse.",
-          "* Chi ha !!, ... o CHEAP non vuole il volantino. Lascialo passare.",
-          "* Tre errori fanno finire la prova."
+          "* Fai leggere otto volantini. Ogni pila parla di una cosa: STUDIO, LABORATORIO o INCONTRI.",
+          "* Cerca il ? sopra le persone e abbina il loro simbolo alla pila giusta. Aspetta che siano nella zona chiara.",
+          "[PC] * Scegli la pila con SINISTRA, SU o DESTRA. Poi INVIO o clic sulla persona.",
+          "[TEL] * Trascina dalla pila alla persona con lo stesso simbolo. Funziona anche nel verso opposto.",
+          "* Il primo volantino è una prova senza fretta. Chi ha !!, ... o CHEAP va lasciato passare."
         ],
         "reward": 0,
         "fixed_reward": true,
         "help_on_win_only": true,
         "win_flags": [
           "c5_ada_stanze"
-        ]
+        ],
+        "prima_prova": true,
+        "stelle": true,
+        "battute_stelle": {
+          "1": [
+            "Otto lettori veri. Le mani che agitano via il volantino non le ho contate."
+          ],
+          "2": [
+            "Un volantino ha sbagliato persona. Succede anche alle lettere d'amore."
+          ],
+          "3": [
+            "Otto volantini, tutti letti. Il prossimo lo stampo sul curriculum."
+          ]
+        }
       }
     },
     "robot_lines": [
@@ -757,17 +833,30 @@
         "prima_prova": true,
         "title": "L'orario delle coincidenze",
         "intro": [
-          "* OTTIMIZZAZIONE TRASPORTI: traccia il percorso di Nadir da CASA alla ZONA INDUSTRIALE. Parte alle 6:40, ha 6 € di budget e deve timbrare il cartellino entro le 8:00. Attenzione alle corse soppresse: il tempo non si rimborsa.",
-          "[TEL] * Trascina il dito da una fermata all'altra, lungo una linea.",
-          "[PC] * Trascina col mouse da una fermata all'altra, lungo una linea. Oppure FRECCE e {ok}.",
-          "* Quando cambi linea devi avere almeno 3 minuti fra l'arrivo e la partenza successiva. Controlla anche corse soppresse e badge richiesti."
+          "* Porta Nadir da CASA al lavoro entro le 8:00. Parte alle 6:40 e può spendere al massimo 6 EUR.",
+          "* Ogni cambio richiede tre minuti. La navetta CHEAP richiede un badge che Nadir non ha.",
+          "[PC] * Scegli una linea con le FRECCE: sotto la mappa vedi partenza, arrivo e costo. INVIO per prenderla. Oppure trascina lungo la linea.",
+          "[TEL] * Trascina lungo una linea. Prima di lasciare il dito, controlla sotto la mappa gli orari e il costo.",
+          "* La prima tratta è una prova con il tempo fermo. RICOMINCIA serve per provare un altro percorso."
         ],
         "reward": 0,
         "fixed_reward": true,
         "help_on_win_only": true,
         "win_flags": [
           "c5_nadir_percorso"
-        ]
+        ],
+        "stelle": true,
+        "battute_stelle": {
+          "1": [
+            "Arrivo in orario. Le prove sbagliate le chiamiamo visite turistiche."
+          ],
+          "2": [
+            "Un cambio sbagliato. Lo metto nel curriculum: flessibilità negli spostamenti."
+          ],
+          "3": [
+            "In orario, col biglietto giusto. Non dirlo in fabbrica: mi allungano il turno."
+          ]
+        }
       }
     },
     "reveal_flag": "c5_rivelazione",

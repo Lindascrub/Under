@@ -14,13 +14,16 @@ var preso: Node = null
 var foglio_in_volo := false
 var guida_t := 0.0
 var guida_fatta := false
+var prima_consegna := false
+var trascina_pila := -1
 const PASSANTE := preload("res://scenes/minigame/rifatti/passante.tscn")
 ## Cosa cerca chi passa: si scrive prima la parola e poi il ? (libro?, martello?, incontri?).
 const INTERESSI := ["libro", "martello", "incontri"]
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	tempo = durata
-	$Aiuto.text = "Trascina dalla persona con ? alla pila del suo interesse." if TouchControls.enabled else "SINISTRA/SU/DESTRA: pila. INVIO o clic sulla persona: consegna."
+	prima_consegna = bool(c.get("prima_prova", false)) and not bool(GameState.flags.get("prova_volantini", false)) and not bool(c.get("rigioco", false))
+	$Aiuto.text = "Trascina il volantino dalla pila alla persona con lo stesso simbolo." if TouchControls.enabled else "SINISTRA/SU/DESTRA: pila. INVIO o clic sulla persona: consegna."
 	$Casa/Porta.visible = _casa_aperta()
 	$Casa/Chiusura.visible = not $Casa/Porta.visible
 	$Casa/Titolo.text = "CASA COMUNE" if $Casa/Porta.visible else "CASA COMUNE · CHIUSA"
@@ -45,7 +48,15 @@ func crea_persona() -> Node:
 	return p
 func _process(dt: float) -> void:
 	if not attivo or Ui.busy: return
-	tempo -= dt
+	var dt_visuale := dt
+	var pausa_guida := false
+	if prima_consegna:
+		for p in persone:
+			if p.get_meta("disponibile", false) and not p.get_meta("dato", false) and p.position.x <= 350:
+				pausa_guida = true
+		if pausa_guida: $Esito.text = "Primo volantino: prova con calma, il tempo è fermo."
+	if not prima_consegna: tempo -= dt
+	if pausa_guida: dt = 0.0
 	fra_poco -= dt
 	if fra_poco <= 0:
 		crea_persona()
@@ -58,14 +69,14 @@ func _process(dt: float) -> void:
 			persone.erase(p)
 			p.queue_free()
 	if TouchControls.enabled and not guida_fatta:
-		guida_t += dt
+		guida_t += dt_visuale
 		$Guida.visible = false
 		for p in persone:
 			if p.get_meta("disponibile", false) and not p.get_meta("dato", false) and p.position.x >= zona_consegna.x and p.position.x <= zona_consegna.y:
 				var fine: Vector2 = $Pile.get_child(int(p.get_meta("interesse"))).get_global_rect().get_center()
 				$Guida.visible = true
-				$Guida/Traccia.points = PackedVector2Array([p.position, fine])
-				$Guida/Punto.position = p.position.lerp(fine, fmod(guida_t, 1.3) / 1.3)
+				$Guida/Traccia.points = PackedVector2Array([fine, p.position - Vector2(0, 20)])
+				$Guida/Punto.position = fine.lerp(p.position - Vector2(0, 20), fmod(guida_t, 1.3) / 1.3)
 				break
 	_aggiorna()
 	if tempo <= 0: chiudi(false)
@@ -83,12 +94,14 @@ func consegna(p: Node, scelta: int) -> void:
 		$Esito.text = "Aspetta che sia davanti ad Ada, nella zona chiara."
 		return
 	if not p.get_meta("disponibile", false) or int(p.get_meta("interesse")) != scelta:
-		errori += 1
-		$Esito.text = "Non lo legge. Cerca un ? e il suo interesse."
+		if not prima_consegna: errori += 1
+		$Esito.text = "Cerca un ? e abbina il simbolo alla pila."
 		Sound.sfx("deny")
 		if errori >= 3: chiudi(false)
 		return
 	p.set_meta("dato", true)
+	prima_consegna = false
+	GameState.flags["prova_volantini"] = true
 	foglio_in_volo = true
 	$Foglio.position = $Ada.position + Vector2(8, -20)
 	$Foglio.visible = true
@@ -143,13 +156,28 @@ func punta(pos: Vector2, step: int) -> void:
 			consegna(scegli_persona(pos), pila)
 		return
 	if step == 0:
+		trascina_pila = -1
+		for i in 3:
+			if $Pile.get_child(i).get_global_rect().has_point(pos):
+				trascina_pila = i
+				preso = null
+				pila = i
+				$Gesto.visible = true
+				$Gesto.points = PackedVector2Array([pos, pos])
+				_aggiorna()
+				return
 		preso = scegli_persona(pos)
 		$Gesto.visible = preso != null
 		if preso != null: $Gesto.points = PackedVector2Array([preso.position, pos])
+	elif step == 1 and trascina_pila >= 0:
+		$Gesto.points = PackedVector2Array([$Pile.get_child(trascina_pila).get_global_rect().get_center(), pos])
 	elif step == 1 and is_instance_valid(preso):
 		$Gesto.points = PackedVector2Array([preso.position, pos])
 	elif step == 2:
 		$Gesto.visible = false
+		if trascina_pila >= 0:
+			consegna(scegli_persona(pos), trascina_pila)
+			trascina_pila = -1
 		if is_instance_valid(preso):
 			for i in 3:
 				if $Pile.get_child(i).get_global_rect().has_point(pos): consegna(preso, i)

@@ -125,6 +125,8 @@ var inv_queue: Array = []
 var inv_sel := 0
 var inv_done := 0
 var inv_msg := ""
+var inv_drag := Vector2(-1, -1)
+var inv_sistemati: Array[int] = [0, 0, 0, 0]
 
 # LE RATE MANCANTI (Olga): rate_cards = in che ordine stanno sul tavolo i documenti
 var rate_cards: Array = []
@@ -190,6 +192,7 @@ func _ready() -> void:
 	_title.text = str(cfg.get("title", "Dai una mano"))
 	_risposta = get_node_or_null("Risposta")
 	_info.text = ""
+	_mostra_persona()
 	# i giochi rifatti (scenes/minigame/rifatti): la scena c'è già mentre leggi le istruzioni, ferma
 	if bool(cfg.get("visivo", false)) and SCENE_VISIVE.has(type):
 		_title.visible = false
@@ -204,6 +207,31 @@ func _ready() -> void:
 		await Ui.faded_in
 	await Ui.say(cfg.get("intro", ["* Dai una mano."]))
 	_start()
+
+
+## Gli stessi personaggi della mappa, alla scala intera del gioco: nessun ritratto sostitutivo.
+func _mostra_persona() -> void:
+	var ids := {"wires": "bulbo", "bulbs": "mina", "sequence": "tilde", "inventory": "leda"}
+	if not ids.has(type): return
+	var id: String = ids[type]
+	var data: Dictionary = GameState.npc_data(id)
+	var sprite := CharSprite.new()
+	sprite.name = "PersonaAiutata"
+	sprite.sheet = str(data.get("sheet", "char_08"))
+	sprite.person = id
+	sprite.anim = "phone" if type == "sequence" else "idle_right"
+	sprite.scale = Vector2(2, 2)
+	sprite.position = Vector2(70, 246)
+	add_child(sprite)
+	var label := Label.new()
+	label.text = str(data.get("name", ""))
+	label.position = Vector2(22, 256)
+	label.size = Vector2(96, 20)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", Assets.font())
+	label.add_theme_font_size_override("font_size", 11)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)
 
 
 func _start() -> void:
@@ -246,7 +274,7 @@ func _start() -> void:
 			time_total = time_left
 			_new_bulb()
 		"wires":
-			_info.text = "Trascina ogni filo sul suo colore" if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore"
+			_info.text = "Trascina ogni filo sul suo colore e sulla sua lettera." if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore e sulla sua lettera."
 			time_left = float(cfg.get("time", 30.0))
 			time_total = time_left
 			_new_wires()
@@ -377,6 +405,7 @@ func _new_wires() -> void:
 
 ## Il filo di sinistra `wire_pick` va al posto di destra `wire_sel`: giusto o sbagliato?
 func _wire_connect() -> void:
+	if wire_pick < 0 or wire_pick in wire_done or wire_sel < 0 or wire_sel >= wire_right.size(): return
 	if wire_right[wire_sel] == wire_pick:
 		_fine_prima_prova()
 		wire_done.append(wire_pick)
@@ -420,7 +449,7 @@ func touch_scheme() -> String:
 		"timing":
 			return "tap"
 		"sequence":
-			return "dirs"
+			return "point"
 		"bulbs":
 			return "swipe"
 		"volantini":
@@ -468,12 +497,35 @@ func touch_point(pos: Vector2, step: int) -> void:
 				_pr_answer(k)
 				return
 		return
-	if type == "inventory" and step == 0:
-		for k in INV_CATS.size():
-			if _inv_shelf(k).grow(4).has_point(pos):
-				inv_sel = k
-				_inv_place(k)
-				return
+	if type == "sequence":
+		if step == 0 and phase == "play":
+			for a: String in ARROWS:
+				if _seq_pad(a).has_point(pos):
+					var e := InputEventAction.new()
+					e.action = "move_" + a
+					e.pressed = true
+					_unhandled_input(e)
+					return
+		return
+	if type == "inventory":
+		if step == 0:
+			if _inv_product_rect().has_point(pos) and not inv_queue.is_empty():
+				inv_drag = pos
+			else:
+				for k in INV_CATS.size():
+					if _inv_shelf(k).grow(4).has_point(pos):
+						inv_sel = k
+						_inv_place(k)
+		elif step == 1 and inv_drag.x >= 0:
+			inv_drag = pos
+		elif step == 2 and inv_drag.x >= 0:
+			inv_drag = Vector2(-1, -1)
+			for k in INV_CATS.size():
+				if _inv_shelf(k).grow(4).has_point(pos):
+					inv_sel = k
+					_inv_place(k)
+					break
+		queue_redraw()
 		return
 	if type == "collect":
 		finger = pos if step != 2 else Vector2(-1, -1)
@@ -484,7 +536,10 @@ func touch_point(pos: Vector2, step: int) -> void:
 		var gap := (BOX.size.y - 52) / 3.0
 		var row := clampi(int(round((pos.y - y0) / gap)), 0, 3)
 		var right := pos.x >= BOX.get_center().x
+		var socket_x := BOX.end.x - 40 if right else BOX.position.x + 40
+		var on_socket := absf(pos.x - socket_x) <= 36 and absf(pos.y - (y0 + row * gap)) <= gap * 0.52
 		if step == 0:
+			if not on_socket: return
 			if not right:
 				if row not in wire_done:
 					wire_pick = row
@@ -500,12 +555,16 @@ func touch_point(pos: Vector2, step: int) -> void:
 				wire_sel = row
 		elif step == 2 and wire_drag.x >= 0.0:
 			wire_drag = Vector2(-1, -1)
-			if right and wire_pick >= 0:
+			if right and on_socket and wire_pick >= 0:
 				wire_sel = row
 				_wire_connect()
 
 
 # --- SCATOLE E SCAFFALI ---------------------------------------------------------
+
+func _inv_product_rect() -> Rect2:
+	return Rect2(INV.position + Vector2(14, 12), Vector2(INV.size.x - 28, 80))
+
 
 func _inv_shelf(k: int) -> Rect2:
 	return Rect2(INV.position.x + 10 + k * 102, INV.position.y + 110, 90, 76)
@@ -526,6 +585,7 @@ func _inv_place(k: int) -> void:
 		sposta.tween_callback(scatola.queue_free)
 		inv_queue.pop_front()
 		inv_done += 1
+		inv_sistemati[k] += 1
 		inv_msg = ""
 		Sound.sfx("arcade/collect_3", 1.0 + inv_done * 0.025, 4.0)
 		if inv_queue.is_empty():
@@ -539,7 +599,7 @@ func _inv_place(k: int) -> void:
 		misses += 1
 		flash = 0.3
 		Sound.sfx("arcade/blocked", 1.0, 4.0)
-		inv_msg = "%s in %s? No. (Però una volta Leda ci ha trovato il sapone.)" % [str(g[0]), INV_CATS[k]]
+		inv_msg = "%s non va in %s. Guarda gli oggetti già esposti." % [str(g[0]), INV_CATS[k]]
 		if misses >= int(cfg.get("misses", 3)):
 			_finish(false)
 
@@ -578,7 +638,7 @@ func _next_round() -> void:
 		shown = 0
 		show_t = 0.8
 		phase = "show"
-		_info.text = "Esempio: ripeti il primo segno. Quello con la X si salta."
+		_info.text = "Prima prova: ripeti il primo segno. Salta la X."
 		return
 	round_n += 1
 	seq.clear()
@@ -706,13 +766,14 @@ func _process(delta: float) -> void:
 				if shown > seq.size():
 					phase = "play"
 					if seq_rosse.has(true):
-						_info.text = "Tocca sopra, sotto, a sinistra o a destra, nello stesso ordine. Salta i segni con la X." if TouchControls.enabled else "Ripeti con le frecce. Salta i segni con la X."
+						_info.text = "Ripeti sui quattro riquadri. Salta le X." if TouchControls.enabled else "Ripeti con le frecce. Salta i segni con la X."
 					else:
 						_info.text = "Ora ripeti: tocca sopra, sotto, a sinistra o a destra!" if TouchControls.enabled else "Ora ripeti con le frecce!"
 	queue_redraw()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.echo: return
 	if phase != "play":
 		return
 	if visivo != null:
@@ -729,7 +790,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	# sul PC i giochi "a dito" si fanno anche col mouse
 	# la mappa di Nadir e i fili di Bulbo col mouse: si preme, si trascina, si lascia sul posto giusto
-	if type in ["coincidenze", "wires"] and not TouchControls.enabled:
+	if type in ["coincidenze", "wires", "inventory", "sequence"] and not TouchControls.enabled:
 		if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 			touch_point((event as InputEventMouseButton).position, 0 if (event as InputEventMouseButton).pressed else 2)
 			return
@@ -849,8 +910,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					if misses >= int(cfg.get("misses", 2)):
 						_finish(false)
 					else:
-						round_n -= 1
-						_next_round()
+						_repeat_sequence()
 					return
 				if _con_stelle():
 					_risposta.giusto(_seq_casella(typed.size() - 1, dire.size()), "blip")
@@ -880,7 +940,43 @@ func _da_dire() -> Array[String]:
 
 ## Dove sta la casella `i` di `n` mentre ripeti.
 func _seq_casella(i: int, n: int) -> Vector2:
-	return Vector2(BOX.get_center().x + (i - (n - 1) / 2.0) * 44.0, BOX.get_center().y)
+	return Vector2(BOX.get_center().x + (i - (n - 1) / 2.0) * 40.0, BOX.end.y + 24)
+
+
+func _seq_pad(a: String) -> Rect2:
+	var offset: Vector2 = {"up": Vector2(0, -43), "down": Vector2(0, 43), "left": Vector2(-94, 0), "right": Vector2(94, 0)}[a]
+	return Rect2(BOX.get_center() + offset - Vector2(27, 22), Vector2(54, 44))
+
+
+func _repeat_sequence() -> void:
+	typed.clear()
+	shown = 0
+	show_t = 1.1
+	phase = "show"
+	_info.text = "Riascolta lo stesso copione. Salta le X."
+
+
+func _draw_sequence(font: Font) -> void:
+	var current := ""
+	var crossed := false
+	if phase == "show" and shown >= 1 and shown <= seq.size() and show_t > show_len * 0.33:
+		current = seq[shown - 1]
+		crossed = seq_rosse[shown - 1]
+	for a: String in ARROWS:
+		var r := _seq_pad(a)
+		var active := a == current
+		Art.panel(self, r, Color("9b3b4a") if active and crossed else (Color("9c823e") if active else Color("34485a")))
+		_arrow(r.get_center(), a, 12, Art.CREAM if active else Color("8b9eae"))
+		if active and crossed:
+			draw_texture_rect(CROCE, Rect2(r.get_center() - Vector2(18, 18), Vector2(36, 36)), false)
+	var label := "SALTA" if crossed else ("ASCOLTA" if phase == "show" else "RIPETI")
+	draw_string(font, BOX.get_center() + Vector2(-48, 4), label, HORIZONTAL_ALIGNMENT_CENTER, 96, 10, Art.GOLD)
+	var n := _da_dire().size()
+	for i in n:
+		var at := _seq_casella(i, n)
+		if i < typed.size(): _arrow(at, typed[i], 12, GREEN)
+		else: draw_rect(Rect2(at + Vector2(-10, 6), Vector2(20, 2)), Color("8b9eae"))
+	draw_string(font, Vector2(BOX.position.x - 20, BOX.end.y + 57), "Copione %d/2  ·  Errori %d/%d" % [maxi(1, round_n), misses, int(cfg.get("misses", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x + 40, 11, Art.CREAM)
 
 
 func _ercole_colpo(perfetto: bool) -> void:
@@ -955,12 +1051,14 @@ func _finish(success: bool, partial := false) -> void:
 		GameState.money += reward
 		GameState.changed.emit()
 		if rigioco:
-			lines.append_array((cfg.get("rigioca", {}) as Dictionary).get("meglio" if quante > prima else "uguale", []))
+			var confronto := "meglio" if quante > prima else ("peggio" if quante < prima else "uguale")
+			var replica: Dictionary = cfg.get("rigioca", {})
+			lines.append_array(replica.get(confronto, replica.get("uguale", [])))
 		else:
 			lines.append_array(cfg.get("win", ["Grazie!"]))
-			# una battuta per quante stelline hai preso ("battute_stelle": {"1": [...], "2": [...], "3": [...]})
-			if quante > 0:
-				lines.append_array((cfg.get("battute_stelle", {}) as Dictionary).get(str(quante), []))
+		# La battuta segue questo risultato, anche quando si rigioca; il record resta il migliore.
+		if quante > 0:
+			lines.append_array((cfg.get("battute_stelle", {}) as Dictionary).get(str(quante), []))
 		if reward > 0:
 			if not rigioco:
 				lines.append("Tieni, non è molto, ma te li sei guadagnati.")
@@ -1044,25 +1142,7 @@ func _draw() -> void:
 		"inventory":
 			_draw_inventory(font)
 		"sequence":
-			var cx := BOX.get_center()
-			# la freccia resta accesa per due terzi del tempo, poi si spegne: così si vede quando cambia
-			if phase == "show" and shown >= 1 and shown <= seq.size() and show_t > show_len * 0.33:
-				if seq_rosse[shown - 1]:
-					# la frase sbagliata del copione: rossa e barrata
-					_arrow(cx, seq[shown - 1], 18.0, Color("e8434f"))
-					draw_texture_rect(CROCE, Rect2(cx + Vector2(2, 2), Vector2(32, 32)), false, Color("ff2a3a"))
-				else:
-					_arrow(cx, seq[shown - 1], 18.0, YELLOW)
-			if phase == "show" and shown >= 1 and shown <= seq.size():
-				draw_string(font, Vector2(BOX.position.x, BOX.end.y - 14), "%d / %d" % [shown, seq.size()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 14, Color("8a8494"))
-			elif phase == "play":
-				var n := _da_dire().size()
-				for i in n:
-					var p := _seq_casella(i, n)
-					if i < typed.size():
-						_arrow(p, typed[i], 16.0, Color.WHITE)
-					else:
-						draw_rect(Rect2(p + Vector2(-12, 14), Vector2(24, 2)), Color("8a8494"))
+			_draw_sequence(font)
 	if flash > 0.0:
 		draw_rect(frame, Color(1, 0.2, 0.2, flash))
 
@@ -1079,9 +1159,9 @@ func _draw_bulbs(font: Font) -> void:
 	var lit := bulb == "buona" or (bulb == "fioca" and int(bulb_t * 9) % 3 != 0)
 	if phase != "demo":
 		Art.bulb(self, c, bulb, 3, lit)
-	if bulb == "fioca" and not cfg.get("prima_prova", false):
+	if bulb == "fioca" and phase == "play" and not prima_prova:
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/%d)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
-	elif bulb_fixed and phase == "play" and not cfg.get("prima_prova", false):
+	elif bulb_fixed and phase == "play" and not prima_prova:
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), "Avvitata! Ora mettila nelle BUONE >", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, GREEN)
 
 
@@ -1598,6 +1678,7 @@ func _cz_restart() -> void:
 	cz_path = []
 	cz_at = 0
 	cz_now = int(_cz_data().get("partenza", 400))
+	cz_focus = 0
 
 
 ## Le linee della mappa: le corse con lo stesso nome, la stessa partenza e lo stesso arrivo
@@ -1636,7 +1717,7 @@ const CZ_BEND := 44.0      # quanto si allontanano le curve di due linee sulle s
 
 func _cz_stop_pos(i: int) -> Vector2:
 	var p: Array = (_cz_data().get("mappa", {}) as Dictionary).get(_cz_stop_name(i), [0, 0])
-	return BIG.position + Vector2(float(p[0]), float(p[1]))
+	return BIG.position + Vector2(float(p[0]), roundf(float(p[1]) * 0.86))
 
 
 ## I punti della curva di una linea, dalla fermata di partenza a quella di arrivo.
@@ -1695,6 +1776,15 @@ func _cz_touch(pos: Vector2, step: int) -> void:
 	if step == 1:
 		if pos.distance_to(cz_trail[cz_trail.size() - 1]) > 3.0:
 			cz_trail.append(pos)
+		var targets := _cz_targets()
+		var nearest := INF
+		for i in targets.size():
+			if targets[i] is not Dictionary: continue
+			for q in _cz_curve(targets[i]):
+				var distance := pos.distance_squared_to(q)
+				if distance < nearest:
+					nearest = distance
+					cz_focus = i
 		return
 	# step 2: il dito si alza
 	var trail := cz_trail
@@ -1731,6 +1821,16 @@ func _cz_touch(pos: Vector2, step: int) -> void:
 
 
 ## Nadir prende la prima corsa di quella linea che fa in tempo a prendere.
+func _cz_preview(l: Dictionary) -> String:
+	var ready := cz_now + (0 if cz_path.is_empty() else int(_cz_data().get("cambio", 3)))
+	for k: int in l["corse"]:
+		var c: Dictionary = _cz_rides()[k]
+		if str(c.get("stato", "")) == "badge": return str(l["linea"]) + ": serve il badge CHEAP."
+		if str(c.get("stato", "")) == "soppressa" or _cz_min(str(c["parte"])) < ready: continue
+		return "%s: %s > %s · Totale %d/%d EUR" % [l["linea"], c["parte"], c["arriva"], _cz_cost() + int(c.get("euro", 0)), int(_cz_data().get("budget", 6))]
+	return str(l["linea"]) + ": nessuna corsa disponibile."
+
+
 func _cz_take(l: Dictionary) -> void:
 	var ready := cz_now + (0 if cz_path.is_empty() else int(_cz_data().get("cambio", 3)))
 	var pick := -1
@@ -1837,7 +1937,7 @@ func _draw_coincidenze(font: Font) -> void:
 	draw_string(font, BIG.position + Vector2(14, 18), "Nadir è a %s alle %s   ·   si entra alle %s   ·   %d € al giorno" % [
 		_cz_stop_name(cz_at), _clock(cz_now), str(d.get("entrata", "8:00")), int(d.get("budget", 6))], HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 28, 9, YELLOW)
 	var targets := _cz_targets()
-	var focus: Variant = null if TouchControls.enabled or targets.is_empty() else targets[clampi(cz_focus, 0, targets.size() - 1)]
+	var focus: Variant = null if targets.is_empty() else targets[clampi(cz_focus, 0, targets.size() - 1)]
 	var lines := _cz_lines()
 	var rides := _cz_rides()
 	# prima le curve, poi i cartellini con gli orari, poi le fermate sopra a tutto
@@ -1891,6 +1991,8 @@ func _draw_coincidenze(font: Font) -> void:
 	if cz_trail.size() >= 2:
 		draw_polyline(cz_trail, YELLOW, 3.0)
 		draw_circle(cz_trail[cz_trail.size() - 1], 5, YELLOW)
+	if focus is Dictionary:
+		draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 43), _cz_preview(focus), HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 28, 10, Art.GOLD)
 	PracticeCard.button(self, _cz_reset_button(), "RICOMINCIA", Color("4a5a6a"), font, focus is String, 11)
 	draw_string(font, Vector2(BIG.position.x + 14, BIG.end.y - 14), cz_msg, HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 150, 9,
 		Color("ffb0b0") if flash > 0.0 else Color("c8c0d0"))
@@ -1972,13 +2074,13 @@ func _draw_pratiche(font: Font) -> void:
 
 func _draw_inventory(font: Font) -> void:
 	Art.panel(self, INV.grow(-4), Color("50433e"), Color("c8a57a"))
-	var card := Rect2(INV.position + Vector2(14, 12), Vector2(INV.size.x - 28, 80))
+	var card := _inv_product_rect()
 	Art.paper(self, card, Color("eee4cc"))
 	if not inv_queue.is_empty():
 		var g: Array = inv_queue[0]
 		Art.product(self, Rect2(card.position + Vector2(10, 6), Vector2(72, 68)), str(g[0]))
 		draw_string(font, card.position + Vector2(96, 34), str(g[0]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 17, Color("352b36"))
-		draw_string(font, card.position + Vector2(96, 56), "IN QUALE SCAFFALE?", HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 9, Color("7a6257"))
+		draw_string(font, card.position + Vector2(96, 56), "TRASCINA O SCEGLI LO SCAFFALE", HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 9, Color("7a6257"))
 		draw_string(font, card.position + Vector2(96, 71), "Altri prodotti: %d" % maxi(0, inv_queue.size() - 1), HORIZONTAL_ALIGNMENT_LEFT, card.size.x - 108, 8, Color("7a6257"))
 	if inv_msg != "":
 		draw_string(font, Vector2(INV.position.x, INV.position.y + 105), inv_msg, HORIZONTAL_ALIGNMENT_CENTER, INV.size.x, 9, Color("ffb7aa"))
@@ -1994,9 +2096,14 @@ func _draw_inventory(font: Font) -> void:
 			Art.product(self, Rect2(r.position + Vector2(5 + i * spacing, 27), Vector2(floorf(spacing - 1), 30)), str(examples[k][i]))
 		draw_rect(Rect2(r.position + Vector2(3, 59), Vector2(r.size.x - 6, 5)), Color("c99c68"))
 		draw_rect(Rect2(r.position + Vector2(3, 64), Vector2(r.size.x - 6, 5)), Color("4d3631"))
+		for filled in mini(inv_sistemati[k], 8):
+			draw_rect(Rect2(r.position + Vector2(5 + filled * 9, 70), Vector2(6, 3)), Art.GOLD)
 		if k == inv_sel and not TouchControls.enabled:
 			draw_rect(r.grow(2), YELLOW, false, 2)
 			draw_rect(Rect2(r.get_center().x - 4, r.end.y - 9, 8, 3), YELLOW)
+
+	if inv_drag.x >= 0 and not inv_queue.is_empty():
+		Art.product(self, Rect2(inv_drag - Vector2(22, 26), Vector2(44, 44)), str(inv_queue[0][0]))
 
 
 func _draw_wires(font: Font) -> void:
@@ -2015,6 +2122,8 @@ func _draw_wires(font: Font) -> void:
 		var yr := y0 + i * gap
 		Art.cable(self, PackedVector2Array([Vector2(lx - 27, yl), Vector2(lx - 12, yl + 2), Vector2(lx, yl)]), col, 4, true)
 		Art.cable(self, PackedVector2Array([Vector2(rx, yr), Vector2(rx + 12, yr - 2), Vector2(rx + 27, yr)]), WIRE_COLS[j], 4, true)
+		draw_string(font, Vector2(lx - 15, yl - 5), "ABCD"[i], HORIZONTAL_ALIGNMENT_CENTER, 16, 9, Art.CREAM)
+		draw_string(font, Vector2(rx + 1, yr - 5), "ABCD"[j], HORIZONTAL_ALIGNMENT_CENTER, 16, 9, Art.CREAM)
 		if i in wire_done:
 			Art.lead(self, Vector2(lx, yl), Vector2(rx, y0 + wire_right.find(i) * gap), col, 4)
 	if wire_pick < 0:
@@ -2028,7 +2137,7 @@ func _draw_wires(font: Font) -> void:
 		else:
 			Art.lead(self, Vector2(lx, yl2), Vector2(rx, yr), WIRE_COLS[wire_pick], 3)
 			draw_rect(Rect2(rx - 4, yr - 8, 38, 16), Art.GOLD, false, 2)
-	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d di %d" % [mini(wire_round + 1, _wire_rounds()), _wire_rounds()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
+	draw_string(font, Vector2(BOX.position.x, BOX.end.y - 6), "Pannello %d/%d · Fili %d/4" % [mini(wire_round + 1, _wire_rounds()), _wire_rounds(), wire_done.size()], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 10, Art.CREAM)
 
 
 ## Il tempo e gli errori, da vedere e non da leggere: una barra sotto il riquadro che si accorcia
