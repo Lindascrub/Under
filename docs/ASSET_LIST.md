@@ -2,7 +2,7 @@
 
 > **Grafica aggiornata da Codex:** sono stati sostituiti tutti i **100 PNG personalizzati**,
 > conservando nomi, misure, trasparenze e tagli dei fogli animati. Gli asset acquistati
-> in `assets/limezu/` sono rimasti invariati. Stato e rigenerazione: [ASSET_REFRESH_CODEX.md](ASSET_REFRESH_CODEX.md).
+> in `assets/limezu/` sono rimasti invariati.
 > Le tabelle sotto conservano il contratto tecnico originario; i riferimenti ai
 > segnaposto descrivono la provenienza dei file, ora sostituiti. I vecchi generatori
 > conservano automaticamente i PNG definitivi tramite `tools/asset_guard.py`.
@@ -144,7 +144,6 @@ La licenza del pacchetto non era inclusa nello zip e va verificata prima della p
 | `notte` | La notte | NightTownWaltz |
 | `nives` | Nives | Lively City |
 | `fondo` | Stanze vecchie del Fondo | DripstoneCave |
-| `battaglia` | Battaglie (versione precedente) | Battle Theme I, Battle Theme II, HaveYouEverPlayedGrimDawn |
 | `tensione` | (pronta, non ancora usata) | Tension1, Tension2 |
 
 ## Capitolo 5 — La Città (`art/c5/`, generati da `tools/make_placeholders_citta.py`)

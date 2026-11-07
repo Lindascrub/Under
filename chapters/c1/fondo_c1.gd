@@ -252,26 +252,35 @@ func _talk_fermo() -> void:
 func _first_talk() -> void:
 	var who := "Fermo"
 	GameState.flags["met_fermo"] = true
+	# tutta la presentazione è una scena: anche mentre la camera si sposta non si cammina
+	var prima := Ui.cutscene
+	Ui.cutscene = true
 	await Ui.say(["* Fermo sospira."])
 	await Ui.say(["Ancora. Un’altra persona.",
 		"Se te lo stai chiedendo, la festa non è per te. È per l’azienda. La fanno ogni volta che arriva qualcuno."], who)
 	await Ui.say(["* Ti guarda da capo a piedi."])
 	await Ui.say(["Io sono Fermo. Di nome e di fatto.", "Tu come ti chiami?"], who)
-	await Ui.say(["* Sussurri il tuo nome: {name}."])
-	await Ui.say(["Bel nome. Tienitelo stretto, quaggiù i nomi si svalutano molto facilmente.", "Quanto ti hanno messo di debito?"], who)
+	await Ui.say(["Piacere, io sono {name}."], GameState.player_name)
+	await Ui.say(["Bel nome. Tienitelo stretto, quaggiù i nomi si svalutano esponenzialmente.", "Quanto ti hanno messo di debito?"], who)
 	await Ui.say(["Sette miliardi."], GameState.player_name)
 	await Ui.say(["Oh. Una cosetta.", "Io ho iniziato con nove. Ora ne devo undici.",
 		"Ogni notte aggiungono gli interessi. Quelli non saltano mai un turno."], who)
 	await Ui.say(["* Indica la cyclette nell’angolo."])
+	# la camera va sulla cyclette, poi torna su di voi (Inquadrature/Cyclette nella scena)
+	var ripresa: Dictionary = await FocusShot.begin(self, $Inquadrature/Cyclette as Inquadratura)
 	await Ui.say(["Vedi quella? È collegata a una dinamo. Tu pedali, loro prendono la corrente e ti pagano.",
 		"Avvicinati dove c’è scritto TURNO, se vuoi cominciare. Sono dieci ore. Della tua giornata, naturalmente."], who)
+	await FocusShot.restore(self, ripresa)
 	await Ui.say(["E poi?"], GameState.player_name)
-	await Ui.say(["Poi, per oggi, hai lavorato.",
+	await Ui.say(["Poi, per oggi, hai lavorato. D'altronde hai quelle ore per vivere: ne dormi 7, ne lavori 10, per mangiare ne usi 3 e le ultime 4 sono tue. Forse.",
 		"Se vuoi fare un altro turno, devi aspettare domani. Vedi quella stellina?"], who)
 	await Ui.say(["* Ti indica il punto luminoso."])
+	# la camera va sulla stellina (Inquadrature/Stellina nella scena)
+	ripresa = await FocusShot.begin(self, $Inquadrature/Stellina as Inquadratura)
 	await Ui.say(["Lì puoi salvare la partita e recuperare le energie.",
 		"Se scegli ‘Salva e lascia passare la notte’, ti riposi e comincia un altro giorno. Così puoi lavorare di nuovo.",
 		"Però nel frattempo aumentano anche i soldi che devi. Gli interessi funzionano così: tu dormi, loro lavorano."], who)
+	await FocusShot.restore(self, ripresa)
 	await Ui.say(["Quindi devo continuare a pedalare?"], GameState.player_name)
 	await Ui.say(["Puoi. Io lo faccio da undici anni. Ormai il sellino sa più cose di me.", "Oppure puoi provare a salire."], who)
 	await Ui.say(["Salire?"], GameState.player_name)
@@ -282,12 +291,12 @@ func _first_talk() -> void:
 	await Ui.say(["Un altro piano. Un altro lavoro. Un altro badge da comprare.",
 		"Magari trovi anche qualcuno che ti spiega perché devi tutti quei soldi. Io qui sotto non l’ho trovato."], who)
 	await Ui.say(["* Guarda verso il resto della sala."])
-	await Ui.say(["Prima di andartene, puoi parlare anche con gli altri.",
-		"Mina è l’elettricista, quella dei fili. Bulbo è il nonno con le lampadine. Hanno sempre qualcosa da sistemare.",
-		"Magari riesci a dargli una mano. O almeno vi fate compagnia mentre lavorate."], who)
-	await Ui.say(["* Si risistema sulla cassetta."])
-	await Ui.say(["Ecco. Cyclette per lavorare. Stellina per salvare e far passare la notte. Nives per il badge. Scale per salire.",
+	await Ui.say(["Se scegli di salire, ti consiglio di conoscere un po' anche gli altri.",
+		"Mina, quella ai fili. Bulbo, quello alle lampadine. Hanno sempre qualcosa da sistemare.",
+		"Magari riesci a dargli una mano, o almeno vi potete far compagnia."], who)
+	await Ui.say(["D'altronde, a parte lavorare, qua non c'è altro da fare.",
 		"Io sono quello sulla cassetta. Se ti perdi, almeno me mi ritrovi."], who)
+	Ui.cutscene = prima
 	GameState.flags["fermo_talked"] = true
 
 

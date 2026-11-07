@@ -1,10 +1,10 @@
 # CHEAP
 
-Un piccolo RPG narrativo in stile Undertale per Android (telefono in orizzontale), fatto con Godot 4.
+Un piccolo RPG narrativo per Android (telefono in orizzontale), fatto con Godot 4.
 
-Inizi dentro un ascensore che scende, con un debito di 7 miliardi di €. Al piano -5 si rompe: è tutto buio, tranne la luce intorno a Fermo, che ti spiega come funziona. Si sale la torre un piano alla volta: lavori, compri il badge del piano di sopra (che scala dal debito) e passi il tornello delle scale. I giorni non sono contati, ma ogni notte il debito cresce. Al lavoro scegli se firmare qualcosa che rovina una persona (un'ora, pagato tantissimo) o fare un turno duro di 8 ore (una battaglia alla Undertale, pagata pochissimo). Per strada e al parco le persone ti "attaccano" coi loro problemi: puoi PROMUOVERLE (cioè sfruttarle, ma con un nome più elegante), PARLARE con loro o AIUTARLE. Aiutando le persone si sbloccano posti nuovi, come il Rifugio. Aiutare qualcuno fa partire un piccolo minigioco a sorpresa. Si salva toccando le stelline. Ci sono anche piccole missioni (trovare il gatto di Elsa, dare ripetizioni al figlio di Marta…) che rubano tempo. Le persone che sfrutti spariscono, sostituite da robot con la loro faccia. Te ne accorgi solo alla fine.
+Inizi dentro un ascensore che scende, con un debito di 7 miliardi di €. Al piano -5 si rompe: è tutto buio, tranne la luce intorno a Fermo, che ti spiega come funziona. Si sale la torre un piano alla volta (Fondo, Sottoufficio, Mercato, Banca, Città, Cima): a ogni piano fai il TURNO (un minigioco, uno al giorno), conosci le persone e le aiuti con un minigioco a sorpresa, compri il badge del piano di sopra (che scala dal debito) e passi il tornello delle scale. I giorni non sono contati, ma ogni notte il debito cresce. Il Capo ti propone degli incarichi: prenderti il merito di qualcuno conviene, ma chi viene sfruttato diventa un robot con la sua faccia. Si salva toccando le stelline. Alla Cima una scelta decide il finale; quello che hai fatto prima decide come va.
 
-Tre strade, cioè tre sistemi economici: **capitalismo** (sfrutti e sali di LV), **comunismo** (resti un ingranaggio) e **baratto** (convinci le persone a smettere di lavorare: se sono abbastanza, il sistema crolla). Design completo in [docs/GDD.md](docs/GDD.md).
+Design in [docs/GDD.md](docs/GDD.md), regole attuali in [docs/COHERENCE.md](docs/COHERENCE.md), finali in [docs/ENDING_SYSTEM.md](docs/ENDING_SYSTEM.md).
 
 ## Requisiti
 
@@ -29,7 +29,7 @@ Tre strade, cioè tre sistemi economici: **capitalismo** (sfrutti e sali di LV),
 | Frecce / WASD | Muoversi |
 | Z / Invio / Spazio | Parlare, interagire, confermare |
 | X / Shift | Correre, saltare il testo |
-| C | Stato e oggetti (ore rimaste, energia, caffè di Nico), e le Impostazioni |
+| C | Stato e oggetti (ora, energia, badge), e le Impostazioni |
 | F11 | Schermo intero (sul computer) |
 
 Le **Impostazioni** (dal menu iniziale o con C) cambiano il volume di musica ed effetti e lo schermo intero; dal
@@ -41,7 +41,7 @@ Senza, la pagina disegna dei tasti semplici con la scritta.
 
 ## Comandi touch (telefono)
 
-Joystick a sinistra per muoversi; a destra **OK** (parlare, confermare), **X** (correre, saltare il testo) e **C** (stato e oggetti). Nei dialoghi basta toccare lo schermo; nelle battaglie si toccano direttamente i pulsanti e le voci dei menu. I comandi compaiono solo quando servono.
+Joystick a sinistra per muoversi; a destra **OK** (parlare, confermare), **X** (correre, saltare il testo) e **C** (stato e oggetti). Nei dialoghi basta toccare lo schermo; nei menu si toccano direttamente le voci. I comandi compaiono solo quando servono.
 
 Per provarli sul PC: avvia il gioco con l'argomento `-- --touch`.
 
@@ -57,7 +57,7 @@ Il profilo di esportazione è già pronto in `export_presets.cfg` (nome pacchett
 
 ## Test automatico
 
-Il test gioca da solo tutte le scene e i tre finali:
+Il test gioca da solo tutti i piani, dal Fondo alla Cima, fino ai finali:
 
 ```powershell
 Godot_v4.6.3-stable_win64_console.exe --headless --path . res://tests/smoke_test.tscn
@@ -74,7 +74,7 @@ Godot_v4.6.3-stable_win64_console.exe --headless --path . res://tests/nives_memo
 
 ## Modificare i testi
 
-I dialoghi delle persone sono in `data/npcs.json`, gli incarichi in `data/jobs.json`. Si possono cambiare senza toccare il codice. Quando esporti il gioco, aggiungi `*.json` ai "filtri per esportare file non-risorsa" nelle impostazioni di esportazione.
+I dialoghi delle persone sono in `data/npcs.json`, i turni di lavoro in `data/worklist.json`. Si possono cambiare senza toccare il codice. Quando esporti il gioco, aggiungi `*.json` ai "filtri per esportare file non-risorsa" nelle impostazioni di esportazione.
 
 ## Crediti
 

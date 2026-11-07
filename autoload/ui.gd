@@ -167,6 +167,9 @@ func _show_portrait(speaker: String, sheet: String) -> void:
 
 
 func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
+	if speaker != "" and speaker == GameState.player_name:
+		await _reply(lines)
+		return
 	busy = true
 	_box.visible = true
 	_name.text = speaker
@@ -180,6 +183,29 @@ func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 			continue   # frase solo per l'altro dispositivo ([PC] / [TEL])
 		for page in _pages(t):
 			await _type(_text, page)
+	_box.visible = false
+	busy = false
+
+
+## Le cose che dice il protagonista: non nel riquadro grande, ma di lato, come una scelta.
+## Sopra resta l'ultima frase di chi ti parlava; si va avanti come in un dialogo (INVIO o un tocco).
+func _reply(lines: Array) -> void:
+	busy = true
+	_box.visible = true
+	for line: Variant in lines:
+		var t := GameState.fmt(str(line))
+		if t == "":
+			continue
+		_options = [t]
+		_sel = 0
+		_render_choices()
+		_choice_box.visible = true
+		_typing = false
+		_label = _text
+		_mode = "say"
+		await _advance
+		_mode = ""
+	_choice_box.visible = false
 	_box.visible = false
 	busy = false
 
@@ -278,10 +304,6 @@ func show_status() -> void:
 	options.append("Chiudi")
 	var prompt := "{rank}. {floor}, ore {clock}. Badge: %d. Energia %d/%d." % [
 		GameState.badges.size(), GameState.energy, GameState.MAX_ENERGY]
-	var missions := Quests.active_titles()
-	if not missions.is_empty():
-		prompt += "
-Missioni: " + ", ".join(missions) + "."
 	if GameState.items.is_empty():
 		prompt += "
 Non hai oggetti."

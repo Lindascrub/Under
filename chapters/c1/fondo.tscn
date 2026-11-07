@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
 [ext_resource type="Texture2D" path="res://assets/limezu/grocery/356.png" id="crate_356"]
 [ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/classroom.png" id="lavagna_png"]
 [ext_resource type="Texture2D" path="res://art/lampadina_cassetta.png" id="lamp_png"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
@@ -1493,6 +1494,19 @@ position = Vector2(80, 176)
 position = Vector2(176, 16)
 script = ExtResource("19_kwl31")
 
+[node name="TabelloneDebito" type="Sprite2D" parent="Mondo"]
+position = Vector2(300, 28)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("lavagna_png")
+centered = false
+region_enabled = true
+region_rect = Rect2(208, 84, 32, 28)
+
+[node name="GuardaTabelloneDebito" type="Node2D" parent="Mondo"]
+position = Vector2(312, 56)
+script = ExtResource("7_i6r6f")
+lines = PackedStringArray("* Un tabellone impolverato, mezzo coperto dai cavi. C'è scritto: \"DEBITO DEL NUOVO ARRIVATO: 7.000.000.000 €\".", "* Sotto, qualcuno ha aggiunto a pennarello: \"Più gli interessi.\"")
+
 [node name="Arrivi" type="Node2D" parent="." unique_id=1574611149]
 
 [node name="default" type="Marker2D" parent="Arrivi" unique_id=741006832]
@@ -1518,6 +1532,20 @@ durata_ritorno = 0.45
 
 [node name="OffsetDialogo" type="Marker2D" parent="Inquadrature/BulboScatole"]
 position = Vector2(0, 32)
+
+[node name="Cyclette" type="Marker2D" parent="Inquadrature"]
+position = Vector2(64, 120)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.6
+durata_ritorno = 0.5
+
+[node name="Stellina" type="Marker2D" parent="Inquadrature"]
+position = Vector2(84, 196)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.6
+durata_ritorno = 0.5
 
 [node name="SguardoIndietro" type="Marker2D" parent="Inquadrature" unique_id=1994448893]
 position = Vector2(190, 112)

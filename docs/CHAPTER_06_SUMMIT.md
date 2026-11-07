@@ -266,8 +266,6 @@ e per lo strappo, la sezione della Torre disegnata per gli epiloghi.
 
 ## Limiti noti
 
-- I vecchi finali (`scenes/endings/`) e l'ufficio del capo (`scenes/world/boss_office.tscn`) restano nel progetto
-  per i percorsi della versione precedente; il capitolo 6 nuovo non li usa.
 - Il pulsante REGOLE mostra il testo per intero; su schermi molto piccoli va letto a pagine.
 - Le battute degli epiloghi sono scritte per i 12 personaggi dei capitoli 1-5; nuovi personaggi vanno aggiunti
   in `finale_c6.gd`, `epilogue_for()`, e in `finali.gd`, `PEOPLE`.

@@ -222,6 +222,8 @@ static func fondo_price(who: String) -> void:
 	await Ui.say(["Per quella dopo."], who, CLERK)
 	await _me("E tu?")
 	await Ui.say(["Io lavoro da questa parte."], who, CLERK)
+	await Ui.say(["Sette miliardi per cosa?"], GameState.player_name)
+	await Ui.say(["In questa torre non paghi per quello che compri.", "Paghi per il fatto che respiri la loro aria."], who, CLERK)
 	await Ui.say(["* L'addetta raddrizza il cartellino sul bancone. Era già dritto."])
 
 

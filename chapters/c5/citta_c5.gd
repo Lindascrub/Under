@@ -39,6 +39,8 @@ func setup() -> void:
 		Sound.sfx("deny")
 		await Ui.say(["* La porta di vetro della Banca è sbarrata. Da qui non si torna giù."]))
 	add_exit(CASA_DOOR, Router.CASA_COMUNE, "default")
+	# il centralino del Centro Comunicazioni (Mondo/Centralino): ora è solo un oggetto, il TURNO è l'autobus
+	add_spot(($Mondo/Centralino as Node2D).global_position, _centralino)
 	# Nadir è partito con l'autobus: torna in piazza per la manifestazione e l'assemblea
 	if _f("c5_nadir_partito") and not _f("c5_protesta"):
 		var nadir := _npc("nadir")
@@ -235,20 +237,27 @@ func _nadir_first() -> void:
 func _nadir_menu() -> void:
 	var who := "Nadir"
 	while true:
-		var opts: Array = ["E il lavoro?"]
-		var acts: Array = ["lavoro"]
-		if _f("c5_nadir_lavoro"):
+		# i discorsi già fatti non tornano nel menu
+		var opts: Array = []
+		var acts: Array = []
+		if not _f("c5_nadir_lavoro"):
+			opts.append("E il lavoro?")
+			acts.append("lavoro")
+		if _f("c5_nadir_lavoro") and not _f("c5_nadir_cambiare"):
 			opts.append("Perché non cambi lavoro?")
 			acts.append("cambiare")
-		if _f("c5_nadir_cambiare") or _f("c5_nadir_uccelli") or _f("c5_nadir_percorso"):
+		if (_f("c5_nadir_cambiare") or _f("c5_nadir_percorso")) and not _f("c5_nadir_uccelli"):
 			opts.append("Cosa stai guardando?")
 			acts.append("uccelli")
-			if not _f("c5_nadir_percorso"):
-				opts.append("Ti aiuto con gli orari")
-				acts.append("percorso")
+		if (_f("c5_nadir_cambiare") or _f("c5_nadir_uccelli") or _f("c5_nadir_percorso")) and not _f("c5_nadir_percorso"):
+			opts.append("Ti aiuto con gli orari")
+			acts.append("percorso")
 		if _f("c5_nadir_percorso") and _f("c5_ada") and not _f("c5_nadir_rete"):
 			opts.append("E se i pendolari si organizzassero?")
 			acts.append("rete")
+		if opts.is_empty():
+			await Ui.say(["* Nadir aspetta l'autobus."])
+			return
 		opts.append("Ciao")
 		acts.append("")
 		var c: int = await Ui.choose("Nadir aspetta l'autobus.", opts, who)
@@ -394,14 +403,28 @@ func _rina_first() -> void:
 func _rina_menu() -> void:
 	var who := "Rina"
 	while true:
-		var c: int = await Ui.choose("Rina pulisce la vetrina intera.", ["Ti preoccupa qualcosa?",
-			"Sei d'accordo con chi vuole tenere aperta la Casa Comune?", "Ciao"], who)
-		match c:
-			0:
+		# i discorsi già fatti non tornano nel menu
+		var opts: Array = []
+		var acts: Array = []
+		if not _f("c5_rina_preoccupa"):
+			opts.append("Ti preoccupa qualcosa?")
+			acts.append("preoccupa")
+		if not _f("c5_rina_ascoltata"):
+			opts.append("Sei d'accordo con chi vuole tenere aperta la Casa Comune?")
+			acts.append("casa")
+		if opts.is_empty():
+			await Ui.say(["* Rina pulisce la vetrina intera."])
+			return
+		opts.append("Ciao")
+		acts.append("")
+		var c: int = await Ui.choose("Rina pulisce la vetrina intera.", opts, who)
+		match str(acts[c]):
+			"preoccupa":
+				GameState.flags["c5_rina_preoccupa"] = true
 				await Ui.say(["Dicono che ci sarà una manifestazione. In piazza. Davanti alla bottega.",
 					"L'ultima volta ho pagato io il vetro. E per due giorni i clienti giravano alla larga.",
 					"Lo so che la gente ha dei problemi.", "Anch'io ne ho.", "Il vetro l'ho pagato io."], who)
-			1:
+			"casa":
 				GameState.flags["c5_rina_ascoltata"] = true
 				await Ui.say(["Vorrei che mantenessero aperta la Casa Comune.", "Mio nipote ci ha studiato per anni.",
 					"Ma vorrei anche poter aprire la bottega domattina."], who)
@@ -477,22 +500,14 @@ func _show_node(nm: String) -> CanvasItem:
 	return n
 
 
-# --- 5.08 il TURNO: Comunicazioni (dal terzo turno, lo smistamento rapido) ------------------------
+# --- 5.08 il TURNO: la linea 12 (l'autobus) e il centralino ---------------------------------------
 
-func _station(j: Dictionary) -> void:
+## Il centralino del Centro Comunicazioni: la richiesta di verifica della Banca passa da qui.
+func _centralino() -> void:
 	if GameState.flags.get("c4_verifica", false) and str(GameState.flags.get("c5_richiesta", "")) == "":
 		await _request_switchboard()
 		return
-	var quick: Dictionary = GameState.city.get("rapido", {})
-	if GameState.worked_today or int(GameState.flags.get("c5_turni", 0)) < int(quick.get("dopo", 2)):
-		await super(j)
-		return
-	var c: int = await Ui.choose(str(j.get("station_text", "")) + "\nIniziare il turno? (10 ore)",
-		["Turno al centralino", "Smistamento rapido (veloce)", "Non ancora"])
-	if c == 0:
-		start_job(j)
-	elif c == 1:
-		await quick_turn()
+	await Ui.say(["* Il centralino del Centro Comunicazioni. Squilla. Non per te."])
 
 
 ## La richiesta di verifica partita dalla Banca passa dal centralino, una volta sola, con la
@@ -512,23 +527,6 @@ func _request_switchboard() -> void:
 		_:
 			await Ui.say(["* SEGNALA. La richiesta si ferma e resta a te. La stampi e la pieghi in tasca, vicino al badge.",
 				"* La porterai su a mano."])
-
-
-## Il TURNO RAPIDO: le richieste arrivano già smistate. Stessa paga base, nessuna discrepanza vista.
-func quick_turn() -> void:
-	if GameState.worked_today:
-		return
-	var pay := int(GameState.city.get("rapido", {}).get("paga", 1600))
-	GameState.finish_hard_job(pay)
-	GameState.flags["c5_turni"] = int(GameState.flags.get("c5_turni", 0)) + 1
-	GameState.flags["c5_rapidi"] = int(GameState.flags.get("c5_rapidi", 0)) + 1
-	for i in 3:
-		Sound.sfx("blip", 0.9 + i * 0.15)
-		await get_tree().create_timer(0.25).timeout
-	Sound.sfx("coin")
-	await Ui.say(["* Le richieste arrivano già smistate da un algoritmo. Tu premi CONFERMA. Cento volte.",
-		"* Paga: %s." % GameState.euros(pay), "* Discrepanze viste: zero. Non perché non ci fossero."])
-	await show_pending()
 
 
 # --- 5.09 la telefonata del capo ---------------------------------------------------------------
@@ -573,9 +571,15 @@ func _boss_call() -> void:
 		await Ui.say(["Senti, so che sei una persona prudente.", "Ma la prudenza non paga il badge."], BOSS)
 	await Ui.say(["%s per firmarlo tu." % GameState.euros(prize), "Pensa che opportunità!",
 		"Sei quasi in cima. Perché rischiare tutto per un edificio pieno di sedie vecchie?"], BOSS)
+	var asked := false
 	while true:
-		var e: int = await Ui.choose("Il progetto di Ada: %s." % GameState.euros(prize), ["Va bene", "Ci penso", "Perché io?", "No. È di Ada."], BOSS)
+		# "Perché io?" si chiede una volta sola
+		var opts: Array = ["Va bene", "Ci penso", "No. È di Ada."] if asked else ["Va bene", "Ci penso", "Perché io?", "No. È di Ada."]
+		var e: int = await Ui.choose("Il progetto di Ada: %s." % GameState.euros(prize), opts, BOSS)
+		if asked and e == 2:
+			e = 3
 		if e == 2:
+			asked = true
 			await Ui.say(["Perché tu sei arrivato fin qui. Lei è ancora seduta su una sedia spaiata."], BOSS)
 			continue
 		if e == 3:
@@ -1293,7 +1297,7 @@ func _badge_machine() -> void:
 			return
 		if not GameState.buy_badge(BADGE):
 			Sound.sfx("deny")
-			await Ui.say(["Non bastano.", "Il centralino è lì. Squilla sempre. È la cosa più puntuale della piazza, dopo il merlo."], NIVES, BADGE_CLERK)
+			await Ui.say(["Non bastano.", "L'autobus è lì. Passa sempre. È la cosa più puntuale della piazza, dopo il merlo."], NIVES, BADGE_CLERK)
 			return
 		GameState.flags["c5_badge"] = "comprato"
 		Sound.sfx("coin")
@@ -1326,6 +1330,8 @@ func _gift() -> void:
 
 
 func _nives_wish() -> void:
+	await Ui.say(["Perché non sei mai salita?"], GameState.player_name)
+	await Ui.say(["Perché chi arriva in cima non torna mai giù a raccontare com'è.", "O è il paradiso, o ti cambiano la serratura."], NIVES, BADGE_CLERK)
 	await Ui.say(["Quando arriverai in cima…"], NIVES, BADGE_CLERK)
 	await get_tree().create_timer(1.0).timeout
 	await Ui.say(["Niente.", "Buona fortuna."], NIVES, BADGE_CLERK)

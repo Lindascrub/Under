@@ -9,7 +9,6 @@ Aggiornato il 5 novembre 2026, dopo l'approvazione della revisione completa. Que
 - `chapters/c6/direzione_regole.gd`: conti del turno di Direzione.
 - `chapters/c6/finali.gd` e `docs/ENDING_SYSTEM.md`: condizioni dei finali.
 - `chapters/c6/finale_c6.gd`: messa in scena ed epiloghi.
-- `docs/REVISIONE_COMPLETA_20261105.md`: modifiche di questa revisione e limiti delle prove.
 
 ## Economia e progressione
 
@@ -59,7 +58,7 @@ La verifica del regolamento è diversa dal consenso del giocatore. La contestazi
 
 Le istruzioni mostrano soltanto i comandi del dispositivo in uso. Le prime prove di fili, lampadine, Tilde, Ercole, Leda e Nadir non consumano tempo o errori fino al gesto previsto. Non si ripetono integralmente dopo averle completate.
 
-Amir, Olga, Teo e Ada usano le scene in `scenes/minigame/rifatti/` quando la configurazione ha `visivo: true`. I tipi e i metodi precedenti restano compatibili con vecchie configurazioni e prove; la partita corrente non apre lo Snake di Amir.
+Amir, Olga, Teo e Ada usano le scene in `scenes/minigame/rifatti/` quando la configurazione ha `visivo: true`. Lo Snake di Amir resta solo per le configurazioni vecchie; la partita corrente non lo apre.
 
 Le scene del Capo -4/-3/-2/0 sono modificabili nell'editor. I conti e gli stati restano in `boss_missions.gd`; le scene non inventano premi o esiti.
 

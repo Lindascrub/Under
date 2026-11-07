@@ -9,10 +9,6 @@ var _failures: Array[String] = []
 var choose_index := 0
 ## Scelte specifiche da fare in ordine (poi si torna a choose_index).
 var choose_queue: Array = []
-## Piano per la battaglia: lista di [pulsante, voce del sottomenu].
-var plan: Array = []
-var fallback := [3, 1]
-var fast_dodge := true
 var immortal := false
 ## Come finiscono da soli i minigiochi di aiuto: "win", "fail" o "partial".
 var minigame_result := "win"
@@ -36,9 +32,7 @@ func _process(_delta: float) -> void:
 	if immortal:
 		GameState.energy = GameState.MAX_ENERGY
 	var scene := get_tree().current_scene
-	if scene and scene.scene_file_path == Router.BATTLE and not Ui.transitioning:
-		_drive_battle(scene)
-	elif scene and scene.scene_file_path == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play":
+	if scene and scene.scene_file_path == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play":
 		scene.call("_finish", minigame_result == "win", minigame_result == "partial")
 	elif scene and scene.scene_file_path == Router.DIREZIONE and not Ui.transitioning and not Ui.busy and _frame % 3 == 0:
 		_drive_direction(scene)
@@ -76,26 +70,6 @@ func _drive_direction(d: Node) -> void:
 				if str(opts[i][0]) == want and str(opts[i][opts[i].size() - 1]) == "":
 					pick = i
 			d.call("_pick", pick)
-
-
-func _drive_battle(b: Node) -> void:
-	if _frame % 3 != 0:
-		return
-	match str(b.get("phase")):
-		"menu":
-			var step: Array = plan.pop_front() if not plan.is_empty() else fallback
-			b.set("menu", step[0])
-			b.set("_pending_sub", step[1])
-			_tap("confirm")
-		"sub":
-			var items: Array = b.get("sub_items")
-			b.set("sub", mini(int(b.get("_pending_sub")), items.size() - 1))
-			_tap("confirm")
-		"msg", "bubble":
-			_tap("confirm")
-		"dodge":
-			if fast_dodge:
-				b.set("attack_t", 99.0)
 
 
 func _tap(action: String) -> void:
@@ -274,7 +248,7 @@ func _test_chapter3() -> void:
 	_check(GameState.flags.get("c3_acqua_amir", false) and "Acqua economica" not in GameState.items, "l'acqua si può regalare ad Amir")
 
 	# 14-16, 23: il turno alla cassa paga la paga configurata, una volta al giorno; il capo chiama una volta
-	var base_pay := int(GameState.job("cassa_mercato")["battle"]["pay"])
+	var base_pay := int(GameState.job("cassa_mercato")["turno"]["pay"])
 	var money0 := GameState.money
 	choose_queue = [0, 0, 1]
 	m = await _c3_call(m, "_station", [GameState.job("cassa_mercato")])
@@ -837,11 +811,11 @@ func _test_chapter6() -> void:
 			_check(Sound.PLAYLISTS.has(mus), "il minigioco d'aiuto di %s ha la sua musica" % helper)
 		Sound.music("cima")
 		_check(Sound.current_track() in Sound.PLAYLISTS["cima"], "alla Cima suona una canzone della sua scaletta")
-		# dove le canzoni sono più d'una (le battaglie), finita una ne parte un'altra
-		Sound.music("battaglia")
+		# dove le canzoni sono più d'una (la tensione), finita una ne parte un'altra
+		Sound.music("tensione")
 		var first: String = Sound.current_track()
 		Sound.call("_on_music_finished")
-		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["battaglia"], "finita una canzone ne parte un'altra, diversa")
+		_check(Sound.current_track() != first and Sound.current_track() in Sound.PLAYLISTS["tensione"], "finita una canzone ne parte un'altra, diversa")
 		Sound.music("cima")
 	for effect: String in ["select_2", "confirm_2", "blocked", "collect_3", "computer_1", "chime"]:
 		_check(ResourceLoader.exists("res://audio/arcade/%s.wav" % effect), "effetto arcade importato: " + effect)
@@ -1048,20 +1022,20 @@ func _test_chapter5() -> void:
 	for i in 3:
 		m = await _c5_call(m, "_albero")
 	_check(int(GameState.flags.get("c5_albero", 0)) == 3, "l'albero: tre volte")
-	# 20: Rina, ascoltata
-	choose_queue = [0, 1, 2]
+	# 20: Rina, ascoltata (i discorsi fatti spariscono dal menu: sempre la prima voce)
+	choose_queue = [0, 0]
 	m = await _c5_talk("rina")
 	_check(GameState.flags.get("c5_rina", false) and GameState.flags.get("c5_rina_ascoltata", false), "Rina: 'Non toccare quella', poi le sue preoccupazioni")
 	# 18-19: Nadir, il tabellone, IL PERCORSO POSSIBILE (sbagliare e riprovare)
 	GameState.minutes = GameState.DAY_START
 	# le domande compaiono una alla volta: il lavoro, perché non lo cambia, poi il merlo e il percorso
-	choose_queue = [0, 1, 2, 3, 0]
+	choose_queue = [0, 0, 0, 0, 0]
 	minigame_result = "fail"
 	m = await _c5_talk("nadir")
 	_check(GameState.flags.get("c5_nadir", false) and GameState.flags.get("c5_tabellone", false) and GameState.flags.get("c5_nadir_lavoro", false) and GameState.flags.get("c5_nadir_uccelli", false), "Nadir: il tabellone che fa retromarcia, il lavoro, il merlo")
 	_check(not GameState.flags.get("c5_nadir_percorso", false) and "nadir" not in GameState.helped_ids, "percorso sbagliato: non conta come aiuto")
 	minigame_result = "win"
-	choose_queue = [3, 0]
+	choose_queue = [0, 0]
 	m = await _c5_talk("nadir")
 	_check(GameState.flags.get("c5_nadir_percorso", false) and "nadir" in GameState.helped_ids, "percorso trovato: Nadir aiutato")
 	# gli orari delle coincidenze: da casa alle 6:40, si entra alle 8:00, 6 €
@@ -1140,7 +1114,7 @@ func _test_chapter5() -> void:
 	_check(GameState.flags.get("c5_rapporto", false) and GameState.flags.get("c5_documento", false) and GameState.flags.get("c5_contatore", false) and GameState.flags.get("c5_b4_capito", false), "rapporto, VALUTAZIONE OPPORTUNITÀ, contatore (Fondo), B-4 (Tilde)")
 	# la rete dei pendolari (Nadir conosce Ada, adesso)
 	m = await _go(Router.CITY, "from_casa")
-	choose_queue = [3, 3]
+	choose_queue = [0]
 	m = await _c5_talk("nadir")
 	_check(GameState.flags.get("c5_nadir_rete", false), "Nadir: la rete dei pendolari")
 	# 29, 35: l'assemblea: rapporto presentato, stanze organizzate, quattro risorse vere -> gestione comunitaria
@@ -1260,10 +1234,11 @@ func _test_chapter5() -> void:
 			choose_queue = [0]
 			m = await _c5_call(m, "_station", [job])
 		else:
-			m = await _c5_call(m, "quick_turn")
+			choose_queue = [0]
+			m = await _c5_call(m, "_station", [job])
 		turns += 1
 	_check(turns == 5 and GameState.money == 8000 and GameState.exploited == 0, "solo lavoro: 5 turni per 8.000 € (turni %d, soldi %d)" % [turns, GameState.money])
-	_check(int(GameState.flags.get("c5_rapidi", 0)) == 3 and GameState.flags.get("c5_protesta", false), "dal terzo turno lo smistamento rapido; la manifestazione c'è comunque")
+	_check(int(GameState.flags.get("c5_turni", 0)) == 5 and GameState.flags.get("c5_protesta", false), "cinque turni alla linea 12; la manifestazione c'è comunque")
 
 
 func _run() -> void:
@@ -1275,8 +1250,6 @@ func _run() -> void:
 	GameState.worked_today = false
 	var sotto: Room = await _go(Router.SOTTOUFFICIO, "from_below")
 	choose_queue = [0, 1]
-	plan = []
-	fallback = [0, 0]
 	sotto.call("_station", GameState.job("callcenter"))
 	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.SOTTOUFFICIO)
@@ -1342,8 +1315,6 @@ func _run() -> void:
 	_check(GameState.flags.get("fermo_talked", false), "si dovrebbe poter parlare con Fermo")
 	# il lavoro: la cyclette
 	choose_queue = [0, 1]
-	plan = []
-	fallback = [0, 0]
 	fondo.call("_station", GameState.job("dinamo"))
 	await _wait_scene(Router.WORK)
 	await _wait_scene(Router.FONDO)

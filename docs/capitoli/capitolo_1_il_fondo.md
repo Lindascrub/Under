@@ -55,18 +55,17 @@ La scena si genera con `tools/bake_c1_fondo.gd` (la mappa è scritta in `ROWS`).
 ## Comandi: tutto col dito
 
 Il gioco è per telefono. Nel mondo ci sono joystick e pulsanti; nei minigiochi no, si gioca direttamente sullo schermo:
-- cyclette e magazzino: tocca la metà sinistra o destra;
+- cyclette: tocca la metà sinistra o destra;
 - lampadine: scorri a destra (buona), a sinistra (rotta), su e giù (avvita quella che sfarfalla);
 - fili: tocca un filo a sinistra, poi il suo posto a destra;
 - un, due, tre, stella: tieni il dito giù, staccalo quando si gira;
-- gli altri: tocca il telefono che squilla, trascina spugna, barra e racchetta, scorri per Snake e Tetris.
 Le istruzioni dicono "tocca", non "premi". Su PC restano anche i tasti.
 
 In alto resta la barra con piano, ora, debito ("7,00 mld €") e soldi. Quello che non si deve mai vedere è il fuori-mappa: la telecamera resta sempre dentro i muri della stanza, anche ai bordi.
 
 ## Cosa resta del gioco attuale
 
-- Asset LimeZu, Fermo, i badge, le scale a piedi, il Breakout, Nives, l'autostima; compatibilità con il vecchio furto di merito nei salvataggi precedenti.
+- Asset LimeZu, Fermo, i badge, le scale a piedi, Nives, l'autostima; compatibilità con il vecchio furto di merito nei salvataggi precedenti.
 - La stanza verrà rifatta come **scena vera di Godot** (pavimenti, muri e oggetti come nodi), modificabile anche nell'editor.
 
 ## Da decidere più avanti

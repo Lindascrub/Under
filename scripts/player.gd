@@ -133,6 +133,8 @@ func _find_target() -> Node:
 	var probe := global_position + Vector2(0, -6) + (FACING_VECTORS[facing] as Vector2) * 6.0
 	var best: Node = null
 	var best_d := 16.0
+	var seat: Node = null
+	var seat_d := INF
 	for n in get_tree().get_nodes_in_group("interactable"):
 		if n is Interactable and n.facing_required != "" and n.facing_required != facing:
 			continue
@@ -150,9 +152,17 @@ func _find_target() -> Node:
 			d -= 4.0
 		elif n.get_meta("inspect_prop", false):
 			d += 3.0
+		# sedie e sportelli (le cose che si usano da un lato preciso) contano più delle descrizioni
+		var main: bool = n is Seat or (n is Interactable and n.approach != Vector2.ZERO and not n.get_meta("inspect_prop", false))
+		if main and d < seat_d:
+			seat = n
+			seat_d = d
 		if d < best_d:
 			best_d = d
 			best = n
+	# una sedia o uno sportello a portata vince sulla descrizione automatica del mobile accanto
+	if seat and best and best.get_meta("inspect_prop", false):
+		return seat
 	return best
 
 

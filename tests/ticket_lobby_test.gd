@@ -18,7 +18,8 @@ func _ready() -> void:
  check(room._lift._spr.texture.resource_path == Lift.SHEET, "Porte originali dell'ascensore")
  check(room.find_children("Telecamera_*", "Sprite2D", true, false).size() == 2, "Due telecamere animate")
  check(room._stairs_up_pos.x > 512, "Scale oltre il pilastro, non dentro la biglietteria")
- room.player.global_position = Vector2(344, 160)
+ # il passaggio sta fra MuroRitorno e MuroTramezzoBasso (MuriBiglietteria): qui passa, y 170
+ room.player.global_position = Vector2(344, 170)
  for i in 90:
   await get_tree().physics_frame
   room.player.velocity = Vector2(80, 0)
@@ -43,7 +44,7 @@ func _ready() -> void:
  room.player.camera.zoom = Vector2(4, 4)
  await frames(4); await shot("ascensore_originale")
  await close_current()
- GameState.minigame = {"kind": "work", "game": "pedal", "name": "CycletteDinamo", "pay": 200, "job": GameState.job("dinamo")["battle"], "intro": [], "return": Router.FONDO, "return_pos": Vector2(64, 112)}
+ GameState.minigame = {"kind": "work", "game": "pedal", "name": "CycletteDinamo", "pay": 200, "job": GameState.job("dinamo")["turno"], "intro": [], "return": Router.FONDO, "return_pos": Vector2(64, 112)}
  current = load(Router.WORK).instantiate()
  get_tree().root.add_child(current); get_tree().current_scene = current
  await frames(100)

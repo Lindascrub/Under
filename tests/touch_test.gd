@@ -169,26 +169,6 @@ func _run() -> void:
 	await _tap_at(Vector2(540, 200))
 	_check(float(w.get("speed")) < sp, "toccare due volte lo stesso lato dovrebbe far inciampare")
 
-	# --- il magazzino: tocca la metà giusta
-	w = await _work("sort")
-	(w.get("boxes") as Array).append({"y": 200.0, "red": true})
-	await _tap_at(Vector2(80, 150))
-	_check(float(w.get("score")) >= 1.0, "toccare a sinistra dovrebbe smistare la scatola rossa")
-
-	# --- i bagni: la spugna segue il dito
-	w = await _work("clean")
-	var s0: Vector2 = w.get("sponge")
-	_touch(Vector2(200, 130), true)
-	await _frames(30)
-	_check((w.get("sponge") as Vector2).distance_to(Vector2(200, 130)) < s0.distance_to(Vector2(200, 130)) - 20, "la spugna dovrebbe andare verso il dito")
-	_touch(Vector2(200, 130), false)
-	await _frames(2)
-
-	# --- le consegne: tocca la corsia
-	w = await _work("deliver")
-	await _tap_at(Vector2(320, 110))
-	_check(int(w.get("lane")) == 0, "toccare la corsia in alto dovrebbe portarci la bici")
-
 	# --- il call center del -4: tocca il telefono che squilla, poi la risposta
 	w = await _work("helpdesk")
 	w.set("hd_phase", "ring")
@@ -209,13 +189,6 @@ func _run() -> void:
 	await _tap_at((w.call("_hd_button", kinds.find(1)) as Rect2).get_center())
 	_check(int(w.get("hd_honest")) == 1, "la risposta sincera dovrebbe essere contata")
 
-	# --- il call center: tocca il telefono che squilla
-	w = await _work("calls")
-	(w.get("ringing") as Dictionary).clear()
-	(w.get("ringing") as Dictionary)["left"] = 5.0
-	await _tap_at(Vector2(200, 191))
-	_check(float(w.get("score")) >= 1.0, "toccare il telefono a sinistra dovrebbe rispondere")
-
 	# --- un, due, tre, stella: il dito giù fa avvicinare
 	w = await _work("steal", {"victim_name": "Fermo", "victim_sheet": "char_14", "item": "il quaderno", "seated": true})
 	var arc: Object = w.get("arcade")
@@ -231,22 +204,6 @@ func _run() -> void:
 	var x1 := float(arc.get("st_x"))
 	await _frames(20)
 	_check(is_equal_approx(float(arc.get("st_x")), x1), "staccando il dito ci si dovrebbe fermare")
-
-	# --- breakout: la barra segue il dito
-	w = await _work("breakout")
-	arc = w.get("arcade")
-	_touch(Vector2(160, 250), true)
-	await _frames(40)
-	_check(float(arc.get("br_paddle")) < 300.0, "la barra dovrebbe seguire il dito (%.0f)" % float(arc.get("br_paddle")))
-	_touch(Vector2(160, 250), false)
-	await _frames(3)
-	_check(not bool(arc.get("br_stuck")), "staccare il dito dovrebbe lanciare la pallina")
-
-	# --- snake: scorrere gira il mocio
-	w = await _work("snake")
-	arc = w.get("arcade")
-	await _swipe(Vector2(320, 200), Vector2(320, 120))
-	_check(arc.get("sn_next") == Vector2i.UP, "scorrere in su dovrebbe girare il mocio in su")
 
 	# --- lampadine: scorri a destra = buona
 	var m := await _help("bulbs")
@@ -292,30 +249,6 @@ func _run() -> void:
 	_check(int(m.get("misses")) == 1, "lo scaffale sbagliato dovrebbe essere un errore")
 	await _tap_at((m.call("_inv_shelf", int(good[1])) as Rect2).get_center())
 	_check(int(m.get("inv_done")) == 1, "lo scaffale giusto dovrebbe sistemare il prodotto")
-
-	# --- Amir, L'ULTIMA CONSEGNA: tocca gli incroci (la strada sicura arriva in tempo)
-	m = await _help("route")
-	await _tap_at(m.rt_nodes[4])
-	_check((m.get("rt_done") as Array).is_empty(), "un incrocio lontano non si raggiunge")
-	# la mattina, per la strada sicura: Scala B, Piazza, Via dei Fiori (110 minuti su 120)
-	for n in [2, 5, 4]:
-		await _tap_at(m.rt_nodes[n])
-		# il cuore cammina fino all'incrocio, poi si può toccare il prossimo
-		for i in 600:
-			if float(m.get("rt_k")) >= 1.0:
-				break
-			await _frames(1)
-		if n == 5:
-			_check((m.get("rt_done") as Array).size() == 2 and int(m.get("rt_left")) == 40, "la strada sicura: Scala B e Piazza in 80 minuti (ne restano 40 per Via dei Fiori)")
-	_check(int(m.get("rt_map")) == 1 and int(m.get("rt_total")) == 3 and (m.get("rt_done") as Array).is_empty(), "finita la mattina parte il pomeriggio, con altri tre pacchi")
-	# il pomeriggio: Scuola, Via Roma, Ospedale (140 minuti su 150)
-	for n in [2, 5, 6]:
-		await _tap_at(m.rt_nodes[n])
-		for i in 600:
-			if float(m.get("rt_k")) >= 1.0 or str(m.get("phase")) != "play":
-				break
-			await _frames(1)
-	_check(int(m.get("rt_total")) == 6, "sei pacchi su sei: la consegna è finita (fatti %d)" % int(m.get("rt_total")))
 
 	# --- Amir, LE CONSEGNE: il furgone (snake); si scorre per girare, si prende il pacco, si porta alla casa giusta
 	var amir_mg: Dictionary = (GameState.npc_data("amir")["help"]["minigame"] as Dictionary).duplicate(true)
@@ -493,30 +426,22 @@ func _run() -> void:
 	await trace.call(line.call("Bus 30", 1))
 	_check(str(m.get("phase")) != "play" and GameState.flags.get("c5_nadir_corse", []) == [1, 5], "Bus 12 e Bus 30 con lo stesso biglietto: Nadir arriva alle 7:58")
 
-	# --- il centralino della Città: destinazioni; poi le discrepanze (VERIFICA, CONFERMA)
-	w = await _work("smistamento", {"job": {"pay": 1600, "pay_max": 2000, "duration": 45}})
-	w.set("sm_cur", {"testo": "Libri", "cat": "Consegne", "dest": 0})
-	await _tap_at((w.call("_sm_button", 1) as Rect2).get_center())
-	_check(int(w.get("sm_wrong")) == 1 and int(w.get("mistakes")) == 1, "i libri alla fermata: destinazione sbagliata")
-	for i in 600:
-		if str(w.get("sm_phase")) == "read":
-			break
-		await _frames(1)
-	w.set("sm_cur", {"id": "082", "testo": "Richiesta n. 082", "cat": "Consegne", "proposta": "ARCHIVIO CENTRALE", "dest": 0})
-	await _tap_at((w.call("_sm_button", 1) as Rect2).get_center())
-	_check(int(w.get("sm_found")) == 1 and str(w.get("sm_phase")) == "verify", "VERIFICA una discrepanza: trovata (e ci vuole più tempo)")
-	for i in 600:
-		if str(w.get("sm_phase")) == "read":
-			break
-		await _frames(1)
-	w.set("sm_cur", {"id": "091", "testo": "Richiesta n. 091", "cat": "Servizi", "proposta": "ARCHIVIO CENTRALE", "dest": 0})
-	await _tap_at((w.call("_sm_button", 0) as Rect2).get_center())
-	_check(int(w.get("sm_confirmed")) == 1 and int(w.get("mistakes")) == 1, "CONFERMA non è un errore tuo: il sistema ha proposto")
-	for i in 600:
-		if str(w.get("sm_phase")) == "read":
-			break
-		await _frames(1)
-	_check(float(w.get("score")) >= 3.0, "le richieste chiuse contano tutte")
+	# --- la linea 12 della Città: sopra/sotto l'autobus cambia corsia, la striscia a destra accelera
+	w = await _work("autobus", {"job": {"pay": 1600, "pay_max": 2000, "duration": 34, "fermate": 5}})
+	var bus: Control = w.get("bus")
+	var bus_pos: Vector2 = bus.global_position + (bus.get_node("Bus") as Node2D).position
+	await _tap_at(bus_pos + Vector2(0, -30))
+	_check(int(bus.get("corsia")) == 0, "toccare sopra l'autobus: corsia in alto")
+	await _tap_at(bus_pos + Vector2(0, 30))
+	await _tap_at(bus_pos + Vector2(0, 30))
+	_check(int(bus.get("corsia")) == 2, "toccare sotto: corsia in basso (non esce dalla strada)")
+	var pedale := bus.get_node("Pedale") as Control
+	_touch(pedale.get_global_rect().get_center(), true)
+	await _frames(3)
+	_check(bool(bus.get("veloce")), "il dito sulla striscia a destra: veloce")
+	_touch(pedale.get_global_rect().get_center(), false)
+	await _frames(3)
+	_check(not bool(bus.get("veloce")), "lasciata la striscia: piano")
 
 	# --- la Cima, il TURNO di Direzione: più e meno sulle voci, CONFERMA solo a 100
 	# Existing Director control fixture; new mandate flow has its own integration test.

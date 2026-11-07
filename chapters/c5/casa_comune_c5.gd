@@ -106,13 +106,21 @@ func _ada_first() -> void:
 func _ada_menu() -> void:
 	var who := "Ada"
 	while true:
-		var opts: Array = ["Perché non andate altrove?"]
-		var acts: Array = ["altrove"]
+		# i discorsi già fatti non tornano nel menu
+		var opts: Array = []
+		var acts: Array = []
+		if not _f("c5_ada_perche"):
+			opts.append("Perché non andate altrove?")
+			acts.append("altrove")
 		if not _f("c5_ada_stanze"):
 			opts.append("Ti do una mano coi volantini")
 			acts.append("stanze")
-		opts.append("Cos'è quella lettera?")
-		acts.append("lettera")
+		if not _f("c5_lettera"):
+			opts.append("Cos'è quella lettera?")
+			acts.append("lettera")
+		if opts.is_empty():
+			await Ui.say(["Quella libreria mi odia."], who)
+			return
 		opts.append("Ciao")
 		acts.append("")
 		var c: int = await Ui.choose("Ada.", opts, who)

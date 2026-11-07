@@ -3,17 +3,14 @@ extends Node2D
 const Art := preload("res://scripts/minigame_art.gd")
 ## I turni di lavoro: ogni lavoro ha il suo minigioco. Config in GameState.minigame (kind "work"):
 ##   game "pedal":   alterna sinistra/destra per tenere la lancetta nel verde (la dinamo del -5)
-##   game "clean":   passa la spugna sulle macchie finché spariscono (i bagni del -4)
-##   game "calls":   squilla un telefono (su/giù/sinistra/destra): rispondi con la freccia giusta (call center)
-##   game "scale":   ferma la lancetta della bilancia sul peso giusto (il banco del mercato)
-##   game "sort":    scatole rosse a sinistra, blu a destra (il magazzino)
-##   game "deliver": in bici tra tre corsie, evita le auto e prendi i pacchi (le consegne)
 ##   game "helpdesk": il call center del -4: tocca il telefono che squilla, poi scegli la risposta
 ##                    (il copione paga, la sincerità no ma ti resta, la sgarbata è un errore)
 ##   game "cassa":   la cassa del Mercato (-3): tocca l'articolo, poi CONFERMA o CORREGGI il prezzo.
 ##   game "smistamento": il Centro Comunicazioni della Città (piano terra): tocca la destinazione
 ##                   della richiesta. Poi arrivano le discrepanze (il sistema propone un posto, il
 ##                   mittente ne ha scritto un altro): CONFERMA, VERIFICA o SEGNALA. Dati in data/city.json.
+##   game "autobus": la linea 12 della Città (piano terra): schivi gli ostacoli cambiando corsia e ti
+##                   fermi alle fermate nella corsia del marciapiede. È la scena Autobus (autobus.tscn).
 ##   game "sportello": lo sportello crediti della Banca (-2): leggi la pratica, poi APPROVA o
 ##                   RICHIEDI VERIFICA. Approvare è subito, verificare costa un po' di tempo: CHEAP
 ##                   paga le pratiche chiuse, non quelle giuste. Pratiche in data/bank.json.
@@ -27,9 +24,6 @@ const BOX := Rect2(120, 96, 400, 190)
 const RED := Color("ff2a3c")
 const YELLOW := Color("ffe14d")
 const GREEN := Color("3ddc84")
-const BLUE := Color("39b6ff")
-const DIRS := ["up", "down", "left", "right"]
-const DIR_PITCH := {"up": 1.5, "right": 1.25, "down": 0.75, "left": 1.0}
 
 var cfg: Dictionary = {}
 var game := "pedal"
@@ -52,26 +46,6 @@ var t := 0.0
 var speed := 0.0
 var band := Vector2(0.55, 0.8)
 var last_side := ""
-# clean / sponge
-var sponge := Vector2.ZERO
-var stains: Array[Dictionary] = []
-var spawn_t := 0.0
-# calls
-var ringing: Dictionary = {}
-var call_t := 0.0
-# scale
-var needle := 0.0
-var needle_dir := 1.0
-var wanted := 0.5
-var scale_hold := 0.0
-# sort
-var boxes: Array[Dictionary] = []
-# deliver
-var lane := 1
-var road: Array[Dictionary] = []
-var crash_t := 0.0
-## dove tiene il dito chi gioca col telefono (spugna); x < 0: nessun dito
-var finger := Vector2(-1, -1)
 # helpdesk
 ## Le chiamate, dalla più gentile alla più cattiva: [cliente, copione, sincera, sgarbata].
 const CALLS := [
@@ -144,13 +118,15 @@ var sp_short := false
 
 var _title: Label
 var _info: Label
+## La linea 12 (scena Autobus dentro work.tscn): solo per game "autobus".
+var bus: Control = null
 ## La canzone di ogni turno: una per piano, mai la stessa di un altro posto (autoload/sound.gd).
 const JOB_MUSIC := {
 	"pedal": "turno_dinamo", "helpdesk": "turno_callcenter", "cassa": "turno_cassa",
-	"sportello": "turno_sportello", "smistamento": "turno_smistamento", "steal": "capo",
+	"sportello": "turno_sportello", "smistamento": "turno_smistamento", "autobus": "turno_smistamento", "steal": "capo",
 }
 
-## I giochi classici (Snake, Simon, Tetris, Frogger, Breakout, Pong): vedi arcade.gd.
+## Il furto dell'idea (un, due, tre, stella): vedi arcade.gd.
 var arcade: Arcade
 
 
@@ -195,44 +171,28 @@ func _rules() -> String:
 		match game:
 			"pedal":
 				return "* Tocca lo schermo a SINISTRA e a DESTRA, una volta per parte, per pedalare. Tieni la lancetta nel verde. Se tocchi due volte lo stesso lato, inciampi."
-			"clean":
-				return "* Trascina la spugna col dito e tienila sulle macchie finché spariscono. Se una macchia resta troppo, si secca."
-			"calls":
-				return "* Quando un telefono squilla, toccalo prima che riattacchino. Ogni telefono ha il suo squillo."
-			"scale":
-				return "* Il cliente chiede un peso. Tocca lo schermo quando la lancetta è sulla tacca gialla."
-			"sort":
-				return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Tocca la metà giusta dello schermo prima che arrivino in fondo al nastro."
-			"deliver":
-				return "* Tocca la corsia dove vuoi andare. Evita le auto, prendi i pacchi."
 			"helpdesk":
 				return "* Tocca il telefono che squilla. Poi tocca la risposta.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 			"cassa":
 				return "* Prima tocca l’articolo per scansionarlo. Poi confronta schermo e cartellino: tocca CONFERMA se coincidono, CORREGGI se il prezzo è sbagliato.\n* Correggere richiede più tempo."
 			"sportello":
 				return "* Controlla i documenti. APPROVA significa che i fogli sono completi e coerenti; il prestito lo decide un altro ufficio.\n* Tocca APPROVA se tutto torna. Altrimenti tocca RICHIEDI VERIFICA.\n* La verifica richiede più tempo."
+			"autobus":
+				return "* Guidi l'autobus della linea 12. Tocca sopra o sotto l'autobus per cambiare corsia e schivare quello che c'è in strada.\n* Tieni il dito sulla striscia a destra per andare più veloce.\n* Alle fermate stai nella corsia in alto e lascia la striscia: ti fermi da solo sul segno giallo. Se sbatti perdi tempo.\n* Più sei in orario, più guadagni."
 			"smistamento":
 				return "* Manda la richiesta al posto indicato dal mittente: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA.\n* Tocca la destinazione.\n* Se il sistema propone un posto diverso: CONFERMA accetta la proposta; VERIFICA chiama il mittente e richiede tempo; SEGNALA lascia la richiesta ferma in attesa di controllo."
 	# (solo PC) da qui in giù: il telefono è già tornato sopra
 	match game:
 		"pedal":
 			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
-		"clean":
-			return "* Muovi la spugna con le frecce e tienila sulle macchie finché spariscono. Se una macchia resta troppo, si secca."
-		"calls":
-			return "* Quando un telefono squilla, premi la freccia della sua direzione prima che riattacchino. Ogni telefono ha il suo squillo."
-		"scale":
-			return "* Il cliente chiede un peso. Premi {ok} quando la lancetta è sulla tacca gialla."
-		"sort":
-			return "* Le scatole ROSSE (o le monete d'oro) vanno a SINISTRA, quelle BLU (o i bottoni) a DESTRA. Premi la freccia prima che arrivino in fondo al nastro."
-		"deliver":
-			return "* SU e GIÙ per cambiare corsia. Evita le auto, prendi i pacchi."
 		"helpdesk":
 			return "* Rispondi al telefono che squilla con la sua freccia. Poi scegli una risposta con SU e GIÙ e conferma con {ok}.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 		"cassa":
 			return "* Prima premi {ok} per scansionare l’articolo. Poi confronta schermo e cartellino: SINISTRA conferma, DESTRA corregge il prezzo sbagliato.\n* Correggere richiede più tempo."
 		"sportello":
 			return "* Controlla i documenti. APPROVA significa che i fogli sono completi e coerenti; il prestito lo decide un altro ufficio.\n* SINISTRA approva. DESTRA richiede una verifica se manca un documento, due dati sono diversi o c’è un doppione.\n* La verifica richiede più tempo."
+		"autobus":
+			return "* Guidi l'autobus della linea 12. SU e GIÙ cambiano corsia: schiva quello che c'è in strada.\n* Tieni premuto {ok} per andare più veloce.\n* Alle fermate stai nella corsia in alto e lascia {ok}: ti fermi da solo sul segno giallo. Se sbatti perdi tempo.\n* Più sei in orario, più guadagni."
 		"smistamento":
 			return "* Manda la richiesta al posto indicato dal mittente: CASA COMUNE, FERMATA CENTRALE o BOTTEGA DI RINA.\n* SINISTRA e DESTRA scelgono la destinazione. {ok} conferma.\n* Se il sistema propone un posto diverso: CONFERMA accetta la proposta; VERIFICA chiama il mittente e richiede tempo; SEGNALA lascia la richiesta ferma in attesa di controllo."
 	return "* Lavora."
@@ -250,18 +210,6 @@ func _start() -> void:
 		"pedal":
 			target = duration * 0.6
 			band = Vector2(0.55, 0.8 - d * 0.1)
-		"clean":
-			sponge = BOX.get_center()
-			target = 9.0 + d * 6.0
-		"calls":
-			target = 10.0 + d * 6.0
-		"scale":
-			target = 5.0 + d * 3.0
-			_new_weight()
-		"sort":
-			target = 12.0 + d * 8.0
-		"deliver":
-			target = 6.0 + d * 4.0
 		"helpdesk":
 			duration = 45.0
 			time_left = duration
@@ -283,6 +231,16 @@ func _start() -> void:
 			time_left = duration
 			target = roundf(duration / 3.75)
 			_sm_next()
+		"autobus":
+			var job: Dictionary = cfg.get("job", {})
+			var short := int(GameState.flags.get("c5_turni", 0)) >= int(job.get("short_after", 2))
+			duration = float(job.get("short_duration" if short else "duration", 34))
+			time_left = duration
+			var stops := int(job.get("fermate_brevi" if short else "fermate", 5))
+			target = float(stops)
+			bus = $Autobus
+			bus.visible = true
+			bus.call("avvia", self, stops)
 		"sportello":
 			var job: Dictionary = cfg.get("job", {})
 			sp_short = int(GameState.flags.get("c4_turni", 0)) >= int(job.get("short_after", 2))
@@ -311,89 +269,6 @@ func _process(delta: float) -> void:
 			band = Vector2(mid - half, mid + half)
 			if speed >= band.x and speed <= band.y:
 				score += delta
-		"clean":
-			if finger.x >= 0.0:
-				sponge = sponge.move_toward(finger, 260.0 * delta)
-			else:
-				var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-				sponge += v * 150.0 * delta
-			sponge = sponge.clamp(BOX.position + Vector2(10, 10), BOX.end - Vector2(10, 10))
-			spawn_t -= delta
-			if spawn_t <= 0.0 and stains.size() < 6:
-				spawn_t = maxf(0.5, 1.3 - d * 0.6)
-				stains.append({"pos": Vector2(randf_range(BOX.position.x + 20, BOX.end.x - 20), randf_range(BOX.position.y + 20, BOX.end.y - 20)), "life": 1.0, "age": 0.0})
-			for i in range(stains.size() - 1, -1, -1):
-				var s := stains[i]
-				s["age"] = float(s["age"]) + delta
-				if (s["pos"] as Vector2).distance_to(sponge) < 16.0:
-					s["life"] = float(s["life"]) - delta * 2.2
-					if int(t * 10) % 3 == 0:
-						Sound.sfx("step", 1.6)
-					if float(s["life"]) <= 0.0:
-						stains.remove_at(i)
-						score += 1.0
-						Sound.sfx("arcade/collect_3", 1.15, 4.0)
-						continue
-				if float(s["age"]) > 8.0 - d * 3.0:
-					stains.remove_at(i)
-					mistakes += 1
-					_flash(RED)
-					Sound.sfx("deny")
-		"calls":
-			call_t -= delta
-			if call_t <= 0.0:
-				call_t = maxf(0.55, 1.4 - d * 0.7)
-				var free := DIRS.filter(func(x: String) -> bool: return not ringing.has(x))
-				if not free.is_empty() and (ringing.size() < 1 + int(d * 2.0)):
-					var dir: String = free.pick_random()
-					ringing[dir] = maxf(0.9, 2.0 - d * 0.9)
-					Sound.sfx("ding", DIR_PITCH[dir])
-			for dir: String in ringing.keys():
-				ringing[dir] = float(ringing[dir]) - delta
-				if float(ringing[dir]) <= 0.0:
-					ringing.erase(dir)
-					mistakes += 1
-					_flash(RED)
-					Sound.sfx("deny")
-		"scale":
-			needle += needle_dir * (0.55 + d * 0.6) * delta
-			if needle > 1.0 or needle < 0.0:
-				needle = clampf(needle, 0.0, 1.0)
-				needle_dir = -needle_dir
-		"sort":
-			spawn_t -= delta
-			if spawn_t <= 0.0:
-				spawn_t = maxf(0.6, 1.4 - d * 0.6)
-				boxes.append({"y": BOX.position.y - 10.0, "red": randf() < 0.5})
-			for i in range(boxes.size() - 1, -1, -1):
-				boxes[i]["y"] = float(boxes[i]["y"]) + (60.0 + d * 50.0) * delta
-				if float(boxes[i]["y"]) > BOX.end.y - 14:
-					boxes.remove_at(i)
-					mistakes += 1
-					_flash(RED)
-					Sound.sfx("deny")
-		"deliver":
-			crash_t = maxf(0.0, crash_t - delta)
-			spawn_t -= delta
-			if spawn_t <= 0.0:
-				spawn_t = maxf(0.45, 1.0 - d * 0.45)
-				road.append({"x": BOX.end.x + 20, "lane": randi() % 3, "parcel": randf() < 0.35})
-			for i in range(road.size() - 1, -1, -1):
-				var o := road[i]
-				o["x"] = float(o["x"]) - (130.0 + d * 90.0) * delta
-				if absf(float(o["x"]) - (BOX.position.x + 60)) < 16 and int(o["lane"]) == lane:
-					road.remove_at(i)
-					if o["parcel"]:
-						score += 1.0
-						Sound.sfx("coin")
-					elif crash_t <= 0.0:
-						mistakes += 1
-						crash_t = 1.0
-						_flash(RED)
-						Sound.sfx("hurt")
-					continue
-				if float(o["x"]) < BOX.position.x - 20:
-					road.remove_at(i)
 		"helpdesk":
 			hd_t -= delta
 			if hd_t <= 0.0:
@@ -423,7 +298,8 @@ func _process(delta: float) -> void:
 			_sp_process(delta)
 		"smistamento":
 			_sm_process(delta)
-	_info.text = "Tempo %d   Fatto %d/%d   Errori %d" % [int(ceil(time_left)), int(score), int(ceil(target)), mistakes]
+	if game != "autobus":
+		_info.text = "Tempo %d   Fatto %d/%d   Errori %d" % [int(ceil(time_left)), int(score), int(ceil(target)), mistakes]
 	if game == "cassa":
 		_info.text += "   Sovrapprezzi passati %d" % cs_accepted
 	if time_left <= 0.0:
@@ -439,12 +315,8 @@ func touch_scheme() -> String:
 	if arcade:
 		return arcade.touch_scheme()
 	match game:
-		"pedal", "sort":
+		"pedal":
 			return "halves"
-		"calls":
-			return "dirs"
-		"scale":
-			return "tap"
 	return "point"
 
 
@@ -461,6 +333,8 @@ func touch_point(pos: Vector2, step: int) -> void:
 		arcade.touch_point(pos, step)
 		return
 	match game:
+		"autobus":
+			bus.call("touch_point", pos, step)
 		"smistamento":
 			if step != 0 or sm_phase != "read":
 				return
@@ -499,15 +373,6 @@ func touch_point(pos: Vector2, step: int) -> void:
 					if _hd_button(k).grow(4).has_point(pos):
 						_hd_answer(k)
 						return
-		"clean":
-			finger = pos if step != 2 else Vector2(-1, -1)
-		"deliver":
-			if step == 0:
-				var lane_h := (BOX.size.y - 20) / 3.0
-				var want := clampi(int((pos.y - BOX.position.y - 10) / lane_h), 0, 2)
-				if want != lane:
-					lane = want
-					Sound.sfx("move")
 
 
 func flash_now(col: Color) -> void:
@@ -533,6 +398,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		arcade.input(event)
 		return
 	match game:
+		"autobus":
+			bus.call("input", event)
 		"smistamento":
 			if event is InputEventMouseButton and (event as InputEventMouseButton).pressed and not TouchControls.enabled:
 				touch_point((event as InputEventMouseButton).position, 0)
@@ -576,55 +443,6 @@ func _unhandled_input(event: InputEvent) -> void:
 						speed = minf(1.0, speed + 0.075 - d * 0.015)
 						Sound.sfx("pedal", 0.8 + speed * 0.6)
 					last_side = side
-		"calls":
-			for dir: String in DIRS:
-				if event.is_action_pressed("move_" + dir):
-					if ringing.has(dir):
-						ringing.erase(dir)
-						score += 1.0
-						Sound.sfx("select", DIR_PITCH[dir])
-						_flash(GREEN)
-					else:
-						mistakes += 1
-						_flash(RED)
-						Sound.sfx("deny")
-		"scale":
-			if event.is_action_pressed("confirm"):
-				var tol := 0.07 - d * 0.03
-				if absf(needle - wanted) <= tol:
-					score += 1.0
-					Sound.sfx("coin")
-					_flash(GREEN)
-				else:
-					mistakes += 1
-					Sound.sfx("deny")
-					_flash(RED)
-				_new_weight()
-		"sort":
-			for side in ["left", "right"]:
-				if event.is_action_pressed("move_" + side) and not boxes.is_empty():
-					var b := boxes[0]
-					# la scatola più avanti sul nastro
-					for bb in boxes:
-						if float(bb["y"]) > float(b["y"]):
-							b = bb
-					var ok: bool = (side == "left") == bool(b["red"])
-					boxes.erase(b)
-					if ok:
-						score += 1.0
-						Sound.sfx("blip", 1.2)
-						_flash(GREEN)
-					else:
-						mistakes += 1
-						Sound.sfx("deny")
-						_flash(RED)
-		"deliver":
-			if event.is_action_pressed("move_up"):
-				lane = maxi(0, lane - 1)
-				Sound.sfx("move")
-			elif event.is_action_pressed("move_down"):
-				lane = mini(2, lane + 1)
-				Sound.sfx("move")
 		"helpdesk":
 			if hd_phase == "ring":
 				for k in 3:
@@ -1040,12 +858,6 @@ func _cs_correct() -> void:
 	Sound.sfx("select")
 
 
-func _new_weight() -> void:
-	wanted = randf_range(0.15, 0.85)
-	needle = 0.0 if randf() < 0.5 else 1.0
-	needle_dir = 1.0 if needle == 0.0 else -1.0
-
-
 func _finish() -> void:
 	phase = "end"
 	if game == "steal":
@@ -1071,6 +883,14 @@ func _finish() -> void:
 		GameState.flags["c5_trovate"] = int(GameState.flags.get("c5_trovate", 0)) + sm_found
 		GameState.flags["c5_sbagliate"] = int(GameState.flags.get("c5_sbagliate", 0)) + sm_wrong
 		GameState.flags["c5_confermate"] = int(GameState.flags.get("c5_confermate", 0)) + sm_confirmed
+	elif game == "autobus":
+		# in orario si arriva fino a "pay_max"
+		var top := int((cfg.get("job", {}) as Dictionary).get("pay_max", base))
+		if ratio >= 1.0:
+			pay = base + int(round((top - base) * clampf((ratio - 1.0) / 0.25, 0.0, 1.0)))
+		GameState.flags["c5_turni"] = int(GameState.flags.get("c5_turni", 0)) + 1
+		GameState.flags["c5_fermate"] = int(GameState.flags.get("c5_fermate", 0)) + int(bus.get("fatte"))
+		GameState.flags["c5_urti"] = int(GameState.flags.get("c5_urti", 0)) + int(bus.get("urti"))
 	elif game == "sportello":
 		# CHEAP paga le pratiche chiuse: chi va più veloce dell'obiettivo arriva fino a "pay_max"
 		var top := int((cfg.get("job", {}) as Dictionary).get("pay_max", base))
@@ -1120,6 +940,10 @@ func result_lines(ratio: float, pay: int) -> Array:
 		lines.append("* Turno finito. Dieci ore della tua vita.")
 	if game == "pedal":
 		lines.append("* Secondi nella fascia corretta: %d. Errori registrati: %d." % [int(score), mistakes])
+	elif game == "autobus" and bus:
+		lines.append("* Fermate fatte bene: %d su %d. Frenate brusche: %d. Fermate saltate: %d. Urti: %d." % [
+			int(bus.get("fatte")), int(target), int(bus.get("brusche")), int(bus.get("saltate")), int(bus.get("urti"))])
+		lines.append("* Capolinea in orario." if bool(bus.get("finito")) else "* Il turno è finito prima del capolinea: in ritardo.")
 	else:
 		lines.append("* Operazioni completate: %d. Errori registrati: %d." % [int(score), mistakes])
 	lines.append("* Paga: %s." % GameState.euros(pay))
@@ -1168,16 +992,6 @@ func _draw() -> void:
 	match game:
 		"pedal":
 			_draw_pedal(font)
-		"clean":
-			_draw_clean()
-		"calls":
-			_draw_calls(font)
-		"scale":
-			_draw_scale(font)
-		"sort":
-			_draw_sort(font)
-		"deliver":
-			_draw_deliver()
 		"helpdesk":
 			_draw_helpdesk(font)
 		"sportello":
@@ -1323,98 +1137,3 @@ func _draw_drin(font: Font) -> void:
 	draw_string(font, Vector2(0, BOX.position.y - 6), "SQUILLANO TUTTI", HORIZONTAL_ALIGNMENT_CENTER, 640, 11, RED)
 
 
-func _draw_clean() -> void:
-	for y in range(int(BOX.position.y) + 4, int(BOX.end.y) - 4, 20):
-		for x in range(int(BOX.position.x) + 4, int(BOX.end.x) - 4, 20):
-			var base := Color("bed0d2") if (x / 20 + y / 20) % 2 == 0 else Color("a6bec7")
-			draw_rect(Rect2(x, y, 18, 18), base)
-			draw_rect(Rect2(x, y, 18, 1), base.lightened(0.12))
-	for s in stains:
-		var p: Vector2 = s["pos"]
-		var k := clampf(float(s["life"]), 0.0, 1.0)
-		var dry := float(s["age"]) / (8.0 - d * 3.0)
-		Art.stain(self, p, 6 + 8 * k, Color("88684d").lerp(Color("55414a"), dry))
-	Art.sponge(self, sponge)
-
-
-func _draw_calls(font: Font) -> void:
-	Art.panel(self, BOX.grow(-5), Color("354152"), Color("7e9caa"))
-	var c := BOX.get_center()
-	var pos := {"up": c + Vector2(0, -60), "down": c + Vector2(0, 60), "left": c + Vector2(-110, 0), "right": c + Vector2(110, 0)}
-	for dir: String in DIRS:
-		var p: Vector2 = pos[dir]
-		var on := ringing.has(dir)
-		var shake := Vector2(round(sin(t * 50) * 2), 0) if on else Vector2.ZERO
-		Art.phone(self, p + shake, on, Color("b9bdc3"))
-		_arrow(p + Vector2(0, 28) if dir != "down" else p + Vector2(0, -25), dir, 6, YELLOW if on else Color("8194a6"))
-		if on:
-			var left := float(ringing[dir]) / maxf(0.9, 2.0 - d * 0.9)
-			draw_rect(Rect2(p + Vector2(-20, 22) + (Vector2(0, -46) if dir == "down" else Vector2.ZERO), Vector2(40 * left, 3)), GREEN)
-	draw_string(font, Vector2(c.x - 100, c.y + 6), "\"Grazie per la sua pazienza\"", HORIZONTAL_ALIGNMENT_CENTER, 200, 10, Art.CREAM)
-
-
-func _draw_scale(font: Font) -> void:
-	Art.panel(self, BOX.grow(-5), Color("d3c5a6"), Color("8fa9b3"))
-	var c := Vector2(BOX.get_center().x, BOX.end.y - 43)
-	var r := 105.0
-	for i in 41:
-		var a0 := PI + PI * i / 40.0
-		var a1 := PI + PI * (i + 1) / 40.0
-		draw_line(c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r, Color("626b7a"), 10)
-	for i in 21:
-		var a := PI + PI * i / 20.0
-		draw_line(c + Vector2(cos(a), sin(a)) * (r - 8), c + Vector2(cos(a), sin(a)) * r, Art.CREAM, 2)
-	var aw := PI + PI * wanted
-	draw_line(c + Vector2(cos(aw), sin(aw)) * (r - 16), c + Vector2(cos(aw), sin(aw)) * (r + 5), Art.INK, 8)
-	draw_line(c + Vector2(cos(aw), sin(aw)) * (r - 16), c + Vector2(cos(aw), sin(aw)) * (r + 5), YELLOW, 4)
-	var an := PI + PI * needle
-	draw_line(c, c + Vector2(cos(an), sin(an)) * (r - 18), RED, 3)
-	draw_circle(c, 7, Art.INK)
-	draw_circle(c, 4, Art.CREAM)
-	Art.panel(self, Rect2(c.x - 57, c.y + 15, 114, 12), Color("8b9eae"), Color("d6e4de"))
-	for i in 4:
-		Art.fruit(self, c + Vector2(-34 + i * 22, 9), [Color("df6355"), Color("e8a348"), Color("7caa68"), Color("df6355")][i])
-	draw_string(font, Vector2(BOX.position.x, BOX.position.y + 23), "Il cliente vuole: %d grammi" % int(round(wanted * 1000)), HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 13, Art.INK)
-
-
-func _draw_sort(font: Font) -> void:
-	Art.panel(self, BOX.grow(-5), Color("3c4c5e"), Color("859cae"))
-	var cx := BOX.get_center().x
-	Art.panel(self, Rect2(cx - 35, BOX.position.y + 5, 70, BOX.size.y - 10), Color("303543"), Color("97a6b5"))
-	for y in range(int(BOX.position.y) + int(fmod(t * 60, 16)), int(BOX.end.y) - 4, 16):
-		draw_rect(Rect2(cx - 28, y, 56, 2), Color("505b69"))
-	Art.carton(self, Rect2(BOX.position.x + 20, BOX.end.y - 50, 70, 40), RED, true)
-	Art.carton(self, Rect2(BOX.end.x - 90, BOX.end.y - 50, 70, 40), BLUE, true)
-	draw_string(font, Vector2(BOX.position.x + 20, BOX.end.y - 56), "ROSSE <", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, RED)
-	draw_string(font, Vector2(BOX.end.x - 90, BOX.end.y - 56), "> BLU", HORIZONTAL_ALIGNMENT_CENTER, 70, 12, BLUE)
-	for b in boxes:
-		Art.carton(self, Rect2(cx - 14, float(b["y"]) - 12, 28, 24), RED if b["red"] else BLUE)
-
-
-func _draw_deliver() -> void:
-	var lane_h := (BOX.size.y - 20) / 3
-	draw_rect(BOX.grow(-3), Color("6c7d83"))
-	for i in 3:
-		var y := BOX.position.y + 10 + i * lane_h
-		draw_rect(Rect2(BOX.position.x + 4, y, BOX.size.x - 8, lane_h - 2), Color("3c4654"))
-		for x in range(int(BOX.position.x) + 4 - int(fmod(t * 160, 40)) + 40, int(BOX.end.x) - 8, 40):
-			draw_rect(Rect2(x, y + lane_h - 3, 18, 2), Art.CREAM)
-	for o in road:
-		var y := BOX.position.y + 10 + int(o["lane"]) * lane_h + lane_h / 2
-		var x := float(o["x"])
-		if o["parcel"]:
-			Art.carton(self, Rect2(x - 8, y - 8, 16, 14))
-		else:
-			Art.car(self, Rect2(x - 20, y - 9, 40, 18))
-	var by := BOX.position.y + 10 + lane * lane_h + lane_h / 2
-	var bx := BOX.position.x + 60
-	var blink := crash_t > 0 and int(t * 12) % 2 == 0
-	if not blink: Art.courier(self, Vector2(bx, by), t)
-
-
-func _arrow(c: Vector2, dir: String, r: float, col: Color) -> void:
-	var pts := PackedVector2Array([Vector2(0, -r), Vector2(r, r * 0.6), Vector2(-r, r * 0.6)])
-	var ang := {"up": 0.0, "right": PI / 2, "down": PI, "left": -PI / 2}[dir] as float
-	for i in pts.size():
-		pts[i] = c + pts[i].rotated(ang)
-	draw_colored_polygon(pts, col)

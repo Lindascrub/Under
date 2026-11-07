@@ -285,8 +285,6 @@ func interact() -> void:
 	# un torto della missione del Capo si può riparare tornando da chi l'ha subito (scripts/storia.gd)
 	if await Storia.offer_repair(id, who):
 		return
-	if await Quests.handle_npc(self):
-		return
 	# la stanza può avere qualcosa di speciale da far dire a questa persona (talk_<id>)
 	var room := get_tree().current_scene
 	if room and room.has_method("talk_" + id) and await room.call("talk_" + id, self):
@@ -321,11 +319,6 @@ func interact() -> void:
 		if await _offer_replay(who):
 			return
 	await Ui.say(_lines(), who)
-	if id == "nico" and GameState.flags.get("coffee_day", 0) != GameState.day:
-		GameState.flags["coffee_day"] = GameState.day
-		GameState.give_item("Caffè di Nico")
-		Sound.sfx("heal")
-		await Ui.say(["Tieni, offre la casa. Ne hai bisogno.", "* (Hai ricevuto: Caffè di Nico. Usalo dal menu con C.)"], who)
 	await _offer_encounter(who)
 
 
@@ -345,8 +338,6 @@ func _lines() -> Array:
 	if not GameState.flags.get(met_key, false) and data.has("intro"):
 		GameState.flags[met_key] = true
 		return data["intro"]
-	if id == "nico":
-		return GameState.nico_lines()
 	if id in GameState.freed and data.has("motive"):
 		return data["motive"].get("freed_lines", ["..."])
 	if id in GameState.helped_ids and data.has("helped"):
@@ -355,33 +346,11 @@ func _lines() -> Array:
 	return days[clampi(GameState.day - 1, 0, days.size() - 1)]
 
 
-## Come in Undertale: invece di combattere, la persona ti "attacca" coi suoi problemi.
-## Chi non ha una battaglia ti chiede direttamente una mano (minigioco a sorpresa).
+## La persona ti chiede una mano (minigioco a sorpresa).
 func _offer_encounter(who: String) -> void:
 	if not GameState.can_meet(id):
 		return
-	if not data.has("battle"):
-		await _offer_help(who)
-		return
-	if not GameState.has_time(GameState.COST_LISTEN):
-		return
-	var choice: int = await Ui.choose(str(data["battle"].get("hook", "Sembra che abbia bisogno di sfogarsi.")),
-		["Ascolta (1 ora)", "Saluta e vai"], who)
-	if choice != 0:
-		return
-	GameState.met_today.append(id)
-	GameState.spend(GameState.COST_LISTEN)
-	var cfg: Dictionary = (data["battle"] as Dictionary).duplicate(true)
-	cfg["kind"] = "person"
-	cfg["id"] = id
-	cfg["name"] = who
-	cfg["sheet"] = data.get("sheet", "char_02")
-	cfg["help"] = data.get("help", {})
-	if data.has("motive"):
-		cfg["motive"] = data["motive"]
-	cfg["return"] = get_tree().current_scene.scene_file_path
-	cfg["return_pos"] = (get_tree().get_first_node_in_group("player") as Node2D).global_position
-	Router.battle(cfg)
+	await _offer_help(who)
 
 
 func _offer_help(who: String) -> void:

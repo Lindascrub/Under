@@ -116,8 +116,12 @@ func _counters() -> void:
 	for target in get_tree().get_nodes_in_group("interactable"):
 		if not target is Interactable or target.approach != Vector2.DOWN: continue
 		var at: Vector2 = target.hotspot()
-		p.position = at + Vector2(0, 24); p.facing = "up"
-		_check(p._find_target() == target, str(target.name)+" not reachable from front")
+		var ok := false
+		for distance in range(6, 33, 2):
+			p.position = at + Vector2(0, distance); p.facing = "up"
+			if _feet_clear(p) and p._find_target() == target:
+				ok = true; break
+		_check(ok, str(target.name)+" not reachable from front")
 		p.position = at + Vector2(0, -8); p.facing = "down"
 		_check(p._find_target() != target, str(target.name)+" works from behind")
 	p.position = old
@@ -156,7 +160,7 @@ func _seats() -> void:
 		var seat := node as Seat
 		var reachable := false
 		for dir in ["up", "down", "left", "right"]:
-			for distance in [16,18,20,22,24,26]:
+			for distance in range(2, 27, 2):
 				p.position = seat.hotspot() - (Player.FACING_VECTORS[dir] as Vector2) * distance + Vector2(0, 6)
 				p.facing = dir
 				if _feet_clear(p) and p._find_target() == seat:

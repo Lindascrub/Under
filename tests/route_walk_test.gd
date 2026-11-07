@@ -1,7 +1,7 @@
 extends "res://tests/smoke_test.gd"
-## Test automatico: gioca dal Fondo alla Banca nelle tre strade (comunismo, capitalismo, baratto),
+## Test automatico: gioca dal Fondo alla Banca in due modi (aiutando le persone, o sfruttandole),
 ## poi scende e risale le scale più volte. Le scale si fanno a piedi (tasti premuti), i turni con il
-## minigioco vero; la scelta della strada è data a GameState (sfruttare, liberare, aiutare).
+## minigioco vero; aiutare o sfruttare è dato a GameState.
 ## Esegui:  Godot --headless --path . res://tests/route_walk_test.tscn
 ## Alla fine stampa "ROUTE WALK OK" oppure gli errori trovati.
 
@@ -27,12 +27,12 @@ var _missions := {}
 
 
 ## L'incarico del Capo (boss_mission): lo si fa come in tests/boss_playthrough_test.gd, con la
-## scorciatoia solo sulla strada del capitalismo.
+## scorciatoia solo quando si sfrutta.
 func _process(delta: float) -> void:
 	var sc := get_tree().current_scene
 	if sc and sc.scene_file_path == B.SCENE and not Ui.transitioning and not Ui.busy and _frame % 10 == 0 			and not _missions.has(sc.get_instance_id()):
 		_missions[sc.get_instance_id()] = true
-		_drive_mission(sc, _route == "capitalismo")
+		_drive_mission(sc, _route == "sfruttare")
 	if sc and sc.scene_file_path == B.SCENE and _frame % 600 == 0:
 		print("  [incarico aperto] busy=", Ui.busy, " trans=", Ui.transitioning, " fatto=", _missions.has(sc.get_instance_id()), " floor=", sc.get("floor"), " msg=", sc.get("msg"), " fin=", sc.get("finishing"))
 	super(delta)
@@ -66,7 +66,7 @@ func _drive_mission(m: Node, exploit: bool) -> void:
 
 
 func _run() -> void:
-	for route in ["comunismo", "capitalismo", "baratto"]:
+	for route in ["aiutare", "sfruttare"]:
 		await _play_route(route)
 	if _failures.is_empty():
 		print("ROUTE WALK OK")
@@ -92,7 +92,6 @@ func _play_route(route: String) -> void:
 		await _play_floor(route, i)
 		await _climb(i)
 	_check(_scene_path() == Router.BANCA, route + ": non si arriva alla Banca")
-	_check(GameState.route() == route, route + ": la strada è diventata " + GameState.route())
 	# su e giù: Banca -> Mercato -> Banca -> ... -> Fondo -> Banca, due volte
 	for round_ in 2:
 		await _descend(3)
@@ -106,7 +105,6 @@ func _play_route(route: String) -> void:
 			at += 1
 		_check(_scene_path() == Router.BANCA, "%s: giro %d, non si torna alla Banca (sono in %s)" % [route, round_, _scene_path()])
 	# alla fine della corsa: ancora tutto al suo posto
-	_check(GameState.route() == route, route + ": dopo su e giù la strada è cambiata in " + GameState.route())
 	for f in ["c1_rivelazione", "c2_rivelazione", "c3_rivelazione"]:
 		_check(GameState.flags.get(f, false), route + ": manca " + f)
 
@@ -141,27 +139,15 @@ func _play_floor(route: String, i: int) -> void:
 		if person != "" and person not in ids:
 			ids.append(person)
 	for id in ids:
-		if id in GameState.workers() and not GameState.is_robot(id):
+		if not GameState.is_robot(id):
 			who = id
 			break
-	# nessun "lavoratore" (data/npcs.json, campo motive) su questo piano: la scelta cade su chi c'è
-	if who == "":
-		for id in ids:
-			if not GameState.is_robot(id):
-				who = id
-				break
-	print("  scelta della strada al ", FLOOR_IDS[i], ": ", who)
-	match route:
-		"capitalismo":
-			# l'incarico del capo c'è solo su qualche piano: si sfrutta anche qui, come si libera e si aiuta
-			if who != "":
-				GameState.exploit(who, 0)
-		"baratto":
-			if who != "":
-				GameState.free_npc(who)
-		"comunismo":
-			if who != "":
-				GameState.help(who, "time", 0)
+	print("  ", route, " al ", FLOOR_IDS[i], ": ", who)
+	if who != "":
+		if route == "sfruttare":
+			GameState.exploit(who, 0)
+		else:
+			GameState.help(who, "time", 0)
 	# i turni: veri, uno al giorno
 	var need: String = FLOOR_IDS[i + 1]
 	var turns := 0
@@ -177,7 +163,7 @@ func _play_floor(route: String, i: int) -> void:
 		turns += 1
 	if path == Router.SOTTOUFFICIO and not GameState.flags.get("c2_modulo_ok", false):
 		# il B-4: consegnato (firmato da Ercole, timbrato da Tilde) o, per chi ha fretta, pagato
-		choose_queue = [1] if route == "capitalismo" else [0]
+		choose_queue = [1] if route == "sfruttare" else [0]
 		_room().call("_agenda")
 		await _back_to(path)
 		_check(GameState.flags.get("c2_modulo_ok", false), route + ": il Modulo B-4 non si timbra")
@@ -230,7 +216,7 @@ func _climb(i: int) -> void:
 	if exit == Vector2.INF:
 		_fail("%s: niente scale in su" % FLOOR_IDS[i])
 		return
-	if i == 0 and _route != "capitalismo" and not GameState.flags.get("c1_rivelazione", false):
+	if i == 0 and _route != "sfruttare" and not GameState.flags.get("c1_rivelazione", false):
 		# il primo gradino accende la rivelazione; poi si torna giù ad ascoltare Fermo (le scale restano aperte)
 		await _back_to(room.scene_file_path)
 		room.player.position = exit + Vector2(0, 20)
@@ -266,7 +252,7 @@ func _descend(i: int) -> bool:
 	if pos == Vector2.INF:
 		# al posto delle scale il buco sbarrato: succede solo se dal Fondo sei salito senza voltarti
 		_check(i == 1 and GameState.flags.get("c1_sbarrato", false), "%s: scale in giù senza gradini" % FLOOR_IDS[i])
-		_check(_route == "capitalismo", _route + ": il Fondo è sbarrato anche se hai ascoltato Fermo")
+		_check(_route == "sfruttare", _route + ": il Fondo è sbarrato anche se hai ascoltato Fermo")
 		return false
 	var dir := "move_down" if pos.y > exit.y else "move_up"
 	await _walk(room, exit + (exit - pos).normalized() * 18.0, dir, target)

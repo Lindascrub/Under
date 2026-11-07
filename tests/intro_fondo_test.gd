@@ -4,7 +4,7 @@ var letti: Array[String] = []
 
 
 func _process(delta: float) -> void:
-	for key: String in ["_label", "_narr"]:
+	for key: String in ["_label", "_narr", "_choice_label"]:
 		var label: Label = Ui.get(key)
 		if Ui.busy and is_instance_valid(label) and label.text not in letti:
 			letti.append(label.text)
@@ -38,16 +38,16 @@ func _run() -> void:
 	_check(_letto("Acuta, contentissima"), "voce registrata chiara")
 	_check(_letto("Alla fine premi l’allarme"), "allarme ascensore")
 	_check(_letto("fin troppo abbaglianti"), "le porte danno sulle luci")
-	_check(_letto("Sussurri il tuo nome: LUCA"), "nome scelto dal giocatore")
+	_check(_letto("Piacere, io sono LUCA"), "nome scelto dal giocatore (detto da lui, di lato)")
 	_check(_letto("Io ho iniziato con nove. Ora ne devo undici."), "nuovo debito di Fermo")
 	_check(_letto("Quanto ti hanno messo di debito?"), "domanda sul debito chiara")
 	_check(_letto("Quelli non saltano mai un turno"), "interessi spiegati da Fermo")
 	_check(_letto("Il prezzo te lo dice lei"), "prezzo affidato a Nives")
 	_check(_letto("Se ti perdi, almeno me mi ritrovi."), "ultima battuta nuova")
-	_check(_letto("TORRE CHEAP"), "titolo prima dell'ascensore")
+	_check(_letto("CHEAP srl."), "titolo prima dell'ascensore")
 	_check(_letto("Salva e lascia passare la notte"), "tutorial: scelta esatta per passare al giorno dopo")
-	_check(_letto("Nives per il badge. Scale per salire"), "tutorial: badge e scale spiegati")
-	_check(_letto("Mina è l’elettricista") and _letto("Bulbo è il nonno"), "identità corrette dei personaggi")
+	_check(_letto("Lo vende Nives, vicino alle scale"), "tutorial: badge e scale spiegati")
+	_check(_letto("Mina, quella ai fili") and _letto("Bulbo, quello alle lampadine"), "identità corrette dei personaggi")
 	_check(not _letto("ne dovevo quattro") and not _letto("con un nastrino") and not _letto("Come un dente"), "vecchie battute eliminate")
 	_check(GameState.flags.get("fermo_talked", false) and GameState.flags.get("met_fermo", false), "Fermo conosciuto e tutorial concluso")
 	_check(GameState.debt == GameState.START_DEBT and GameState.money == 0, "l'apertura non cambia i conti")

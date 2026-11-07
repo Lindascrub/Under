@@ -109,7 +109,7 @@ Tutti i numeri sono in **un posto solo**:
 
 | Cosa | Valore | Dove |
 |---|---|---|
-| Paga del TURNO | 120 € (fissa: niente moltiplicatore del piano) | `data/worklist.json`, `cassa_mercato.battle.pay` |
+| Paga del TURNO | 120 € (fissa: niente moltiplicatore del piano) | `data/worklist.json`, `cassa_mercato.turno.pay` |
 | Bonus massimo del TURNO | fino a 160 € (chi supera l'obiettivo) | `pay_max` |
 | Durata del TURNO | 40 s; dal 4° turno "turno breve" di 24 s, stessa paga | `duration`, `short_duration`, `short_after` |
 | Sovrapprezzi | dal 2° turno | `mismatch_from` |
@@ -183,7 +183,7 @@ avanti e indietro, robot è immobile e i clienti si muovono il doppio più veloc
 ## Uscita
 
 Badge del -2 (comprato, regalato o col contratto) → primo gradino (scontrino) → in cima (sguardo indietro,
-salvataggio) → la Banca (`scenes/world/banca.gd`, ancora la versione vecchia). Dalla Banca si scende al Mercato.
+salvataggio) → la Banca (`chapters/c4/banca.tscn`). Dalla Banca si scende al Mercato.
 
 ## Test e criteri di accettazione
 

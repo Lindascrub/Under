@@ -194,6 +194,19 @@ offset_bottom = 14
 mouse_filter = 2
 color = Color(0.01961, 0.01569, 0.03922, 1)
 
+[node name="LuceFuori" type="ColorRect" parent="Cabina/Porte"]
+offset_right = 192.0
+offset_bottom = 14.0
+mouse_filter = 2
+color = Color(1, 0.96, 0.78, 1)
+
+[node name="Bagliore" type="ColorRect" parent="Cabina/Porte/LuceFuori"]
+offset_left = 56.0
+offset_top = -46.0
+offset_right = 136.0
+mouse_filter = 2
+color = Color(1, 0.95, 0.7, 0.18)
+
 [node name="PortaSinistra" type="ColorRect" parent="Cabina/Porte"]
 offset_left = 0
 offset_top = 0

@@ -12,7 +12,6 @@ const ELEVATOR := "res://scenes/world/elevator_intro.tscn"
 const FONDO := "res://chapters/c1/fondo.tscn"
 const MINIGAME := "res://scenes/minigame/minigame.tscn"
 const WORK := "res://scenes/minigame/work.tscn"
-const BATTLE := "res://scenes/battle/battle.tscn"
 ## Il capitolo 6: la Cima, il TURNO di Direzione, il finale (con epiloghi e titoli di coda).
 const CIMA := "res://chapters/c6/cima.tscn"
 const DIREZIONE := "res://chapters/c6/direzione.tscn"
@@ -43,16 +42,6 @@ func goto(path: String, spawn_name: String = "", narration: Array = []) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await Ui.fade_in()
-
-
-## Avvia una battaglia. Alla fine si torna a `cfg.return` / `cfg.spawn`.
-func battle(cfg: Dictionary) -> void:
-	if Ui.transitioning:
-		return
-	GameState.battle = cfg
-	Sound.sfx("encounter")
-	Sound.music("")
-	goto(BATTLE)
 
 
 ## Un minigioco "a sorpresa" quando aiuti qualcuno. Alla fine si torna dove si era.

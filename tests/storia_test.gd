@@ -156,21 +156,21 @@ func _test_citta() -> void:
 	# il centralino: solo con la richiesta di verifica, una volta sola; SEGNALA = la porti a mano
 	var m := await _c5_reset()
 	choose_queue = [1]
-	m = await _c5_call(m, "_station", [job])
+	m = await _c5_call(m, "_centralino")
 	_check(not GameState.flags.has("c5_richiesta") and Storia.richiesta() == "", "senza richiesta il centralino non mostra niente")
 	m = await _c5_reset()
 	GameState.flags["c4_verifica"] = true
 	_check(Storia.richiesta() == "direzione", "la richiesta non ancora smistata va dove l'ha mandata la Banca")
 	choose_queue = [2]
-	m = await _c5_call(m, "_station", [job])
+	m = await _c5_call(m, "_centralino")
 	_check(Storia.richiesta() == "a_mano" and Storia.richiesta_arrivata() and not GameState.worked_today, "SEGNALA: la richiesta resta a te e la porti a mano")
 	choose_queue = [1]
-	m = await _c5_call(m, "_station", [job])
+	m = await _c5_call(m, "_centralino")
 	_check(Storia.richiesta() == "a_mano", "il centralino la mostra una volta sola")
 	m = await _c5_reset()
 	GameState.flags["c4_verifica"] = true
 	choose_queue = [0]
-	m = await _c5_call(m, "_station", [job])
+	m = await _c5_call(m, "_centralino")
 	_check(Storia.richiesta() == "archivio" and not Storia.richiesta_arrivata(), "CONFERMA: in archivio, non arriva")
 
 	# le offerte: ognuna dal suo dialogo

@@ -3,7 +3,7 @@ extends Node
 ## Si sale la torre un piano alla volta: per passare al piano di sopra serve il suo badge,
 ## che si compra pagando una parte del debito (vedi FLOORS). I giorni non sono contati:
 ## il tempo passa, e ogni notte il debito cresce un po'.
-## Le regole dei tre finali sono in route().
+## I finali li sceglie chapters/c6/finali.gd.
 
 signal changed
 
@@ -13,8 +13,6 @@ var save_path := SAVE_PATH
 const START_DEBT := 7_000_000_000
 const DAILY_INTEREST := 0.02
 const MIN_PAYMENT := 150
-const LATE_FEE := 100
-const LAST_DAY := 4
 const MAX_ENERGY := 20
 ## La giornata va dalle 7:00 a mezzanotte. Il tempo è in minuti dall'inizio del giorno.
 const DAY_START := 7 * 60
@@ -46,7 +44,6 @@ const ROBOT_LINES: Array[String] = [
 ]
 
 const ITEMS := {
-	"Caffè di Nico": {"energy": 8, "text": "* Bevi il caffè di Nico. Sa di bruciato e di amicizia."},
 	"Panino": {"energy": 12, "text": "* Mangi il panino. Un po' schiacciato, ma buono."},
 	"Barretta": {"energy": 5, "text": "* Mangi la barretta. Sa di cartone al cioccolato."},
 	"Acqua economica": {"energy": 3, "text": "* Bevi l'acqua economica. Sa di plastica e di niente. Però era bagnata."},
@@ -82,7 +79,6 @@ var energy := MAX_ENERGY
 var rank := 0
 var exploited := 0
 var hard_work := 0
-var refused := 0
 var helped := 0
 var items: Array[String] = []
 var robots: Array[String] = []
@@ -91,22 +87,15 @@ var met_today: Array[String] = []
 ## Chi hai aiutato oggi: per il resto della giornata fa altro (campo "after_help").
 var helped_today: Array[String] = []
 var flags: Dictionary = {}
-## Stato delle missioni (vedi scripts/quests.gd): id -> "active" | "found" | "done" | "failed".
-var quests: Dictionary = {}
-## Persone che hai convinto a smettere di lavorare (strada del baratto).
+## Persone che hanno smesso di lavorare (i finali ne tengono conto).
 var freed: Array[String] = []
-## Persone di cui conosci il "perché lavoro" (glielo hai chiesto in battaglia).
-var motives_known: Array[String] = []
 var worked_today := false
 ## Righe da mostrare appena il giocatore entra nella prossima stanza.
 var pending_lines: Array = []
-## Configurazione della prossima battaglia (vedi scenes/battle/battle.gd).
-var battle: Dictionary = {}
 ## Configurazione del prossimo minigioco (vedi scenes/minigame/minigame.gd).
 var minigame: Dictionary = {}
 
 var _npcs: Dictionary = {}
-var _jobs: Array = []
 var _worklist: Array = []
 var _promotions: Dictionary = {}
 ## Il Mercato (capitolo 3): prezzi prima e dopo l'aggiornamento, premi, fatture.
@@ -119,7 +108,6 @@ var city: Dictionary = {}
 
 func _ready() -> void:
 	_npcs = _load_json("res://data/npcs.json", {})
-	_jobs = _load_json("res://data/jobs.json", [])
 	_worklist = _load_json("res://data/worklist.json", [])
 	_promotions = _load_json("res://data/promotions.json", {})
 	market = _load_json("res://data/market.json", {})
@@ -150,7 +138,6 @@ func new_game() -> void:
 	rank = 0
 	exploited = 0
 	hard_work = 0
-	refused = 0
 	helped = 0
 	items.assign(["Panino"])
 	robots.clear()
@@ -162,12 +149,9 @@ func new_game() -> void:
 	# il numero della partita (per la memoria di Nives): lo dà il menu con "Nuova partita"
 	flags["run_id"] = ""
 	minigame.clear()
-	quests.clear()
 	freed.clear()
-	motives_known.clear()
 	worked_today = false
 	pending_lines.clear()
-	battle.clear()
 	changed.emit()
 
 
@@ -194,12 +178,6 @@ func npc_place(id: String) -> Dictionary:
 	if schedule.is_empty():
 		return {}
 	return schedule[clampi(day - 1, 0, schedule.size() - 1)]
-
-
-func job_today() -> Dictionary:
-	if _jobs.is_empty():
-		return {}
-	return _jobs[clampi(day - 1, 0, _jobs.size() - 1)]
 
 
 func rank_name() -> String:
@@ -263,12 +241,7 @@ func spend(cost: int) -> bool:
 	return rolled
 
 
-func is_midnight() -> bool:
-	return false
-
-
 func _new_day() -> void:
-	Quests.end_day()
 	var before := debt
 	debt += int(round(debt * interest_rate()))
 	debito_salito_stanotte = debt - before
@@ -293,11 +266,6 @@ func daylight() -> Color:
 
 
 # --- energia e oggetti ------------------------------------------------------
-
-func hurt(amount: int) -> void:
-	energy = maxi(0, energy - amount)
-	changed.emit()
-
 
 func restore(amount: int) -> void:
 	energy = mini(MAX_ENERGY, energy + amount)
@@ -337,15 +305,6 @@ func exploit(victim: String, pay: int) -> void:
 	changed.emit()
 
 
-## Firmare l'incarico facile del giorno: un'ora di "fatica", una persona in meno.
-func do_easy_job() -> int:
-	var pay := easy_pay()
-	exploit(str(job_today().get("victim", "")), pay)
-	worked_today = true
-	spend(COST_EASY_JOB)
-	return pay
-
-
 func finish_hard_job(pay: int) -> void:
 	money += pay
 	hard_work += 1
@@ -354,14 +313,6 @@ func finish_hard_job(pay: int) -> void:
 	# prima passano le 10 ore, poi si segna il turno: se il turno finisce dopo mezzanotte,
 	# conta per il giorno nuovo (prima il giorno nuovo cancellava il segno e si lavorava due volte)
 	spend(COST_HARD_JOB)
-	worked_today = true
-	changed.emit()
-
-
-func refuse_work() -> void:
-	if worked_today:
-		return
-	refused += 1
 	worked_today = true
 	changed.emit()
 
@@ -408,34 +359,6 @@ func pay_debt(amount: int) -> int:
 	return paid
 
 
-func end_day(paid_minimum: bool) -> void:
-	Quests.end_day()
-	var before := debt
-	if not paid_minimum and debt > 0:
-		debt += LATE_FEE
-	debt += int(round(debt * interest_rate()))
-	debito_salito_stanotte = debt - before
-	day += 1
-	minutes = DAY_START
-	energy = MAX_ENERGY
-	worked_today = false
-	met_today.clear()
-	helped_today.clear()
-	changed.emit()
-
-
-## Quale finale ha "meritato" il giocatore. Le tre strade sono tre sistemi economici:
-##   capitalismo -> hai sfruttato (comprato il tempo degli altri)
-##   baratto     -> hai liberato almeno una persona (il tempo si scambia, senza prezzo)
-##   comunismo   -> non hai spinto da nessuna parte: sei rimasto un ingranaggio (strada predefinita)
-func route() -> String:
-	if exploited >= 3 or (debt <= 0 and exploited >= 1):
-		return "capitalismo"
-	if not freed.is_empty():
-		return "baratto"
-	return "comunismo"
-
-
 # --- LV, stati delle persone, massa critica ---------------------------------
 
 ## Come il LV di Undertale: sale quando sfrutti. La promozione è il "level up".
@@ -452,15 +375,6 @@ func level_up_line() -> String:
 	return "* LEVEL UP! Il tuo LV è salito a %d. Il mondo ti sembra un po' più grigio." % lv()
 
 
-## Lavoratori: le persone che hanno un "perché lavoro" (campo "motive"). Solo loro si possono liberare.
-func workers() -> Array:
-	var out: Array = []
-	for id: String in npc_ids():
-		if npc_data(id).has("motive"):
-			out.append(id)
-	return out
-
-
 ## Stato di una persona: "sfruttato" (robot), "libero" (ha smesso) o "ingranaggio" (lavora come sempre).
 func npc_state(id: String) -> String:
 	if is_robot(id):
@@ -468,51 +382,6 @@ func npc_state(id: String) -> String:
 	if id in freed:
 		return "libero"
 	return "ingranaggio"
-
-
-func free_npc(id: String) -> void:
-	if id not in freed:
-		freed.append(id)
-	changed.emit()
-
-
-## Quanti lavoratori hai liberato, da 0 a 1.
-func freed_ratio() -> float:
-	var w := workers()
-	return 0.0 if w.is_empty() else float(freed.size()) / w.size()
-
-
-## Massa critica della strada del baratto: "pochi", "soglia" (il sistema crolla) o "quasi_tutti".
-func barter_level() -> String:
-	var r := freed_ratio()
-	if r >= 0.8:
-		return "quasi_tutti"
-	if r >= 0.5:
-		return "soglia"
-	return "pochi"
-
-
-## Le zone si ricordano cosa hai fatto: {zona: {"sfruttato": n, "libero": n, "ingranaggio": n}}.
-const ZONES := {
-	"sottoufficio": ["tilde", "ercole"],
-	"ufficio": ["dario", "giulia"],
-	"strada": ["marta", "sig_bruno", "lea", "ragazzo_sami", "portiere_ivo", "nico"],
-	"mercato": ["leda", "amir"],
-	"banca": ["olga", "teo"],
-	"citta": ["ada", "nadir", "rina"],
-	"parco": ["tano", "elsa", "rocco"],
-}
-
-
-# --- la mappa a livelli: ogni giorno si apre una zona nuova -----------------
-
-## Come le zone di Undertale: il Sottoufficio e il Quartiere dal primo giorno,
-## il Mercato dal secondo, la Banca dal terzo, la Cima (tuo padre) dal quarto.
-const AREA_FLOOR := {"sottoufficio": "-4", "mercato": "-3", "banca": "-2", "ufficio": "0", "cima": "cima"}
-
-
-func area_open(area: String) -> bool:
-	return has_badge(str(AREA_FLOOR.get(area, "-5")))
 
 
 # --- piani e badge ------------------------------------------------------------
@@ -641,16 +510,6 @@ func met_count() -> int:
 	return n
 
 
-## Che aspetto ha il mondo: dipende da quanto hai sfruttato e quanto hai liberato.
-##   "capitalismo" (asta, marmo, robot), "comunismo" (code, razioni, timbri), "baratto" (scambi, disordine vivo).
-func world_look() -> String:
-	if exploited > 0 and exploited >= freed.size():
-		return "capitalismo"
-	if freed.size() > 0:
-		return "baratto"
-	return "comunismo"
-
-
 # --- la lista dei lavori peggiori del mondo ---------------------------------
 
 ## I lavori della lista (ogni piano ha i suoi posti di lavoro).
@@ -665,26 +524,12 @@ func job(id: String) -> Dictionary:
 	return {}
 
 
-## Il lavoro che ti hanno assegnato oggi (o {} se non l'hai ancora scelto).
-func assigned_job() -> Dictionary:
-	if int(flags.get("job_day", 0)) != day:
-		return {}
-	return job(str(flags.get("job_id", "")))
-
-
-func assign_job(id: String) -> void:
-	flags["job_day"] = day
-	flags["job_id"] = id
-	changed.emit()
-
-
 # --- la telefonata del capo: le promozioni ----------------------------------
 
 ## Dopo un turno il capo ti chiama per proporti una promozione: sfruttare qualcuno.
-## La prima volta è una cosa piccola e ambigua (il buono pasto di Gino); poi sceglie
-## sempre qualcuno che hai conosciuto, così la scelta fa male.
+## Serve solo ai salvataggi vecchi (senza gli incarichi del Capo, scripts/boss_missions.gd):
+## sceglie qualcuno che hai conosciuto su questo piano, così la scelta fa male.
 func promotion_victim() -> String:
-	var order := ["gino", "vito", "marta", "dario", "sig_bruno", "lea", "giulia", "ragazzo_sami", "portiere_ivo"]
 	# prima di tutto qualcuno che hai conosciuto qui, su questo piano (al Fondo: Fermo)
 	var here: Array = []
 	if floor_id == "-5":
@@ -693,11 +538,9 @@ func promotion_victim() -> String:
 	for id: String in here:
 		if flags.get("met_" + id, false) and not is_robot(id) and id not in freed and not promotion(id).is_empty():
 			return id
-	for id: String in order:
-		if flags.get("met_" + id, false) and not is_robot(id) and id not in freed:
-			return id
-	for id: String in order:
-		if not is_robot(id) and id not in freed:
+	# se non hai ancora parlato con nessuno, il capo sceglie comunque qualcuno di questo piano
+	for id: String in here:
+		if not is_robot(id) and id not in freed and not promotion(id).is_empty():
 			return id
 	return ""
 
@@ -721,79 +564,7 @@ func boss_call_pending() -> bool:
 	return int(flags.get("boss_call_day", 0)) == day and not flags.get("boss_call_done_%d" % day, false) 		and not flags.get("boss_call_floor_" + floor_id, false)
 
 
-func zone_summary() -> Dictionary:
-	var out := {}
-	for z: String in ZONES:
-		var counts := {"sfruttato": 0, "libero": 0, "ingranaggio": 0}
-		for id: String in ZONES[z]:
-			counts[npc_state(id)] += 1
-		out[z] = counts
-	return out
-
-
 # --- il tempo, cioè la vera valuta ------------------------------------------
-
-## Quante ore della giornata sono davvero tue: quelle rimaste, meno il lavoro (se non l'hai fatto),
-## i pasti e le faccende.
-func own_hours() -> float:
-	var left := hours_left()
-	if not worked_today:
-		left -= 10.0
-	var h := minutes / 60.0
-	if h < 13.0:
-		left -= 1.0
-	if h < 20.0:
-		left -= 1.0
-	left -= 1.0
-	return maxf(0.0, left)
-
-
-## Sfruttare qualcuno ti fa guadagnare tempo: le sue ore diventano tue.
-func steal_time(minutes_gained: int) -> void:
-	minutes = maxi(DAY_START, minutes - minutes_gained)
-	changed.emit()
-
-
-## Il gioco finisce quando il debito è pagato (o quando arrivi in cima, vedi la Presidenza).
-func is_over() -> bool:
-	return debt <= 0
-
-
-## Nico è l'unico personaggio che si accorge di come stai cambiando.
-func nico_lines() -> Array:
-	if exploited >= 3:
-		return [
-			"Ehi, {rank}! ...Scusa, ora ti chiamano tutti così, no?",
-			"Non ti vedo più qui sotto.",
-			"A dire il vero non vedo più nessuno, qui sotto. Solo gente che sorride sempre uguale.",
-		]
-	if exploited >= 2:
-		return [
-			"Sempre di corsa, eh? Bel vestito.",
-			"Il signor Bruno dice che l'hai salutato come se non lo conoscessi.",
-			"...Sarà la stanchezza. Prenditi un caffè.",
-		]
-	if refused >= 2:
-		flags["rebel_hint"] = true
-		return [
-			"Ho sentito che hai detto di no al capo. Ah!",
-			"Sai quanti siamo, qui, a non poterne più?",
-			"La sera, al parcheggio, ci scambiamo roba. Pane, riparazioni, favori. Senza soldi.",
-			"Pensaci.",
-		]
-	if helped >= 2:
-		return [
-			"Ho saputo che hai dato una mano a mezzo quartiere.",
-			"Non ti farà diventare ricco. Però ti fa dormire, no?",
-		]
-	var by_day := [
-		["Il caffè di oggi sa di bruciato. Come il mio conto in banca."],
-		["Sai qual è il trucco per non pensare ai debiti?", "...Se lo scopri dimmelo."],
-		["La CHEAP ha comprato anche il bar all'angolo. Ora il caffè costa il doppio e lo fa una macchina."],
-		["Ieri ho fatto due conti. Poi ho smesso, che mi veniva da piangere."],
-	]
-	return by_day[clampi(day - 1, 0, by_day.size() - 1)]
-
 
 # --- testo ------------------------------------------------------------------
 
@@ -818,7 +589,6 @@ func fmt(text: String) -> String:
 		.replace("{day}", str(day)) \
 		.replace("{day_name}", day_name()) \
 		.replace("{clock}", clock()) \
-		.replace("{last_day}", str(LAST_DAY)) \
 		.replace("{floor}", floor_name()) \
 		.replace("{name}", player_name) \
 		.replace("{ok}", "OK" if TouchControls.enabled else "INVIO")
@@ -866,10 +636,10 @@ func has_save() -> bool:
 func save_game(room := "res://chapters/c1/fondo.tscn", pos := Vector2.INF) -> void:
 	var data := {
 		"save_version": 2, "day": day, "minutes": minutes, "money": money, "debt": debt, "energy": energy, "rank": rank,
-		"exploited": exploited, "hard_work": hard_work, "refused": refused, "helped": helped,
+		"exploited": exploited, "hard_work": hard_work, "helped": helped,
 		"items": items, "robots": robots, "helped_ids": helped_ids, "met_today": met_today, "helped_today": helped_today,
-		"worked_today": worked_today, "flags": flags, "quests": quests,
-		"freed": freed, "motives_known": motives_known, "room": room,
+		"worked_today": worked_today, "flags": flags,
+		"freed": freed, "room": room,
 		"floor_id": floor_id, "badges": badges, "player_name": player_name, "self_esteem": self_esteem,
 		"pos": [pos.x, pos.y] if pos != Vector2.INF else [],
 	}
@@ -924,7 +694,6 @@ func load_game() -> Dictionary:
 	rank = int(d.get("rank", 0))
 	exploited = int(d.get("exploited", 0))
 	hard_work = int(d.get("hard_work", 0))
-	refused = int(d.get("refused", 0))
 	helped = int(d.get("helped", 0))
 	items.assign(d.get("items", []))
 	robots.assign(d.get("robots", []))
@@ -936,9 +705,7 @@ func load_game() -> Dictionary:
 	# un salvataggio di prima della memoria di Nives: è una partita sola, sempre la stessa
 	if not flags.has("run_id"):
 		flags["run_id"] = MemoriaNives.LEGACY
-	quests = d.get("quests", {})
 	freed.assign(d.get("freed", []))
-	motives_known.assign(d.get("motives_known", []))
 	floor_id = str(d.get("floor_id", "-5"))
 	badges.assign(d.get("badges", []))
 	player_name = capital(str(d.get("player_name", "Tu")))

@@ -1,13 +1,13 @@
 # CHEAP — Documento di design
 
-> **28/10/2026 — Incarichi del Capo implementati:** per le nuove partite le missioni di furto ripetute sono sostituite da energia, pratiche, etichette, contratti e montaggio del notiziario; alla Cima le pressioni entrano nei tre bilanci esistenti. Alternative realmente giocabili, conseguenze persistenti, premi una sola volta, nessuna nuova robotizzazione. Le descrizioni storiche del furto sotto restano valide per i salvataggi che lo avevano già aperto. Specifica, audit, compatibilità, economia e prove: [BOSS_MISSIONS_REWORK.md](BOSS_MISSIONS_REWORK.md).
+> **28/10/2026 — Incarichi del Capo implementati:** per le nuove partite le missioni di furto ripetute sono sostituite da energia, pratiche, etichette, contratti e montaggio del notiziario; alla Cima le pressioni entrano nei tre bilanci esistenti. Alternative realmente giocabili, conseguenze persistenti, premi una sola volta, nessuna nuova robotizzazione. Il vecchio furto ("un, due, tre, stella") resta solo per i salvataggi che lo avevano già aperto. Regole in `scripts/boss_missions.gd`.
 
-> Nives annuncia l'arrivo, usa una musica dedicata e viene seguita dalla camera; lo sportello si usa lungo il bancone. Nel Fondo la CycletteDinamo originale è condivisa col minigioco, la biglietteria ha pavimento beige LimeZu, divisorio sottile, ritorno di muro all'ingresso e pilastro separato dalle scale. Ascensore esistente con porte originali e stipite; sei telecamere originali nei luoghi di lavoro. Le versioni precedenti sono conservate sotto `backup/`, escluso dall'importazione di Godot.
+> Nives annuncia l'arrivo, usa una musica dedicata e viene seguita dalla camera; lo sportello si usa lungo il bancone. Nel Fondo la CycletteDinamo originale è condivisa col minigioco, la biglietteria ha pavimento beige LimeZu, divisorio sottile, ritorno di muro all'ingresso e pilastro separato dalle scale. Ascensore esistente con porte originali e stipite; sei telecamere originali nei luoghi di lavoro. Le versioni precedenti sono nella cronologia di git.
 
-> Aggiornato il 26/10/2026. La storia completa (capitoli, personaggi, tendenze, finali, variabili)
-> è in [NARRATIVE_DESIGN.md](NARRATIVE_DESIGN.md). I capitoli già rifatti hanno il loro documento in
-> [capitoli/](capitoli/). Le parti marcate **(versione precedente)** descrivono codice che esiste
-> ancora ma che verrà rifatto: non sono più la direzione del gioco.
+> Aggiornato il 5/11/2026: tolti le battaglie, la città vecchia (strada, parco, ufficio, casa), i suoi
+> personaggi e le sue missioni, i vecchi finali e i minigiochi che nessun piano usava più.
+> Le regole attuali sono in [COHERENCE.md](COHERENCE.md). I capitoli hanno il loro documento in
+> [capitoli/](capitoli/) e nei file CHAPTER_*.
 
 ## L'idea in una frase
 
@@ -72,7 +72,7 @@ telefonata del Capo, la scelta finale (vedi [CHAPTER_06_SUMMIT](CHAPTER_06_SUMMI
 ### Le scale sbarrate
 
 Se al Fondo sali senza esserti voltato verso nessuno, le scale per il Fondo vengono chiuse (coni,
-nastro, cartello VIETATO, al -4). Al Fondo non si torna più. Va resa più chiara: vedi NARRATIVE_DESIGN, "Incoerenze".
+nastro, cartello VIETATO, al -4). Al Fondo non si torna più.
 
 ## Musica
 
@@ -119,7 +119,7 @@ Il gioco è pensato per telefono in orizzontale.
 
 Con i valori attuali, salire fino alla Cima senza sfruttare nessuno chiede circa **42 turni**
 (il badge raddoppia, la paga sale solo del 10% a piano). Troppi.
-La proposta (in NARRATIVE_DESIGN, "Verifica della salita") è di far crescere la paga piano per piano
+La proposta era di far crescere la paga piano per piano
 e introdurre, dal Mercato, il **costo della vita**: guadagni di più, ma spendi di più. È il tema del capitolo 3,
 e porta la salita onesta a circa **19 turni** (meno se aiuti tutti e Nives ti regala il badge).
 
@@ -135,12 +135,12 @@ il prezzo, più la metà, va sul debito, e gli interessi salgono.
 
 ## La meccanica dei robot
 
-Chi viene sfruttato (promozione del capo, o PROMUOVI in una battaglia) viene sostituito da un robot:
+Chi viene sfruttato (la promozione del capo) viene sostituito da un robot:
 stessa faccia e stesso posto, frasi aziendali che ti chiamano per titolo, nessun respiro.
 Ogni sfruttamento fa salire il **LV** (come in Undertale, qui è "level of violence"): la promozione è il level up.
 Nel finale `shaders/robot.gdshader` rivela tutti i robot.
 
-Le promozioni per piano sono in `data/promotions.json` (Fermo, Tilde, e i vecchi personaggi della città).
+Le promozioni per piano sono in `data/promotions.json` (Fermo, Tilde, Amir, Teo, Ada).
 
 ## Minigiochi
 
@@ -154,9 +154,8 @@ Le promozioni per piano sono in `data/promotions.json` (Fermo, Tilde, e i vecchi
 | -2 | Lo sportello | Leggi la pratica, poi APPROVA (subito) o RICHIEDI VERIFICA (più lento). CHEAP paga le pratiche chiuse, non quelle giuste |
 | 0 | Il centralino | Tocca la destinazione della richiesta. A volte il sistema ne propone una sbagliata: CONFERMA (veloce), VERIFICA (lenta, giusta) o SEGNALA |
 | Cima | TURNO di Direzione (il bilancio) | Tocca più e meno sulle quattro voci, poi CONFERMA (solo a 100 unità); REGOLE mostra tutte le regole |
-| altri (versione precedente) | Bilancia, magazzino (Tetris), consegne, bagni, cassa (Pong) | Tocco, scorrimento, trascinamento |
 
-Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre turni è stata tolta.
+Il turno è sempre un minigioco. I lavori dei turni sono in `data/worklist.json`.
 
 ### L'aiuto alle persone, in `scenes/minigame/minigame.gd`
 
@@ -164,53 +163,33 @@ Il turno è sempre il minigioco: la vecchia "battaglia col caporeparto" ogni tre
 |---|---|---|
 | Lampadine | Scorri a destra (buona), a sinistra (rotta), su e giù (avvita) | Bulbo |
 | Fili | Tocca un filo a sinistra, poi il suo posto a destra | Mina |
-| Sequenza | Guarda le frecce, poi ripetile | Tilde (il copione) |
-| Tempismo | Tocca quando il segno è nel verde | Ercole (tienilo sveglio) |
-| Raccolta | Trascina il cuore e raccogli tutto | (versione precedente: Ivo, Elsa) |
+| Sequenza | Guarda le frecce, poi ripetile | Tilde (il copione), Ines (le pratiche) |
+| Tempismo | Tocca quando il segno è nel verde | Ottavio (l'ombrello), Sandro (il lucchetto) |
+| Tieni sveglio Ercole | Due fasce che si accendono a turno: vale solo quella accesa | Ercole |
+| Raccolta | Trascina il cuore e raccogli tutto | Rosa (la frutta) |
 | Scatole e scaffali | Tocca lo scaffale giusto (alimentari, igiene, scuola, casa) | Leda |
 | L'ultima consegna | Guida il furgone come uno snake: raccogli sei pacchi e portali alle case illuminate senza urtare ostacoli o la tua coda | Amir |
 | Le rate mancanti | Tocca i 6 documenti dal più vecchio, poi la voce doppia dell'estratto conto | Olga |
 | La pratica impossibile | Per ogni pratica tocca il problema: in ordine, manca un documento, dati diversi, doppione, errore di registrazione | Teo |
-| Una stanza per tutti | Tocca un mobile, poi la stanza: ogni stanza deve avere quello che le serve (più soluzioni valide) | Ada |
-| Il percorso possibile | Tocca le tratte da casa al lavoro: in tempo e dentro i 6 € al giorno | Nadir |
+| Volantinaggio | In piazza passa la gente: dai il volantino a chi ti guarda, non a chi ha fretta, è al telefono o è una guardia CHEAP | Ada |
+| L'orario delle coincidenze | Trascina il dito da una fermata all'altra lungo una linea: Nadir deve arrivare al lavoro in orario e nel budget | Nadir |
 
 ### Un, due, tre, stella (il furto di merito), in `scenes/minigame/arcade.gd`
 
 Tieni il dito giù per avvicinarti mentre il capo ti dà le spalle, e ancora per copiare. Quando si gira, stacca il dito.
 Al -3 la vittima è Amir, al -2 Teo (il rapporto 404), al piano 0 Ada (il progetto della Casa Comune): il furto non promuove subito, arrivato al terminale scegli se firmare (`win_flag` in `start_steal`).
 
-## Le battaglie (stile Undertale)
-
-Il cuore rosso schiva gli "attacchi" dentro il riquadro. L'energia (20) scende quando vieni colpito;
-a zero crolli dallo stress e perdi tre ore. Restano per gli incontri con le persone
-(PROMUOVI, PARLA, OGGETTI, AIUTA). Il testo del riquadro si rimpicciolisce se non ci sta.
-
 ## Salvataggi
 
 Le stelline salvano stanza, posizione, ora e tutte le scelte (`user://cheap_save.json`), e possono
 far passare la notte. Si salva tutto lo stato di `GameState` (soldi, debito, badge, robot, aiutati, liberati,
-flag), più le scelte nuove descritte in NARRATIVE_DESIGN ("Stato narrativo").
+flag).
 
-## La città (versione precedente)
-
-Esiste ancora nei file, ma il capitolo 5 non la usa più (è stato rifatto in `chapters/c5/`, con Ada, Nadir e Rina).
-L'ufficio del capo (`scenes/world/boss_office.tscn`) e i vecchi finali (`scenes/endings/`) restano nei file per i percorsi della versione precedente, ma il capitolo 6 nuovo (`chapters/c6/`) non li usa più. Le scale della città portano alla Cima nuova.
-- **Strada:** il chiosco di Nico, Marta, il Signor Bruno, Lea, Sami, Ivo.
-- **Ufficio:** Dario e Giulia; l'ascensore per la Direzione (Dottor Prezzi, il capo).
-- **Parco:** Tano il musicista, la Signora Elsa dei gatti, Rocco (sostituito da un robot).
-- **Il Rifugio** (cantina del palazzo blu): l'idea è diventata la **Casa Comune** del capitolo 5 (nuova, `chapters/c5/casa_comune.tscn`).
-- **Casa:** il letto, il robot giocattolo, il post-it e i vestiti di tuo padre.
-- **Missioni** (`data/quests.json`): il gatto di Elsa, le ripetizioni a Luca, il pacco di Sami, gli occhiali di Ivo.
-
-Le regole globali (debito, badge, robot, liberare, notte) sono fissate in [COHERENCE](COHERENCE.md).
-
-I personaggi di città hanno un "perché lavoro" (`motive` in `data/npcs.json`: debito, paura, abitudine, orgoglio)
-e si possono **liberare**: conquisti la fiducia, chiedi perché lavora, e in AIUTA scegli Liberalo.
-Chi smette rinuncia allo stipendio: ha ancora bisogno di mangiare e di una casa.
+Le regole globali (debito, badge, robot, notte) sono fissate in [COHERENCE](COHERENCE.md).
 
 ## I finali
 
-Le vecchie tre strade (capitalismo, comunismo, baratto) e i finali Ricco/Ribelle/Onesto **non sono più la direzione**.
+Le vecchie tre strade (capitalismo, comunismo, baratto) e i finali Ricco/Ribelle/Onesto sono stati tolti.
 Al loro posto ci sono tre **tendenze**, che non si vedono mai durante il gioco e non decidono da sole il finale:
 
 - **Ascesa** (potere e compromessi): dirigente opportunista, oppure qualcuno che prova a cambiare il sistema da dentro.
@@ -224,8 +203,6 @@ contati: legami, reti, prove, il bilancio del turno, l'attribuzione del Capo. Un
 Poi gli epiloghi "sei mesi dopo" piano per piano (solo le persone conosciute, Nives per ultima), il sogno,
 e CHEAP / Quanto costa una vita? / FINE.
 
-`GameState.route()` e i vecchi finali (`scenes/endings/`) restano solo per i percorsi della versione precedente.
-
 ## Struttura del codice
 
 ```
@@ -237,19 +214,15 @@ autoload/      singleton sempre attivi
   sound        musica e suoni (la voce dei dialoghi ha un canale suo)
 chapters/      i capitoli rifatti: c1/ (Fondo), c2/ (Sottoufficio), c3/ (Mercato), c4/ (Banca), c5/ (Città), c6/ (Cima, Direzione, finali). Scena .tscn + script di logica
 world/         EditorRoom (stanze fatte nell'editor), RoomFeature, NpcSpot, Examine, CharSprite, tileset
-scripts/       Room (base di tutte le stanze), Player, Npc, Quests, Assets
-scenes/        main_menu, world/ (stanze della versione precedente), minigame/, battle/, endings/
-data/          testi e dati (JSON): persone, promozioni, lavori, missioni, market (prezzi del -3), bank (documenti e pratiche del -2)
+scripts/       Room (base di tutte le stanze), Player, Npc, Assets, boss_missions, storia
+scenes/        main_menu, minigame/ (turni, aiuti, furto)
+data/          testi e dati (JSON): persone (npcs), promozioni, lavori dei turni (worklist), market (prezzi del -3), bank (documenti e pratiche del -2), city (la Città)
 art/           grafica fatta apposta: per ora segnaposto, elenco in docs/ASSET_LIST.md
 tools/         gli script "bake" che creano le scene dei capitoli, la generazione di arte e audio
-tests/         smoke_test (gioca tutto il gioco), touch_test (i comandi col dito)
+tests/         smoke_test (gioca tutto il gioco), storia_test, route_walk_test, touch_test (i comandi col dito) e altri
 ```
-
-I file `scenes/world/fondo.*` e `scenes/world/fall.*` non sono più usati (sostituiti dal capitolo 1 e dall'ascensore):
-si possono togliere.
 
 ## Domande ancora aperte
 
 - Il protagonista ha un nome scelto dal giocatore: resta così?
 - Quanto deve durare tutta la salita? (Proposta: 2-3 ore, circa 20 giorni di gioco.)
-- Il sogno del protagonista: tra quali possibilità? (Proposta in NARRATIVE_DESIGN, "Il sogno".)

@@ -15,6 +15,11 @@ extends Node2D
 @onready var _dark: ColorRect = $Buio
 @onready var _player: AnimatedSprite2D = $Giocatore
 @onready var _exit: Marker2D = $Uscita
+## La luce del Fondo che entra dalle porte quando si aprono (Cabina/Porte/LuceFuori e il suo bagliore).
+@onready var _outside: CanvasItem = $Cabina/Porte/LuceFuori
+## Mentre è vero, le luci della cabina sfarfallano da sole.
+var _flicker := false
+var _flicker_t := 0.0
 
 var _floor_text := "0":
 	set(v):
@@ -54,6 +59,7 @@ func _ready() -> void:
 	_player.visible = false
 	_player.play("idle_up")
 	_number.text = _floor_text
+	_outside.modulate.a = 0.0
 	_door_w = _door_l.size.x
 	_door_end = _door_r.position.x + _door_r.size.x
 	if Ui.transitioning:
@@ -64,7 +70,7 @@ func _ready() -> void:
 func _sequence() -> void:
 	await Ui.narrate([
 		"La sveglia è suonata, come ogni mattina. Ti sei alzato dal lato sbagliato del letto. Ultimamente succedeva spesso.",
-		"Sei sceso in cucina per fare colazione. Di fretta, naturalmente. Sembrava che il mondo intero avesse fretta, e tu cercavi di stargli dietro.",
+		"Sei sceso in cucina per fare colazione, come sempre frettoloso. Il mondo intero sembrava che avesse sempre fretta e tu cercavi di stargli dietro.",
 		"Ma stavolta era tutto sottosopra.",
 		"Hai chiamato tuo padre. Una volta, due, tre. Nessuna risposta.",
 		"Sei andato a cercarlo in camera sua. Hai trovato soltanto un biglietto:",
@@ -72,7 +78,7 @@ func _sequence() -> void:
 		"Accanto, una lettera già aperta:",
 		"«Si presenti alla CHEAP per saldare il suo debito.»",
 		"Tuo padre se n’era andato. Tu eri rimasto senza una lira, con quella lettera in mano.",
-		"TORRE CHEAP",
+		"CHEAP srl.",
 	])
 	_cabin.visible = true
 	_player.visible = true
@@ -83,7 +89,7 @@ func _sequence() -> void:
 		"* C’è il solito odore di metallo, ma più forte. E sotto, qualcosa che conosci.",
 		"* Lo stesso odore che riempiva casa quando tuo padre giocava. Non hai mai saputo dargli un nome. Tristezza, forse.",
 		"* Anche la musica è diversa. Negli altri ascensori quelle musichette provavano almeno a tranquillizzarti.",
-		"* Questa è lenta, triste. Ti mette addosso un’ansia che non sai spiegare.",
+		"* Questa è movimentata, cupa. Ti mette addosso un’ansia che non sai spiegare.",
 		"* Una voce registrata interrompe la musica. Acuta, contentissima. Cerca di sembrare umana. Si sente quanto si sta sforzando.",
 	])
 	await Ui.say(["Benvenuto alla CHEAP. Il futuro costa poco."], "Voce CHEAP")
@@ -101,9 +107,12 @@ func _sequence() -> void:
 		await _wait(0.9)
 		_floor_text = f
 		Sound.sfx("ding", 0.9)
+	_jolts()
 	await Ui.say(["* Uno scatto. Poi un altro. Le luci sfarfallano e ti aggrappi al corrimano.",
 		"* Sta davvero cadendo a pezzi, o sei tu che hai cominciato a sentire ogni rumore?",
 		"* Ti manca l’aria. Guardi la porta chiusa."])
+	_flicker = false
+	_light = 0.9
 	await _wait(0.5)
 	_floor_text = "-4"
 	Sound.sfx("ding", 0.8)
@@ -137,8 +146,10 @@ func _sequence() -> void:
 		"* Per un momento non succede nulla."])
 	await _wait(0.6)
 	Sound.sfx("door", 0.7)
-	var tw := create_tween()
+	Sound.sfx("stridio", 1.0, -3.0)
+	var tw := create_tween().set_parallel()
 	tw.tween_property(self, "_doors", 0.45, 1.4).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(_outside, "modulate:a", 1.0, 1.4).set_trans(Tween.TRANS_SINE)
 	await tw.finished
 	await _wait(0.4)
 	await Ui.say(["* Poi uno stridio metallico. Le porte si aprono e si bloccano a metà.",
@@ -150,6 +161,17 @@ func _sequence() -> void:
 	await walk.finished
 	Ui.cutscene = false
 	Router.goto(Router.FONDO, "elevator", ["CAPITOLO 1", "IL FONDO", "Piano −5."])
+
+
+## I due scatti dell'ascensore: un colpo, la cabina trema, poi un altro. Da lì le luci sfarfallano.
+func _jolts() -> void:
+	Sound.sfx("clunk", 1.35, -4.0)
+	_shake = 0.35
+	_light = 0.55
+	await _wait(0.7)
+	Sound.sfx("clunk", 1.15, -2.0)
+	_shake = 0.5
+	_flicker = true
 
 
 func _wait(s: float) -> void:
@@ -180,6 +202,11 @@ func _add_sparks() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_shake = maxf(0.0, _shake - delta * 1.6)
+	if _flicker:
+		_flicker_t -= delta
+		if _flicker_t <= 0.0:
+			_flicker_t = randf_range(0.05, 0.25)
+			_light = 0.3 if randf() < 0.35 else randf_range(0.75, 0.95)
 	position = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * 6.0 * _shake
 	if not _sparks.is_empty() and randf() < 0.3:
 		_sparks.pop_front().queue_free()

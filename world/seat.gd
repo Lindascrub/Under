@@ -15,6 +15,12 @@ extends Interactable
 var _used := false
 
 
+## Le sedie stanno spesso dentro un divano o una fila di sedili: si toccano da un po' più lontano
+## degli oggetti (14 invece di 8), se no non ci si arriva.
+func _init() -> void:
+	reach = 14.0
+
+
 func interact() -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p == null or p.seated:

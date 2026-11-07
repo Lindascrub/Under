@@ -1,0 +1,385 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/minigame/autobus.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/bus_destra.png" id="bus"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Manhole_Open_2.png" id="buca"]
+[ext_resource type="Texture2D" path="res://assets/limezu/cars/car_right_2.png" id="auto1"]
+[ext_resource type="Texture2D" path="res://assets/limezu/cars/car_right_5.png" id="auto2"]
+[ext_resource type="Texture2D" path="res://assets/limezu/park/Modern_Exteriors_Singles_Traffic_Cone_2.png" id="cono"]
+[ext_resource type="Texture2D" path="res://assets/limezu/street/trash_bags.png" id="sacchi"]
+
+[node name="Autobus" type="Control"]
+offset_right = 400.0
+offset_bottom = 190.0
+clip_contents = true
+mouse_filter = 2
+script = ExtResource("script")
+
+[node name="Marciapiede" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 400.0
+offset_bottom = 30.0
+mouse_filter = 2
+color = Color(0.54, 0.56, 0.6, 1)
+
+[node name="Strada" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 162.0
+mouse_filter = 2
+color = Color(0.23, 0.24, 0.27, 1)
+
+[node name="MarciapiedeBasso" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 162.0
+offset_right = 400.0
+offset_bottom = 190.0
+mouse_filter = 2
+color = Color(0.54, 0.56, 0.6, 1)
+
+[node name="BordoAlto" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 32.0
+mouse_filter = 2
+color = Color(0.85, 0.85, 0.85, 1)
+
+[node name="BordoBasso" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 160.0
+offset_right = 400.0
+offset_bottom = 162.0
+mouse_filter = 2
+color = Color(0.85, 0.85, 0.85, 1)
+
+[node name="Strisce" type="Node2D" parent="."]
+
+[node name="Striscia1_1" type="ColorRect" parent="Strisce"]
+offset_left = 0.0
+offset_top = 74.0
+offset_right = 18.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_2" type="ColorRect" parent="Strisce"]
+offset_left = 40.0
+offset_top = 74.0
+offset_right = 58.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_3" type="ColorRect" parent="Strisce"]
+offset_left = 80.0
+offset_top = 74.0
+offset_right = 98.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_4" type="ColorRect" parent="Strisce"]
+offset_left = 120.0
+offset_top = 74.0
+offset_right = 138.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_5" type="ColorRect" parent="Strisce"]
+offset_left = 160.0
+offset_top = 74.0
+offset_right = 178.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_6" type="ColorRect" parent="Strisce"]
+offset_left = 200.0
+offset_top = 74.0
+offset_right = 218.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_7" type="ColorRect" parent="Strisce"]
+offset_left = 240.0
+offset_top = 74.0
+offset_right = 258.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_8" type="ColorRect" parent="Strisce"]
+offset_left = 280.0
+offset_top = 74.0
+offset_right = 298.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_9" type="ColorRect" parent="Strisce"]
+offset_left = 320.0
+offset_top = 74.0
+offset_right = 338.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_10" type="ColorRect" parent="Strisce"]
+offset_left = 360.0
+offset_top = 74.0
+offset_right = 378.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia1_11" type="ColorRect" parent="Strisce"]
+offset_left = 400.0
+offset_top = 74.0
+offset_right = 418.0
+offset_bottom = 76.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_1" type="ColorRect" parent="Strisce"]
+offset_left = 0.0
+offset_top = 118.0
+offset_right = 18.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_2" type="ColorRect" parent="Strisce"]
+offset_left = 40.0
+offset_top = 118.0
+offset_right = 58.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_3" type="ColorRect" parent="Strisce"]
+offset_left = 80.0
+offset_top = 118.0
+offset_right = 98.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_4" type="ColorRect" parent="Strisce"]
+offset_left = 120.0
+offset_top = 118.0
+offset_right = 138.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_5" type="ColorRect" parent="Strisce"]
+offset_left = 160.0
+offset_top = 118.0
+offset_right = 178.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_6" type="ColorRect" parent="Strisce"]
+offset_left = 200.0
+offset_top = 118.0
+offset_right = 218.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_7" type="ColorRect" parent="Strisce"]
+offset_left = 240.0
+offset_top = 118.0
+offset_right = 258.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_8" type="ColorRect" parent="Strisce"]
+offset_left = 280.0
+offset_top = 118.0
+offset_right = 298.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_9" type="ColorRect" parent="Strisce"]
+offset_left = 320.0
+offset_top = 118.0
+offset_right = 338.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_10" type="ColorRect" parent="Strisce"]
+offset_left = 360.0
+offset_top = 118.0
+offset_right = 378.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Striscia2_11" type="ColorRect" parent="Strisce"]
+offset_left = 400.0
+offset_top = 118.0
+offset_right = 418.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.75, 1)
+
+[node name="Corsie" type="Node2D" parent="."]
+
+[node name="Corsia1" type="Marker2D" parent="Corsie"]
+position = Vector2(0, 52)
+
+[node name="Corsia2" type="Marker2D" parent="Corsie"]
+position = Vector2(0, 96)
+
+[node name="Corsia3" type="Marker2D" parent="Corsie"]
+position = Vector2(0, 140)
+
+[node name="Fermata" type="Node2D" parent="."]
+position = Vector2(300, 0)
+
+[node name="Segno" type="ColorRect" parent="Fermata"]
+offset_left = -18.0
+offset_top = 33.0
+offset_right = 18.0
+offset_bottom = 71.0
+mouse_filter = 2
+color = Color(1, 0.88, 0.3, 0.3)
+
+[node name="SegnoBordo" type="ColorRect" parent="Fermata"]
+offset_left = -18.0
+offset_top = 33.0
+offset_right = 18.0
+offset_bottom = 35.0
+mouse_filter = 2
+color = Color(1, 0.88, 0.3, 1)
+
+[node name="Palina" type="ColorRect" parent="Fermata"]
+offset_left = -1.0
+offset_top = 6.0
+offset_right = 1.0
+offset_bottom = 30.0
+mouse_filter = 2
+color = Color(0.85, 0.85, 0.9, 1)
+
+[node name="Cartello" type="ColorRect" parent="Fermata"]
+offset_left = -7.0
+offset_top = 2.0
+offset_right = 7.0
+offset_bottom = 11.0
+mouse_filter = 2
+color = Color(0.2, 0.45, 0.85, 1)
+
+[node name="Numero" type="Label" parent="Fermata"]
+offset_left = -50.0
+offset_top = 12.0
+offset_right = 50.0
+offset_bottom = 26.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 8
+text = "FERMATA 1/5"
+horizontal_alignment = 1
+
+[node name="Ostacoli" type="Node2D" parent="."]
+
+[node name="Bus" type="Sprite2D" parent="."]
+position = Vector2(70, 96)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("bus")
+offset = Vector2(0, -6)
+
+[node name="Modelli" type="Node2D" parent="."]
+visible = false
+
+[node name="Buca" type="Sprite2D" parent="Modelli"]
+texture = ExtResource("buca")
+metadata/nome = "Una buca"
+
+[node name="AutoFerma" type="Sprite2D" parent="Modelli"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("auto1")
+offset = Vector2(0, -6)
+metadata/nome = "Un'auto in doppia fila"
+
+[node name="AutoFerma2" type="Sprite2D" parent="Modelli"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("auto2")
+offset = Vector2(0, -6)
+metadata/nome = "Un'auto in doppia fila"
+
+[node name="Lavori" type="Node2D" parent="Modelli"]
+metadata/nome = "Lavori in corso"
+
+[node name="Cono1" type="Sprite2D" parent="Modelli/Lavori"]
+position = Vector2(-7, -6)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("cono")
+
+[node name="Cono2" type="Sprite2D" parent="Modelli/Lavori"]
+position = Vector2(7, -6)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("cono")
+
+[node name="Sacchi" type="Sprite2D" parent="Modelli"]
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("sacchi")
+metadata/nome = "I sacchi della spazzatura"
+
+[node name="Pedale" type="ColorRect" parent="."]
+offset_left = 330.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 162.0
+mouse_filter = 2
+color = Color(1, 0.88, 0.3, 0.12)
+
+[node name="Scritta" type="Label" parent="Pedale"]
+offset_left = 0.0
+offset_top = 50.0
+offset_right = 70.0
+offset_bottom = 80.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 8
+text = "TIENI\nPREMUTO:\nVELOCE"
+horizontal_alignment = 1
+
+[node name="Veloce" type="Label" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 84.0
+offset_bottom = 18.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 9
+text = "VELOCE >>"
+horizontal_alignment = 0
+
+[node name="Esito" type="Label" parent="."]
+offset_left = 0.0
+offset_top = 166.0
+offset_right = 400.0
+offset_bottom = 188.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+text = ""
+horizontal_alignment = 1

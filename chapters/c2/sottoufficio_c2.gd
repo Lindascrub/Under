@@ -127,6 +127,7 @@ func _stop_ringing() -> void:
 func _quiet() -> void:
 	_stop_ringing()
 	await Ui.say(["* I telefoni tacciono. Le chiamate che nessuno prendeva le hai prese tu, una per una.",
+		"* Però quella canzoncina è ritornata. Non sai se è un bene o un male: almeno quegli squilli erano veri.",
 		"* Nella sala, i colleghi continuano a sorridere al nulla. Non se ne sono accorti."])
 	# un timer della stanza: se te ne vai prima, se ne va con lei
 	var t := Timer.new()

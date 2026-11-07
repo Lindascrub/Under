@@ -7563,6 +7563,7 @@ lines = PackedStringArray()
 lines_after = PackedStringArray()
 method = "_quaderno"
 approach = Vector2(0, 1)
+reach = 16.0
 
 [node name="Leggio" type="Sprite2D" parent="Mondo" unique_id=1119414611]
 position = Vector2(593, 241)

@@ -207,14 +207,6 @@ func show_pending() -> void:
 	await _floor_gift()
 
 
-## Il posto di lavoro del lavoro assegnato oggi, se si trova in questa stanza.
-func add_station(room_key: String) -> void:
-	for j: Dictionary in GameState.jobs_available():
-		if j.get("room", "") != room_key:
-			continue
-		add_station_at(j, Vector2i(int(j["station"][0]), int(j["station"][1])))
-
-
 ## Il posto di lavoro: la scena world/posto_turno.tscn (nei piani fatti nell'editor è già nella scena).
 const POSTO_TURNO := "res://world/posto_turno.tscn"
 const STELLINA := "res://world/stellina.tscn"
@@ -266,9 +258,9 @@ func _station(j: Dictionary) -> void:
 	start_job(j)
 
 
-## Parte il turno (il minigioco, o la battaglia col caporeparto). Senza domande: le fa _station().
+## Parte il turno (il minigioco). Senza domande: le fa _station().
 func start_job(j: Dictionary) -> void:
-	var cfg: Dictionary = (j.get("battle", {}) as Dictionary).duplicate(true)
+	var cfg: Dictionary = (j.get("turno", {}) as Dictionary).duplicate(true)
 	if j.has("game"):
 		# la paga cresce un po' a ogni piano, tranne nei lavori a paga fissa ("pay_fixed": la cassa del -3)
 		var pay := int(cfg.get("pay", 300))
@@ -283,12 +275,7 @@ func start_job(j: Dictionary) -> void:
 		}
 		Router.goto(Router.WORK)
 		return
-	# ogni tanto il caporeparto ti sta addosso: il turno diventa una battaglia
-	cfg["intro"] = "* Oggi il caporeparto ti sta addosso. Ogni tuo movimento è un problema.\n" + str(cfg.get("intro", ""))
-	cfg["kind"] = "work"
-	cfg["return"] = scene_file_path
-	cfg["return_pos"] = player.global_position
-	Router.battle(cfg)
+	push_error("Il lavoro %s non ha un minigioco (\"game\" in data/worklist.json)" % str(j.get("id", "")))
 
 
 ## Chi, su ogni piano, ha pena di te: [nome, foglio, frasi, fregatura]. La fregatura è quello che
@@ -509,20 +496,7 @@ func _boss_call() -> void:
 		GameState.flags["promotions_refused"] = int(GameState.flags.get("promotions_refused", 0)) + 1
 		await Ui.say(["Peccato. Ci sono altri cento come lei, sa? Ci pensi."], "Il capo")
 		return
-	var data := GameState.npc_data(victim)
 	start_steal(victim, promo)
-	return
-	@warning_ignore("unreachable_code")
-	Router.battle({
-		"kind": "sign",
-		"promotion": true,
-		"id": victim,
-		"name": str(data.get("name", "Qualcuno")),
-		"sheet": str(data.get("sheet", "char_02")),
-		"intro": "* Davanti a te, la pratica di %s: %s.\n* Tutti i pulsanti dicono FIRMA. Qualunque cosa tu scelga, la risposta è sempre la stessa." % [str(data.get("name", "qualcuno")), str(promo.get("title", "una pratica")).to_lower()],
-		"return": scene_file_path,
-		"return_pos": player.global_position,
-	})
 
 
 # --- mappa ------------------------------------------------------------------
@@ -762,39 +736,6 @@ func _save_here(here: Vector2) -> void:
 ## Un punto che, guardato, mostra una descrizione.
 func examine(pos: Vector2, text: Array) -> Interactable:
 	return add_spot(pos, func() -> void: Ui.say(text))
-
-
-## Mette nella stanza le persone che oggi, secondo data/npcs.json, si trovano qui.
-func spawn_people(room_key: String) -> void:
-	var items := Quests.items_in(room_key)
-	for it: Dictionary in items:
-		_people_cells[it["cell"]] = true
-	for id: String in GameState.npc_ids():
-		var place := GameState.npc_place(id)
-		if place.get("room", "") != room_key:
-			continue
-		var cell: Array = place.get("cell", [1, 1])
-		add_npc(id, Vector2i(int(cell[0]), int(cell[1])), str(place.get("anim", "idle_down")))
-	for it: Dictionary in items:
-		_add_quest_item(it["quest"], it["cell"])
-
-
-## L'oggetto nascosto di una missione: un gatto che dorme (world/gatto.tscn) o un paio di occhiali
-## per terra (world/occhiali.tscn). Nelle scene: `Sprite` è il disegno, `Tocco` il punto da cui lo raccogli.
-const QUEST_ITEMS := {"cat": "res://world/gatto.tscn", "glasses": "res://world/occhiali.tscn"}
-
-
-func _add_quest_item(q: Dictionary, cell: Vector2i) -> void:
-	var node := load(QUEST_ITEMS["cat"] if q.get("item") == "cat" else QUEST_ITEMS["glasses"]).instantiate() as Node2D
-	node.position = cell_feet(cell)
-	world.add_child(node)
-	var holder: Array = []
-	holder.append(add_spot((node.get_node("Tocco") as Node2D).global_position, func() -> void:
-		node.queue_free()
-		for h: Node in holder:
-			h.queue_free()
-		await Quests.pick_up(q)
-	))
 
 
 ## Ritaglia un pezzo da un foglio grande (per esempio un edificio intero).
@@ -1230,8 +1171,6 @@ func add_exit(r: Rect2i, path: String, spawn_name: String) -> void:
 
 func _spawn_player() -> void:
 	player = load(PLAYER_SCENE).instantiate() as Player
-	if Router.spawn == "_back" and GameState.battle.has("return_pos"):
-		spawns["_back"] = GameState.battle["return_pos"]
 	if Router.spawn == "_mg" and GameState.minigame.has("return_pos"):
 		spawns["_mg"] = GameState.minigame["return_pos"]
 	if Router.spawn == "_save" and Router.save_pos != Vector2.INF:

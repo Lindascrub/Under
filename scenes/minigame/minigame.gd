@@ -11,7 +11,6 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##                    si aggiusta con SU o GIÙ (Bulbo, il nonno delle lampadine)
 ##   type "wires":    collega i fili dello stesso colore, come in Among Us (Mina, l'elettricista)
 ##   type "inventory": ogni prodotto sul suo scaffale (Leda: SCATOLE E SCAFFALI)
-##   type "route":    due giri (mattina e pomeriggio), tre pacchi ciascuno: scegli le strade (Amir: L'ULTIMA CONSEGNA)
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
 ##                    (Olga: LE RATE MANCANTI; dati in data/bank.json)
 ##   type "pratiche": trova direttamente la riga sospetta nel fascicolo
@@ -126,41 +125,6 @@ var inv_queue: Array = []
 var inv_sel := 0
 var inv_done := 0
 var inv_msg := ""
-# consegne (Amir): incroci, strade [da, a, minuti, rischiosa], pacchi
-## Due giri: la mattina e il pomeriggio. Ogni giro ha la sua mappa, i suoi tre pacchi e il suo tempo.
-## In ogni mappa c'è una strada sicura che arriva in tempo; le scorciatoie rosse passano dal cantiere.
-const RT_MAPS := [
-	{"title": "MATTINA", "budget": 120, "parcels": [2, 4, 5],
-		"nodes": [Vector2(64, 190), Vector2(151, 126), Vector2(151, 258), Vector2(238, 190), Vector2(352, 126), Vector2(352, 258)],
-		"names": ["MAGAZZINO", "Incrocio A", "Scala B", "Incrocio B", "Via dei Fiori", "Piazza"],
-		"edges": [[0, 1, 30, false], [0, 2, 30, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 50, false],
-			[2, 5, 50, false], [4, 5, 30, false], [0, 3, 10, true], [3, 4, 10, true], [3, 5, 10, true]]},
-	# i nomi stanno sotto gli incroci in basso e sotto quello in alto a destra: non coprono i minuti
-	{"title": "POMERIGGIO", "budget": 150, "parcels": [2, 5, 6],
-		"nodes": [Vector2(64, 190), Vector2(137, 126), Vector2(137, 258), Vector2(210, 190), Vector2(283, 126), Vector2(283, 258), Vector2(356, 126)],
-		"names": ["MAGAZZINO", "Incrocio A", "Scuola", "Incrocio B", "Incrocio C", "Via Roma", "Ospedale"],
-		"edges": [[0, 1, 30, false], [0, 2, 40, false], [1, 3, 30, false], [2, 3, 30, false], [1, 4, 60, false],
-			[2, 5, 50, false], [4, 6, 30, false], [5, 6, 50, false],
-			[0, 3, 15, true], [3, 4, 20, true], [3, 5, 20, true]]},
-]
-var rt_map := 0
-var rt_total := 0
-var rt_nodes: Array = []
-var rt_names: Array = []
-var rt_edges: Array = []
-var rt_parcels: Array = []
-## Quanto costa un imprevisto in una strada rischiosa (il cantiere), e quanto spesso capita.
-const RT_DETOUR := 40
-const RT_RISK := 0.5
-var rt_at := 0
-var rt_left := 120
-var rt_done: Array = []
-var rt_sel := 0
-var rt_from := Vector2.ZERO
-var rt_to := Vector2.ZERO
-var rt_k := 1.0
-var rt_msg := ""
-var rt_rng := RandomNumberGenerator.new()
 
 # LE RATE MANCANTI (Olga): rate_cards = in che ordine stanno sul tavolo i documenti
 var rate_cards: Array = []
@@ -220,13 +184,9 @@ func _ready() -> void:
 	cfg = GameState.minigame
 	type = str(cfg.get("type", "timing"))
 	Ui.show_hud(false)
-	# lo sfondo, il titolo e la riga sotto sono nodi di scenes/minigame/minigame.tscn: Titolo e Info,
-	# oppure TitoloPercorso e InfoPercorso (più in alto e più piccoli) per il gioco del percorso
-	var route := type == "route"
-	_title = $TitoloPercorso if route else $Titolo
-	_info = $InfoPercorso if route else $Info
-	for l: Label in [$Titolo, $Info, $TitoloPercorso, $InfoPercorso]:
-		l.visible = l == _title or l == _info
+	# lo sfondo, il titolo e la riga sotto sono nodi di scenes/minigame/minigame.tscn: Titolo e Info
+	_title = $Titolo
+	_info = $Info
 	_title.text = str(cfg.get("title", "Dai una mano"))
 	_risposta = get_node_or_null("Risposta")
 	_info.text = ""
@@ -299,13 +259,6 @@ func _start() -> void:
 			_sn_start()
 			_sn_spawn_parcel()
 			sn_msg = "Scorri il dito per partire e girare il furgone." if TouchControls.enabled else "Le FRECCE fanno partire e girare il furgone."
-		"route":
-			_rt_load(0)
-			if cfg.has("seed"):
-				rt_rng.seed = int(cfg["seed"])
-			else:
-				rt_rng.randomize()
-			_info.text = "Tocca una destinazione a destra. Porta tutti e tre i pacchi." if TouchControls.enabled else "FRECCE scegli la destinazione • %s viaggia • Porta tutti e tre i pacchi" % GameState.fmt("{ok}")
 		"rate":
 			rate_cards = range(_rate_docs().size())
 			var rng := RandomNumberGenerator.new()
@@ -515,17 +468,6 @@ func touch_point(pos: Vector2, step: int) -> void:
 				_inv_place(k)
 				return
 		return
-	if type == "route" and step == 0:
-		var choices := _rt_neighbors(rt_at)
-		for i in choices.size():
-			if _rt_card(i).has_point(pos):
-				_rt_go(int(choices[i]))
-				return
-		for n in choices:
-			if pos.distance_to(rt_nodes[n]) < 26.0:
-				_rt_go(n)
-				return
-		return
 	if type == "collect":
 		finger = pos if step != 2 else Vector2(-1, -1)
 	elif type == "wires":
@@ -593,111 +535,6 @@ func _inv_place(k: int) -> void:
 		inv_msg = "%s in %s? No. (Però una volta Leda ci ha trovato il sapone.)" % [str(g[0]), INV_CATS[k]]
 		if misses >= int(cfg.get("misses", 3)):
 			_finish(false)
-
-
-# --- L'ULTIMA CONSEGNA ---------------------------------------------------------
-
-func _rt_edge(a: int, b: int) -> Array:
-	for e: Array in rt_edges:
-		if (int(e[0]) == a and int(e[1]) == b) or (int(e[0]) == b and int(e[1]) == a):
-			return e
-	return []
-
-
-func _rt_neighbors(a: int) -> Array:
-	var out: Array = []
-	for e: Array in rt_edges:
-		if int(e[0]) == a:
-			out.append(int(e[1]))
-		elif int(e[1]) == a:
-			out.append(int(e[0]))
-	# in ordine da sinistra a destra (e dall'alto in basso): così le frecce vanno dove ti aspetti
-	out.sort_custom(func(x: int, y: int) -> bool: return rt_nodes[x].x * 1000 + rt_nodes[x].y < rt_nodes[y].x * 1000 + rt_nodes[y].y)
-	return out
-
-
-## Vai all'incrocio `n` (deve essere vicino). La strada rischiosa a volte ha il cantiere.
-func _rt_go(n: int) -> void:
-	if rt_k < 1.0 or phase != "play":
-		return
-	var e := _rt_edge(rt_at, n)
-	if e.is_empty():
-		return
-	var cost := int(e[2])
-	rt_msg = ""
-	if bool(e[3]) and rt_rng.randf() < RT_RISK:
-		cost += RT_DETOUR
-		rt_msg = "Cantiere! Giri intorno: +%d minuti." % RT_DETOUR
-		flash = 0.3
-		Sound.sfx("hurt")
-	else:
-		Sound.sfx("move")
-	rt_from = rt_nodes[rt_at]
-	rt_to = rt_nodes[n]
-	rt_k = 0.0
-	rt_at = n
-	rt_sel = 0
-	if cost > rt_left:
-		rt_left = 0
-		rt_msg = "Tempo scaduto a metà strada."
-		_rt_map_over()
-		return
-	rt_left -= cost
-	if n in rt_parcels and n not in rt_done:
-		rt_done.append(n)
-		Sound.sfx("coin")
-		if rt_done.size() >= rt_parcels.size():
-			_rt_map_over()
-			return
-	# se non c'è più tempo nemmeno per la strada più corta, è finita
-	var shortest := 999
-	for m in _rt_neighbors(rt_at):
-		shortest = mini(shortest, int(_rt_edge(rt_at, m)[2]))
-	if shortest > rt_left:
-		_rt_map_over()
-
-
-## Prepara il giro `i`: la sua mappa, il suo tempo, il cuore al magazzino.
-func _rt_load(i: int) -> void:
-	var m: Dictionary = RT_MAPS[i]
-	rt_map = i
-	rt_nodes = m["nodes"]
-	rt_names = m["names"]
-	rt_edges = m["edges"]
-	rt_parcels = m["parcels"]
-	rt_left = int(cfg.get("budget", m["budget"])) if i == 0 else int(m["budget"])
-	rt_done = []
-	rt_at = 0
-	rt_sel = 0
-	rt_k = 1.0
-	rt_from = rt_nodes[0]
-	rt_to = rt_nodes[0]
-
-
-func _rt_all() -> int:
-	var n := 0
-	for m: Dictionary in RT_MAPS:
-		n += (m["parcels"] as Array).size()
-	return n
-
-
-## Il giro è finito: i pacchi consegnati si sommano, e se c'è ancora il pomeriggio si riparte.
-func _rt_map_over() -> void:
-	rt_total += rt_done.size()
-	if rt_map + 1 < RT_MAPS.size():
-		var got := rt_done.size()
-		_rt_load(rt_map + 1)
-		rt_msg = "Mattina finita (%d pacchi su 3). Ora il pomeriggio: altri tre." % got
-		Sound.sfx("ding")
-		return
-	_rt_end()
-
-
-func _rt_end() -> void:
-	var n := rt_total
-	phase = "end"
-	await get_tree().create_timer(0.7).timeout
-	_finish(n >= _rt_all(), n > 0 and n < _rt_all())
 
 
 func _new_zone() -> void:
@@ -768,7 +605,6 @@ func _process(delta: float) -> void:
 	if visivo != null: return
 	flash = maxf(0.0, flash - delta)
 	t_spin += delta * 4.0
-	rt_k = minf(1.0, rt_k + delta * 2.0)
 	match phase:
 		"play":
 			if type == "timing":
@@ -893,7 +729,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event is InputEventMouseMotion and ((event as InputEventMouseMotion).button_mask & MOUSE_BUTTON_MASK_LEFT):
 			touch_point((event as InputEventMouseMotion).position, 1)
 			return
-	if type in ["inventory", "route", "rate", "pratiche"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
+	if type in ["inventory", "rate", "pratiche"] and event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
 			and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
 		touch_point((event as InputEventMouseButton).position, 0)
 		return
@@ -957,17 +793,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			Sound.sfx("arcade/select_2", 1.0, 4.0)
 		elif event.is_action_pressed("confirm"):
 			_pr_answer(pr_sel)
-		return
-	if type == "route":
-		var nb := _rt_neighbors(rt_at)
-		if event.is_action_pressed("move_left") or event.is_action_pressed("move_up"):
-			rt_sel = posmod(rt_sel - 1, nb.size())
-			Sound.sfx("move")
-		elif event.is_action_pressed("move_right") or event.is_action_pressed("move_down"):
-			rt_sel = posmod(rt_sel + 1, nb.size())
-			Sound.sfx("move")
-		elif event.is_action_pressed("confirm"):
-			_rt_go(int(nb[clampi(rt_sel, 0, nb.size() - 1)]))
 		return
 	var tapped := event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed
 	if type == "timing" and (event.is_action_pressed("confirm") or tapped):
@@ -1182,13 +1007,9 @@ func _draw() -> void:
 	if type == "ercole":
 		return
 	var font := Assets.font()
-	var frame := INV if type == "inventory" else (Rect2(24, 64, 592, 280) if type == "route" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze", "consegne"] else BOX))
-	if type == "route":
-		Art.backdrop(self)
-		Art.panel(self, frame, Color("202b35"), Color("829caa"))
-	else:
-		Art.backdrop(self)
-		Art.panel(self, frame, Color("24313e"), Color("829caa"))
+	var frame := INV if type == "inventory" else (BIG if type in ["rate", "pratiche", "volantini", "coincidenze", "consegne"] else BOX)
+	Art.backdrop(self)
+	Art.panel(self, frame, Color("24313e"), Color("829caa"))
 	match type:
 		"rate":
 			_draw_rate(font)
@@ -1232,8 +1053,6 @@ func _draw() -> void:
 			_draw_stato()
 		"inventory":
 			_draw_inventory(font)
-		"route":
-			_draw_route(font)
 		"sequence":
 			var cx := BOX.get_center()
 			# la freccia resta accesa per due terzi del tempo, poi si spegne: così si vede quando cambia
@@ -2188,65 +2007,6 @@ func _draw_inventory(font: Font) -> void:
 		if k == inv_sel and not TouchControls.enabled:
 			draw_rect(r.grow(2), YELLOW, false, 2)
 			draw_rect(Rect2(r.get_center().x - 4, r.end.y - 9, 8, 3), YELLOW)
-
-
-func _rt_card(i: int) -> Rect2:
-	return Rect2(410, 122 + i * 43, 194, 38)
-
-
-func _draw_route(font: Font) -> void:
-	var nb := _rt_neighbors(rt_at)
-	var selected := int(nb[clampi(rt_sel, 0, nb.size()-1)]) if not nb.is_empty() else -1
-	draw_string(font, Vector2(38, 84), "%s   CONSEGNE %d/3" % [str(RT_MAPS[rt_map]["title"]), rt_done.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color.WHITE)
-	draw_string(font, Vector2(410, 84), "%d MIN DISPONIBILI" % rt_left, HORIZONTAL_ALIGNMENT_CENTER, 194, 10, YELLOW)
-	draw_line(Vector2(36, 94), Vector2(604, 94), Color("52616d"), 1)
-	# Il tragitto selezionato resta l'unico luminoso; gli altri sono sullo sfondo.
-	for e: Array in rt_edges:
-		var a: Vector2 = rt_nodes[int(e[0])]
-		var b: Vector2 = rt_nodes[int(e[1])]
-		var risky := bool(e[3])
-		var active := (int(e[0]) == rt_at and int(e[1]) == selected) or (int(e[1]) == rt_at and int(e[0]) == selected)
-		var col := YELLOW if active else (Color("bd7168") if risky else Color("617b86"))
-		if risky:
-			var steps := maxi(1, int(a.distance_to(b) / 9.0))
-			for i in steps:
-				if i % 2 == 0: draw_line(a.lerp(b,float(i)/steps), a.lerp(b,float(i+1)/steps), col, 3 if active else 2)
-		else:
-			draw_line(a, b, col, 5 if active else 3)
-		var mid := a.lerp(b, 0.5)
-		draw_rect(Rect2(mid-Vector2(13,7), Vector2(26,14)), Color("202b35"))
-		draw_string(font, mid+Vector2(-13,3), str(int(e[2]))+"'", HORIZONTAL_ALIGNMENT_CENTER, 26, 9, col)
-	for i in rt_nodes.size():
-		var at: Vector2 = rt_nodes[i]
-		var parcel := rt_parcels.find(i)
-		var col := GREEN if i in rt_done else (YELLOW if parcel >= 0 else Color("9baeb5"))
-		draw_circle(at, 11, Color("141e29"))
-		draw_arc(at, 11, 0, TAU, 32, col, 2)
-		if i == selected: draw_arc(at, 15, 0, TAU, 32, YELLOW, 2)
-		if parcel >= 0:
-			draw_string(font, at+Vector2(-9,4), "OK" if i in rt_done else str(parcel+1), HORIZONTAL_ALIGNMENT_CENTER, 18, 9, col)
-		elif i != rt_at:
-			draw_circle(at, 3, col)
-		# Le destinazioni stanno fuori dalle strade, mai sopra i costi.
-		var y := at.y+28 if at.y >= 190 else at.y-20
-		var name_ := str(rt_names[i]).replace("Incrocio", "Inc.")
-		draw_string(font, Vector2(at.x-48,y), name_, HORIZONTAL_ALIGNMENT_CENTER, 96, 9, col)
-	_heart(rt_from.lerp(rt_to, rt_k), RED)
-	draw_string(font, Vector2(410, 112), "SCEGLI DOVE ANDARE", HORIZONTAL_ALIGNMENT_CENTER, 194, 10, Color.WHITE)
-	for i in nb.size():
-		var n := int(nb[i])
-		var edge := _rt_edge(rt_at, n)
-		var risk := bool(edge[3])
-		var card := _rt_card(i)
-		var chosen := i == rt_sel
-		draw_rect(card, Color("3b4c58") if chosen else Color("293640"))
-		draw_rect(card, YELLOW if chosen else Color("52616d"), false, 1)
-		draw_string(font, card.position+Vector2(7,14), str(rt_names[n]), HORIZONTAL_ALIGNMENT_LEFT, 180, 10, Color.WHITE)
-		var detail := "%d min  %s" % [int(edge[2]), "CANTIERE: rischio +40" if risk else "STRADA SICURA"]
-		draw_string(font, card.position+Vector2(7,29), detail, HORIZONTAL_ALIGNMENT_LEFT, 180, 8, Color("f09c87") if risk else Color("83d6bd"))
-	draw_string(font, Vector2(38, 310), "1 2 3 = PACCHI   VERDE = CONSEGNATO", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("c4d3d7"))
-	var message := rt_msg if rt_msg != "" else "Il tempo scende solo quando viaggi. Le linee rosse passano dai cantieri."
-	draw_string(font, Vector2(38, 332), message, HORIZONTAL_ALIGNMENT_LEFT, 566, 8, Color("f0b58a") if rt_msg != "" else Color("c4d3d7"))
 
 
 func _draw_wires(font: Font) -> void:

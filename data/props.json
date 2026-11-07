@@ -8,7 +8,7 @@
     ],
     "sign": [
       ["* Un cartello con il marchio CHEAP."],
-      ["* Un cartello CHEAP. Usa tre punti esclamativi per dire una cosa che non consola."],
+      ["* Un cartello aziendale CHEAP. Usa tre punti esclamativi per comunicare una pessima notizia con grande entusiasmo."],
       ["* L'avviso è nuovo. Il nastro adesivo che lo copre è ancora più nuovo."]
     ],
     "plant": [
@@ -47,8 +47,7 @@
       ["* Il neon fa un piccolo ronzio. Con abbastanza ore diventa una voce."]
     ],
     "vending": [
-      ["* Un distributore automatico. Accetta monete, badge e decisioni prese male."],
-      ["* Dietro il vetro, lo snack più economico è bloccato nella spirale."],
+      ["* Un distributore automatico che accetta monete, badge e pessime decisioni. Dietro il vetro, lo snack più economico è irrimediabilmente incastrato nella spirale."],
       ["* Il display mostra il prezzo e, sotto, la possibilità di pagarlo a rate."]
     ],
     "door": [
@@ -57,8 +56,7 @@
       ["* La porta ha una maniglia di metallo."]
     ],
     "trash": [
-      ["* Un cestino pieno di bozze. Tutte cominciano con \"Gentile cliente\"."],
-      ["* Carta strappata, bicchieri vuoti e una richiesta compilata perfettamente."],
+      ["* Un cestino traboccante di bozze strappate che iniziano con \"Gentile cliente\". In mezzo ai bicchieri vuoti spicca una richiesta compilata in modo impeccabile, gettata via per sbaglio."],
       ["* Il cestino viene svuotato ogni sera. Le ragioni per riempirlo restano."]
     ],
     "floor_-5": [

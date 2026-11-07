@@ -167,7 +167,6 @@ const PLAYLISTS := {
 	"notte": ["nighttownwaltz"],
 	"nives": ["lively_city"],
 	"fondo": ["dripstonecave"],
-	"battaglia": ["battle_theme_i", "battle_theme_ii", "haveyoueverplayedgrimdawn"],
 	"tensione": ["tension1", "tension2"],
 }
 

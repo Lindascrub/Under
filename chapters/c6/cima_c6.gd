@@ -406,6 +406,8 @@ func read_contract() -> void:
 	Sound.sfx("flap")
 	await Ui.say(["* La Presidente apre un cassetto ed estrae una cartellina rosa.",
 		"* OBBLIGO DI ESISTENZA. IMPORTO ORIGINARIO: 7.000.000.000 €."])
+	await Ui.say(["Non guardarla così. Sette miliardi sembrano tanti, ma se li dividi per l'eternità sono una rata mensile del tutto ragionevole.",
+		"Noi qui vendiamo certezze."], PRES)
 	await Ui.say(["È il fascicolo della tua registrazione. Non il contratto che cercavi."], PRES)
 	# le sezioni si leggono in ordine, una alla volta
 	var sections := ["1. Registrazione", "2. Importo", "3. Consenso"]

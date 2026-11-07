@@ -277,7 +277,8 @@ func _quaderno() -> void:
 	GameState.flags["c4_teo_sogno"] = true
 	await Ui.say(["* Nel cassetto della scrivania, sotto i documenti, un quaderno di fumetti. Un impiegato con la cravatta lunghissima.",
 		"* Nella vignetta dopo, la cravatta diventa un mantello."])
-	await Ui.say(["Quello?", "È un progetto.", "Prima o poi vorrei pubblicarlo.", "Appena avrò un lavoro un po' più tranquillo."], "Teo")
+	await Ui.say(["Quello?", "È un progetto.", "Prima o poi vorrei pubblicarlo.", "Appena avrò un lavoro un po' più tranquillo.",
+		"Un giorno scriverò un fumetto in cui il supercattivo è un tasso di interesse variabile. È il nemico più spaventoso che conosca."], "Teo")
 
 
 func _archivio() -> void:
@@ -368,9 +369,15 @@ func _boss_call() -> void:
 		"%s." % GameState.euros(prize)], BOSS)
 	if _f("c4_teo_aiutato"):
 		await Ui.say(["Ho visto che l'hai aiutato con le pratiche. Ottimo! Così sai già dove tiene le cose."], BOSS)
+	var asked := false
 	while true:
-		var d: int = await Ui.choose("Il rapporto 404: %s." % GameState.euros(prize), ["Va bene", "Ci penso", "Perché io?", "No. È di Teo."], BOSS)
+		# "Perché io?" si chiede una volta sola
+		var opts: Array = ["Va bene", "Ci penso", "No. È di Teo."] if asked else ["Va bene", "Ci penso", "Perché io?", "No. È di Teo."]
+		var d: int = await Ui.choose("Il rapporto 404: %s." % GameState.euros(prize), opts, BOSS)
+		if asked and d == 2:
+			d = 3
 		if d == 2:
+			asked = true
 			await Ui.say(["Perché una scoperta importante vale molto.", "Soprattutto se l'ha fatta la persona giusta."], BOSS)
 			continue
 		if d == 3:

@@ -7,17 +7,6 @@ const CREAM := Color("fff0cd")
 const GOLD := Color("f4c85c")
 const STEEL := Color("8b9eae")
 const TEAL := Color("326e78")
-const FURNITURE := {
-	"tavolo": preload("res://art/c5/tavolo_lungo.png"),
-	"scaffale": preload("res://art/c5/libreria.png"),
-	"sedie": preload("res://art/c5/sedie_spaiate.png"),
-}
-
-static func furniture(ci: CanvasItem, r: Rect2, kind: String) -> void:
-	var tex: Texture2D = FURNITURE.get(kind, FURNITURE["tavolo"])
-	var k := minf(r.size.x / tex.get_width(), r.size.y / tex.get_height())
-	var size := (tex.get_size() * k).floor()
-	ci.draw_texture_rect(tex, Rect2((r.get_center() - size / 2).floor(), size), false)
 
 static func panel(ci: CanvasItem, r: Rect2, base := Color("24313e"), trim := STEEL) -> void:
 	ci.draw_rect(r, INK)
@@ -99,54 +88,8 @@ static func phone(ci: CanvasItem, c: Vector2, lit := false, tint := CREAM) -> vo
 			ci.draw_line(c + Vector2(s * 29, -12), c + Vector2(s * 34, -17), GOLD, 2)
 			ci.draw_line(c + Vector2(s * 30, -4), c + Vector2(s * 37, -5), GOLD, 2)
 
-static func sponge(ci: CanvasItem, c: Vector2) -> void:
-	var r := Rect2(c.round() - Vector2(10, 7), Vector2(20, 14))
-	ci.draw_rect(r.grow(1), INK)
-	ci.draw_rect(r, GOLD)
-	ci.draw_rect(Rect2(r.position, Vector2(20, 4)), Color("4b9174"))
-	ci.draw_rect(Rect2(r.position + Vector2(1, 4), Vector2(18, 2)), CREAM)
-	for p in [Vector2(4, 9), Vector2(11, 7), Vector2(15, 11)]:
-		ci.draw_rect(Rect2(r.position + p, Vector2(2, 2)), Color("c28b47"))
-	ci.draw_rect(Rect2(r.position + Vector2(1, 12), Vector2(18, 2)), Color("c28b47"))
-
-static func stain(ci: CanvasItem, c: Vector2, radius: float, color := Color("725144")) -> void:
-	var p := c.round()
-	ci.draw_rect(Rect2(p - Vector2(radius, radius * 0.4), Vector2(radius * 2, radius * 0.8)), color)
-	ci.draw_rect(Rect2(p - Vector2(radius * 0.65, radius * 0.7), Vector2(radius * 1.35, radius * 1.4)), color)
-	ci.draw_rect(Rect2(p + Vector2(radius * 0.7, radius * 0.25), Vector2(radius * 0.6, radius * 0.35)), color)
-	ci.draw_rect(Rect2(p - Vector2(radius * 0.4, radius * 0.3), Vector2(radius * 0.5, 2)), color.lightened(0.18))
-
-static func fruit(ci: CanvasItem, c: Vector2, color := Color("dc5b4a"), unit := 1.0) -> void:
-	pixel(ci, c - Vector2(6, 7) * unit, ["......ss....", ".....ssgg...", ".....sggg...", "..###s###...", ".#rrrlrrr#..", "#rllrrrrrr#.", "#rlrrrrrrr#.", "#rrrrrrrrd#.", "#rrrrrrrrd#.", ".#rrrrrrd#..", "..##rrd##...", "....###....."], {"#": INK, "r": color, "l": color.lightened(0.3), "d": color.darkened(0.3), "s": Color("765343"), "g": Color("65996e")}, unit)
-
 static func product(ci: CanvasItem, r: Rect2, name: String) -> void:
 	Products.draw(ci, r, name)
-
-static func car(ci: CanvasItem, r: Rect2, color := Color("d75a58")) -> void:
-	ci.draw_rect(Rect2(r.position + Vector2(4, -2), Vector2(r.size.x - 8, r.size.y + 4)), INK)
-	ci.draw_rect(r, INK)
-	ci.draw_rect(r.grow(-1), color)
-	ci.draw_rect(Rect2(r.position + Vector2(8, 2), Vector2(r.size.x - 16, r.size.y - 4)), Color("9fd0dd"))
-	ci.draw_rect(Rect2(r.position + Vector2(15, 3), Vector2(r.size.x - 27, r.size.y - 6)), color.darkened(0.22))
-	ci.draw_rect(Rect2(r.position + Vector2(3, 2), Vector2(3, 3)), CREAM)
-	ci.draw_rect(Rect2(r.position + Vector2(3, r.size.y - 5), Vector2(3, 3)), CREAM)
-	ci.draw_rect(Rect2(r.end.x - 4, r.position.y + 2, 2, 3), Color("983b47"))
-
-static func courier(ci: CanvasItem, c: Vector2, t: float) -> void:
-	for dx in [-11, 11]:
-		ci.draw_circle(c + Vector2(dx, 7), 7, INK)
-		ci.draw_circle(c + Vector2(dx, 7), 5, STEEL)
-		ci.draw_circle(c + Vector2(dx, 7), 3, INK)
-	var points := PackedVector2Array([c + Vector2(-11, 7), c + Vector2(-4, -4), c + Vector2(5, 7), c + Vector2(11, 7), c + Vector2(5, -8), c + Vector2(-4, -4)])
-	ci.draw_polyline(points, INK, 4)
-	ci.draw_polyline(points, GOLD, 2)
-	ci.draw_rect(Rect2(c + Vector2(-3, -24), Vector2(9, 9)), INK)
-	ci.draw_rect(Rect2(c + Vector2(-1, -23), Vector2(6, 7)), Color("e4b893"))
-	ci.draw_rect(Rect2(c + Vector2(-4, -25), Vector2(11, 3)), Color("5699b2"))
-	ci.draw_line(c + Vector2(0, -15), c + Vector2(-3, -6), Color("5699b2"), 6)
-	ci.draw_line(c + Vector2(-3, -7), c + Vector2(3, 2 + sin(t * 12) * 2), Color("4f526f"), 3)
-	ci.draw_line(c + Vector2(1, -13), c + Vector2(8, -8), Color("e4b893"), 2)
-	carton(ci, Rect2(c + Vector2(-20, -9), Vector2(11, 10)), CREAM)
 
 static func cable(ci: CanvasItem, points: PackedVector2Array, color: Color, width := 3.0, tips := false) -> void:
 	if points.size() < 2: return
@@ -178,9 +121,6 @@ static func paper(ci: CanvasItem, r: Rect2, base := Color("f4efdc")) -> void:
 	ci.draw_rect(Rect2(r.position + Vector2(2, 2), Vector2(r.size.x - 8, 2)), CREAM)
 	ci.draw_rect(Rect2(r.end.x - 7, r.position.y + 1, 6, 6), Color("d7cbb0"))
 	ci.draw_line(Vector2(r.end.x - 7, r.position.y + 1), Vector2(r.end.x - 1, r.position.y + 7), Color("9d8c76"), 1)
-
-static func coin(ci: CanvasItem, c: Vector2, unit := 1.0) -> void:
-	pixel(ci, c - Vector2(6, 6) * unit, ["...######...", "..#yyyyyy#..", ".#yyhhhyyy#.", "#yyhhyyyyyd#", "#yhyyyyyyyd#", "#yhyyhhhyyd#", "#yhyyhyyyyd#", "#yyyyhhhyyd#", "#yyyyyyyyyd#", ".#yyyyyydd#.", "..#yddddd#..", "...######..."], {"#": INK, "y": GOLD, "h": CREAM, "d": Color("bd8548")}, unit)
 
 static func collectible(ci: CanvasItem, c: Vector2, color: Color, title: String) -> void:
 	if title.to_lower().contains("croccant"):

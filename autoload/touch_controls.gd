@@ -85,9 +85,6 @@ func _process(_delta: float) -> void:
 	elif Ui.busy or Ui.transitioning or Ui.cutscene or path == "res://scenes/main_menu.tscn":
 		stick = false
 		buttons = false
-	elif path == "res://scenes/battle/battle.tscn":
-		stick = scene.get("phase") == "dodge"
-		buttons = false
 	elif path == "res://scenes/minigame/minigame.tscn":
 		stick = scene.get("phase") in ["play", "show"] and scene.get("type") not in ["timing", "volantini"]
 		buttons = false

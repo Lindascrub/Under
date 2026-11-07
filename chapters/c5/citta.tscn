@@ -296,10 +296,10 @@ size = Vector2(8, 5)
 size = Vector2(8, 5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hc0sm"]
-size = Vector2(28, 13)
+size = Vector2(28, 30)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arypb"]
-size = Vector2(26, 13)
+size = Vector2(28, 38)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ynjc2"]
 size = Vector2(60, 13)
@@ -1390,8 +1390,11 @@ npc_id = "nadir"
 activity = "idle_left"
 
 [node name="PostoTurno" parent="Mondo" unique_id=985533622 instance=ExtResource("posto_tscn")]
-position = Vector2(368, 160)
+position = Vector2(312, 240)
 job = "comunicazioni_citta"
+
+[node name="Centralino" type="Marker2D" parent="Mondo"]
+position = Vector2(376, 168)
 
 [node name="SportelloBadge" type="Node2D" parent="Mondo" unique_id=170100235]
 y_sort_enabled = true
@@ -1835,7 +1838,7 @@ metadata/footprint_applied = true
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1" unique_id=2086157286]
 
 [node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom1/Collisione" unique_id=120313362]
-position = Vector2(0, -6.5)
+position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_hc0sm")
 
 [node name="ModernExteriorsSinglesPortableBathroom4" type="Sprite2D" parent="Mondo" unique_id=1528719428]
@@ -1848,7 +1851,7 @@ metadata/footprint_applied = true
 [node name="Collisione" type="StaticBody2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4" unique_id=161749096]
 
 [node name="Forma" type="CollisionShape2D" parent="Mondo/ModernExteriorsSinglesPortableBathroom4/Collisione" unique_id=121474293]
-position = Vector2(0, -6.5)
+position = Vector2(0, -19)
 shape = SubResource("RectangleShape2D_arypb")
 
 [node name="ModernExteriorsSinglesShopShoppingCenterTrolleyShelter1" type="Sprite2D" parent="Mondo" unique_id=1169987076]

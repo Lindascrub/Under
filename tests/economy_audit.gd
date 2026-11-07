@@ -26,7 +26,7 @@ func _ready() -> void:
     # City identifier is data-owned, not guessed.
     for candidate: Dictionary in GameState.jobs_available():
      if str(candidate.get("room", "")) == "citta": job = candidate
-   var pay := int(job.get("battle", {}).get("pay", 0))
+   var pay := int(job.get("turno", {}).get("pay", 0))
    if not bool(job.get("pay_fixed", false)): pay = int(pay * (1.0 + 0.1 * i))
    var target := 0 if bool(scenario.get("gifts", false)) else GameState.badge_cost(GameState.floor_above()) + (300 if i == 1 else 0)
    var n := 0
@@ -34,8 +34,8 @@ func _ready() -> void:
     if GameState.worked_today:
      if bool(scenario.get("minimum", false)):
       GameState.pay_debt(GameState.MIN_PAYMENT)
-      GameState.end_day(true)
-     else: GameState.end_day(false)
+     # come la stellina: "Salva e lascia passare la notte"
+     GameState.spend(GameState.MIDNIGHT - GameState.minutes)
     n += 1; total_turns += 1
     GameState.finish_hard_job(pay)
     if n == 1 and i in scenario["accept"]: GameState.money += int(B.PRIZES[GameState.floor_id])

@@ -747,7 +747,7 @@ func _run_click() -> void:
 
 
 func receipt_lines() -> Array:
-	var pay := int(GameState.job("cassa_mercato").get("battle", {}).get("pay", 120))
+	var pay := int(GameState.job("cassa_mercato").get("turno", {}).get("pay", 120))
 	var bread: Array = GameState.market["prezzi"]["pane"]["prezzo"]
 	var lines := ["CHEAP — RIEPILOGO ECONOMICO", "--------------------------",
 		"RETRIBUZIONE TURNO: %d €" % pay, "PREZZO PANE INIZIALE: %d €" % int(bread[0])]

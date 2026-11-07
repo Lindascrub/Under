@@ -1,6 +1,5 @@
 extends Node
 
-const RouteProbe = preload("res://tests/fixtures/rate_probe.gd")
 var room: Room
 var mg: Node2D
 var failures: Array[String] = []
@@ -119,7 +118,6 @@ func _ready() -> void:
 		_check(seated != null and is_equal_approx(seated.position.y,246), name_+" is off the bench")
 	await _shot("pausa_leda_amir", Vector2(520,234), 4.0)
 	await _close()
-	await _routes()
 	print("INTERACTIONS CHAPTERS: ",checks," checks, failures=",failures)
 	Sound.music("")
 	get_tree().quit(0 if failures.is_empty() else 1)
@@ -168,62 +166,6 @@ func _solid(spr: Sprite2D, local: Vector2) -> bool:
 	for hit in room.get_world_2d().direct_space_state.intersect_point(query):
 		if spr.is_ancestor_of(hit.collider): return true
 	return false
-
-func _routes() -> void:
-	GameState.minigame={"type":"route","title":"L'ULTIMA CONSEGNA","intro":[],"seed":17}
-	# le scritte del minigioco sono nodi della sua scena: la sonda usa la scena vera
-	mg=load("res://scenes/minigame/minigame.tscn").instantiate();mg.set_script(RouteProbe)
-	get_tree().root.add_child(mg);get_tree().current_scene=mg
-	for i in 40: await get_tree().process_frame
-	_check(mg.get("phase")=="play","Amir did not start")
-	await _capture("amir_mappa")
-	# Reach every parcel using the safe itinerary; exercise actual input at different sizes.
-	var plan := [2,5,4,2,5,6]
-	for i in plan.size():
-		var target: int=plan[i]
-		# si sceglie la tappa dopo solo quando il furgone è arrivato (il viaggio è animato)
-		for frame in 600:
-			await get_tree().process_frame
-			if float(mg.get("rt_k")) >= 1.0 and frame > 10: break
-		var choices: Array=mg.call("_rt_neighbors",mg.get("rt_at"))
-		var index:=choices.find(target)
-		_check(index>=0,"Safe route is disconnected")
-		if index<0:break
-		if i==0:
-			mg.set("rt_sel",0)
-			for j in index:_event("move_down");await get_tree().process_frame
-			_event("confirm")
-			for j in 3:await get_tree().process_frame
-		elif i==3:
-			get_window().size=Vector2i(1000,800)
-			for j in 8:await get_tree().process_frame
-			await _tap_card(index,true)
-		else:
-			await _tap_card(index,false)
-		_check(int(mg.get("rt_at"))==target or i in [2,5],"Selected route did not move")
-		print("ROUTE step=",i," at=",mg.get("rt_at")," map=",mg.get("rt_map")," left=",mg.get("rt_left")," total=",mg.get("rt_total")," phase=",mg.get("phase"))
-	for i in 600:
-		await get_tree().process_frame
-		# a fine giro il gioco mostra il risultato per un momento, poi chiude (la sonda segna probe_done)
-		if mg.get("phase") == "probe_done": break
-	_check(mg.get("won") and int(mg.get("rt_total"))==6,"Safe deliveries cannot be completed")
-	get_tree().current_scene=self;mg.queue_free();mg=null
-	for i in 5:await get_tree().process_frame
-
-func _tap_card(index: int, touch: bool) -> void:
-	var local: Vector2=(mg.call("_rt_card",index) as Rect2).get_center()
-	var point:Vector2=get_viewport().get_screen_transform()*mg.get_global_transform_with_canvas()*local
-	if touch:
-		TouchControls.enabled=true
-		var event:=InputEventScreenTouch.new();event.position=point;event.index=0;event.pressed=true;Input.parse_input_event(event)
-		await get_tree().process_frame
-		event=InputEventScreenTouch.new();event.position=point;event.index=0;Input.parse_input_event(event)
-		TouchControls.enabled=false
-	else:
-		var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=true;Input.parse_input_event(event)
-		await get_tree().process_frame
-		event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;Input.parse_input_event(event)
-	for i in 2:await get_tree().process_frame
 
 ## Cammina verso `dir` finché si sbatte contro qualcosa, come col tasto premuto.
 func _push(p: Player, start: Vector2, dir: String) -> void:

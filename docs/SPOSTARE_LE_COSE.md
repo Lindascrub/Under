@@ -4,7 +4,6 @@ Queste stanze sono scene vere: si aprono in Godot e si sistemano trascinando i n
 
 | Piano | Scena |
 |---|---|
-| Piano terra | `scenes/world/office.tscn` |
 | L'ascensore dell'inizio | `scenes/world/elevator_intro.tscn` |
 | -5 Il Fondo | `chapters/c1/fondo.tscn` |
 | -4 Il Sottoufficio | `chapters/c2/sottoufficio.tscn` |
@@ -46,7 +45,7 @@ Queste stanze sono scene vere: si aprono in Godot e si sistemano trascinando i n
   - **Pezzi piccoli che si attaccano alle persone** (si aprono e si cambiano lì): `world/antenna_robot.tscn`,
     `chapters/c4/timbro_robot.tscn` (anche il ritmo), `chapters/c4/lettera_olga.tscn`,
     `chapters/c4/ricerca_contratto.tscn`, `chapters/c5/cartello_in_mano.tscn`, `world/signor_rata.tscn`
-    (lo `Sprite` è dove compare rispetto a te), `world/gatto.tscn` e `world/occhiali.tscn` (le missioni).
+    (lo `Sprite` è dove compare rispetto a te).
   - **Le scale chiuse del Sottoufficio** (quando il Fondo è sbarrato): `chapters/c2/scale_chiuse.tscn`
     (`Botola`, `Sbarramento` con coni, nastro e cartello, `Collisioni`, `Guarda`, `Arrivo`).
   - **Le biglietterie** (`Mondo/SportelloBadge`, su tutti i piani) sono la scena `world/badge_booth.tscn`:
@@ -129,7 +128,5 @@ Griglia consigliata: nel menu della vista 2D, *Snap* attivo con passo 16x16 (una
 
 - **Gli script di bake non sovrascrivono più le scene**: se esiste già, `tools/bake_*.gd` si ferma.
   Per rifare una scena da zero (perdendo gli spostamenti fatti a mano) serve `-- --force`.
-- Le persone che si muovono secondo l'orario (quelle in `data/npcs.json`, come Dario e Giulia al piano
-  terra) compaiono dove dice il loro orario, non sono nodi della scena.
-- Fatte ancora solo col codice (non si spostano nell'editor): la casa, la strada, il parco, il rifugio,
-  l'ufficio del capo, la Presidenza.
+- Tutte le stanze sono nell'editor: le stanze fatte solo col codice (casa, strada, parco, ufficio del
+  capo, Presidenza) sono state tolte il 5/11/2026.

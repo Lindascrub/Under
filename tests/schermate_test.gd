@@ -237,13 +237,15 @@ func _test_impostazioni() -> void:
 	_check(not Ui.busy, "dopo i comandi il gioco resta bloccato")
 	# lo schermo intero si accende e si spegne (senza salvarlo nelle impostazioni vere)
 	_check(InputMap.has_action("fullscreen"), "manca il tasto F11 per lo schermo intero")
-	var was := Controls.is_fullscreen()
-	Controls._apply_fullscreen(true)
-	await _idle()
-	_check(Controls.is_fullscreen(), "lo schermo intero non si accende")
-	Controls._apply_fullscreen(was)
-	await _idle()
-	_check(Controls.is_fullscreen() == was, "lo schermo intero non si spegne")
+	# senza finestra (--headless) lo schermo intero non esiste: si prova solo con la finestra
+	if DisplayServer.get_name() != "headless":
+		var was := Controls.is_fullscreen()
+		Controls._apply_fullscreen(true)
+		await _idle()
+		_check(Controls.is_fullscreen(), "lo schermo intero non si accende")
+		Controls._apply_fullscreen(was)
+		await _idle()
+		_check(Controls.is_fullscreen() == was, "lo schermo intero non si spegne")
 	set_process(true)
 
 	_section = "impostazioni_manifesto"
@@ -530,21 +532,37 @@ func _gioca_inventario() -> void:
 func _gioca_consegne() -> void:
 	var g := await _in_gioco()
 	_shot("consegne_inizio")
-	var start: Vector2i = (g.get("sn_body") as Array)[0]
-	g.set("sn_parcel", start + Vector2i(2, 0))
-	_tap("move_right")
-	for i in 300:
-		if int(g.get("sn_carry")) >= 0:
+	var v: Node = g.get("visivo")
+	_check(v != null, "l'ultima consegna: manca la scena del gioco (visivo)")
+	if v == null:
+		return
+	# si gioca coi tasti veri: SU/GIÙ per la corsia della prossima porta, INVIO quando la porta arriva
+	for i in 6000:
+		if _scene_path() != Router.MINIGAME or not is_instance_valid(v) or not bool(v.get("attivo")):
 			break
 		await get_tree().process_frame
-	var casa := int(g.get("sn_carry"))
-	_check(casa >= 0, "l'ultima consegna: il furgone non ha raccolto il pacco")
-	if casa < 0:
-		return
-	var head: Vector2i = (g.get("sn_body") as Array)[0]
-	(g.get("cfg")["case"][casa] as Dictionary)["cella"] = [head.x + 2, head.y]
-	g.set("sn_done", 5)
-	_shot("consegne_pacco_a_bordo")
+		if Ui.busy or bool(v.get("lancio_in_corso")):
+			continue
+		var corsie: PackedFloat32Array = v.get("corsie")
+		var mira_x: float = (v.get_node("Mira") as Node2D).position.x
+		var anticipo: float = float(v.get("velocita")) * float(v.get("durata_lancio"))
+		var prossima: Node2D = null
+		for p: Node2D in v.get("porte"):
+			if p.get_meta("chiusa", false) or p.get_meta("consegnata", false) or p.position.x - anticipo < mira_x - 10.0:
+				continue
+			if prossima == null or p.position.x < prossima.position.x:
+				prossima = p
+		if prossima == null:
+			continue
+		var corsia := 0
+		for k in corsie.size():
+			if absf(corsie[k] - prossima.position.y) < absf(corsie[corsia] - prossima.position.y):
+				corsia = k
+		if corsia != int(v.get("corsia")):
+			_tap("move_up" if corsia < int(v.get("corsia")) else "move_down")
+		elif absf(prossima.position.x - anticipo - mira_x) < 6.0:
+			_tap("confirm")
+	_shot("consegne_fine")
 	for i in 600:
 		if _scene_path() != Router.MINIGAME:
 			break
@@ -650,7 +668,10 @@ func _shot(what: String) -> void:
 	# I titoli finali possono contenere ritorni a capo: su Windows non sono validi nei nomi dei PNG.
 	var safe := what.to_lower().replace("\r", "_").replace("\n", "_").replace(" ", "_").validate_filename().left(30)
 	var path := _out + "%04d_%s_%s.png" % [_n, _section, safe]
-	get_viewport().get_texture().get_image().save_png(path)
+	# senza finestra (--headless) non c'è niente da fotografare
+	var img := get_viewport().get_texture().get_image()
+	if img:
+		img.save_png(path)
 
 
 ## Il testo sta nel riquadro? Le scelte stanno nello schermo e non coprono il testo?

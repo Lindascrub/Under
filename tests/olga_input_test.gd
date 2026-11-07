@@ -10,7 +10,9 @@ func _ready() -> void:
 	GameState.save_path="user://olga_input_regression.json"
 	GameState.new_game()
 	GameState.minigame={"type":"rate","title":"LE RATE MANCANTI","intro":[],"seed":17}
-	current=Probe.new()
+	# le scritte del minigioco sono nodi della sua scena: la sonda usa la scena vera
+	current=load("res://scenes/minigame/minigame.tscn").instantiate()
+	current.set_script(Probe)
 	get_tree().root.add_child(current)
 	get_tree().current_scene=current
 	for i in 1200:
