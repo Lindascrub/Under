@@ -240,7 +240,9 @@ func mondo(i: int, r: Rect2) -> void:
 			ART.panel(self, Rect2(r.position + Vector2(26, 4), Vector2(76, 48)), Color("889590"))
 			draw_circle(r.position + Vector2(64, 28), 13, INK)
 			draw_circle(r.position + Vector2(64, 28), 10, Color("aeb7a6"), false, 2)
-			for k in mini(10, int(preview.state.reserve) / 5): moneta(r.position + Vector2(14 + k * 10, 49))
+			# I gettoni assegnati sono già nella fila del budget sotto la cassaforte.
+			draw_line(r.position + Vector2(64, 20), r.position + Vector2(64, 36), INK, 2)
+			draw_line(r.position + Vector2(56, 28), r.position + Vector2(72, 28), INK, 2)
 func _draw_options() -> void:
 	var casa := phase == "casa"
 	testo("LA CASA COMUNE" if casa else "LA REGOLA DEI DEBITI", Rect2(16, 40, 608, 26), 16, MINT)
