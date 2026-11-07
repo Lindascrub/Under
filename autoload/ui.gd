@@ -300,6 +300,12 @@ func show_status() -> void:
 	var options: Array = []
 	for item in GameState.items:
 		options.append(item)
+	# chi si chiama come la schermata admin (scripts/admin.gd) la trova qui
+	# (caricata qui e non per nome: la schermata usa le stanze, e le stanze usano Ui)
+	var admin: GDScript = load("res://scripts/admin.gd")
+	var room: Node = get_tree().current_scene
+	if admin.attivo() and room and room.has_method("start_job"):
+		options.append("Admin")
 	options.append("Impostazioni")
 	options.append("Chiudi")
 	var prompt := "{rank}. {floor}, ore {clock}. Badge: %d. Energia %d/%d." % [
@@ -308,7 +314,10 @@ func show_status() -> void:
 		prompt += "
 Non hai oggetti."
 	var i: int = await choose(prompt, options, "Stato")
-	if i == GameState.items.size():
+	if str(options[i]) == "Admin":
+		await admin.menu(room)
+		return
+	if str(options[i]) == "Impostazioni":
 		await settings_menu()
 		return
 	if i < GameState.items.size():

@@ -105,6 +105,13 @@ func _ready() -> void:
 	if arrive_to != Vector2.INF:
 		await _do_arrival(arrive_to)
 	enter()
+	# la partita admin (scripts/admin.gd) comincia con la schermata admin già aperta
+	if GameState.flags.get("admin_apri", false):
+		GameState.flags.erase("admin_apri")
+		await get_tree().process_frame
+		while Ui.blocks_input():
+			await get_tree().process_frame
+		await (load("res://scripts/admin.gd") as GDScript).menu(self)
 
 
 func build() -> void:

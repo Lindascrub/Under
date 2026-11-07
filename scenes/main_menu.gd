@@ -296,6 +296,12 @@ func _choose(option: String) -> void:
 			GameState.flags["run_id"] = MemoriaNives.new_run_id()
 			GameState.player_name = who
 			GameState.delete_save()
+			if (load("res://scripts/admin.gd") as GDScript).attivo():
+				# la partita admin salta l'ascensore: si parte dal Fondo con la schermata admin aperta
+				GameState.flags["c1_arrivo"] = true
+				GameState.flags["admin_apri"] = true
+				Router.goto(Router.FONDO)
+				return
 			Router.goto(Router.ELEVATOR)
 		"Impostazioni":
 			# dalla schermata iniziale c'è anche "Dimentica le partite" (se Nives si ricorda qualcosa)
