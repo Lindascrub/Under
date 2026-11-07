@@ -51,7 +51,8 @@ func _run() -> void:
 		_check(_scene_path() == Router.MINIGAME, "admin: il minigioco %d non parte" % k)
 		await _wait_scene(Router.FONDO)
 		await _idle()
-	# i turni
+	# i turni (dopo un turno a volte chiama il Capo, come nel gioco: il test risponde "Più tardi")
+	choose_index = 1
 	var turni := GameState.jobs_available().filter(func(j: Dictionary) -> bool: return j.has("game")).size()
 	for k in turni:
 		choose_queue = [2] + _pagina(k)
