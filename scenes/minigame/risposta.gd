@@ -36,6 +36,13 @@ extends Node2D
 ## Quanto restano le stelline sullo schermo (si saltano con OK / un tocco).
 @export var durata_stelle := 2.2
 @export var scritte := PackedStringArray(["Ce l'hai fatta", "Bene!", "Benissimo!"])
+## Le stelline: accesa (presa) e spenta, con gli occhi a X (quelle che non hai preso).
+@export var stella_accesa: Texture2D
+@export var stella_spenta: Texture2D
+## Quanto è scura la stellina spenta.
+@export var colore_spenta := Color(0.25, 0.25, 0.3)
+## La scritta quando perdi: le tre stelline restano tutte spente.
+@export var scritta_zero := "0 stelle"
 
 @export_group("Soldi")
 ## Se perdi, chi hai aiutato ti dà lo stesso questi euro.
@@ -135,13 +142,16 @@ func vittoria(quante: int, id: String) -> void:
 	scritta.text = scritte[clampi(quante - 1, 0, scritte.size() - 1)]
 	record.visible = false
 	for i in 3:
-		(_stelle.get_node("Stella%d" % (i + 1)) as CanvasItem).modulate = Color(0.25, 0.25, 0.3)
+		var spenta: Sprite2D = _stelle.get_node("Stella%d" % (i + 1))
+		spenta.texture = stella_spenta
+		spenta.modulate = colore_spenta
 	_stelle.scale = Vector2(0.6, 0.6)
 	create_tween().tween_property(_stelle, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_salta = false
 	for i in quante:
 		await get_tree().create_timer(0.28).timeout
 		var st: Node2D = _stelle.get_node("Stella%d" % (i + 1))
+		(st as Sprite2D).texture = stella_accesa
 		st.modulate = Color.WHITE
 		st.scale = Vector2(1.6, 1.6)
 		create_tween().tween_property(st, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -155,6 +165,25 @@ func vittoria(quante: int, id: String) -> void:
 		resta -= get_process_delta_time()
 	_stelle.visible = false
 
+
+
+## Hai perso: le tre stelline compaiono lo stesso, tutte spente (0 stelle).
+func zero() -> void:
+	_stelle.visible = true
+	(_stelle.get_node("Scritta") as Label).text = scritta_zero
+	_stelle.get_node("Record").visible = false
+	for i in 3:
+		var spenta: Sprite2D = _stelle.get_node("Stella%d" % (i + 1))
+		spenta.texture = stella_spenta
+		spenta.modulate = colore_spenta
+	_stelle.scale = Vector2(0.6, 0.6)
+	create_tween().tween_property(_stelle, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_salta = false
+	var resta := durata_stelle
+	while resta > 0.0 and not _salta:
+		await get_tree().process_frame
+		resta -= get_process_delta_time()
+	_stelle.visible = false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _stelle.visible:

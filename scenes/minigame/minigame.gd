@@ -937,6 +937,8 @@ func _finish(success: bool, partial := false) -> void:
 	if success and _con_stelle():
 		quante = _risposta.stelle(misses, time_left / time_total if time_total > 0.0 else -1.0)
 		await _risposta.vittoria(quante, id)
+	elif _con_stelle():
+		await _risposta.zero()
 	# le sconfitte di fila con questa persona (per la "sgridata"); vincere le azzera
 	var persi := 0 if success else int(GameState.flags.get("persi_" + id, 0)) + 1
 	if _con_stelle():

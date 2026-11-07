@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/minigame/risposta.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sains_ui/stella.png" id="stella"]
 [ext_resource type="Texture2D" path="res://assets/sains_ui/divieto.png" id="divieto"]
+[ext_resource type="Texture2D" path="res://assets/sains_ui/stella_x.png" id="stella_x"]
 
 [sub_resource type="Curve" id="Curve_scintille"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -15,6 +16,8 @@ colors = PackedColorArray(1, 0.88, 0.3, 1, 0.24, 0.86, 0.52, 1, 0.22, 0.71, 1, 1
 [node name="Risposta" type="Node2D"]
 z_index = 50
 script = ExtResource("1")
+stella_accesa = ExtResource("stella")
+stella_spenta = ExtResource("stella_x")
 
 [node name="Camera" type="Camera2D" parent="."]
 anchor_mode = 0
