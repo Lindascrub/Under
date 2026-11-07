@@ -1,6 +1,6 @@
 extends "res://scenes/minigame/rifatti/base.gd"
 ## LE DICIOTTO PORTE (Amir): le case passano da destra a sinistra, sempre più veloci.
-## Amir spinge il carrello su una delle tre corsie; quando una porta illuminata arriva sulla
+## Amir guida il furgone delle consegne; quando una porta illuminata arriva sulla
 ## sua corsia, si lancia il pacco poco prima che la porta raggiunga la mira.
 ## Ogni lancio consuma un pacco (ce n'è qualcuno di scorta). Errore = lancio a vuoto o porta superata.
 ## Le stelline (minigame.gd, nodo Risposta): 0 errori 3, un errore 2, di più 1.
@@ -24,10 +24,8 @@ extends "res://scenes/minigame/rifatti/base.gd"
 @export var tolleranza := 40.0
 @export var precisione_bonus := 25.0
 @export var corsie := PackedFloat32Array([137, 210, 283])
-## I colori dei muri delle case (uno a caso per porta).
-@export var colori_muri := PackedColorArray([Color(0.78, 0.55, 0.42), Color(0.55, 0.68, 0.78), Color(0.86, 0.78, 0.55), Color(0.6, 0.74, 0.58), Color(0.8, 0.62, 0.7), Color(0.7, 0.7, 0.74)])
-## Il carrello di Amir: pieno, a metà, quasi vuoto, vuoto.
-@export var carrelli: Array[Texture2D] = []
+## Ingressi residenziali dello stesso pacchetto della Città, senza stirare gli edifici.
+@export var facciate: Array[Texture2D] = []
 const PORTA := preload("res://scenes/minigame/rifatti/porta_consegna.tscn")
 const PERSONE := ["char_02", "char_05", "char_08", "char_11", "char_03", "char_06"]
 var velocita := 150.0
@@ -69,7 +67,7 @@ func _crea_porte() -> void:
 		$Porte.add_child(p)
 		p.position = Vector2(x, corsie[k])
 		p.get_node("Numero").text = str(i + 1)
-		p.get_node("Muro").color = colori_muri[randi() % colori_muri.size()]
+		if not facciate.is_empty(): p.get_node("Facciata").texture = facciate[i % facciate.size()]
 		p.get_node("Destinatario").sheet = PERSONE[i % PERSONE.size()]
 		porte.append(p)
 		x += randf_range(spazio_min, spazio_max)
@@ -86,6 +84,7 @@ func _process(dt: float) -> void:
 			chiuse += 1
 			p.get_node("Luce").visible = false
 			if not p.get_meta("consegnata", false):
+				p.get_node("Lampada").modulate = Color(0.4, 0.4, 0.4)
 				errori += 1
 				$Esito.text = "Porta superata. Quel pacco non è arrivato."
 				Sound.sfx("deny")
@@ -105,10 +104,8 @@ func cambia_corsia(d: int) -> void:
 func _aggiorna() -> void:
 	cambia_corsia(0)
 	$Stato.text = "Consegnati: %d/%d · Pacchi: %d · Errori: %d" % [consegnati, porte_totali, rimasti, errori]
-	$Traiettoria.points = PackedVector2Array([$Amir.position + Vector2(30, -20), Vector2(($Amir.position.x + $Mira.position.x) / 2.0 + 15.0, corsie[corsia] - 33), $Mira.position])
-	if carrelli.size() >= 4:
-		var quota := float(rimasti) / float(maxi(1, pacchi))
-		$Amir/Carrello.texture = carrelli[0 if quota > 0.66 else (1 if quota > 0.33 else (2 if rimasti > 0 else 3))]
+	var da: Vector2 = $Amir/UscitaPacco.global_position
+	$Traiettoria.points = PackedVector2Array([da, Vector2((da.x + $Mira.position.x) / 2.0, corsie[corsia] - 33), $Mira.position])
 
 
 func lancia() -> void:
@@ -124,7 +121,7 @@ func lancia() -> void:
 			scelta = p
 			errore_distanza = distanza
 	var valido := scelta != null and errore_distanza <= tolleranza
-	var da: Vector2 = $Amir.position + Vector2(30, -20)
+	var da: Vector2 = $Amir/UscitaPacco.global_position
 	$Pacco.position = da
 	$Pacco.visible = true
 	$Pacco.rotation = 0.0
@@ -143,7 +140,11 @@ func lancia() -> void:
 		scelta.get_node("Destinatario").visible = true
 		consegnati += 1
 		if errore_distanza <= precisione_bonus: precisi += 1
-		scelta.get_node("Porta").scale.x = 0.5
+		scelta.get_node("Porta").visible = false
+		scelta.get_node("Ricevuto").visible = true
+		scelta.get_node("Numero").visible = false
+		scelta.get_node("Targa").visible = false
+		scelta.get_node("Lampada").modulate = Color(0.3, 1, 0.5)
 		var pop := create_tween()
 		scelta.scale = Vector2(1.15, 0.9)
 		pop.tween_property(scelta, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -186,7 +187,7 @@ func punta(pos: Vector2, step: int) -> void:
 		var spostamento := pos - origine_dito
 		if absf(spostamento.y) >= 20.0:
 			cambia_corsia(-1 if spostamento.y < 0 else 1)
-		elif not gesto and is_instance_valid(porta_dito) and not porta_dito.get_meta("chiusa", false): lancia()
+		elif not gesto and is_instance_valid(porta_dito) and not porta_dito.get_meta("chiusa", false) and not porta_dito.get_meta("consegnata", false): lancia()
 		porta_dito = null
 
 
@@ -196,6 +197,7 @@ func _porta_premuta(pos: Vector2) -> void:
 
 func _porta_al_punto(pos: Vector2) -> Node:
 	for p in porte:
-		if not p.get_meta("chiusa", false) and Rect2(p.position - Vector2(34, 50), Vector2(68, 70)).has_point(pos):
+		var larghezza: float = p.get_node("Facciata").texture.get_width()
+		if not p.get_meta("chiusa", false) and not p.get_meta("consegnata", false) and Rect2(p.position - Vector2(larghezza / 2.0, 50), Vector2(larghezza, 72)).has_point(pos):
 			return p
 	return null

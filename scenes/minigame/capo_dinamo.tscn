@@ -1,58 +1,13 @@
 [gd_scene format=3]
-
 [ext_resource type="Script" path="res://scenes/minigame/capo_dinamo.gd" id="1"]
 [ext_resource type="FontFile" path="res://fonts/PixeloidSans-Bold.otf" id="2"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/limezu/characters/cheap_fermo.png" id="4"]
 [ext_resource type="Texture2D" path="res://art/lampadina_cassetta.png" id="5"]
-
 [node name="CapoDinamo" type="Node2D"]
 script = ExtResource("1")
-
-[node name="Sfondo" type="ColorRect" parent="."]
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-color = Color(0.09, 0.118, 0.165, 1)
-
-[node name="Pavimento" type="ColorRect" parent="."]
-offset_top = 250.0
-offset_right = 640.0
-offset_bottom = 290.0
-mouse_filter = 2
-color = Color(0.137, 0.176, 0.231, 1)
-
-[node name="Riga" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 14.0
-offset_right = 20.0
-offset_bottom = 44.0
-mouse_filter = 2
-color = Color(1, 0.882, 0.302, 1)
-
-[node name="Titolo" type="Label" parent="."]
-offset_left = 28.0
-offset_top = 12.0
-offset_right = 600.0
-offset_bottom = 34.0
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 16
-text = "ANCORA CINQUE MINUTI"
-
-[node name="Frase" type="Label" parent="."]
-offset_left = 28.0
-offset_top = 36.0
-offset_right = 600.0
-offset_bottom = 78.0
-theme_override_colors/font_color = Color(0.953, 0.929, 0.863, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 11
-text = "Sposta la leva e guarda cosa cambia: luci, fatica e pausa di Fermo. Quando hai deciso, conferma."
-autowrap_mode = 3
-
 [node name="Fermo" type="Node2D" parent="."]
-position = Vector2(70, 250)
+position = Vector2(54, 248)
 scale = Vector2(3, 3)
 
 [node name="Cyclette" type="Sprite2D" parent="Fermo"]
@@ -84,154 +39,99 @@ scale_amount_min = 1.0
 scale_amount_max = 1.5
 color = Color(0.55, 0.8, 1, 1)
 
-[node name="Pausa" type="Label" parent="."]
-offset_left = 40.0
-offset_top = 262.0
-offset_right = 220.0
-offset_bottom = 282.0
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 11
-text = "Pausa: 15 min"
-horizontal_alignment = 1
 
 [node name="Leva" type="Node2D" parent="."]
-position = Vector2(300, 90)
+position = Vector2(248, 111)
 
-[node name="Base" type="ColorRect" parent="Leva"]
-offset_left = -22.0
-offset_top = -12.0
-offset_right = 22.0
-offset_bottom = 152.0
-mouse_filter = 2
-color = Color(0.255, 0.314, 0.38, 1)
-
-[node name="Binario" type="ColorRect" parent="Leva"]
+[node name="Binario" type="Control" parent="Leva"]
 offset_left = -3.0
+offset_top = 0.0
 offset_right = 3.0
-offset_bottom = 140.0
+offset_bottom = 110.0
 mouse_filter = 2
-color = Color(0.063, 0.09, 0.137, 1)
 
-[node name="Manico" type="ColorRect" parent="Leva"]
-offset_left = -18.0
+[node name="Manico" type="Control" parent="Leva"]
+offset_left = -15.0
 offset_top = -7.0
-offset_right = 18.0
+offset_right = 15.0
 offset_bottom = 7.0
 mouse_filter = 2
-color = Color(1, 0.882, 0.302, 1)
 
-[node name="Area" type="ColorRect" parent="Leva"]
-offset_left = -40.0
-offset_top = -20.0
-offset_right = 40.0
-offset_bottom = 160.0
+[node name="Area" type="Control" parent="Leva"]
+offset_left = -22.0
+offset_top = -8.0
+offset_right = 72.0
+offset_bottom = 135.0
 mouse_filter = 2
-color = Color(1, 1, 1, 0)
 
-[node name="Premio" type="Label" parent="."]
-offset_left = 240.0
-offset_top = 258.0
-offset_right = 360.0
-offset_bottom = 280.0
-theme_override_colors/font_color = Color(1, 0.882, 0.302, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 14
-text = "+600 €"
-horizontal_alignment = 1
-
-[node name="Festa" type="Node2D" parent="."]
-position = Vector2(390, 90)
-
-[node name="Filo" type="Line2D" parent="Festa"]
-points = PackedVector2Array(0, 0, 40, 18, 80, 26, 120, 26, 160, 18, 200, 0)
-width = 1.5
-default_color = Color(0.4, 0.42, 0.48, 1)
-
-[node name="Luci" type="Node2D" parent="Festa"]
-
-[node name="Luce1" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(20, 14)
-scale = Vector2(2, 2)
-texture = ExtResource("5")
-
-[node name="Luce2" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(60, 27)
-scale = Vector2(2, 2)
-texture = ExtResource("5")
-
-[node name="Luce3" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(100, 31)
-scale = Vector2(2, 2)
-texture = ExtResource("5")
-
-[node name="Luce4" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(140, 27)
-scale = Vector2(2, 2)
-texture = ExtResource("5")
-
-[node name="Luce5" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(180, 14)
-scale = Vector2(2, 2)
-texture = ExtResource("5")
-
-[node name="Luce6" type="Sprite2D" parent="Festa/Luci"]
-position = Vector2(100, 70)
-scale = Vector2(3, 3)
-texture = ExtResource("5")
-
-[node name="Servizi" type="Label" parent="Festa"]
-offset_left = 40.0
-offset_top = 120.0
-offset_right = 160.0
-offset_bottom = 136.0
-theme_override_colors/font_color = Color(0.67, 0.725, 0.78, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 9
-text = "LA FESTA"
-horizontal_alignment = 1
-
-[node name="Esci" type="ColorRect" parent="."]
-offset_left = 24.0
-offset_top = 304.0
-offset_right = 178.0
-offset_bottom = 326.0
+[node name="Servizi" type="Control" parent="."]
+offset_left = 344.0
+offset_top = 62.0
+offset_right = 624.0
+offset_bottom = 132.0
 mouse_filter = 2
-color = Color(0.255, 0.314, 0.38, 1)
 
-[node name="Scritta" type="Label" parent="Esci"]
-offset_right = 154.0
-offset_bottom = 22.0
-theme_override_colors/font_color = Color(0.953, 0.929, 0.863, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 9
-text = "SALVA ED ESCI"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Conferma" type="ColorRect" parent="."]
-offset_left = 462.0
-offset_top = 304.0
-offset_right = 616.0
-offset_bottom = 326.0
+[node name="Festa" type="Control" parent="."]
+offset_left = 344.0
+offset_top = 142.0
+offset_right = 624.0
+offset_bottom = 267.0
 mouse_filter = 2
-color = Color(1, 0.882, 0.302, 1)
 
-[node name="Scritta" type="Label" parent="Conferma"]
-offset_right = 154.0
-offset_bottom = 22.0
-theme_override_colors/font_color = Color(0.188, 0.176, 0.235, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 9
-text = "CONFERMA"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Pausa" type="Control" parent="."]
+offset_left = 16.0
+offset_top = 274.0
+offset_right = 332.0
+offset_bottom = 323.0
+mouse_filter = 2
 
-[node name="Aiuto" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 334.0
-offset_right = 616.0
-offset_bottom = 352.0
-theme_override_colors/font_color = Color(0.67, 0.725, 0.78, 1)
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 8
+[node name="Invia" type="Control" parent="."]
+offset_left = 524.0
+offset_top = 328.0
+offset_right = 624.0
+offset_bottom = 356.0
+mouse_filter = 2
+
+[node name="Esci" type="Control" parent="."]
+offset_left = 416.0
+offset_top = 328.0
+offset_right = 514.0
+offset_bottom = 356.0
+mouse_filter = 2
+
+[node name="Scelta0" type="Control" parent="Festa"]
+offset_left = 8.0
+offset_top = 86.0
+offset_right = 92.0
+offset_bottom = 120.0
+mouse_filter = 2
+
+[node name="Scelta1" type="Control" parent="Festa"]
+offset_left = 96.0
+offset_top = 86.0
+offset_right = 180.0
+offset_bottom = 120.0
+mouse_filter = 2
+
+[node name="Scelta2" type="Control" parent="Festa"]
+offset_left = 184.0
+offset_top = 86.0
+offset_right = 268.0
+offset_bottom = 120.0
+mouse_filter = 2
+
+[node name="Conferma" type="Node2D" parent="."]
+
+[node name="Indietro" type="Control" parent="Conferma"]
+offset_left = 112.0
+offset_top = 218.0
+offset_right = 313.0
+offset_bottom = 258.0
+mouse_filter = 2
+
+[node name="Applica" type="Control" parent="Conferma"]
+offset_left = 323.0
+offset_top = 218.0
+offset_right = 528.0
+offset_bottom = 258.0
+mouse_filter = 2

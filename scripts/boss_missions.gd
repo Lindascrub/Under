@@ -124,7 +124,101 @@ static func market_preview(p: Dictionary) -> Dictionary:
 static func cash(cents: int) -> String:
  return "%d,%02d €" % [cents / 100, absi(cents) % 100]
 
-static func submit_market() -> String:
+## La stampa conserva ciò che il cartellino mostra, separato dalla bozza corrente.
+static func market_label_signature(cfg: Dictionary = {}) -> Dictionary:
+ var p := progress("-3") if cfg.is_empty() else cfg
+ var v := market_preview(p)
+ return {"round": int(p.get("round", 0)), "rate": int(p.get("rate", 0)), "reference": int(p.get("reference", 0)), "units": int(p.get("units", 1)), "base": int(v.base), "ref": int(v.ref), "each": int(v.each), "basket": int(v.basket)}
+
+static func market_print_current(cfg: Dictionary = {}) -> bool:
+ var p := progress("-3") if cfg.is_empty() else cfg
+ var printed: Dictionary = p.get("label_work", {}).get("printed", {})
+ var now := market_label_signature(p)
+ if printed.is_empty(): return false
+ for key: String in now:
+  if int(printed.get(key, -1)) != int(now[key]): return false
+ return true
+
+static func market_sticker_size(kind: String) -> Vector2:
+ return Vector2(140, 58) if kind == "discount" else Vector2(218, 50)
+
+static func market_sticker_position(kind: String, cfg: Dictionary = {}) -> Vector2:
+ var p := progress("-3") if cfg.is_empty() else cfg
+ var defaults := {"discount": [52, 30], "conditions": [12, 104]}
+ var pos: Array = p.get("label_work", {}).get(kind, defaults[kind])
+ return Vector2(float(pos[0]), float(pos[1]))
+
+static func set_market_value(key: String, value: int) -> String:
+ var allowed := {"rate": [0, 10, 50], "reference": [0, 1], "units": [1, 2]}
+ if not allowed.has(key) or value not in allowed[key]: return "Scegli un valore della stampante."
+ progress("-3")[key] = value
+ checkpoint("-3")
+ return ""
+
+static func print_market_label() -> String:
+ var p := progress("-3")
+ if int(p.get("round", 0)) >= 3: return "I tre cartellini sono già consegnati."
+ var work: Dictionary = p.get("label_work", {})
+ work["printed"] = market_label_signature(p)
+ for kind in ["discount", "conditions"]:
+  var pos := market_sticker_position(kind, p)
+  work[kind] = [pos.x, pos.y]
+ p["label_work"] = work
+ checkpoint("-3")
+ return ""
+
+static func _market_layout_error(discount: Vector2, conditions: Vector2, visible: bool) -> String:
+ var area := Rect2(4, 26, 236, 134)
+ var d := Rect2(discount, market_sticker_size("discount"))
+ var c := Rect2(conditions, market_sticker_size("conditions"))
+ if not area.encloses(d): return "Lo sconto deve stare dentro il cartellino."
+ if visible:
+  if not area.encloses(c): return "Le condizioni devono stare dentro il cartellino."
+  if d.intersects(c): return "Le etichette si coprono: lascia leggibili le condizioni."
+ return ""
+
+static func move_market_sticker(kind: String, point: Vector2) -> String:
+ var p := progress("-3")
+ var work: Dictionary = p.get("label_work", {})
+ if (work.get("printed", {}) as Dictionary).is_empty(): return "Prima stampa il cartellino."
+ if kind not in ["discount", "conditions"]: return "Scegli una delle etichette."
+ var d := point.round() if kind == "discount" else market_sticker_position("discount", p)
+ var c := point.round() if kind == "conditions" else market_sticker_position("conditions", p)
+ var visible := true if kind == "conditions" else bool(p.get("visible", true))
+ var error := _market_layout_error(d, c, visible)
+ if error != "": return error
+ work[kind] = [point.round().x, point.round().y]
+ p["label_work"] = work
+ p["visible"] = visible
+ checkpoint("-3")
+ return ""
+
+static func hide_market_conditions() -> String:
+ var p := progress("-3")
+ if (p.get("label_work", {}).get("printed", {}) as Dictionary).is_empty(): return "Prima stampa il cartellino."
+ p["visible"] = false
+ checkpoint("-3")
+ return ""
+
+static func prepared_market_error() -> String:
+ var p := progress("-3")
+ if int(p.get("round", 0)) >= 3: return "I tre cartellini sono già consegnati."
+ if not market_print_current(p): return "Prima stampa la bozza attuale."
+ var v := market_preview(p)
+ if not bool(v.valid): return "Il prezzo supera quello di oggi: cambia lo sconto o la base."
+ return _market_layout_error(market_sticker_position("discount", p), market_sticker_position("conditions", p), bool(p.get("visible", true)))
+
+static func submit_prepared_market() -> String:
+ var error := prepared_market_error()
+ if error != "": return error
+ var result := submit_market(false)
+ if result == "":
+  progress("-3").erase("label_work")
+  checkpoint("-3")
+ return result
+
+
+static func submit_market(persist := true) -> String:
  var p := progress("-3")
  var v := market_preview(p)
  if not bool(v["valid"]):
@@ -133,7 +227,7 @@ static func submit_market() -> String:
  rows.append(v)
  p["round"] = int(p["round"]) + 1
  p["rate"] = 0; p["reference"] = 0; p["units"] = 1; p["visible"] = true
- checkpoint("-3")
+ if persist: checkpoint("-3")
  return ""
 
 ## Idempotent even after JSON reload. Never calls exploit(victim).
@@ -213,9 +307,8 @@ static func result_lines(floor: String) -> Array:
   else:
    lines.append_array(["* E-27: IN ATTESA DI INTEGRAZIONE. Richiesto il registro all'archivio del personale.", "Ercole: Quindi non mi hanno riconosciuto niente, ancora? Almeno la richiesta esiste."])
  if floor == "-2":
-  lines.append("* Proposta: %d rate, rata ordinaria %s, ultima %s, costo totale %s, commissione iniziale %s." % [int(r["months"]), cash(int(r["monthly"])), cash(int(r["last"])), cash(int(r["total"])), cash(int(r["fee"]) * 100)])
   if not bool(r["visible"]):
-   lines.append_array(["Olga: La rata sembra possibile. Per quanti mesi, però? E quel foglio piccolo?", "* Il Capo accredita il premio per la proposta. Olga chiede la copia completa prima di firmare: il prestito è in attesa, nessuna rata è ancora addebitata."])
+   lines.append_array(["Olga: La rata sembra possibile. Ma quanto pago in tutto? E quel foglio piccolo?", "* Il Capo accredita il premio per la proposta. Olga chiede la copia completa prima di firmare: il prestito è in attesa, nessuna rata è ancora addebitata."])
   else:
    lines.append_array(["Olga: Questo prestito si aggiunge al mutuo. Prima di accettare voglio confrontare il totale.", "* Olga prende il riepilogo. La proposta è leggibile; non è ancora una firma."])
   if not GameState.is_robot("teo"):
@@ -275,6 +368,85 @@ const DOCUMENTS := [
  {"id": "F-03", "title": "RIMBORSO LAMPADINE", "body": "Acquisto dichiarato, ma manca la fattura. Il fornitore può inviarne una copia. Non risulta alcun pagamento.", "correct": 2},
 ]
 
+## I fogli presenti si sistemano; le prove mancanti non vengono inventate dalla grafica.
+const DOCUMENT_PIECES := [
+ [{"name": "RICEVUTA", "kind": "ricevuta", "available": true}, {"name": "CONFERMA", "kind": "conferma", "available": true}],
+ [{"name": "DOMANDA", "kind": "domanda", "available": true}, {"name": "REGISTRO TURNI", "kind": "registro", "available": false, "missing": "Il registro va richiesto al Personale."}],
+ [{"name": "FIRMA 1", "kind": "firma", "available": true}, {"name": "FIRMA 2", "kind": "firma", "available": true}],
+ [{"name": "ACQUISTO", "kind": "acquisto", "available": true}, {"name": "FATTURA", "kind": "fattura", "available": false, "missing": "La fattura va richiesta al fornitore."}],
+]
+
+static func document_pieces(index: int) -> Array:
+ return DOCUMENT_PIECES[clampi(index, 0, DOCUMENT_PIECES.size() - 1)]
+
+static func document_layout(cfg: Dictionary = {}) -> Dictionary:
+ var p := progress("-4") if cfg.is_empty() else cfg
+ var id := str(DOCUMENTS[mini(3, int(p.get("document", 0)))]["id"])
+ return p.get("paperwork", {}).get(id, {})
+
+static func document_placed(cfg: Dictionary = {}) -> Array:
+ var laid: Array = []
+ for piece in document_layout(cfg).get("placed", []):
+  if int(piece) not in laid: laid.append(int(piece))
+ return laid
+
+static func document_stamp(cfg: Dictionary = {}) -> int:
+ return int(document_layout(cfg).get("stamp", -1))
+
+static func document_ready() -> bool:
+ var p := progress("-4")
+ var pieces := document_pieces(int(p["document"]))
+ var laid := document_placed()
+ for i in pieces.size():
+  if bool(pieces[i]["available"]) and i not in laid: return false
+ return true
+
+static func _save_document_layout(laid: Array, stamp: int) -> void:
+ var p := progress("-4")
+ var papers: Dictionary = p.get("paperwork", {})
+ var id := str(DOCUMENTS[mini(3, int(p["document"]))]["id"])
+ papers[id] = {"placed": laid, "stamp": stamp}
+ p["paperwork"] = papers
+ checkpoint("-4")
+
+static func place_document_piece(piece: int, slot: int) -> String:
+ var pieces := document_pieces(int(progress("-4")["document"]))
+ if piece < 0 or piece >= pieces.size() or slot < 0 or slot >= pieces.size(): return "Scegli il foglio e la sua sagoma."
+ if not bool(pieces[piece]["available"]): return str(pieces[piece].get("missing", "Il documento manca."))
+ if piece != slot: return "La sagoma è diversa: cerca lo stesso documento."
+ var laid := document_placed()
+ if piece in laid: return ""
+ laid.append(piece)
+ _save_document_layout(laid, -1)
+ return ""
+
+static func remove_document_piece(piece: int) -> String:
+ var laid := document_placed()
+ if piece not in laid: return ""
+ laid.erase(piece)
+ _save_document_layout(laid, -1)
+ return ""
+
+static func stamp_document(stamp: int) -> String:
+ if stamp < 0 or stamp > 3: return "Prendi un timbro."
+ if not document_ready(): return "Sistema prima i fogli presenti."
+ _save_document_layout(document_placed(), stamp)
+ return ""
+
+static func prepared_document_error() -> String:
+ if not document_ready(): return "Sistema prima i fogli presenti."
+ var stamp := document_stamp()
+ if stamp < 0: return "Applica un timbro al fascicolo."
+ var i := mini(3, int(progress("-4")["document"]))
+ if stamp == int(DOCUMENTS[i]["correct"]) or (i == 1 and stamp == 3): return ""
+ return ["Il pagamento è già ricevuto: questa pratica si può chiudere.", "Per il registro serve RICHIEDI DOCUMENTI.", "Serve l'autorizzazione del Personale.", "Per la fattura serve RICHIEDI DOCUMENTI."][i]
+
+static func submit_prepared_document() -> String:
+ var error := prepared_document_error()
+ if error != "": return error
+ return submit_document(document_stamp())
+
+
 static func submit_document(action: int) -> String:
  var p := progress("-4")
  var i := int(p["document"])
@@ -309,6 +481,20 @@ static func contract_preview(p: Dictionary) -> Dictionary:
  return {"capital": capital, "months": months, "apr": apr, "monthly": monthly, "last": last,
   "fee": int(p.get("fee", 0)), "total": total, "interest": total - capital - int(p.get("fee", 0)) * 100,
   "visible": bool(p.get("visible", true)), "balance": balance}
+
+static func set_contract_value(key: String, value: int) -> String:
+ if str(state("-2").get("status")) != "active": return "La proposta è già stata inviata."
+ var allowed := {"months": [12, 24, 36], "apr": [4, 8, 12], "fee": [0, 60, 120]}
+ if not allowed.has(key) or value not in allowed[key]: return "Valore non disponibile."
+ progress("-2")[key] = value
+ checkpoint("-2")
+ return ""
+
+static func set_contract_copy(visible: bool) -> String:
+ if str(state("-2").get("status")) != "active": return "La proposta è già stata inviata."
+ progress("-2")["visible"] = visible
+ checkpoint("-2")
+ return ""
 
 static func finish_contract() -> String:
  var r := contract_preview(progress("-2"))
@@ -346,7 +532,7 @@ static func news_time(p: Dictionary) -> int:
   seconds += int(clip["duration"])
  return seconds
 
-static func add_news_clip() -> String:
+static func add_news_clip(persist := true) -> String:
  var p := progress("0")
  var sources := news_sources()
  if sources.size() < 3: return "Mancano le registrazioni. Torna in piazza dopo la manifestazione."
@@ -359,6 +545,62 @@ static func add_news_clip() -> String:
  clips.append({"id": source["id"], "cut": bool(p["cut"]), "duration": duration, "quote": source["quote"], "who": source["who"], "context": source["context"]})
  clips.back()["broadcast_quote"] = cut_quote(source) if bool(p["cut"]) else source["quote"]
  clips.back()["headline"] = cut_headline(str(source["id"])) if bool(p["cut"]) else "CASA COMUNE: COSTI, ACCESSO E VETRINA ROTTA"
+ if persist: checkpoint("0")
+ return ""
+
+## Physical editing operations; validation precedes mutation so a failed drop preserves the draft.
+static func insert_news_clip(source_index: int, at: int) -> String:
+ var sources := news_sources()
+ if source_index < 0 or source_index >= sources.size(): return "Manca la registrazione originale."
+ var p := progress("0")
+ var cut := bool(p.get("cut", false)) if source_index == int(p.get("source", 0)) else false
+ var old_source: int = int(p.get("source", 0))
+ var old_cut: bool = bool(p.get("cut", false))
+ p["source"] = source_index
+ p["cut"] = cut
+ var error := add_news_clip(false)
+ if error != "":
+  p["source"] = old_source
+  p["cut"] = old_cut
+  return error
+ var clips: Array = p["clips"]
+ var clip: Dictionary = clips.pop_back()
+ clips.insert(clampi(at, 0, clips.size()), clip)
+ checkpoint("0")
+ return ""
+
+static func edit_news_clip(index: int, cut: bool) -> String:
+ var p := progress("0")
+ var clips: Array = p["clips"]
+ if index < 0 or index >= clips.size(): return "Scegli uno spezzone sulla pista."
+ var clip: Dictionary = clips[index]
+ var source: Dictionary = {}
+ for s: Dictionary in news_sources():
+  if s["id"] == clip["id"]: source = s; break
+ if source.is_empty(): return "Manca la registrazione originale."
+ var duration := 8 if cut else int(source["seconds"])
+ if news_time(p) - int(clip["duration"]) + duration > 60:
+  return "Non entra nei 60 secondi. Fai spazio senza togliere altre parole per sbaglio."
+ clip["cut"] = cut
+ clip["duration"] = duration
+ clip["broadcast_quote"] = cut_quote(source) if cut else source["quote"]
+ clip["headline"] = cut_headline(str(source["id"])) if cut else "CASA COMUNE: COSTI, ACCESSO E VETRINA ROTTA"
+ checkpoint("0")
+ return ""
+
+static func move_news_clip(from: int, to: int) -> String:
+ var clips: Array = progress("0")["clips"]
+ if from < 0 or from >= clips.size(): return "Scegli uno spezzone sulla pista."
+ var dest := to - 1 if to > from else to
+ var clip: Dictionary = clips.pop_at(from)
+ clips.insert(clampi(dest, 0, clips.size()), clip)
+ checkpoint("0")
+ return ""
+
+static func remove_news_clip(index: int) -> String:
+ var clips: Array = progress("0")["clips"]
+ if index < 0 or index >= clips.size(): return "Scegli uno spezzone sulla pista."
+ clips.remove_at(index)
  checkpoint("0")
  return ""
 
@@ -378,21 +620,16 @@ static func finish_news() -> String:
 static func instructions(floor: String) -> Array:
  return {
  "-4": [
-  "Leggi il fascicolo e scegli come procedere. Se manca un documento, richiedilo.",
-  "SEGNA RISOLTA chiude la pratica: non produce il documento né la risposta che manca."
+  "Sistema i fogli nelle sagome. Timbro sul fascicolo, poi CONSEGNA."
  ],
  "-3": [
-  "Scegli lo sconto e il prezzo su cui calcolarlo: quello di oggi o quello futuro.",
-  "Controlla quantità minima e condizioni. Confronta il cartellino con ALLA CASSA."
+  "Gira la rotella, stampa e sistema le etichette. La cassa mostra il costo reale."
  ],
  "-2": [
-  "Prepara una proposta con una rata entro 65 € al mese. È un nuovo prestito, aggiuntivo al mutuo di Olga.",
-  "Controlla durata, ultima rata, commissione e totale. Poi scegli se Olga li può leggere tutti.",
-  "Inviare la proposta non significa che Olga abbia firmato."
+  "Allunga il calendario e confronta rata e totale. Sposta il foglio dei costi fra la copia per Olga e la tasca interna."
  ],
  "0": [
-  "Monta tre fonti diverse entro 60 secondi.",
-  "Per ogni registrazione scegli se tenere il contesto o usare il taglio con il titolo.",
-  "Il cartello FATTI VERIFICATI occupa 10 secondi. Poi scegli TRASMETTI."
+  "Metti le tre registrazioni sulla pista. Le forbici tolgono il contesto; RIMETTI lo recupera.",
+  "Hai 60 secondi di spazio nel servizio. Puoi lavorare con calma e guardare l'anteprima."
  ]
 }.get(floor, [])

@@ -249,3 +249,16 @@ della Cima (capitolo 6) e per i minigiochi.
 - `tiles/elevator_anim.png` e `tiles/elevator_off.png` (Modern Exteriors, ascensore della stazione): l'ascensore del Fondo
   e del piano terra (`world/lift.gd`): porte che si aprono e si chiudono, luci spente quando è rotto o serve un badge.
 - `themes/conference.png` (bancone, bandiere, urna), `themes/subway.png` (biglietteria, tabellone): il Sottoufficio.
+
+
+## Furgone di Amir — 7 novembre 2026
+
+Il minigioco consegne usa il furgone originale di LimeZu Modern Exteriors,
+dal foglio `ME_Theme_Sorter_16x16/22_Post_Office_16x16.png`, importato come
+`assets/limezu/themes/post_office.png` da `tools/import_assets.ps1`.
+Il veicolo è un AtlasTexture nella regione `(0, 16, 128, 80)`, scala 1× e filtro nearest.
+Nessuna modifica al PNG acquistato, nessuna nuova immagine generata.
+Documento di licenza locale: `../asset/image/modernexteriors-win/Modern_Exteriors_License.pdf`.
+Gli ingressi riusano home, condo_blue e condo_yellow; il pacco riusa market/box_1;
+strada e porta riusano city_terrains e porta_legno. Le texture dei carrelli sono ancora
+necessarie nel Mercato e non vengono cancellate.

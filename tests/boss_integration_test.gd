@@ -34,41 +34,41 @@ func _ready() -> void:
     var bin: Rect2 = (current.dinamo.get_node("Leva/Binario") as Control).get_global_rect()
     TouchControls.enabled = false
     await click(Vector2(bin.get_center().x, bin.end.y - 1))
-    check(int(current.p["intensity"]) == 3 and int(current.p["extra"]) == 10, "Mouse trasformato -5" + str(size))
+    check(int(current.p["intensity"]) == 3 and int(current.p["extra"]) == 0, "Mouse trasformato -5" + str(size))
     TouchControls.enabled = true
     await frames(4)
     await touch(Vector2(bin.get_center().x, bin.position.y + 1))
-    check(int(current.p["intensity"]) == 2 and int(current.p["extra"]) == 0, "Touch trasformato -5" + str(size))
+    check(int(current.p["intensity"]) == 1 and int(current.p["extra"]) == 0, "Touch trasformato -5" + str(size))
     TouchControls.enabled = false
     continue
    TouchControls.enabled = false
    var key: String = {"-5": "intensity", "-4": "document", "-3": "rate", "-2": "months", "0": "source"}[floor]
    var old_value: int = int(current.p[key])
-   await click((current.buttons[0]["rect"] as Rect2).get_center())
+   if floor == "-2": await click(current.visuale.rett("Calendario/Anno1").get_center())
+   else: await click((current.buttons[1 if floor == "0" else 0]["rect"] as Rect2).get_center())
    if floor != "-4": check(int(current.p[key]) != old_value, "Mouse trasformato " + floor + str(size))
-   # First office button intentionally targets wrong office: retry with no penalty.
-   if floor == "-4": check(current.msg != "", "Errore pratica spiega e permette riprova")
+   if floor == "-4": check(current.visuale.in_mano == "carta_0", "Mouse prende il documento senza consegnarlo")
    TouchControls.enabled = true
    await frames(4)
    old_value = int(current.p[key])
-   await touch((current.buttons[0]["rect"] as Rect2).get_center())
+   if floor == "-2": await touch(current.visuale.rett("Calendario/Anno3").get_center())
+   else: await touch((current.buttons[2 if floor == "0" else 0]["rect"] as Rect2).get_center())
    if floor != "-4": check(int(current.p[key]) != old_value, "Touch trasformato " + floor + str(size))
+   else: check(current.visuale.in_mano == "", "Touch restituisce il documento senza perdere prove")
   TouchControls.enabled = false
   if floor == "-4":
    current.selected = 0
+   await action("confirm")
    await action("move_right")
-   check(int(current.selected) == 1, "Vaschette: destra segue la riga superiore")
-   await action("move_down")
-   check(int(current.selected) == 3, "Vaschette: giù segue la colonna")
-   await action("move_down")
-   check(int(current.selected) == 4, "Vaschette: giù raggiunge SALVA ED ESCI")
-   await action("move_up")
-   check(int(current.selected) == 2, "Vaschette: su rientra nella scrivania")
+   check(current.buttons[current.selected]["action"] == "fasc_sagoma_0", "Tastiera: destra raggiunge la sagoma corrispondente")
+   await action("confirm")
+   check(0 in B.document_placed(), "Tastiera: il foglio entra davvero nel fascicolo")
   current.selected = 0
   var old_value: int = int(current.p.get("intensity", current.p.get("rate", current.p.get("months", current.p.get("source", 0)))))
   if floor == "-5":
-   await action("move_down"); await action("move_down")
+   await action("move_right")
   else:
+   if floor == "0": current.selected = 1
    await action("confirm")
   if floor != "-4": check(int(current.p.get("intensity", current.p.get("rate", current.p.get("months", current.p.get("source", 0))))) != old_value, "Tastiera " + floor)
   # Checkpoint and actual exit restore the saved world position.

@@ -20,9 +20,9 @@ in `C:/Users/linda/Documents/app/play/cheap_c5_codex_backup/`. Non è usata.
 | `data/city.json` | Tutti i numeri del capitolo: stanze, percorso, smistamento, bilanci, premio del capo, turno rapido |
 | `data/npcs.json` | Ada (`char_19`), Nadir (`char_02`), Rina (`char_16`) |
 | `data/promotions.json` | `ada`: "La proposta di riutilizzo della Casa Comune" |
-| `data/worklist.json` | Il TURNO `comunicazioni_citta` (gioco `smistamento`) |
+| `data/worklist.json` | Il TURNO `comunicazioni_citta` (gioco `autobus`) |
 | `scenes/minigame/minigame.gd` | I minigiochi d'aiuto `stanze` (Ada) e `percorso` (Nadir) |
-| `scenes/minigame/work.gd` | Il TURNO `smistamento` (il centralino) |
+| `scenes/minigame/work.gd`, `autobus.gd` | Il TURNO della linea 12 |
 | `tools/make_placeholders_citta.py` | I segnaposto grafici (`art/c5/`), elenco in `docs/ASSET_LIST.md` |
 | `tools/make_sfx_citta.py` | `audio/crash.wav`, `thump.wav`, `crack.wav`, `music_citta.wav` (segnaposto) |
 
@@ -114,11 +114,17 @@ Da casa di Nadir alla zona industriale, tratta dopo tratta. Si entra alle 8:00, 
 Il percorso economico (bus 12 + bus 30) arriva tardi; il veloce (bus 4 + navetta Premium) costa 10 €;
 l'unico valido è il compromesso (bus 4 + treno, 6 € esatti). Il gioco non lo dice: lo si trova.
 
-### Il centralino (TURNO, `game: "smistamento"`)
-Arrivano richieste dei cittadini: toccare la destinazione giusta. Dopo le prime quattro, una su tre arriva con
-una destinazione "proposta dal sistema" sbagliata: CONFERMA (veloce, non conta come errore tuo),
-VERIFICA (lenta, la richiesta arriva dove deve), SEGNALA (ferma la richiesta). CHEAP paga le richieste chiuse.
-Il conteggio delle discrepanze trovate va nei bilanci e nel riepilogo.
+### La linea 12 e la richiesta della Banca
+
+Il lavoro ordinario è l'autobus: corsie, ostacoli e fermate. Il primo turno continua
+a sbloccare la manifestazione; paga e progressione usano le regole attuali del turno.
+
+Il centralino è un passaggio narrativo separato. Con `c4_verifica`, prima del primo
+turno, la richiesta viene mostrata una volta con tre destinazioni fisiche:
+ARCHIVIO, DIREZIONE, LA PORTO IO. La scelta sposta il foglio verso il cassetto,
+il tubo o la stampante. Non è un turno aggiuntivo e non modifica saldo o debito.
+Il centralino in piazza consente lo stesso passaggio se lo si visita prima del lavoro.
+Scelta già registrata e assenza di richiesta evitano la ripetizione.
 
 ## L'assemblea e gli esiti
 

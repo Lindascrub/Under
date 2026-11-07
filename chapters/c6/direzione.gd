@@ -1,11 +1,11 @@
 extends Node2D
 
 const B := preload("res://scripts/boss_missions.gd")
-const Art := preload("res://scripts/minigame_art.gd")
 ## Capitolo 6 — il TURNO di Direzione: uno schermo, un turno solo.
 ## Non c'è uno stipendio: si dividono 100 unità fra stipendi, servizi, manutenzione e riserve,
 ## poi si decide della Casa Comune, poi della regola dei debiti. Tutto nello stesso turno.
-## Le regole sono in direzione_regole.gd; qui c'è solo lo schermo (dito, mouse, tastiera).
+## Le regole sono in direzione_regole.gd; la scena fisica è in direzione_tavolo.tscn.
+## Qui restano il flusso narrativo e l'applicazione del turno.
 ## Alla fine lo stato comune va in GameState.flags["chapter_6"]["director_turn"] (i tre "cycle_N_completed"
 ## diventano veri insieme), poi si torna alla Cima.
 
@@ -13,27 +13,20 @@ const RULES := preload("res://chapters/c6/direzione_regole.gd")
 const CIMA := "res://chapters/c6/cima.tscn"
 const PRES := "La Presidente"
 const VOICE := "Voce CHEAP"
-const GOLD := Color("ffe14d")
-const GREEN := Color("3ddc84")
-const RED := Color("ff2a3c")
-const DIM := Color("8a8494")
-const PANEL := Color("1a1420")
 
-## Le righe delle voci, i pulsanti e CONFERMA (in coordinate dello schermo 640x360).
-const ROW_Y := 88
-const ROW_H := 44
 
 var cycle := 1
 var st: Dictionary = {}
 var alloc: Dictionary = {}
 ## "alloc" (si dividono le unità), "casa" (la Casa Comune), "debiti" (la regola dei debiti), "done"
 var phase := "intro"
-var sel := 0
 var msg := ""
 var options: Array = []
 var choice_id := ""
 ## La scelta sulla Casa Comune, tenuta da parte finché non si decide anche dei debiti.
 var casa_id := ""
+var visuale: Node
+const TAVOLO := preload("res://chapters/c6/direzione_tavolo.tscn")
 
 
 func _ready() -> void:
@@ -49,15 +42,27 @@ func _ready() -> void:
 	st["cycle"] = cycle
 	alloc = RULES.start_alloc(st)
 	var draft: Dictionary = dt.get("draft", {})
+	if int(draft.get("cycle", 0)) != cycle: draft = {}
 	if int(draft.get("cycle", 0)) == cycle:
 		alloc = draft.get("alloc", alloc).duplicate(true)
-	st["mandate"] = ""
+	st["mandate"] = str(draft.get("mandate", ""))
+	casa_id = str(draft.get("casa_id", ""))
+	visuale = TAVOLO.instantiate()
+	add_child(visuale)
+	visuale.richiesta.connect(_richiesta_tavolo)
 	Ui.show_hud(false)
 	Sound.music("cima")
 	queue_redraw()
 	await get_tree().process_frame
-	await _intro()
-	phase = "alloc"
+	if str(draft.get("phase", "alloc")) not in ["casa", "debiti"]: await _intro()
+	phase = str(draft.get("phase", "alloc"))
+	if phase not in ["alloc", "casa", "debiti"]: phase = "alloc"
+	if phase == "casa": options = RULES.casa_options(st, alloc)
+	elif phase == "debiti":
+		var after := st.duplicate(true)
+		RULES.apply_casa(after, casa_id)
+		options = RULES.debt_options(after, alloc)
+	_sync_view()
 	queue_redraw()
 
 
@@ -102,200 +107,80 @@ func _intro() -> void:
 	await Ui.say(situation(1), PRES)
 	if not _dt().get("rules_seen", false):
 		_dt()["rules_seen"] = true
-		await Ui.say(["* Dividi 100 unità fra STIPENDI, SERVIZI, MANUTENZIONE e RISERVE. Se vuoi aumentare una voce e le unità sono finite, togline da un'altra.",
-			"[PC] * SU e GIÙ scelgono la voce; SINISTRA e DESTRA cambiano il numero. Puoi anche cliccare + e −. Seleziona CONFERMA e premi INVIO per proseguire.",
-			"[TEL] * Tocca + e − per cambiare i numeri. Poi tocca CONFERMA.",
-			"* È un solo turno: dopo il bilancio scegli la Casa Comune e la regola dei debiti."], PRES)
+		await Ui.say(["* Sposta i gettoni fra le quattro destinazioni. Guarda che cosa cambia prima di proseguire.",
+			"* GETTONE cambia la quantità: 5 oppure 1. DETTAGLI apre tutti i conti. Dopo scegli la Casa Comune e i debiti."], PRES)
 
 
-# --- disegno -----------------------------------------------------------------------------------------
-
-func _cat_row(i: int) -> Rect2:
-	return Rect2(16, ROW_Y + i * ROW_H, 300, ROW_H - 6)
-
-
+# Le aree e il disegno sono nella scena del tavolo, senza duplicare i conti.
 func minus_button(i: int) -> Rect2:
-	return Rect2(176, ROW_Y + i * ROW_H + 4, 40, 30)
-
-
+	return visuale.minus_button(i)
 func plus_button(i: int) -> Rect2:
-	return Rect2(270, ROW_Y + i * ROW_H + 4, 40, 30)
-
-
+	return visuale.plus_button(i)
 func confirm_button() -> Rect2:
-	return Rect2(16, 268, 300, 36)
-
-
+	return visuale.rett("Conferma")
 func rules_button() -> Rect2:
-	return Rect2(16, 312, 140, 30)
-
-
+	return visuale.rett("Regole")
 func option_button(i: int) -> Rect2:
-	return Rect2(24, 96 + i * 46, 592, 40)
-
-
+	return visuale.option_button(i)
+func _sync_view() -> void:
+	if visuale == null: return
+	var view_state := st.duplicate(true)
+	if phase == "debiti": RULES.apply_casa(view_state, casa_id)
+	visuale.aggiorna(view_state, alloc, phase, options, msg)
 func _draw() -> void:
-	var font := Assets.font()
-	Art.backdrop(self)
-	draw_string(font, Vector2(16, 26), "TURNO — DIREZIONE", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, DIM)
-	# la domanda cambia con la parte del turno: i soldi, la Casa Comune, i debiti
-	draw_string(font, Vector2(16, 48), RULES.QUESTIONS[{"casa": 2, "debiti": 3}.get(phase, 1)], HORIZONTAL_ALIGNMENT_LEFT, -1, 18, GOLD)
-	draw_string(font, Vector2(400, 26), "Riserve: %d   Arretrato: %d" % [int(st.get("reserve", 0)), int(st.get("backlog", 0))],
-		HORIZONTAL_ALIGNMENT_LEFT, 230, 11, DIM)
-	if phase in ["alloc", "intro"]:
-		_draw_alloc(font)
-	elif phase in ["casa", "debiti"]:
-		_draw_options(font)
-
-
-func _draw_alloc(font: Font) -> void:
-	var t := RULES.total(alloc)
-	draw_string(font, Vector2(16, 72), "Unità assegnate: %d / %d" % [t, RULES.TOTAL], HORIZONTAL_ALIGNMENT_LEFT, -1, 12,
-		GREEN if t == RULES.TOTAL else (RED if t > RULES.TOTAL else Color.WHITE))
-	for i in RULES.CATS.size():
-		var c: String = RULES.CATS[i]
-		var row := _cat_row(i)
-		Art.panel(self, row, PANEL, Color("7896a7"))
-		if sel == i:
-			draw_rect(row, GOLD, false, 2.0)
-		draw_string(font, row.position + Vector2(8, 16), RULES.NAMES[c], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
-		var base := int(RULES.BASE[c])
-		draw_string(font, row.position + Vector2(8, 32), "di solito %d" % base + (" · minimo %d" % RULES.minimum(st, c) if RULES.minimum(st, c) > 0 else ""),
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 9, DIM)
-		for b: Rect2 in [minus_button(i), plus_button(i)]:
-			draw_rect(b, Color("2a2434"))
-			draw_rect(b, Color.WHITE, false, 1.0)
-		draw_string(font, minus_button(i).position + Vector2(0, 21), "−", HORIZONTAL_ALIGNMENT_CENTER, 40, 16, Color.WHITE)
-		draw_string(font, plus_button(i).position + Vector2(0, 21), "+", HORIZONTAL_ALIGNMENT_CENTER, 40, 16, Color.WHITE)
-		draw_string(font, Vector2(218, row.position.y + 25), str(int(alloc[c])), HORIZONTAL_ALIGNMENT_CENTER, 50, 16, GOLD)
-	var bad := RULES.invalid(st, alloc)
-	var cb := confirm_button()
-	draw_rect(cb, Color("1f3a2a") if bad == "" else Color("2a2434"))
-	draw_rect(cb, GOLD if sel == 4 else (GREEN if bad == "" else DIM), false, 2.0)
-	draw_string(font, cb.position + Vector2(0, 23), "CONFERMA" if bad == "" else bad, HORIZONTAL_ALIGNMENT_CENTER, cb.size.x, 12 if bad == "" else 10,
-		Color.WHITE if bad == "" else DIM)
-	var rb := rules_button()
-	draw_rect(rb, Color("2a2434"))
-	draw_rect(rb, GOLD if sel == 5 else DIM, false, 1.0)
-	draw_string(font, rb.position + Vector2(0, 20), "LE REGOLE", HORIZONTAL_ALIGNMENT_CENTER, rb.size.x, 11, Color.WHITE)
-	# a destra: cosa succede con questa distribuzione, prima di confermare
-	Art.panel(self, Rect2(330, 64, 294, 280), PANEL, Color("7896a7"))
-	draw_string(font, Vector2(342, 82), "SE CONFERMI:", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, DIM)
-	var y := 100.0
-	for line: String in RULES.hints(st, alloc):
-		y = _wrap(font, line, Vector2(342, y), 272, 10, Color.WHITE) + 6
-	if msg != "":
-		_wrap(font, msg, Vector2(342, maxf(y, 300)), 272, 10, GOLD)
-
-
-func _draw_options(font: Font) -> void:
-	draw_string(font, Vector2(24, 80), "LA CASA COMUNE" if phase == "casa" else "LA REGOLA DEI DEBITI", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, DIM)
-	for i in options.size():
-		var o: Array = options[i]
-		var r := option_button(i)
-		var closed := str(o[o.size() - 1]) != ""
-		Art.panel(self, r, PANEL, Color("7896a7"))
-		draw_rect(r, GOLD if sel == i else (DIM if closed else Color.WHITE), false, 2.0 if sel == i else 1.0)
-		draw_string(font, r.position + Vector2(10, 16), str(o[1]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 12, DIM if closed else Color.WHITE)
-		var sub := str(o[o.size() - 1]) if closed else (str(o[2]) if phase == "debiti" else "")
-		if sub != "":
-			draw_string(font, r.position + Vector2(10, 32), sub, HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 9, RED if closed else DIM)
-	if msg != "":
-		_wrap(font, msg, Vector2(24, 96 + options.size() * 46 + 14), 592, 10, GOLD)
-
-
-## Scrive andando a capo dentro `width`; restituisce la y dopo l'ultima riga.
-func _wrap(font: Font, text: String, pos: Vector2, width: float, size: int, col: Color) -> float:
-	var words := text.split(" ")
-	var line := ""
-	var y := pos.y
-	for w in words:
-		var test := (line + " " + w).strip_edges()
-		if font.get_string_size(test, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width and line != "":
-			draw_string(font, Vector2(pos.x, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
-			y += size + 4
-			line = w
-		else:
-			line = test
-	if line != "":
-		draw_string(font, Vector2(pos.x, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
-		y += size + 4
-	return y
-
-
-# --- comandi -----------------------------------------------------------------------------------------
-
+	_sync_view()
 func touch_scheme() -> String:
 	return "point" if phase in ["alloc", "casa", "debiti"] else ""
-
-
 func touch_center() -> Vector2:
 	return Vector2(320, 180)
-
-
 func touch_point(pos: Vector2, step: int) -> void:
-	if step != 0 or Ui.busy:
-		return
-	if phase == "alloc":
-		for i in RULES.CATS.size():
-			if minus_button(i).grow(4).has_point(pos):
-				sel = i
-				_nudge(i, -1)
-				return
-			if plus_button(i).grow(4).has_point(pos):
-				sel = i
-				_nudge(i, 1)
-				return
-		if confirm_button().has_point(pos):
-			sel = 4
-			_confirm()
-		elif rules_button().has_point(pos):
-			sel = 5
-			_show_rules()
-	elif phase in ["casa", "debiti"]:
-		for i in options.size():
-			if option_button(i).has_point(pos):
-				sel = i
-				_pick(i)
-				return
-
-
+	if Ui.busy or phase not in ["alloc", "casa", "debiti"]: return
+	visuale.punta(pos, step)
 func _unhandled_input(event: InputEvent) -> void:
-	if Ui.busy or not phase in ["alloc", "casa", "debiti"]:
-		return
-	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed \
-			and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not TouchControls.enabled:
-		touch_point((event as InputEventMouseButton).position, 0)
-		return
-	var n := 6 if phase == "alloc" else options.size()
-	if event.is_action_pressed("move_up"):
-		sel = posmod(sel - 1, n)
-		Sound.sfx("move")
-	elif event.is_action_pressed("move_down"):
-		sel = posmod(sel + 1, n)
-		Sound.sfx("move")
-	elif phase == "alloc" and sel < 4 and (event.is_action_pressed("move_left") or event.is_action_pressed("move_right")):
-		_nudge(sel, -1 if event.is_action_pressed("move_left") else 1)
-	elif event.is_action_pressed("confirm"):
-		if phase == "alloc":
-			if sel == 4:
-				_confirm()
-			elif sel == 5:
-				_show_rules()
-			else:
-				_nudge(sel, 1)
-		else:
-			_pick(sel)
+	if Ui.busy or phase not in ["alloc", "casa", "debiti"]: return
+	if not TouchControls.enabled:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			touch_point(event.position, 0 if event.pressed else 2); return
+		if event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+			touch_point(event.position, 1); return
+	visuale.tastiera(event)
+func _richiesta_tavolo(azione: String, dati: Dictionary) -> void:
+	if Ui.busy or phase not in ["alloc", "casa", "debiti"]: return
+	match azione:
+		"nudge": _nudge(int(dati.index), int(dati.dir), int(dati.amount))
+		"transfer":
+			if phase != "alloc": return
+			var before := alloc.duplicate()
+			alloc = RULES.transfer(st, alloc, int(dati.from), int(dati.to), int(dati.amount))
+			msg = "" if before != alloc else "Nessuna unità disponibile: controlla i contratti e lo spazio rimasto."
+			if before != alloc:
+				var quanti := int(before[RULES.CATS[int(dati.from)]]) - int(alloc[RULES.CATS[int(dati.from)]]) if int(dati.from) >= 0 else int(alloc[RULES.CATS[int(dati.to)]]) - int(before[RULES.CATS[int(dati.to)]])
+				visuale.anima(int(dati.from), int(dati.to), quanti)
+			Sound.sfx("blip" if msg == "" else "deny")
+			_save_draft()
+		"regole": _show_rules()
+		"conferma":
+			if phase == "alloc": _confirm()
+		"select_option":
+			msg = ""
+		"scegli":
+			if phase in ["casa", "debiti"]: _pick(visuale.scelta)
+		"esci":
+			_save_draft()
+			phase = "leaving"
+			Router.goto(CIMA, "desk")
+	_sync_view()
 	queue_redraw()
 
-
-func _nudge(i: int, d: int) -> void:
+func _nudge(i: int, d: int, amount := 5) -> void:
 	var c: String = RULES.CATS[i]
 	var before := int(alloc[c])
-	alloc = RULES.nudge(st, alloc, c, d)
+	alloc = RULES.allocate(st, alloc, c, before + d * amount)
 	if int(alloc[c]) == before:
-		msg = "Non ci sono più unità da assegnare: togline da un'altra voce." if d > 0 and RULES.total(alloc) >= RULES.TOTAL else \
-			("Gli stipendi non scendono sotto %d." % RULES.minimum(st, c) if c == "stipendi" and d < 0 else "")
+		if d > 0:
+			msg = "Togline da un'altra destinazione: sul tavolo non restano unità." if RULES.total(alloc) >= RULES.TOTAL else "Questa destinazione è già al massimo di 60."
+		else:
+			msg = "Gli stipendi non scendono sotto %d." % RULES.minimum(st, c) if c == "stipendi" else "Questa destinazione è già vuota."
 		Sound.sfx("deny")
 	else:
 		msg = ""
@@ -312,6 +197,7 @@ func _show_rules() -> void:
 
 
 func _confirm() -> void:
+	if phase != "alloc" or Ui.busy: return
 	var bad := RULES.invalid(st, alloc)
 	if bad != "":
 		msg = bad
@@ -346,12 +232,14 @@ func _confirm() -> void:
 	await Ui.say(situation(2), PRES)
 	options = RULES.casa_options(st, alloc)
 	phase = "casa"
-	sel = 0
+	visuale.scelta = 0
+	_save_draft()
 	msg = ""
 	queue_redraw()
 
 
 func _pick(i: int) -> void:
+	if phase not in ["casa", "debiti"] or Ui.busy or i < 0 or i >= options.size(): return
 	var o: Array = options[i]
 	var closed := str(o[o.size() - 1])
 	if closed != "":
@@ -371,7 +259,8 @@ func _pick(i: int) -> void:
 		await Ui.say(["ATTENZIONE.", "La stabilità economica è importante.", "Soprattutto per chi è già stabile."], VOICE)
 		options = RULES.debt_options(after, alloc)
 		phase = "debiti"
-		sel = 0
+		visuale.scelta = 0
+		_save_draft()
 		msg = ""
 		queue_redraw()
 		return
@@ -437,7 +326,8 @@ static func _debt_text(c: String) -> String:
 
 
 func _save_draft() -> void:
+	if phase == "done": return
 	if B.uses("cima"):
-		_dt()["draft"] = {"cycle": cycle, "alloc": alloc.duplicate(true)}
+		_dt()["draft"] = {"cycle": cycle, "alloc": alloc.duplicate(true), "phase": phase, "casa_id": casa_id, "mandate": str(st.get("mandate", ""))}
 		GameState.save_game(CIMA, Vector2(520, 158))
 

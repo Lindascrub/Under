@@ -99,6 +99,34 @@ static func nudge(st: Dictionary, a: Dictionary, cat: String, d: int) -> Diction
 	return b
 
 
+## Modifica precisa: usa solo unità disponibili, contratti e tetto già esistenti.
+static func allocate(st: Dictionary, a: Dictionary, cat: String, value: int) -> Dictionary:
+	var b := a.duplicate()
+	if cat not in CATS: return b
+	var available := TOTAL - total(a) + int(a[cat])
+	b[cat] = clampi(value, minimum(st, cat), mini(MAX_CAT, available))
+	return b
+
+## -1 è il tavolo delle unità libere. Il trasferimento avviene tutto insieme.
+static func transfer(st: Dictionary, a: Dictionary, da: int, dest: int, amount: int) -> Dictionary:
+	var b := a.duplicate()
+	if da < -1 or da > 3 or dest < -1 or dest > 3 or da == dest or amount <= 0: return b
+	var disponibili := TOTAL - total(a) if da == -1 else int(a[CATS[da]]) - minimum(st, CATS[da])
+	var spazio := TOTAL if dest == -1 else MAX_CAT - int(a[CATS[dest]])
+	var quanti := mini(amount, mini(disponibili, spazio))
+	if quanti <= 0: return b
+	if da >= 0: b[CATS[da]] = int(b[CATS[da]]) - quanti
+	if dest >= 0: b[CATS[dest]] = int(b[CATS[dest]]) + quanti
+	return b
+
+## Stessi conti di apply, su una copia profonda: la città vera non viene modificata.
+static func preview(st: Dictionary, a: Dictionary) -> Dictionary:
+	var copia := st.duplicate(true)
+	var cover := _cover(st, a)
+	var lines := apply(copia, a)
+	return {"state": copia, "lines": lines, "from_services": cover["from_services"],
+		"services_eff": int(a["servizi"]) - int(cover["from_services"]) - (5 if str(st.get("mandate", "")) == "accentrata" else 0)}
+
 static func wage_label(s: int) -> String:
 	if s < 35:
 		return "tagliati"

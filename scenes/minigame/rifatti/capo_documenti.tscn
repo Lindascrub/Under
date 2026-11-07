@@ -1,167 +1,102 @@
-[gd_scene load_steps=4 format=3]
-[ext_resource type="Script" path="res://scenes/minigame/rifatti/incarico.gd" id="1"]
-[ext_resource type="Script" path="res://world/char_sprite.gd" id="char"]
-[sub_resource type="StyleBoxFlat" id="carta"]
-bg_color = Color(0.93, 0.9, 0.82, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.51, 0.47, 0.37, 1)
-content_margin_left = 8.0
-content_margin_right = 8.0
-[node name="Incarico" type="Node2D"]
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scenes/minigame/rifatti/capo_fascicoli.gd" id="1"]
+[node name="Fascicoli" type="Node2D"]
+texture_filter = 1
 script = ExtResource("1")
-piano = "-4"
-
-[node name="Fondo" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-color = Color(0.09, 0.12, 0.17, 1)
-
-[node name="Titolo" type="Label" parent="."]
-offset_left = 16.0
-offset_top = 6.0
-offset_right = 624.0
-offset_bottom = 32.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
-theme_override_font_sizes/font_size = 18
-text = "CAPO · PRATICHE DA CHIUDERE"
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Stato" type="Label" parent="."]
-offset_left = 16.0
-offset_top = 33.0
-offset_right = 624.0
-offset_bottom = 68.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = ""
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Esito" type="Label" parent="."]
-offset_left = 16.0
-offset_top = 305.0
-offset_right = 624.0
-offset_bottom = 331.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
-theme_override_font_sizes/font_size = 12
-text = ""
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Aiuto" type="Label" parent="."]
-offset_left = 16.0
-offset_top = 333.0
-offset_right = 624.0
-offset_bottom = 357.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = ""
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Scrivania" type="Panel" parent="."]
-offset_left = 16.0
-offset_top = 76.0
-offset_right = 624.0
-offset_bottom = 299.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("carta")
-
-[node name="Documento" type="Panel" parent="."]
+[node name="Tavolo" type="Control" parent="."]
 offset_left = 24.0
-offset_top = 80.0
-offset_right = 324.0
-offset_bottom = 294.0
+offset_top = 94.0
+offset_right = 168.0
+offset_bottom = 292.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("carta")
-
-[node name="Contenuto" type="Label" parent="Documento"]
-offset_left = 8.0
-offset_top = 4.0
-offset_right = 292.0
-offset_bottom = 210.0
+[node name="Foglio0" type="Control" parent="Tavolo"]
+offset_right = 144.0
+offset_bottom = 86.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-text = ""
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Azioni" type="Control" parent="."]
+[node name="Foglio1" type="Control" parent="Tavolo"]
+offset_top = 112.0
+offset_right = 144.0
+offset_bottom = 198.0
 mouse_filter = 2
-
-[node name="A0" type="Button" parent="Azioni"]
-offset_left = 342.0
-offset_top = 80.0
-offset_right = 476.0
-offset_bottom = 159.0
+[node name="Fascicolo" type="Control" parent="."]
+offset_left = 184.0
+offset_top = 76.0
+offset_right = 448.0
+offset_bottom = 308.0
 mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("carta")
-text = "CONTABILITÀ"
-autowrap_mode = 2
-
-[node name="A1" type="Button" parent="Azioni"]
-offset_left = 482.0
-offset_top = 80.0
-offset_right = 616.0
-offset_bottom = 159.0
+[node name="Sagoma0" type="Control" parent="Fascicolo"]
+offset_left = 14.0
+offset_top = 70.0
+offset_right = 126.0
+offset_bottom = 172.0
 mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("carta")
-text = "PERSONALE"
-autowrap_mode = 2
-
-[node name="A2" type="Button" parent="Azioni"]
-offset_left = 342.0
-offset_top = 166.0
-offset_right = 476.0
-offset_bottom = 245.0
+[node name="Sagoma1" type="Control" parent="Fascicolo"]
+offset_left = 138.0
+offset_top = 70.0
+offset_right = 250.0
+offset_bottom = 172.0
 mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("carta")
-text = "CHIEDI\nINTEGRAZIONE"
-autowrap_mode = 2
-
-[node name="A3" type="Button" parent="Azioni"]
-offset_left = 482.0
-offset_top = 166.0
-offset_right = 616.0
-offset_bottom = 245.0
+[node name="Timbri" type="Control" parent="."]
 mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("carta")
-text = "SEGNA RISOLTA"
-autowrap_mode = 2
-
-[node name="A4" type="Button" parent="Azioni"]
-offset_left = 342.0
-offset_top = 253.0
-offset_right = 616.0
-offset_bottom = 293.0
+[node name="Timbro0" type="Control" parent="Timbri"]
+offset_left = 463.0
+offset_top = 87.0
+offset_right = 537.0
+offset_bottom = 167.0
 mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("carta")
-text = "SALVA ED ESCI"
-autowrap_mode = 2
+[node name="Timbro1" type="Control" parent="Timbri"]
+offset_left = 545.0
+offset_top = 87.0
+offset_right = 619.0
+offset_bottom = 167.0
+mouse_filter = 2
+[node name="Timbro2" type="Control" parent="Timbri"]
+offset_left = 463.0
+offset_top = 181.0
+offset_right = 537.0
+offset_bottom = 261.0
+mouse_filter = 2
+[node name="Timbro3" type="Control" parent="Timbri"]
+offset_left = 545.0
+offset_top = 181.0
+offset_right = 619.0
+offset_bottom = 261.0
+mouse_filter = 2
+[node name="Consegna" type="Control" parent="."]
+offset_left = 463.0
+offset_top = 277.0
+offset_right = 619.0
+offset_bottom = 309.0
+mouse_filter = 2
+[node name="Dettagli" type="Control" parent="."]
+offset_left = 16.0
+offset_top = 331.0
+offset_right = 108.0
+offset_bottom = 359.0
+mouse_filter = 2
+[node name="Chiudi" type="Control" parent="Dettagli"]
+offset_left = 184.0
+offset_top = -91.0
+offset_right = 424.0
+offset_bottom = -51.0
+mouse_filter = 2
+[node name="Esci" type="Control" parent="."]
+offset_left = 514.0
+offset_top = 331.0
+offset_right = 624.0
+offset_bottom = 359.0
+mouse_filter = 2
+[node name="Conferma" type="Control" parent="."]
+mouse_filter = 2
+[node name="Indietro" type="Control" parent="Conferma"]
+offset_left = 112.0
+offset_top = 206.0
+offset_right = 313.0
+offset_bottom = 246.0
+mouse_filter = 2
+[node name="Chiudi" type="Control" parent="Conferma"]
+offset_left = 323.0
+offset_top = 206.0
+offset_right = 528.0
+offset_bottom = 246.0
+mouse_filter = 2

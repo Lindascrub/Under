@@ -128,6 +128,7 @@ for ($i = 1; $i -le 20; $i++) {
 }
 
 $exteriors = [ordered]@{
+    "$ext/22_Post_Office_16x16.png" = "themes/post_office.png"
     "$ext/2_City_Terrains_16x16.png" = "tiles/city_terrains.png"
     ($building -f "Condo_3_46")        = "buildings/home.png"
     ($building -f "Condo_5_1")         = "buildings/condo_blue.png"

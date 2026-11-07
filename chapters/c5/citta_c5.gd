@@ -502,6 +502,16 @@ func _show_node(nm: String) -> CanvasItem:
 
 # --- 5.08 il TURNO: la linea 12 (l'autobus) e il centralino ---------------------------------------
 
+## Il passaggio narrativo precede il primo lavoro: la richiesta non si perde perché il turno è il bus.
+func richiesta_prima_del_turno() -> bool:
+	return int(GameState.flags.get("c5_turni", 0)) == 0 and bool(GameState.flags.get("c4_verifica", false)) and str(GameState.flags.get("c5_richiesta", "")) == ""
+
+func _station(j: Dictionary) -> void:
+	if str(j.get("id", "")) == "comunicazioni_citta" and richiesta_prima_del_turno():
+		await _request_switchboard()
+	await super(j)
+
+
 ## Il centralino del Centro Comunicazioni: la richiesta di verifica della Banca passa da qui.
 func _centralino() -> void:
 	if GameState.flags.get("c4_verifica", false) and str(GameState.flags.get("c5_richiesta", "")) == "":
@@ -513,20 +523,25 @@ func _centralino() -> void:
 ## La richiesta di verifica partita dalla Banca passa dal centralino, una volta sola, con la
 ## destinazione proposta dal sistema: ARCHIVIO. Dove va lo decidi tu (c5_richiesta, vedi Storia.richiesta()).
 func _request_switchboard() -> void:
+	var pannello: CanvasLayer = load("res://chapters/c5/richiesta_centralino.tscn").instantiate()
+	add_child(pannello)
 	Sound.sfx("blip", 1.4)
-	await Ui.say(["* Sul pannello del centralino lampeggia una pratica che conosci: RICHIESTA DI VERIFICA — {name}.",
-		"* DESTINAZIONE PROPOSTA DAL SISTEMA: ARCHIVIO."])
-	var c: int = await Ui.choose("La tua richiesta.", ["CONFERMA — archivia", "VERIFICA — manda alla Direzione", "SEGNALA — la porto io"])
+	await Ui.say(["* È la tua richiesta della Banca. Il sistema propone di archiviarla."])
+	var c: int = await Ui.choose("Dove mandi la tua richiesta?", ["ARCHIVIO", "DIREZIONE", "LA PORTO IO"])
+	var bloccato: bool = Ui.cutscene
+	Ui.cutscene = true
+	await pannello.get_node("Grafica").consegna(c)
+	Ui.cutscene = bloccato
 	GameState.flags["c5_richiesta"] = ["archivio", "direzione", "a_mano"][c]
 	Storia.segna("c5_richiesta")
 	match c:
 		0:
-			await Ui.say(["* CONFERMA. La richiesta scivola nella colonna ARCHIVIO."])
+			await Ui.say(["* La tua richiesta finisce nel cassetto ARCHIVIO."])
 		1:
-			await Ui.say(["* VERIFICA. La destinazione diventa: DIREZIONE. Il pannello ci pensa un secondo, poi la lascia salire."])
+			await Ui.say(["* Il foglio parte per la DIREZIONE."])
 		_:
-			await Ui.say(["* SEGNALA. La richiesta si ferma e resta a te. La stampi e la pieghi in tasca, vicino al badge.",
-				"* La porterai su a mano."])
+			await Ui.say(["* Ritiri la copia e la pieghi in tasca. La porterai alla Presidente."])
+	pannello.queue_free()
 
 
 # --- 5.09 la telefonata del capo ---------------------------------------------------------------

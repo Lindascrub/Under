@@ -1,5 +1,7 @@
 # CHEAP — Documento di design
 
+> **7/11/2026 — Incarichi narrativi rifatti:** leva, cartellino e luci di Fermo; fascicoli; cartellini da stampare; calendario del prestito; montaggio del notiziario; gettoni della Direzione in un solo turno. I conti e le conseguenze restano nei sistemi precedenti. La richiesta della Banca compare una volta prima del primo autobus in Città. Dettagli e verifiche in [MINIGIOCHI_NARRATIVI_20261107.md](MINIGIOCHI_NARRATIVI_20261107.md).
+
 > **28/10/2026 — Incarichi del Capo implementati:** per le nuove partite le missioni di furto ripetute sono sostituite da energia, pratiche, etichette, contratti e montaggio del notiziario; alla Cima le pressioni entrano nei tre bilanci esistenti. Alternative realmente giocabili, conseguenze persistenti, premi una sola volta, nessuna nuova robotizzazione. Il vecchio furto ("un, due, tre, stella") resta solo per i salvataggi che lo avevano già aperto. Regole in `scripts/boss_missions.gd`.
 
 > Nives annuncia l'arrivo, usa una musica dedicata e viene seguita dalla camera; lo sportello si usa lungo il bancone. Nel Fondo la CycletteDinamo originale è condivisa col minigioco, la biglietteria ha pavimento beige LimeZu, divisorio sottile, ritorno di muro all'ingresso e pilastro separato dalle scale. Ascensore esistente con porte originali e stipite; sei telecamere originali nei luoghi di lavoro. Le versioni precedenti sono nella cronologia di git.

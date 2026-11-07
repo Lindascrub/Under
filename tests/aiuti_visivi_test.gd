@@ -267,9 +267,9 @@ func _incarichi(_tel: bool) -> void:
 		n.aggiorna(p, "")
 		await immagine(n, caso[1])
 		match caso[0]:
-			"-4": verifica(n.get_node("Documento/Contenuto").text.contains("E-27"), "Capo: il registro mancante appartiene a E-27")
-			"-3": verifica(n.get_node("Cartellino/Condizioni").text == "Condizioni al terminale." and n.get_node("Cassa/Totale").text.contains(MISSIONI.cash(int(MISSIONI.market_preview(p)["basket"]))), "Capo: condizioni nascoste, totale effettivo visibile alla cassa")
-			"-2": verifica(n.get_node("Olga/Copertura").visible and n.get_node("Interno/Dati").text.contains("TOTALE"), "Capo: il giocatore legge ciò che nasconde a Olga")
-			"0": verifica(n.get_node("Intera/Testo").text.contains("CONTESTO") and n.get_node("Televisore/Testo").text.contains("CONTESTO ESCLUSO"), "Capo: il montaggio non cancella la registrazione originale")
+			"-4": verifica(n.documento == 1 and n.campi[1]["kind"] == "registro" and not n.campi[1]["available"], "Capo: il registro mancante appartiene a E-27")
+			"-3": verifica(not bool(n.p["visible"]) and n.condizioni_interne.contains(MISSIONI.cash(int(MISSIONI.market_preview(p)["each"]))) and int(n.v["basket"]) == int(MISSIONI.market_preview(p)["basket"]), "Capo: condizioni nascoste, totale effettivo visibile alla cassa")
+			"-2": verifica(not bool(n.p["visible"]) and n.riepilogo_interno.contains("TOTALE"), "Capo: il giocatore legge ciò che nasconde a Olga")
+			"0": verifica(n.didascalia == MISSIONI.news_sources()[0]["quote"] and n.contesto_originale == MISSIONI.news_sources()[0]["context"] and n.testo_anteprima == MISSIONI.cut_quote(MISSIONI.news_sources()[0]), "Capo: il taglio conserva l'originale e mostra soltanto le parole mandate in onda")
 		n.queue_free()
 		await get_tree().process_frame

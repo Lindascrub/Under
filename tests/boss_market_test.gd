@@ -46,14 +46,17 @@ func _ready() -> void:
  p = B.progress("-3"); p["units"] = 2
  B.checkpoint("-3"); GameState.load_game()
  check(int(B.progress("-3")["units"]) == 2, "Ripresa a metà")
+ B.state("-3")["instructions_seen"] = true
  GameState.minigame = {"boss_floor": "-3"}
  var ui: Control = load(B.SCENE).instantiate()
  add_child(ui)
  await get_tree().process_frame
  await get_tree().process_frame
- ui._act("rate")
+ ui._act("label_rate")
  check(int(ui.p["rate"]) == 10, "Controllo percentuale")
- ui._act("visible")
+ ui._act("label_stampa")
+ ui._act("label_conditions")
+ ui._act("label_terminale")
  check(not ui.p["visible"], "Controllo condizioni")
  ui.queue_free()
  GameState.flags = {"c3_capo": true}; GameState.money = 800; GameState.robots.assign(["amir"])

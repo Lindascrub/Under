@@ -14,27 +14,48 @@ func _ready() -> void:
    var before := GameState.money
    match floor:
     "-5":
-     if exploit:
-      current._act("extra"); current._act("extra"); current._act("extra")
-     else: current._act("decor")
-     current._act("simulate")
+     current.dinamo.attiva("decor_0")
+     if exploit: current.dinamo._metti(2)
+     else: current.dinamo._metti(1)
+     current.dinamo._conferma()
+     current.dinamo.attiva("applica")
     "-4":
      for choice in [3, 3 if exploit else 2, 1, 2]:
-      current._act("doc_%d" % choice); await frames(1)
+      var pieces := B.document_pieces(int(current.p["document"]))
+      for i in pieces.size():
+       if bool(pieces[i]["available"]):
+        current._act("fasc_carta_%d" % i)
+        current._act("fasc_sagoma_%d" % i)
+      current._act("fasc_timbro_%d" % choice)
+      current._act("fasc_fascicolo")
+      current._act("fasc_consegna")
+      if current.visuale.conferma_aperta: current._act("fasc_chiudi")
+      await get_tree().create_timer(0.42).timeout
     "-3":
      for i in 3:
+      if exploit: current._act("label_units_2")
+      current._act("label_stampa")
       if exploit:
-       current._act("units"); current._act("visible")
-      current._act("submit"); await frames(1)
+       current._act("label_conditions")
+       current._act("label_terminale")
+      current._act("label_applica")
+      if current.visuale.conferma_aperta: current._act("label_conferma")
+      await get_tree().create_timer(0.42).timeout
     "-2":
-     if exploit: current._act("visible")
-     current._act("proposal")
+     if exploit:
+      current._act("loan_summary"); current._act("loan_interno")
+     current._act("loan_invia")
+     current._act("loan_conferma")
+     await get_tree().create_timer(0.42).timeout
     "0":
-     if exploit: current._act("cut")
      for i in 3:
-      current._act("add")
-      current._act("source")
-     current._act("broadcast")
+      current._act("mont_fonte_%d" % i)
+      if exploit:
+       current._act("mont_taglia")
+       current._act("mont_fonte_%d" % i)
+      current._act("mont_aggiungi")
+     current._act("mont_trasmetti")
+     current._act("mont_invia")
    var path: String = {"-5": Router.FONDO, "-4": Router.SOTTOUFFICIO, "-3": Router.MERCATO, "-2": Router.BANCA, "0": Router.CITY}[floor]
    await wait_scene(path)
    check(str(B.state(floor)["status"]) == "done", "Completamento UI " + floor + str(exploit))

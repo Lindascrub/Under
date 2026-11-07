@@ -477,9 +477,11 @@ func _run() -> void:
 		_check(str(dz.get("phase")) == want[0], "dopo i soldi, nello stesso turno: " + str(want[0]))
 		var k: int = posmod(int(want[1]), (dz.get("options") as Array).size())
 		await _tap_at((dz.call("option_button", k) as Rect2).get_center())
+		_check(str(dz.get("phase")) == want[0], "selezionare apre i dettagli senza applicare " + str(want[0]))
+		await _tap_at((dz.call("confirm_button") as Rect2).get_center())
 	var c6: Dictionary = GameState.flags["chapter_6"]
 	_check(c6["director_turn"].get("cycle_3_completed", false) and int(c6["director_turn"]["state"]["log"][0]["alloc"]["stipendi"]) == 30 \
-		and str(c6["director_turn"]["state"]["debt_rule"]) == "conservare", "un tocco per scelta: il turno è deciso")
+		and str(c6["director_turn"]["state"]["debt_rule"]) == "conservare", "selezione e conferma: il turno è deciso")
 	c6["director_turn"]["pending"] = null
 	await _wait_scene(Router.CIMA, 60000)
 	await _idle()

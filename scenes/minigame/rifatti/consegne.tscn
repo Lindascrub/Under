@@ -1,22 +1,33 @@
-[gd_scene load_steps=12 format=3]
-[ext_resource type="Script" path="res://scenes/minigame/rifatti/consegne.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/limezu/market/box_1.png" id="pacco"]
-[ext_resource type="Script" path="res://world/char_sprite.gd" id="char"]
-[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_full3_right.png" id="c3"]
-[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_full2_right.png" id="c2"]
-[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_full1_right.png" id="c1"]
-[ext_resource type="Texture2D" path="res://assets/limezu/props/cart_green_empty_right.png" id="c0"]
-[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_blue.png" id="palazzo_blu"]
-[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_yellow.png" id="palazzo_giallo"]
-[sub_resource type="AtlasTexture" id="fila_blu"]
-atlas = ExtResource("palazzo_blu")
-region = Rect2(0, 57, 96, 50)
-[sub_resource type="AtlasTexture" id="fila_gialla"]
-atlas = ExtResource("palazzo_giallo")
-region = Rect2(0, 57, 96, 50)
+[gd_scene load_steps=14 format=3]
+[ext_resource type="Script" path="res://scenes/minigame/rifatti/consegne.gd" id="gioco"]
+[ext_resource type="Texture2D" path="res://assets/limezu/themes/post_office.png" id="poste"]
+[ext_resource type="Texture2D" path="res://assets/limezu/market/box_1.png" id="box"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/home.png" id="home"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_blue.png" id="blue"]
+[ext_resource type="Texture2D" path="res://assets/limezu/buildings/condo_yellow.png" id="yellow"]
+[ext_resource type="Texture2D" path="res://assets/limezu/tiles/city_terrains.png" id="strada"]
+[sub_resource type="AtlasTexture" id="furgone"]
+atlas = ExtResource("poste")
+region = Rect2(0, 16, 128, 80)
+[sub_resource type="AtlasTexture" id="pacco"]
+atlas = ExtResource("box")
+region = Rect2(8, 16, 16, 16)
+[sub_resource type="AtlasTexture" id="casa"]
+atlas = ExtResource("home")
+region = Rect2(0, 224, 112, 64)
+[sub_resource type="AtlasTexture" id="ingresso_blu"]
+atlas = ExtResource("blue")
+region = Rect2(0, 112, 96, 64)
+[sub_resource type="AtlasTexture" id="ingresso_giallo"]
+atlas = ExtResource("yellow")
+region = Rect2(0, 112, 96, 64)
+[sub_resource type="AtlasTexture" id="asfalto"]
+atlas = ExtResource("strada")
+region = Rect2(0, 80, 16, 16)
 [node name="Gioco" type="Node2D"]
-script = ExtResource("1")
-carrelli = Array[Texture2D]([ExtResource("c3"), ExtResource("c2"), ExtResource("c1"), ExtResource("c0")])
+texture_filter = 1
+script = ExtResource("gioco")
+facciate = Array[Texture2D]([SubResource("casa"), SubResource("ingresso_blu"), SubResource("ingresso_giallo")])
 
 [node name="Fondo" type="ColorRect" parent="."]
 offset_left = 0.0
@@ -24,7 +35,474 @@ offset_top = 0.0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
-color = Color(0.16, 0.20, 0.25, 1)
+color = Color(0.085, 0.115, 0.15, 1)
+
+
+[node name="Cornice" type="ColorRect" parent="."]
+offset_left = 14.0
+offset_top = 84.0
+offset_right = 626.0
+offset_bottom = 318.0
+mouse_filter = 2
+color = Color(0.42, 0.49, 0.54, 1)
+
+
+[node name="Asfalto" type="TextureRect" parent="."]
+offset_left = 16.0
+offset_top = 86.0
+offset_right = 624.0
+offset_bottom = 316.0
+texture = SubResource("asfalto")
+stretch_mode = 1
+mouse_filter = 2
+modulate = Color(0.78, 0.85, 0.91, 1)
+
+[node name="Marciapiede0" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 149.0
+offset_right = 624.0
+offset_bottom = 166.0
+mouse_filter = 2
+color = Color(0.51, 0.52, 0.51, 1)
+
+
+[node name="Cordolo0" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 164.0
+offset_right = 624.0
+offset_bottom = 167.0
+mouse_filter = 2
+color = Color(0.70, 0.68, 0.61, 1)
+
+
+[node name="OmbraCordolo0" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 167.0
+offset_right = 624.0
+offset_bottom = 170.0
+mouse_filter = 2
+color = Color(0.11, 0.15, 0.19, 1)
+
+
+[node name="TargaVia0" type="ColorRect" parent="."]
+offset_left = 23.0
+offset_top = 93.0
+offset_right = 47.0
+offset_bottom = 111.0
+mouse_filter = 2
+color = Color(0.12, 0.18, 0.22, 1)
+
+
+[node name="Via0" type="Label" parent="."]
+offset_left = 23.0
+offset_top = 93.0
+offset_right = 47.0
+offset_bottom = 111.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.77, 0.36, 1)
+theme_override_font_sizes/font_size = 12
+text = "1"
+autowrap_mode = 2
+vertical_alignment = 1
+horizontal_alignment = 1
+
+[node name="Marciapiede1" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 222.0
+offset_right = 624.0
+offset_bottom = 239.0
+mouse_filter = 2
+color = Color(0.51, 0.52, 0.51, 1)
+
+
+[node name="Cordolo1" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 237.0
+offset_right = 624.0
+offset_bottom = 240.0
+mouse_filter = 2
+color = Color(0.70, 0.68, 0.61, 1)
+
+
+[node name="OmbraCordolo1" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 240.0
+offset_right = 624.0
+offset_bottom = 243.0
+mouse_filter = 2
+color = Color(0.11, 0.15, 0.19, 1)
+
+
+[node name="TargaVia1" type="ColorRect" parent="."]
+offset_left = 23.0
+offset_top = 166.0
+offset_right = 47.0
+offset_bottom = 184.0
+mouse_filter = 2
+color = Color(0.12, 0.18, 0.22, 1)
+
+
+[node name="Via1" type="Label" parent="."]
+offset_left = 23.0
+offset_top = 166.0
+offset_right = 47.0
+offset_bottom = 184.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.77, 0.36, 1)
+theme_override_font_sizes/font_size = 12
+text = "2"
+autowrap_mode = 2
+vertical_alignment = 1
+horizontal_alignment = 1
+
+[node name="Marciapiede2" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 295.0
+offset_right = 624.0
+offset_bottom = 312.0
+mouse_filter = 2
+color = Color(0.51, 0.52, 0.51, 1)
+
+
+[node name="Cordolo2" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 310.0
+offset_right = 624.0
+offset_bottom = 313.0
+mouse_filter = 2
+color = Color(0.70, 0.68, 0.61, 1)
+
+
+[node name="OmbraCordolo2" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 313.0
+offset_right = 624.0
+offset_bottom = 316.0
+mouse_filter = 2
+color = Color(0.11, 0.15, 0.19, 1)
+
+
+[node name="TargaVia2" type="ColorRect" parent="."]
+offset_left = 23.0
+offset_top = 239.0
+offset_right = 47.0
+offset_bottom = 257.0
+mouse_filter = 2
+color = Color(0.12, 0.18, 0.22, 1)
+
+
+[node name="Via2" type="Label" parent="."]
+offset_left = 23.0
+offset_top = 239.0
+offset_right = 47.0
+offset_bottom = 257.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.77, 0.36, 1)
+theme_override_font_sizes/font_size = 12
+text = "3"
+autowrap_mode = 2
+vertical_alignment = 1
+horizontal_alignment = 1
+
+[node name="Strisce" type="Control" parent="."]
+mouse_filter = 2
+
+[node name="Strada0_0" type="ColorRect" parent="Strisce"]
+offset_left = 24.0
+offset_top = 171.0
+offset_right = 48.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_1" type="ColorRect" parent="Strisce"]
+offset_left = 104.0
+offset_top = 171.0
+offset_right = 128.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_2" type="ColorRect" parent="Strisce"]
+offset_left = 184.0
+offset_top = 171.0
+offset_right = 208.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_3" type="ColorRect" parent="Strisce"]
+offset_left = 264.0
+offset_top = 171.0
+offset_right = 288.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_4" type="ColorRect" parent="Strisce"]
+offset_left = 344.0
+offset_top = 171.0
+offset_right = 368.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_5" type="ColorRect" parent="Strisce"]
+offset_left = 424.0
+offset_top = 171.0
+offset_right = 448.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_6" type="ColorRect" parent="Strisce"]
+offset_left = 504.0
+offset_top = 171.0
+offset_right = 528.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada0_7" type="ColorRect" parent="Strisce"]
+offset_left = 584.0
+offset_top = 171.0
+offset_right = 608.0
+offset_bottom = 173.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_0" type="ColorRect" parent="Strisce"]
+offset_left = 24.0
+offset_top = 244.0
+offset_right = 48.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_1" type="ColorRect" parent="Strisce"]
+offset_left = 104.0
+offset_top = 244.0
+offset_right = 128.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_2" type="ColorRect" parent="Strisce"]
+offset_left = 184.0
+offset_top = 244.0
+offset_right = 208.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_3" type="ColorRect" parent="Strisce"]
+offset_left = 264.0
+offset_top = 244.0
+offset_right = 288.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_4" type="ColorRect" parent="Strisce"]
+offset_left = 344.0
+offset_top = 244.0
+offset_right = 368.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_5" type="ColorRect" parent="Strisce"]
+offset_left = 424.0
+offset_top = 244.0
+offset_right = 448.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_6" type="ColorRect" parent="Strisce"]
+offset_left = 504.0
+offset_top = 244.0
+offset_right = 528.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada1_7" type="ColorRect" parent="Strisce"]
+offset_left = 584.0
+offset_top = 244.0
+offset_right = 608.0
+offset_bottom = 246.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_0" type="ColorRect" parent="Strisce"]
+offset_left = 24.0
+offset_top = 317.0
+offset_right = 48.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_1" type="ColorRect" parent="Strisce"]
+offset_left = 104.0
+offset_top = 317.0
+offset_right = 128.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_2" type="ColorRect" parent="Strisce"]
+offset_left = 184.0
+offset_top = 317.0
+offset_right = 208.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_3" type="ColorRect" parent="Strisce"]
+offset_left = 264.0
+offset_top = 317.0
+offset_right = 288.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_4" type="ColorRect" parent="Strisce"]
+offset_left = 344.0
+offset_top = 317.0
+offset_right = 368.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_5" type="ColorRect" parent="Strisce"]
+offset_left = 424.0
+offset_top = 317.0
+offset_right = 448.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_6" type="ColorRect" parent="Strisce"]
+offset_left = 504.0
+offset_top = 317.0
+offset_right = 528.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Strada2_7" type="ColorRect" parent="Strisce"]
+offset_left = 584.0
+offset_top = 317.0
+offset_right = 608.0
+offset_bottom = 319.0
+mouse_filter = 2
+color = Color(0.55, 0.57, 0.55, 0.6)
+
+
+[node name="Porte" type="Node2D" parent="."]
+
+
+[node name="Entrata" type="Marker2D" parent="."]
+position = Vector2(680, 0)
+
+[node name="Amir" type="Node2D" parent="."]
+position = Vector2(124, 235)
+
+[node name="Ombra" type="Polygon2D" parent="Amir"]
+position = Vector2(0, -2)
+polygon = PackedVector2Array(-64, -8, 60, -8, 66, 0, 58, 4, -62, 4, -68, -1)
+color = Color(0, 0, 0, 0.3)
+
+[node name="Furgone" type="Sprite2D" parent="Amir"]
+position = Vector2(0, -36)
+texture = SubResource("furgone")
+
+
+[node name="UscitaPacco" type="Marker2D" parent="Amir"]
+position = Vector2(56, -28)
+
+[node name="Mira" type="Marker2D" parent="."]
+position = Vector2(265, 210)
+
+[node name="Bersaglio" type="ColorRect" parent="Mira"]
+offset_left = -6.0
+offset_top = -4.0
+offset_right = 6.0
+offset_bottom = 4.0
+mouse_filter = 2
+color = Color(1, 0.88, 0.3, 0.85)
+
+
+[node name="Limite" type="Marker2D" parent="."]
+position = Vector2(92, 0)
+
+[node name="Traiettoria" type="Line2D" parent="."]
+width = 1.0
+default_color = Color(1, 0.9, 0.55, 0.65)
+
+[node name="Pacco" type="Sprite2D" parent="."]
+visible = false
+texture = SubResource("pacco")
+
+[node name="BordoSinistro" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 84.0
+offset_right = 16.0
+offset_bottom = 320.0
+mouse_filter = 2
+color = Color(0.085, 0.115, 0.15, 1)
+
+
+[node name="BordoDestro" type="ColorRect" parent="."]
+offset_left = 624.0
+offset_top = 84.0
+offset_right = 640.0
+offset_bottom = 320.0
+mouse_filter = 2
+color = Color(0.085, 0.115, 0.15, 1)
+
+
+[node name="BordoSopra" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.085, 0.115, 0.15, 1)
+
+
+[node name="BordoSotto" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 318.0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.085, 0.115, 0.15, 1)
+
 
 [node name="Titolo" type="Label" parent="."]
 offset_left = 16.0
@@ -32,11 +510,12 @@ offset_top = 4.0
 offset_right = 624.0
 offset_bottom = 29.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
 theme_override_font_sizes/font_size = 18
-text = "AMIR · LE DICIOTTO PORTE"
+text = "AMIR · GIRO DI CONSEGNE"
 autowrap_mode = 2
 vertical_alignment = 1
+
 
 [node name="Aiuto" type="Label" parent="."]
 offset_left = 16.0
@@ -50,6 +529,7 @@ text = ""
 autowrap_mode = 2
 vertical_alignment = 1
 
+
 [node name="Stato" type="Label" parent="."]
 offset_left = 16.0
 offset_top = 60.0
@@ -62,631 +542,6 @@ text = ""
 autowrap_mode = 2
 vertical_alignment = 1
 
-[node name="Cielo" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 86.0
-offset_right = 624.0
-offset_bottom = 316.0
-mouse_filter = 2
-color = Color(0.2, 0.27, 0.36, 1)
-
-[node name="Fondale0" type="TextureRect" parent="."]
-offset_left = 16.0
-offset_top = 87.0
-offset_right = 624.0
-offset_bottom = 137.0
-mouse_filter = 2
-modulate = Color(0.55, 0.58, 0.68, 1)
-texture = SubResource("fila_blu")
-stretch_mode = 1
-
-[node name="Marciapiede0" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 137.0
-offset_right = 624.0
-offset_bottom = 167.0
-mouse_filter = 2
-color = Color(0.66, 0.64, 0.6, 1)
-
-[node name="Cordolo0" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 165.0
-offset_right = 624.0
-offset_bottom = 168.0
-mouse_filter = 2
-color = Color(0.42, 0.41, 0.4, 1)
-
-[node name="Fondale1" type="TextureRect" parent="."]
-offset_left = 16.0
-offset_top = 160.0
-offset_right = 624.0
-offset_bottom = 210.0
-mouse_filter = 2
-modulate = Color(0.55, 0.58, 0.68, 1)
-texture = SubResource("fila_gialla")
-stretch_mode = 1
-
-[node name="Marciapiede1" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 210.0
-offset_right = 624.0
-offset_bottom = 240.0
-mouse_filter = 2
-color = Color(0.66, 0.64, 0.6, 1)
-
-[node name="Cordolo1" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 238.0
-offset_right = 624.0
-offset_bottom = 241.0
-mouse_filter = 2
-color = Color(0.42, 0.41, 0.4, 1)
-
-[node name="Fondale2" type="TextureRect" parent="."]
-offset_left = 16.0
-offset_top = 233.0
-offset_right = 624.0
-offset_bottom = 283.0
-mouse_filter = 2
-modulate = Color(0.55, 0.58, 0.68, 1)
-texture = SubResource("fila_blu")
-stretch_mode = 1
-
-[node name="Marciapiede2" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 283.0
-offset_right = 624.0
-offset_bottom = 313.0
-mouse_filter = 2
-color = Color(0.66, 0.64, 0.6, 1)
-
-[node name="Cordolo2" type="ColorRect" parent="."]
-offset_left = 16.0
-offset_top = 311.0
-offset_right = 624.0
-offset_bottom = 314.0
-mouse_filter = 2
-color = Color(0.42, 0.41, 0.4, 1)
-
-[node name="Strisce" type="Control" parent="."]
-mouse_filter = 2
-
-[node name="Giunto0" type="ColorRect" parent="Strisce"]
-offset_left = 16.0
-offset_top = 141.0
-offset_right = 18.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto1" type="ColorRect" parent="Strisce"]
-offset_left = 48.0
-offset_top = 141.0
-offset_right = 50.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto2" type="ColorRect" parent="Strisce"]
-offset_left = 80.0
-offset_top = 141.0
-offset_right = 82.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto3" type="ColorRect" parent="Strisce"]
-offset_left = 112.0
-offset_top = 141.0
-offset_right = 114.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto4" type="ColorRect" parent="Strisce"]
-offset_left = 144.0
-offset_top = 141.0
-offset_right = 146.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto5" type="ColorRect" parent="Strisce"]
-offset_left = 176.0
-offset_top = 141.0
-offset_right = 178.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto6" type="ColorRect" parent="Strisce"]
-offset_left = 208.0
-offset_top = 141.0
-offset_right = 210.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto7" type="ColorRect" parent="Strisce"]
-offset_left = 240.0
-offset_top = 141.0
-offset_right = 242.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto8" type="ColorRect" parent="Strisce"]
-offset_left = 272.0
-offset_top = 141.0
-offset_right = 274.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto9" type="ColorRect" parent="Strisce"]
-offset_left = 304.0
-offset_top = 141.0
-offset_right = 306.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto10" type="ColorRect" parent="Strisce"]
-offset_left = 336.0
-offset_top = 141.0
-offset_right = 338.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto11" type="ColorRect" parent="Strisce"]
-offset_left = 368.0
-offset_top = 141.0
-offset_right = 370.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto12" type="ColorRect" parent="Strisce"]
-offset_left = 400.0
-offset_top = 141.0
-offset_right = 402.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto13" type="ColorRect" parent="Strisce"]
-offset_left = 432.0
-offset_top = 141.0
-offset_right = 434.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto14" type="ColorRect" parent="Strisce"]
-offset_left = 464.0
-offset_top = 141.0
-offset_right = 466.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto15" type="ColorRect" parent="Strisce"]
-offset_left = 496.0
-offset_top = 141.0
-offset_right = 498.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto16" type="ColorRect" parent="Strisce"]
-offset_left = 528.0
-offset_top = 141.0
-offset_right = 530.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto17" type="ColorRect" parent="Strisce"]
-offset_left = 560.0
-offset_top = 141.0
-offset_right = 562.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto18" type="ColorRect" parent="Strisce"]
-offset_left = 592.0
-offset_top = 141.0
-offset_right = 594.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto19" type="ColorRect" parent="Strisce"]
-offset_left = 624.0
-offset_top = 141.0
-offset_right = 626.0
-offset_bottom = 163.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto20" type="ColorRect" parent="Strisce"]
-offset_left = 16.0
-offset_top = 214.0
-offset_right = 18.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto21" type="ColorRect" parent="Strisce"]
-offset_left = 48.0
-offset_top = 214.0
-offset_right = 50.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto22" type="ColorRect" parent="Strisce"]
-offset_left = 80.0
-offset_top = 214.0
-offset_right = 82.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto23" type="ColorRect" parent="Strisce"]
-offset_left = 112.0
-offset_top = 214.0
-offset_right = 114.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto24" type="ColorRect" parent="Strisce"]
-offset_left = 144.0
-offset_top = 214.0
-offset_right = 146.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto25" type="ColorRect" parent="Strisce"]
-offset_left = 176.0
-offset_top = 214.0
-offset_right = 178.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto26" type="ColorRect" parent="Strisce"]
-offset_left = 208.0
-offset_top = 214.0
-offset_right = 210.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto27" type="ColorRect" parent="Strisce"]
-offset_left = 240.0
-offset_top = 214.0
-offset_right = 242.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto28" type="ColorRect" parent="Strisce"]
-offset_left = 272.0
-offset_top = 214.0
-offset_right = 274.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto29" type="ColorRect" parent="Strisce"]
-offset_left = 304.0
-offset_top = 214.0
-offset_right = 306.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto30" type="ColorRect" parent="Strisce"]
-offset_left = 336.0
-offset_top = 214.0
-offset_right = 338.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto31" type="ColorRect" parent="Strisce"]
-offset_left = 368.0
-offset_top = 214.0
-offset_right = 370.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto32" type="ColorRect" parent="Strisce"]
-offset_left = 400.0
-offset_top = 214.0
-offset_right = 402.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto33" type="ColorRect" parent="Strisce"]
-offset_left = 432.0
-offset_top = 214.0
-offset_right = 434.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto34" type="ColorRect" parent="Strisce"]
-offset_left = 464.0
-offset_top = 214.0
-offset_right = 466.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto35" type="ColorRect" parent="Strisce"]
-offset_left = 496.0
-offset_top = 214.0
-offset_right = 498.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto36" type="ColorRect" parent="Strisce"]
-offset_left = 528.0
-offset_top = 214.0
-offset_right = 530.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto37" type="ColorRect" parent="Strisce"]
-offset_left = 560.0
-offset_top = 214.0
-offset_right = 562.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto38" type="ColorRect" parent="Strisce"]
-offset_left = 592.0
-offset_top = 214.0
-offset_right = 594.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto39" type="ColorRect" parent="Strisce"]
-offset_left = 624.0
-offset_top = 214.0
-offset_right = 626.0
-offset_bottom = 236.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto40" type="ColorRect" parent="Strisce"]
-offset_left = 16.0
-offset_top = 287.0
-offset_right = 18.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto41" type="ColorRect" parent="Strisce"]
-offset_left = 48.0
-offset_top = 287.0
-offset_right = 50.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto42" type="ColorRect" parent="Strisce"]
-offset_left = 80.0
-offset_top = 287.0
-offset_right = 82.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto43" type="ColorRect" parent="Strisce"]
-offset_left = 112.0
-offset_top = 287.0
-offset_right = 114.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto44" type="ColorRect" parent="Strisce"]
-offset_left = 144.0
-offset_top = 287.0
-offset_right = 146.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto45" type="ColorRect" parent="Strisce"]
-offset_left = 176.0
-offset_top = 287.0
-offset_right = 178.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto46" type="ColorRect" parent="Strisce"]
-offset_left = 208.0
-offset_top = 287.0
-offset_right = 210.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto47" type="ColorRect" parent="Strisce"]
-offset_left = 240.0
-offset_top = 287.0
-offset_right = 242.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto48" type="ColorRect" parent="Strisce"]
-offset_left = 272.0
-offset_top = 287.0
-offset_right = 274.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto49" type="ColorRect" parent="Strisce"]
-offset_left = 304.0
-offset_top = 287.0
-offset_right = 306.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto50" type="ColorRect" parent="Strisce"]
-offset_left = 336.0
-offset_top = 287.0
-offset_right = 338.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto51" type="ColorRect" parent="Strisce"]
-offset_left = 368.0
-offset_top = 287.0
-offset_right = 370.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto52" type="ColorRect" parent="Strisce"]
-offset_left = 400.0
-offset_top = 287.0
-offset_right = 402.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto53" type="ColorRect" parent="Strisce"]
-offset_left = 432.0
-offset_top = 287.0
-offset_right = 434.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto54" type="ColorRect" parent="Strisce"]
-offset_left = 464.0
-offset_top = 287.0
-offset_right = 466.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto55" type="ColorRect" parent="Strisce"]
-offset_left = 496.0
-offset_top = 287.0
-offset_right = 498.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto56" type="ColorRect" parent="Strisce"]
-offset_left = 528.0
-offset_top = 287.0
-offset_right = 530.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto57" type="ColorRect" parent="Strisce"]
-offset_left = 560.0
-offset_top = 287.0
-offset_right = 562.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto58" type="ColorRect" parent="Strisce"]
-offset_left = 592.0
-offset_top = 287.0
-offset_right = 594.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Giunto59" type="ColorRect" parent="Strisce"]
-offset_left = 624.0
-offset_top = 287.0
-offset_right = 626.0
-offset_bottom = 309.0
-mouse_filter = 2
-color = Color(0.55, 0.53, 0.5, 1)
-
-[node name="Porte" type="Node2D" parent="."]
-
-[node name="Entrata" type="Marker2D" parent="."]
-position = Vector2(680, 0)
-
-[node name="Amir" type="Node2D" parent="."]
-position = Vector2(150, 235)
-
-[node name="Persona" type="AnimatedSprite2D" parent="Amir"]
-script = ExtResource("char")
-sheet = "cheap_amir"
-anim = "walk_right"
-
-[node name="Carrello" type="Sprite2D" parent="Amir"]
-position = Vector2(26, -12)
-texture = ExtResource("c3")
-hframes = 3
-
-[node name="Mira" type="Marker2D" parent="."]
-position = Vector2(265, 210)
-
-[node name="Bersaglio" type="ColorRect" parent="Mira"]
-offset_left = -6.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-mouse_filter = 2
-color = Color(1, 0.88, 0.3, 0.85)
-
-[node name="Limite" type="Marker2D" parent="."]
-position = Vector2(92, 0)
-
-[node name="Traiettoria" type="Line2D" parent="."]
-width = 1.5
-default_color = Color(1, 0.9, 0.5, 0.8)
-
-[node name="Pacco" type="Sprite2D" parent="."]
-visible = false
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("pacco")
-
-[node name="BordoSinistro" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 84.0
-offset_right = 16.0
-offset_bottom = 320.0
-mouse_filter = 2
-color = Color(0.16, 0.20, 0.25, 1)
-
-[node name="BordoDestro" type="ColorRect" parent="."]
-offset_left = 624.0
-offset_top = 84.0
-offset_right = 640.0
-offset_bottom = 320.0
-mouse_filter = 2
-color = Color(0.16, 0.20, 0.25, 1)
 
 [node name="Esito" type="Label" parent="."]
 offset_left = 16.0
@@ -694,7 +549,7 @@ offset_top = 325.0
 offset_right = 624.0
 offset_bottom = 357.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = ""
 autowrap_mode = 2

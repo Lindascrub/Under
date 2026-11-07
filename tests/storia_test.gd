@@ -173,6 +173,22 @@ func _test_citta() -> void:
 	m = await _c5_call(m, "_centralino")
 	_check(Storia.richiesta() == "archivio" and not Storia.richiesta_arrivata(), "CONFERMA: in archivio, non arriva")
 
+	# La richiesta precede davvero il primo turno anche se non visiti il centralino.
+	m = await _c5_reset()
+	_check(not m.richiesta_prima_del_turno(), "senza richiesta il primo turno non aggiunge una pratica")
+	GameState.flags["c4_verifica"] = true
+	_check(m.richiesta_prima_del_turno(), "la verifica ancora da smistare precede il primo turno")
+	choose_queue = [1, 1] # Direzione; poi Non ancora al lavoro ordinario.
+	var saldo_prima := GameState.money
+	var giorno_prima := GameState.day
+	m = await _c5_call(m, "_station", [job])
+	_check(Storia.richiesta() == "direzione" and not GameState.worked_today, "la postazione mostra la richiesta prima di iniziare il lavoro")
+	_check(GameState.money == saldo_prima and GameState.day == giorno_prima, "smistare la richiesta non paga e non consuma il turno")
+	_check(not m.richiesta_prima_del_turno(), "la richiesta già smistata non torna al turno successivo")
+	GameState.flags.erase("c5_richiesta")
+	GameState.flags["c5_turni"] = 1
+	_check(not m.richiesta_prima_del_turno(), "una vecchia partita già oltre il primo turno conserva il suo percorso")
+
 	# le offerte: ognuna dal suo dialogo
 	m = await _c5_reset()
 	var f := GameState.flags

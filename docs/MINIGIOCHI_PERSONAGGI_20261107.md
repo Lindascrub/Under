@@ -79,3 +79,27 @@ con il vero pannello di risultato e i veri dialoghi. Confermati icone, battute v
 record, premi e parziale di Amir. Passano anche i 55 controlli dei minigiochi, i 34 di Ercole
 e il controllo dei testi per dispositivo. I risultati sono simulati per verificare il sistema
 delle stelle; non sono 90 partite giocate dall’inizio. La prova su telefono fisico resta distinta.
+
+
+## Amir: furgone e ingressi, 7 novembre
+
+Il carrello della spesa è sostituito da un furgone delle consegne LimeZu.
+Tolte le tre grandi fasce di edifici ripetuti: strada e marciapiedi separano le corsie;
+ogni destinazione mostra uno dei tre ingressi residenziali, con numero e luce.
+Il pacco parte dal furgone; a consegna avvenuta si apre la porta, appare il destinatario
+e la scritta PRESO! sostituisce il numero. Il tocco su una porta già servita non
+consuma un altro pacco, anche se il dito era stato appoggiato prima della consegna.
+
+Restano diciotto porte, quattro pacchi di scorta, quattordici consegne per il bonus,
+nove per l'aiuto parziale, accelerazione, comandi, flag, stelle e risposte precedenti.
+Gli ingressi e il furgone sono AtlasTexture a scala nativa con filtro nearest;
+nessun nuovo asset generato. La cabina è quella originale del veicolo.
+
+Controllati a schermo fuori schermo PC e touch a 640×360: gioco, lancio e consegna.
+Passano aiuti_visivi (71 controlli), touch_test, testi_dispositivo (4865 frasi)
+e la regressione esterna delle nuove interazioni (7 controlli).
+Il simulatore touch non sostituisce una prova su telefono fisico.
+
+Versioni precedenti di scene, script e documenti archiviate fuori dal progetto in
+../cheap_da_cancellare/amir_consegne_20261107. Le texture del carrello restano perché
+world/shopping_cart.gd le carica dinamicamente per il Mercato.
