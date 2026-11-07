@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 [ext_resource type="Script" path="res://scenes/minigame/rifatti/commissione.gd" id="1"]
-[sub_resource type="StyleBoxFlat" id="carta"]
+[ext_resource type="Script" path="res://world/char_sprite.gd" id="char"]
+[sub_resource type="StyleBoxFlat" id="contratto"]
 bg_color = Color(0.94, 0.90, 0.79, 1)
 border_width_left = 2
 border_width_top = 2
@@ -13,12 +14,17 @@ content_margin_right = 8.0
 script = ExtResource("1")
 
 [node name="Fondo" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
 color = Color(0.16, 0.20, 0.25, 1)
+
+[node name="Parete" type="ColorRect" parent="."]
+offset_top = 122.0
+offset_right = 640.0
+offset_bottom = 320.0
+mouse_filter = 2
+color = Color(0.22, 0.3, 0.33, 1)
 
 [node name="Titolo" type="Label" parent="."]
 offset_left = 16.0
@@ -28,7 +34,7 @@ offset_bottom = 29.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
 theme_override_font_sizes/font_size = 18
-text = "OLGA · LA CACCIA ALLA COMMISSIONE"
+text = "OLGA · IL NASTRO DEGLI ADDEBITI"
 autowrap_mode = 2
 vertical_alignment = 1
 
@@ -36,7 +42,7 @@ vertical_alignment = 1
 offset_left = 16.0
 offset_top = 31.0
 offset_right = 624.0
-offset_bottom = 66.0
+offset_bottom = 60.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -46,15 +52,205 @@ vertical_alignment = 1
 
 [node name="Stato" type="Label" parent="."]
 offset_left = 16.0
-offset_top = 65.0
+offset_top = 60.0
 offset_right = 624.0
-offset_bottom = 90.0
+offset_bottom = 84.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = ""
 autowrap_mode = 2
 vertical_alignment = 1
+
+[node name="Prova" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 88.0
+offset_right = 624.0
+offset_bottom = 116.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("contratto")
+text = "CONTRATTO · Rata 63 · Gestione del ritardo: 35 €, una volta sola."
+vertical_alignment = 1
+
+[node name="Nastro" type="ColorRect" parent="."]
+offset_top = 168.0
+offset_right = 640.0
+offset_bottom = 252.0
+mouse_filter = 2
+color = Color(0.2, 0.2, 0.22, 1)
+
+[node name="Rulli" type="Control" parent="Nastro"]
+mouse_filter = 2
+
+[node name="Rullo0" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 0.0
+offset_right = 6.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo1" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 40.0
+offset_right = 46.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo2" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 80.0
+offset_right = 86.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo3" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 120.0
+offset_right = 126.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo4" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 160.0
+offset_right = 166.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo5" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 200.0
+offset_right = 206.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo6" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 240.0
+offset_right = 246.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo7" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 280.0
+offset_right = 286.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo8" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 320.0
+offset_right = 326.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo9" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 360.0
+offset_right = 366.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo10" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 400.0
+offset_right = 406.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo11" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 440.0
+offset_right = 446.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo12" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 480.0
+offset_right = 486.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo13" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 520.0
+offset_right = 526.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo14" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 560.0
+offset_right = 566.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo15" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 600.0
+offset_right = 606.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="Rullo16" type="ColorRect" parent="Nastro/Rulli"]
+offset_left = 640.0
+offset_right = 646.0
+offset_bottom = 84.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.33, 1)
+
+[node name="BordoSopra" type="ColorRect" parent="."]
+offset_top = 164.0
+offset_right = 640.0
+offset_bottom = 168.0
+mouse_filter = 2
+color = Color(0.55, 0.55, 0.6, 1)
+
+[node name="BordoSotto" type="ColorRect" parent="."]
+offset_top = 252.0
+offset_right = 640.0
+offset_bottom = 256.0
+mouse_filter = 2
+color = Color(0.55, 0.55, 0.6, 1)
+
+[node name="Ricevute" type="Node2D" parent="."]
+
+[node name="Archivio" type="ColorRect" parent="."]
+offset_top = 150.0
+offset_right = 44.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0.1, 0.1, 0.12, 1)
+
+[node name="ScrittaArchivio" type="Label" parent="Archivio"]
+offset_left = -38.0
+offset_top = 50.0
+offset_right = 82.0
+offset_bottom = 70.0
+pivot_offset = Vector2(60, 10)
+rotation = -1.5708
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+text = "ARCHIVIO"
+horizontal_alignment = 1
+
+[node name="Entrata" type="Marker2D" parent="."]
+position = Vector2(650, 174)
+
+[node name="Uscita" type="Marker2D" parent="."]
+position = Vector2(44, 174)
+
+[node name="Olga" type="AnimatedSprite2D" parent="."]
+position = Vector2(596, 316)
+scale = Vector2(2, 2)
+script = ExtResource("char")
+sheet = "cheap_olga"
+anim = "idle_left"
 
 [node name="Esito" type="Label" parent="."]
 offset_left = 16.0
@@ -68,98 +264,3 @@ text = ""
 autowrap_mode = 2
 vertical_alignment = 1
 
-[node name="Prova" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 72.0
-offset_right = 616.0
-offset_bottom = 121.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = ""
-autowrap_mode = 2
-vertical_alignment = 1
-
-[node name="Carta" type="Panel" parent="."]
-offset_left = 24.0
-offset_top = 126.0
-offset_right = 616.0
-offset_bottom = 321.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("carta")
-
-[node name="Elenco" type="ScrollContainer" parent="Carta"]
-offset_left = 8.0
-offset_top = 4.0
-offset_right = 584.0
-offset_bottom = 191.0
-mouse_filter = 2
-horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
-
-[node name="Righe" type="VBoxContainer" parent="Carta/Elenco"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 4
-
-[node name="Voce0" type="Button" parent="Carta/Elenco/Righe"]
-custom_minimum_size = Vector2(550, 54)
-layout_mode = 2
-mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("carta")
-autowrap_mode = 2
-
-[node name="Voce1" type="Button" parent="Carta/Elenco/Righe"]
-custom_minimum_size = Vector2(550, 54)
-layout_mode = 2
-mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("carta")
-autowrap_mode = 2
-
-[node name="Voce2" type="Button" parent="Carta/Elenco/Righe"]
-custom_minimum_size = Vector2(550, 54)
-layout_mode = 2
-mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("carta")
-autowrap_mode = 2
-
-[node name="Voce3" type="Button" parent="Carta/Elenco/Righe"]
-custom_minimum_size = Vector2(550, 54)
-layout_mode = 2
-mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("carta")
-autowrap_mode = 2
-
-[node name="Voce4" type="Button" parent="Carta/Elenco/Righe"]
-custom_minimum_size = Vector2(550, 54)
-layout_mode = 2
-mouse_filter = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("carta")
-autowrap_mode = 2
-
-[node name="Timbro" type="Label" parent="."]
-offset_left = 224.0
-offset_top = 205.0
-offset_right = 464.0
-offset_bottom = 249.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.67, 0.16, 0.17, 1)
-theme_override_font_sizes/font_size = 24
-text = "DUPLICATA"
-autowrap_mode = 2
-vertical_alignment = 1

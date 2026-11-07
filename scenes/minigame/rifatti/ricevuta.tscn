@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=3]
+[sub_resource type="StyleBoxFlat" id="carta"]
+bg_color = Color(0.96, 0.93, 0.84, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.46, 0.34, 1)
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 2
+shadow_offset = Vector2(2, 2)
+[sub_resource type="StyleBoxFlat" id="timbro"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.78, 0.12, 0.12, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+[node name="Ricevuta" type="Panel"]
+offset_right = 150.0
+offset_bottom = 72.0
+pivot_offset = Vector2(75, 36)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("carta")
+
+[node name="Data" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 142.0
+offset_bottom = 20.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.4, 0.34, 0.28, 1)
+theme_override_font_sizes/font_size = 11
+text = "01/06"
+
+[node name="Voce" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 19.0
+offset_right = 142.0
+offset_bottom = 49.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Spesa al Mercato"
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Importo" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 49.0
+offset_right = 142.0
+offset_bottom = 68.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "-18 €"
+horizontal_alignment = 2
+
+[node name="Timbro" type="Label" parent="."]
+visible = false
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 130.0
+offset_bottom = 52.0
+pivot_offset = Vector2(55, 16)
+rotation = -0.2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.78, 0.12, 0.12, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("timbro")
+text = "DOPPIA"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -164,7 +164,6 @@ Il turno è sempre un minigioco. I lavori dei turni sono in `data/worklist.json`
 | Lampadine | Scorri a destra (buona), a sinistra (rotta), su e giù (avvita) | Bulbo |
 | Fili | Tocca un filo a sinistra, poi il suo posto a destra | Mina |
 | Sequenza | Guarda le frecce, poi ripetile | Tilde (il copione), Ines (le pratiche) |
-| Tempismo | Tocca quando il segno è nel verde | Ottavio (l'ombrello), Sandro (il lucchetto) |
 | Tieni sveglio Ercole | Due fasce che si accendono a turno: vale solo quella accesa | Ercole |
 | Raccolta | Trascina il cuore e raccogli tutto | Rosa (la frutta) |
 | Scatole e scaffali | Tocca lo scaffale giusto (alimentari, igiene, scuola, casa) | Leda |

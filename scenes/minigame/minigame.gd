@@ -190,6 +190,14 @@ func _ready() -> void:
 	_title.text = str(cfg.get("title", "Dai una mano"))
 	_risposta = get_node_or_null("Risposta")
 	_info.text = ""
+	# i giochi rifatti (scenes/minigame/rifatti): la scena c'è già mentre leggi le istruzioni, ferma
+	if bool(cfg.get("visivo", false)) and SCENE_VISIVE.has(type):
+		_title.visible = false
+		_info.visible = false
+		visivo = SCENE_VISIVE[type].instantiate()
+		add_child(visivo)
+		# ferma finché non finiscono le istruzioni (dopo add_child: prima Godot lo riaccenderebbe da solo)
+		visivo.set_process(false)
 	# ogni persona che aiuti ha la sua canzone (campo "music"); le altre, una per tutte
 	Sound.music(str(cfg.get("music", "aiuto")))
 	if Ui.transitioning:
@@ -200,11 +208,8 @@ func _ready() -> void:
 
 func _start() -> void:
 	phase = "play"
-	if bool(cfg.get("visivo", false)) and SCENE_VISIVE.has(type):
-		_title.visible = false
-		_info.visible = false
-		visivo = SCENE_VISIVE[type].instantiate()
-		add_child(visivo)
+	if visivo != null:
+		visivo.set_process(true)
 		visivo.finito.connect(func(success: bool, partial: bool):
 			misses = visivo.errori
 			_finish(success, partial))
@@ -307,6 +312,8 @@ func _fine_prima_prova() -> void:
 		prima_prova = false
 		GameState.flags["c1_prova_" + type] = true
 		_info.text = ""
+		# da qui niente più frecce: la guida resta solo per la prima lampadina (o il primo filo)
+		$GuidaC1.visible = false
 
 
 func _new_bulb() -> void:
@@ -622,7 +629,7 @@ func _process(delta: float) -> void:
 				bulb_t += delta
 				if not prima_prova:
 					time_left -= delta
-				if cfg.get("prima_prova", false):
+				if prima_prova:
 					$GuidaC1.aggiorna(type, bulb, wire_right, wire_done)
 				if type == "bulbs":
 					_bulb_info()
@@ -824,28 +831,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif not bulb_fixed:   # una girata in più su quella già avvitata non è un errore
 				_bulb_answer(false)
 	elif type == "wires":
-		var free_left: Array[int] = []
-		for i in 4:
-			if i not in wire_done:
-				free_left.append(i)
-		if event.is_action_pressed("move_up") or event.is_action_pressed("move_down"):
-			var step := -1 if event.is_action_pressed("move_up") else 1
-			if wire_pick < 0:
-				var at := free_left.find(wire_sel)
-				wire_sel = free_left[posmod(at + step, free_left.size())]
-			else:
-				wire_sel = posmod(wire_sel + step, 4)
-			Sound.sfx("move")
-		elif event.is_action_pressed("confirm") or event.is_action_pressed("move_right") or tapped:
-			if wire_pick < 0:
-				wire_pick = wire_sel
-				wire_sel = 0
-				Sound.sfx("select")
-			else:
-				_wire_connect()
-		elif event.is_action_pressed("move_left") and wire_pick >= 0:
-			wire_sel = wire_pick
-			wire_pick = -1
+		# i fili si fanno solo trascinando: col mouse sul PC, col dito sul telefono (vedi touch_point)
+		pass
 	elif type == "sequence":
 		for a: String in ARROWS:
 			if event.is_action_pressed("move_" + a):
@@ -991,7 +978,8 @@ func _finish(success: bool, partial := false) -> void:
 			lines.append_array(cfg.get("lose", ["Non fa niente, grazie lo stesso."]))
 			lines.append("* Non è andata benissimo, ma %s apprezza che ci hai provato." % who)
 		# i soldi "per il disturbo" solo la prima volta
-		if not rigioco and _con_stelle() and _risposta.soldi_se_perdi > 0:
+		# chi non ha soldi da dare (Olga, "fixed_reward") non li dà neanche per il disturbo
+		if not rigioco and _con_stelle() and _risposta.soldi_se_perdi > 0 and not cfg.get("fixed_reward", false):
 			GameState.money += _risposta.soldi_se_perdi
 			GameState.changed.emit()
 			lines.append("* %s ti dà %s lo stesso, per il disturbo." % [who, GameState.euros(_risposta.soldi_se_perdi)])

@@ -41,7 +41,9 @@ func _run() -> void:
 	# i minigiochi dei personaggi (vinti dal test): poi si torna al Fondo
 	var quanti := 0
 	for id: String in GameState.npc_ids():
-		if (GameState.npc_data(id).get("help", {}) as Dictionary).has("minigame"):
+		var d := GameState.npc_data(id)
+		var stanze: Array = (d.get("schedule", []) as Array).map(func(p: Dictionary) -> String: return str(p.get("room", "")))
+		if (d.get("help", {}) as Dictionary).has("minigame") and not stanze.has("nessuno"):
 			quanti += 1
 	_check(quanti >= 8, "admin: troppo pochi minigiochi (%d)" % quanti)
 	for k in quanti:

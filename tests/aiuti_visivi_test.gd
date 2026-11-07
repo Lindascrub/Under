@@ -90,19 +90,40 @@ func _prove(tel: bool) -> void:
 	t.queue_free()
 	await get_tree().process_frame
 	var o := nuovo("commissione")
-	await immagine(o, "olga")
 	var soldi := GameState.money
-	o.scegli(1)
-	verifica(o.attivo and GameState.money == soldi and o.errori == 1, "Olga: una mora non è il doppione; nessun denaro perso")
-	verifica(o.righe[2][0] == "18/06" and o.righe[3][0] == "19/06", "Olga: due date, stesso ritardo")
-	o.punta(Vector2(300, 155), 0)
-	var scorrimento: int = o.get_node("Carta/Elenco").scroll_vertical
-	o._process(20.0)
-	verifica(o.get_node("Carta/Elenco").scroll_vertical == scorrimento, "Olga: il foglio non si sposta sotto un gesto già iniziato")
-	o.punta(Vector2(700, 155), 2)
-	o.scegli(3)
-	await get_tree().create_timer(1.05).timeout
-	verifica(esiti == [[true, false]] and GameState.money == soldi, "Olga: prova trovata senza rimborso anticipato")
+	verifica(o.doppi == 4 and o.voci[-2][1] == "Commissione gestione ritardo" and o.voci[-3][1] == o.voci[-2][1], "Olga: quattro doppi sul nastro, l'ultimo è la commissione della rata 63")
+	# idle: chi non fa niente lascia scappare il primo doppio (errore) e la prova (sconfitta)
+	var prime: Array[Control] = []
+	for i in 4: prime.append(o.crea_ricevuta())
+	o.timbra(prime[0])
+	verifica(o.attivo and o.errori == 1 and o.timbrati == 0, "Olga: timbrare una voce giusta è un errore")
+	o.timbra(prime[3])
+	o.timbra(prime[3])
+	verifica(o.timbrati == 1 and o.errori == 1, "Olga: il doppio (03/06, bonifico) si timbra una volta sola")
+	for i in 4: prime[i].position.x = 60 + i * 170
+	var mira: Vector2 = prime[3].position + prime[3].size / 2
+	verifica(o.ricevuta_al_punto(mira) == prime[3], "Olga: clic o dito trovano la ricevuta sotto il punto")
+	await immagine(o, "olga")
+	# fino alla fine, timbrando solo i doppi: si vince, nessun soldo a chi gioca
+	o.set_process(true)
+	var giri := 0
+	while o.attivo and giri < 20000:
+		for r in o.ricevute:
+			if r.get_meta("doppia") and not r.get_meta("timbrata") and r.position.x < 400: o.timbra(r)
+		await get_tree().process_frame
+		giri += 1
+	verifica(esiti == [[true, false]] and o.prova_trovata and o.errori == 1 and GameState.money == soldi, "Olga: prova trovata, un errore (2 stelle), nessun rimborso anticipato")
+	o.queue_free()
+	await get_tree().process_frame
+	# la prova che scappa fa perdere subito
+	o = nuovo("commissione")
+	o.prossima = o.voci.size() - 2
+	var prova: Control = o.crea_ricevuta()
+	prova.position.x = 30
+	o.set_process(true)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	verifica(esiti == [[false, false]], "Olga: se la commissione doppia finisce in archivio si perde")
 	o.queue_free()
 	await get_tree().process_frame
 	var v := nuovo("volantini")

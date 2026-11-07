@@ -15,7 +15,8 @@ var foglio_in_volo := false
 var guida_t := 0.0
 var guida_fatta := false
 const PASSANTE := preload("res://scenes/minigame/rifatti/passante.tscn")
-const INTERESSI := ["LIBRO", "ATTREZZO", "INCONTRI"]
+## Cosa cerca chi passa: si scrive prima la parola e poi il ? (libro?, martello?, incontri?).
+const INTERESSI := ["libro", "martello", "incontri"]
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	tempo = durata
@@ -35,7 +36,7 @@ func crea_persona() -> Node:
 	p.set_meta("interesse", interesse)
 	p.set_meta("disponibile", disponibile)
 	p.set_meta("dato", false)
-	p.get_node("Segno").text = segno + (" " + INTERESSI[interesse] if disponibile else "")
+	p.get_node("Segno").text = INTERESSI[interesse] + "?" if disponibile else segno
 	p.get_node("Icona").tipo = interesse
 	p.get_node("Icona").visible = disponibile
 	p.get_node("Persona").sheet = ["char_02", "char_05", "char_08", "char_11"][generati % 4]

@@ -294,7 +294,7 @@ func _run() -> void:
 	porta.position = Vector2(bici.get_node("Mira").position.x + bici.velocita * bici.durata_lancio, bici.corsie[0])
 	await _tap_at(porta.position)
 	await get_tree().create_timer(0.4).timeout
-	_check(bici.consegnati == 1 and bici.rimasti == 5, "il tocco sulla porta lancia e consegna un solo pacco")
+	_check(bici.consegnati == 1 and bici.rimasti == 5, "il tocco sulla porta lancia e consegna un solo pacco (consegnati %d, rimasti %d, errori %d, attivo %s)" % [bici.consegnati, bici.rimasti, bici.errori, bici.attivo])
 
 	# --- la cassa del Mercato: tocca l'articolo, poi CORREGGI il prezzo sbagliato
 	w = await _work("cassa", {"job": {"pay_max": 160, "duration": 40}})

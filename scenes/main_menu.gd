@@ -214,10 +214,6 @@ const SPECIAL_NAMES := {
 	# le persone che incontrerai: la torre le conosce tutte (e non ne parla benissimo)
 	"tilde": "Come la signora del call center? Resti in linea, la sua chiamata è importante per noi.",
 	"ercole": "Come il custode dell'archivio? Dodici fatiche. Lui ne fa tredici, e senza straordinari.",
-	"rosa": "Come quella delle fragole di plastica? Profumano. Come le promesse della CHEAP.",
-	"ottavio": "Come l'ottimista degli ombrelli? Qui sotto non piove. Ma un debito in testa ti cade lo stesso.",
-	"ines": "Come l'impiegata dello sportello due? Sempre chiuso. Come il tuo conto, fra un po'.",
-	"sandro": "Come la guardia giurata? Lui protegge i soldi. Chi protegge te non è previsto dal contratto.",
 	"leda": "Come quella del negozietto del Mercato? Vent'euro al giorno. Contali due volte.",
 	"amir": "Come quello delle consegne? Diciassette. Il numero preferito di nessuno.",
 	"olga": "Come la signora delle ricevute? Ha una ricevuta per ogni cosa. Anche per questo nome.",

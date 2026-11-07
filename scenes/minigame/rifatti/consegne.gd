@@ -1,5 +1,5 @@
 extends "res://scenes/minigame/rifatti/base.gd"
-@export var velocita := 86.0
+@export var velocita := 130.0
 @export var durata_lancio := 0.32
 @export var tolleranza := 40.0
 @export var precisione_bonus := 25.0

@@ -83,7 +83,9 @@ static func _personaggio(room: Room) -> bool:
 	for id: String in GameState.npc_ids():
 		var d := GameState.npc_data(id)
 		var h: Dictionary = d.get("help", {})
-		if h.has("minigame"):
+		# chi non sta in nessuna stanza (room "nessuno") non è nella storia di adesso
+		var stanze: Array = (d.get("schedule", []) as Array).map(func(p: Dictionary) -> String: return str(p.get("room", "")))
+		if h.has("minigame") and not stanze.has("nessuno"):
 			ids.append(id)
 			nomi.append("%s: %s" % [str(d.get("name", id)), str((h["minigame"] as Dictionary).get("title", "minigioco"))])
 	var i := await _scegli("Il minigioco di chi?", nomi)
