@@ -88,7 +88,13 @@
     ],
     "days": [
       [
-        "Scusa, scusa! Non posso parlare tanto. Devo mantenere il mio colore."
+        "Scusa, scusa! Non posso parlare tanto."
+      ],
+      [
+        "Oggi ne ho accese trecento! Quella lì ha fatto un po' di fumo, ma conta lo stesso."
+      ],
+      [
+        "Sorridere non costa niente. Per questo me lo lasciano fare."
       ]
     ],
     "helped": [
@@ -124,7 +130,7 @@
       }
     },
     "busy_line": [
-      "Torno alle mie lampadine! Se smetto, perdo il mio colore.",
+      "Torno alle mie lampadine!",
       "* Bulbo torna alle sue lampadine. Sorride, ma non a te."
     ],
     "reveal": [
@@ -238,7 +244,7 @@
         "Ho fatto i conti: dormo quattro ore a settimana. Ma le dormo benissimo."
       ],
       [
-        "Nell'archivio ci sono quarant'anni di moduli. Li custodisco io. Nessuno li ha mai chiesti indietro."
+        "Nell'archivio ci sono trentasette anni e quattro turni di moduli. Li custodisco io. Nessuno li ha mai chiesti indietro."
       ],
       [
         "L'Agenda dice che il riposo è un furto. Allora sono il ladro più bravo del piano."
@@ -260,16 +266,15 @@
         "prima_prova": true,
         "title": "Tieni sveglio Ercole",
         "stelle": true,
-        "battute_stelle": {"1": ["Sveglio. Un po' storto, ma sveglio."], "2": ["Quattro gomitate. Un richiamo. Può andare."], "3": ["Neanche un richiamo. Quarant'anni di servizio e il merito è del tuo gomito."]},
+        "battute_stelle": {"1": ["Sveglio. Un po' storto, ma sveglio."], "2": ["Quattro gomitate. Un richiamo. Può andare."], "3": ["Neanche un richiamo. Trentasette anni e quattro turni di servizio, e il merito è del tuo gomito."]},
         "lose": ["L'ispettore ha preso nota. Di me."],
         "sgridata_dopo": 3,
         "sgridata": ["Giovane, questa era la terza prova. Al prossimo controllo mi archiviano."],
         "rigioca": {"chiede": ["Un'altra ispezione. Vuoi darmi una mano anche stavolta?"], "tre_stelle": ["Vuoi riprovare? Il mio turno, purtroppo, continua."], "meglio": ["Meglio. Ti pago la differenza. Il riposo me lo devono ancora."], "uguale": ["Come prima. Il compenso, però, te l'ho già dato."]},
         "intro": [
-          "* Tieni sveglio Ercole con quattro gomitate leggere. Devi controllare sia i suoi occhi sia la barra della forza.",
-          "[PC] * Tieni premuto INVIO o il pulsante del mouse per caricare. Lascia con la forza nel verde, quando gli occhi cominciano a chiudersi.",
-          "[TEL] * Tieni premuto per caricare. Lascia con la forza nel verde, quando gli occhi cominciano a chiudersi.",
-          "* Troppo forte e l’ispettore si gira."
+          "* ISPEZIONE IN CORSO: tieni sveglio Ercole con quattro gomitate. Carica e lascia quando la forza è nel verde e gli occhi cominciano a chiudersi. Troppo forte, e l'ispettore si gira.",
+          "[PC] * Tieni premuto INVIO o il pulsante del mouse per caricare.",
+          "[TEL] * Tieni premuto per caricare."
         ],
         "hits": 4,
         "reward": 10
@@ -278,7 +283,7 @@
     "grey": true,
     "reveal_flag": "c2_rivelazione",
     "reveal": [
-      "Hai sentito? Il tritacarte. Lo sento tutte le notti, da quarant'anni.",
+      "Hai sentito? Il tritacarte. Lo sento tutte le notti, da trentasette anni e quattro turni.",
       "L'archivio è vuoto, giovane. Gli scaffali sono pieni di cartelline vuote. Le riempio io, la mattina, con fogli bianchi. Così sembra pieno.",
       "Mi pagano per custodire niente. Ma lo custodisco benissimo.",
       "Tu però non restare a custodire niente anche tu. Sali. E se lassù ti danno un modulo, guardalo bene prima di riempirlo."
