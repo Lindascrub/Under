@@ -1,11 +1,39 @@
 extends "res://scenes/minigame/rifatti/base.gd"
-@export var velocita := 130.0
+## LE DICIOTTO PORTE (Amir): le case passano da destra a sinistra, sempre più veloci.
+## Amir spinge il carrello su una delle tre corsie; quando una porta illuminata arriva sulla
+## sua corsia, si lancia il pacco poco prima che la porta raggiunga la mira.
+## Ogni lancio consuma un pacco (ce n'è qualcuno di scorta). Errore = lancio a vuoto o porta superata.
+## Le stelline (minigame.gd, nodo Risposta): 0 errori 3, un errore 2, di più 1.
+## Le porte sono copie di porta_consegna.tscn: l'ordine delle corsie cambia a ogni partita.
+
+## Quante porte (consegne) ci sono.
+@export var porte_totali := 18
+## Pacchi in più, oltre a uno per porta.
+@export var scorta := 4
+## Consegne per il bonus, e per l'aiuto a metà.
+@export var vinci := 14
+@export var parziale := 9
+## Velocità: all'inizio, quanto cresce ogni secondo, e il massimo.
+@export var velocita_iniziale := 150.0
+@export var accelerazione := 6.0
+@export var velocita_max := 270.0
+## Spazio fra una porta e la successiva (un valore a caso fra questi due).
+@export var spazio_min := 190.0
+@export var spazio_max := 280.0
 @export var durata_lancio := 0.32
 @export var tolleranza := 40.0
 @export var precisione_bonus := 25.0
 @export var corsie := PackedFloat32Array([137, 210, 283])
+## I colori dei muri delle case (uno a caso per porta).
+@export var colori_muri := PackedColorArray([Color(0.78, 0.55, 0.42), Color(0.55, 0.68, 0.78), Color(0.86, 0.78, 0.55), Color(0.6, 0.74, 0.58), Color(0.8, 0.62, 0.7), Color(0.7, 0.7, 0.74)])
+## Il carrello di Amir: pieno, a metà, quasi vuoto, vuoto.
+@export var carrelli: Array[Texture2D] = []
+const PORTA := preload("res://scenes/minigame/rifatti/porta_consegna.tscn")
+const PERSONE := ["char_02", "char_05", "char_08", "char_11", "char_03", "char_06"]
+var velocita := 150.0
 var corsia := 1
-var rimasti := 6
+var pacchi := 22
+var rimasti := 22
 var consegnati := 0
 var precisi := 0
 var chiuse := 0
@@ -14,30 +42,75 @@ var origine_dito := Vector2.ZERO
 var gesto := false
 var porta_dito: Node = null
 var porte: Array[Node] = []
+
+
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
-	for p in $Porte.get_children(): porte.append(p)
+	velocita = velocita_iniziale
+	pacchi = porte_totali + scorta
+	rimasti = pacchi
+	_crea_porte()
 	$Aiuto.text = "Scorri su o giù: corsia. Tocca una porta: lancia dalla tua corsia." if TouchControls.enabled else "SU/GIÙ: corsia. INVIO o clic: lancia dalla tua corsia."
 	_aggiorna()
+
+
+## Le diciotto porte in fila, fuori dallo schermo a destra: corsie a caso, mai tre uguali di fila.
+func _crea_porte() -> void:
+	var x: float = $Entrata.position.x
+	var prima := -1
+	var di_fila := 0
+	for i in porte_totali:
+		var k := randi() % corsie.size()
+		if k == prima and di_fila >= 1:
+			k = (k + 1 + randi() % (corsie.size() - 1)) % corsie.size()
+		di_fila = di_fila + 1 if k == prima else 0
+		prima = k
+		var p: Node2D = PORTA.instantiate()
+		$Porte.add_child(p)
+		p.position = Vector2(x, corsie[k])
+		p.get_node("Numero").text = str(i + 1)
+		p.get_node("Muro").color = colori_muri[randi() % colori_muri.size()]
+		p.get_node("Destinatario").sheet = PERSONE[i % PERSONE.size()]
+		porte.append(p)
+		x += randf_range(spazio_min, spazio_max)
+
+
 func _process(dt: float) -> void:
-	if not attivo or Ui.busy: return
+	if not attivo or Ui.busy or porte.is_empty(): return
+	# sempre più veloce, man mano
+	velocita = minf(velocita + accelerazione * dt, velocita_max)
 	for p in porte:
 		p.position.x -= velocita * dt
 		if not p.get_meta("chiusa", false) and p.position.x < $Limite.position.x:
 			p.set_meta("chiusa", true)
 			chiuse += 1
 			p.get_node("Luce").visible = false
-			if not p.get_meta("consegnata", false): $Esito.text = "Porta superata. Quel pacco non è arrivato."
+			if not p.get_meta("consegnata", false):
+				errori += 1
+				$Esito.text = "Porta superata. Quel pacco non è arrivato."
+				Sound.sfx("deny")
+	# il marciapiede scorre sotto i piedi
+	for s: Control in $Strisce.get_children():
+		s.position.x = fposmod(s.position.x - velocita * dt - 16.0, 640.0) + 16.0
 	_aggiorna()
-	if not lancio_in_corso and (chiuse == porte.size() or rimasti == 0): _termina()
+	if not lancio_in_corso and (_tutte_fatte() or rimasti == 0): _termina()
+
+
 func cambia_corsia(d: int) -> void:
 	corsia = clampi(corsia + d, 0, corsie.size() - 1)
-	$Bici.position.y = corsie[corsia] + 25.0
+	$Amir.position.y = corsie[corsia] + 25.0
 	$Mira.position.y = corsie[corsia]
+
+
 func _aggiorna() -> void:
 	cambia_corsia(0)
-	$Stato.text = "Pacchi rimasti: %d · Consegnati: %d/6 · Corsia %d" % [rimasti, consegnati, corsia + 1]
-	$Traiettoria.points = PackedVector2Array([$Bici.position + Vector2(12, -16), Vector2(211, corsie[corsia] - 33), $Mira.position])
+	$Stato.text = "Consegnati: %d/%d · Pacchi: %d · Errori: %d" % [consegnati, porte_totali, rimasti, errori]
+	$Traiettoria.points = PackedVector2Array([$Amir.position + Vector2(30, -20), Vector2(($Amir.position.x + $Mira.position.x) / 2.0 + 15.0, corsie[corsia] - 33), $Mira.position])
+	if carrelli.size() >= 4:
+		var quota := float(rimasti) / float(maxi(1, pacchi))
+		$Amir/Carrello.texture = carrelli[0 if quota > 0.66 else (1 if quota > 0.33 else (2 if rimasti > 0 else 3))]
+
+
 func lancia() -> void:
 	if not attivo or rimasti <= 0 or lancio_in_corso: return
 	rimasti -= 1
@@ -51,10 +124,14 @@ func lancia() -> void:
 			scelta = p
 			errore_distanza = distanza
 	var valido := scelta != null and errore_distanza <= tolleranza
-	$Pacco.position = $Bici.position + Vector2(12, -16)
+	var da: Vector2 = $Amir.position + Vector2(30, -20)
+	$Pacco.position = da
 	$Pacco.visible = true
+	$Pacco.rotation = 0.0
+	# il pacco gira in volo (a parte: non allunga il lancio)
+	create_tween().tween_property($Pacco, "rotation", PI, durata_lancio)
 	var tw := create_tween()
-	tw.tween_property($Pacco, "position", Vector2(211, corsie[corsia] - 33), durata_lancio * 0.45)
+	tw.tween_property($Pacco, "position", Vector2((da.x + $Mira.position.x) / 2.0, corsie[corsia] - 33), durata_lancio * 0.45)
 	tw.tween_property($Pacco, "position", $Mira.position, durata_lancio * 0.55)
 	await tw.finished
 	$Pacco.visible = false
@@ -66,7 +143,10 @@ func lancia() -> void:
 		scelta.get_node("Destinatario").visible = true
 		consegnati += 1
 		if errore_distanza <= precisione_bonus: precisi += 1
-		scelta.get_node("Porta").scale.x = 0.35
+		scelta.get_node("Porta").scale.x = 0.5
+		var pop := create_tween()
+		scelta.scale = Vector2(1.15, 0.9)
+		pop.tween_property(scelta, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		$Esito.text = "Preso al volo!" if errore_distanza <= precisione_bonus else "Consegnato. Un po' lontano dalla soglia."
 		Sound.sfx("coin")
 	else:
@@ -74,15 +154,26 @@ func lancia() -> void:
 		$Esito.text = "Pacco a terra. Controlla la corsia e anticipa un poco il passaggio della porta."
 		Sound.sfx("deny")
 	_aggiorna()
-	if rimasti == 0: _termina()
+	if rimasti == 0 or _tutte_fatte(): _termina()
+
+
+## Ogni porta è consegnata o già passata?
+func _tutte_fatte() -> bool:
+	return porte.all(func(p: Node) -> bool: return p.get_meta("chiusa", false) or p.get_meta("consegnata", false))
+
+
 func _termina() -> void:
-	# Sei consegne scelte bene danno il bonus. Tre o più restano aiuto parziale.
-	chiudi(consegnati == 6 and precisi >= 4, consegnati >= 3 and not (consegnati == 6 and precisi >= 4))
+	# Quattordici consegne danno il bonus. Da nove in su resta l'aiuto a metà.
+	chiudi(consegnati >= vinci, consegnati >= parziale and consegnati < vinci)
+
+
 func input_event(e: InputEvent) -> void:
 	if e is InputEventKey and e.echo: return
 	if e.is_action_pressed("move_up"): cambia_corsia(-1)
 	elif e.is_action_pressed("move_down"): cambia_corsia(1)
 	elif e.is_action_pressed("confirm"): lancia()
+
+
 func punta(pos: Vector2, step: int) -> void:
 	if step == 0:
 		origine_dito = pos
@@ -97,10 +188,14 @@ func punta(pos: Vector2, step: int) -> void:
 			cambia_corsia(-1 if spostamento.y < 0 else 1)
 		elif not gesto and is_instance_valid(porta_dito) and not porta_dito.get_meta("chiusa", false): lancia()
 		porta_dito = null
+
+
 func _porta_premuta(pos: Vector2) -> void:
 	if _porta_al_punto(pos) != null: lancia()
+
+
 func _porta_al_punto(pos: Vector2) -> Node:
 	for p in porte:
-		if not p.get_meta("chiusa", false) and Rect2(p.position - Vector2(28, 40), Vector2(56, 58)).has_point(pos):
+		if not p.get_meta("chiusa", false) and Rect2(p.position - Vector2(34, 50), Vector2(68, 70)).has_point(pos):
 			return p
 	return null

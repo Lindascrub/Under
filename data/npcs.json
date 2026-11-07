@@ -335,6 +335,7 @@
       "minigame": {
         "music": "aiuto_leda",
         "type": "inventory",
+        "stelle": true,
         "prima_prova": true,
         "title": "Scatole e scaffali",
         "intro": [
@@ -413,14 +414,16 @@
       "minigame": {
         "music": "aiuto_amir",
         "type": "consegne",
+        "stelle": true,
         "visivo": true,
         "title": "L'ultima consegna",
         "intro": [
-          "* Sei pacchi, sei porte illuminate. Ogni lancio consuma un pacco.",
+          "* Diciotto pacchi, diciotto porte illuminate. La strada corre sempre più veloce.",
           "[TEL] * Scorri su o giù per cambiare corsia. Tocca una porta per lanciare dalla corsia scelta.",
           "[PC] * Prima scegli la corsia con SU e GIÙ. INVIO, oppure un clic su una porta, lancia dalla corsia scelta.",
           "* La linea chiara mostra dove arriverà il pacco. Lancia poco prima che la porta raggiunga quel punto.",
-          "* Sei consegne, almeno quattro precise: bonus. Da tre consegne in su: aiuto parziale."
+          "* Un lancio a vuoto o una porta superata è un errore. Ogni lancio consuma un pacco: ne hai quattro di scorta.",
+          "* Quattordici consegne: bonus. Da nove in su: aiuto parziale."
         ],
         "reward": 0,
         "fixed_reward": true,

@@ -43,7 +43,7 @@ func _prove(tel: bool) -> void:
 	a.punta(Vector2(550, 210), 0)
 	a.punta(Vector2(550, 137), 1)
 	a.punta(Vector2(550, 137), 2)
-	if tel: verifica(a.rimasti == 6 and a.corsia == 0, "Amir: scorrere cambia corsia senza lanciare")
+	if tel: verifica(a.rimasti == a.pacchi and a.corsia == 0, "Amir: scorrere cambia corsia senza lanciare")
 	a.queue_free()
 	await get_tree().process_frame
 	a = nuovo("consegne")
@@ -52,29 +52,41 @@ func _prove(tel: bool) -> void:
 		p.position.x = a.get_node("Mira").position.x + a.velocita * a.durata_lancio
 		a.lancia()
 		await get_tree().create_timer(0.4).timeout
-	verifica(a.consegnati == 6 and a.precisi == 6 and esiti == [[true, false]], "Amir: sei lanci precisi completano il giro")
-	verifica(a.rimasti == 0, "Amir: ogni lancio consuma un pacco")
+	verifica(a.consegnati == 18 and a.precisi == 18 and a.errori == 0 and esiti == [[true, false]], "Amir: diciotto lanci precisi completano il giro")
+	verifica(a.rimasti == a.scorta, "Amir: ogni lancio consuma un pacco")
 	a.queue_free()
 	await get_tree().process_frame
 	a = nuovo("consegne")
-	for i in 6:
-		if i < 3:
+	for i in 18:
+		if i < 9:
 			var p: Node = a.porte[i]
 			a.corsia = a.corsie.find(p.position.y)
 			p.position.x = a.get_node("Mira").position.x + a.velocita * a.durata_lancio
 		a.lancia()
 		await get_tree().create_timer(0.4).timeout
-	verifica(a.consegnati == 3 and esiti == [[false, true]], "Amir: tre pacchi mantengono l'aiuto parziale")
+	# le porte rimaste passano oltre: il giro finisce
+	a._process(60.0)
+	verifica(a.consegnati == 9 and esiti == [[false, true]], "Amir: nove pacchi mantengono l'aiuto parziale")
 	a.queue_free()
 	await get_tree().process_frame
 	a = nuovo("consegne")
-	for i in 6:
+	for i in a.pacchi:
 		a.lancia()
 		await get_tree().create_timer(0.4).timeout
 	verifica(esiti == [[false, false]], "Amir: lanciare a raffica lontano dalle porte fallisce")
 	a.queue_free()
 	await get_tree().process_frame
 	a = nuovo("consegne")
+	var v0: float = a.velocita
+	a._process(0.5)
+	verifica(a.velocita > v0, "Amir: la strada accelera man mano")
+	var b := nuovo("consegne")
+	var diverse := false
+	for i in a.porte.size():
+		if a.porte[i].position.y != b.porte[i].position.y: diverse = true
+	verifica(diverse and a.porte.size() == 18, "Amir: diciotto porte, in un ordine diverso a ogni partita")
+	b.queue_free()
+	esiti.clear()
 	a._process(40.0)
 	verifica(esiti == [[false, false]], "Amir: senza consegnare non si vince")
 	a.queue_free()
