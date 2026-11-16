@@ -83,7 +83,14 @@ func look_back(p: Player, line: String, chapter: String, title: String, path: St
 	# qualche riga sul buio prima del titolo (la Città: "PRESIDENZA CHEAP. SEI ARRIVATO.")
 	if not preface.is_empty():
 		await card.premessa(preface)
-	await card.titolo(chapter, title, subtitle)
+	# Si sale di piano: è passata una notte. Il giorno nuovo sta sul cartello del capitolo.
+	GameState.notte_tra_i_piani()
+	GameState.giorno_da_annunciare = false
+	var giorno := "GIORNO %d · %s" % [GameState.day, GameState.giorno_intero()]
+	if subtitle == "":
+		await card.titolo(chapter, title, giorno)
+	else:
+		await card.titolo(chapter + " · " + giorno, title, subtitle)
 	Ui.cutscene = false
 	Router.goto(path, spawn_name, narration)
 

@@ -35,7 +35,9 @@ func goto(path: String, spawn_name: String = "", narration: Array = []) -> void:
 		GameState.spend(GameState.COST_WALK)
 		Sound.sfx("door")
 	spawn = spawn_name
+	var card := await cartello_giorno()
 	await Ui.fade_out()
+	if card: card.queue_free()
 	if not narration.is_empty():
 		await Ui.narrate(narration)
 	get_tree().change_scene_to_file(path)
@@ -46,6 +48,8 @@ func goto(path: String, spawn_name: String = "", narration: Array = []) -> void:
 
 ## Un minigioco "a sorpresa" quando aiuti qualcuno. Alla fine si torna dove si era.
 func minigame(cfg: Dictionary) -> void:
+	if bool(cfg.get("stelle", false)) and GameState.minigame_closed(str(cfg.get("id", ""))):
+		return
 	if Ui.transitioning:
 		return
 	GameState.minigame = cfg
@@ -59,3 +63,21 @@ func continue_game() -> void:
 		return
 	save_pos = where["pos"]
 	goto(str(where["room"]), "_save" if save_pos != Vector2.INF else "bed", ["{floor}, ore {clock}."])
+
+
+## È cominciato un giorno nuovo: lo si vede e lo si sente. Buio, «GIORNO N», il nome del giorno.
+## Con `torna` il cartello sparisce da solo (si resta nella stanza); senza, resta nero e lo toglie chi lo ha chiesto.
+func cartello_giorno(torna := false) -> SguardoIndietro:
+	if not GameState.giorno_da_annunciare or OS.has_environment("CHEAP_SENZA_CARTELLO"):
+		return null
+	GameState.giorno_da_annunciare = false
+	var was := Ui.cutscene
+	Ui.cutscene = true
+	var card := preload("res://world/sguardo_indietro.tscn").instantiate() as SguardoIndietro
+	get_tree().root.add_child(card)
+	await card.giorno(GameState.day, GameState.giorno_intero(), torna)
+	Ui.cutscene = was
+	if torna:
+		card.queue_free()
+		return null
+	return card

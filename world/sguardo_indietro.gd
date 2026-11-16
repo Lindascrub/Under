@@ -96,3 +96,31 @@ func titolo(chapter: String, title: String, subtitle := "") -> void:
 		c.tween_property(_sottotitolo, "modulate:a", 1.0, comparsa_sottotitolo)
 	await c.finished
 	await get_tree().create_timer(attesa_titolo_con_sottotitolo if subtitle != "" else attesa_titolo).timeout
+
+
+## Il cartello del giorno nuovo: buio veloce, «GIORNO N» e il nome del giorno, poi (se `torna`) si rivede la stanza.
+func giorno(numero: int, nome: String, torna := false) -> void:
+	var b := create_tween()
+	b.tween_property(_buio, "color:a", 1.0, 0.4)
+	await b.finished
+	Sound.sfx("alarm", 1.0, -10.0)
+	await titolo("GIORNO %d" % numero, nome)
+	if torna:
+		var v := create_tween().set_parallel()
+		for n: CanvasItem in [_capitolo, _titolo, _sottotitolo]:
+			v.tween_property(n, "modulate:a", 0.0, 0.4)
+		v.tween_property(_buio, "color:a", 0.0, 0.4)
+		await v.finished
+
+
+## Un cartello in mezzo a un capitolo («LA PIAZZA», «LE PROPOSTE», «L'ASSEMBLEA»): buio veloce, il titolo, poi si rivede la stanza.
+func cartello(sopra: String, titolo_grande: String) -> void:
+	var b := create_tween()
+	b.tween_property(_buio, "color:a", 1.0, 0.4)
+	await b.finished
+	await titolo(sopra, titolo_grande)
+	var v := create_tween().set_parallel()
+	for n: CanvasItem in [_capitolo, _titolo, _sottotitolo]:
+		v.tween_property(n, "modulate:a", 0.0, 0.4)
+	v.tween_property(_buio, "color:a", 0.0, 0.4)
+	await v.finished

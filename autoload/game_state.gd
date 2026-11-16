@@ -75,6 +75,8 @@ var money := 0
 var debt := START_DEBT
 ## Di quanto è salito il debito nell'ultima notte: l'HUD lo mostra in rosso e poi lo rimette a 0.
 var debito_salito_stanotte := 0
+## È cominciato un giorno nuovo e il cartello «GIORNO N» non si è ancora visto (Router e Room lo mostrano).
+var giorno_da_annunciare := false
 var energy := MAX_ENERGY
 var rank := 0
 var exploited := 0
@@ -241,6 +243,18 @@ func spend(cost: int) -> bool:
 	return rolled
 
 
+## Si sale di piano: la giornata finisce lì, e al piano nuovo è mattina.
+func notte_tra_i_piani() -> void:
+	minutes = DAY_START
+	_new_day()
+	changed.emit()
+
+
+## Il nome intero del giorno, per il cartello (dopo la domenica si ricomincia).
+func giorno_intero() -> String:
+	return ["LUNEDÌ", "MARTEDÌ", "MERCOLEDÌ", "GIOVEDÌ", "VENERDÌ", "SABATO", "DOMENICA"][(day - 1) % 7]
+
+
 func _new_day() -> void:
 	var before := debt
 	debt += int(round(debt * interest_rate()))
@@ -250,6 +264,7 @@ func _new_day() -> void:
 	met_today.clear()
 	helped_today.clear()
 	energy = MAX_ENERGY
+	giorno_da_annunciare = true
 	pending_lines.append("* È passata un'altra notte, da qualche parte sopra di te. Gli interessi no: il debito è salito di %s." % euros(debt - before))
 
 
@@ -490,7 +505,40 @@ func floor_people(id := "") -> Array:
 	return out
 
 
-## Hai aiutato tutti quelli del piano? Allora il piano ti apre la porta.
+## Gli aiuti con stelline del piano. Ada lavora nella Casa Comune, parte della Città.
+## Le attività narrative (Rina, Fermo) non assegnano stelle.
+func floor_minigames(id := "") -> Array[String]:
+	var floor_key := floor_id if id == "" else id
+	var rooms: Array = [str(FLOOR_ROOM.get(floor_key, ""))]
+	if floor_key == "0": rooms = ["citta", "casa_comune"]
+	var out: Array[String] = []
+	for n: String in npc_ids():
+		var data := npc_data(n)
+		var sched: Array = data.get("schedule", [])
+		if not sched.is_empty() and str(sched[0].get("room", "")) in rooms \
+				and bool(data.get("help", {}).get("minigame", {}).get("stelle", false)):
+			out.append(n)
+	return out
+
+
+func minigame_mastered(id: String) -> bool:
+	return int(flags.get("stelle_" + id, 0)) >= 3
+
+
+## Una rinuncia concordata dopo dieci prove chiude l'aiuto senza inventare stelle.
+func minigame_closed(id: String) -> bool:
+	return minigame_mastered(id) or bool(flags.get("aiuto_concluso_" + id, false))
+
+
+func floor_minigames_mastered(id := "") -> bool:
+	var people := floor_minigames(id)
+	if people.is_empty(): return false
+	for n: String in people:
+		if not minigame_closed(n) or is_robot(n): return false
+	return true
+
+
+## Hai aiutato tutti quelli del piano? Usato dai riepiloghi narrativi, non dal premio di Nives.
 func floor_all_helped(id := "") -> bool:
 	var people := floor_people(id)
 	if people.is_empty():

@@ -215,7 +215,7 @@ func bulbs() -> void:
 	var n := await game("mina")
 	n.bulb = "fioca"
 	press(n, "move_up")
-	press(n, "move_down")
+	press(n, "move_up")
 	check(n.bulb == "buona" and n.bulb_fixed and n.misses == 0, "Bulbo: la lampadina riparata si accende prima dello smistamento")
 	press(n, "move_right")
 	check(n.bulb_done == 1, "Bulbo: la riparata va nelle BUONE")

@@ -198,6 +198,7 @@ func enter() -> void:
 
 
 func show_pending() -> void:
+	await Router.cartello_giorno(true)
 	if not GameState.pending_lines.is_empty():
 		var lines := GameState.pending_lines.duplicate()
 		GameState.pending_lines.clear()
@@ -242,6 +243,8 @@ func use_station(posto: PostoTurno, j: Dictionary) -> void:
 	var jj := j
 	var spot := add_spot((posto.get_node("PuntoUso") as Node2D).global_position, func() -> void: _station(jj))
 	spot.set_meta("job_id", str(j.get("id", "")))
+	spot.interaction_bounds = posto.area_uso
+	spot.reach = posto.distanza_uso
 	spot.approach = posto.direzione_avvicinamento()
 	spot.facing_required = posto.verso_richiesto()
 
@@ -393,7 +396,7 @@ var _clerk_camera_speed := 7.0
 
 
 func _floor_gift() -> void:
-	if floor_id == "" or not GameState.floor_all_helped(floor_id):
+	if floor_id == "" or not GameState.floor_minigames_mastered(floor_id):
 		return
 	var need := GameState.floor_above(floor_id)
 	if need == "" or GameState.has_badge(need) or GameState.flags.get("gift_" + floor_id, false):
@@ -430,17 +433,17 @@ func _floor_gift() -> void:
 		_badge_booth.clerk.play("idle_" + ("right" if delta.x > 0 else "left") if absf(delta.x) > absf(delta.y) else "idle_" + ("down" if delta.y > 0 else "up"))
 	if first_friend and floor_id == "-5":
 		await Ui.say(["* L'addetta dello sportello ti viene incontro con un badge in mano.",
-			"Ho visto. Hai dato una mano a tutti, qui.",
+			"Ho visto quanto tempo hai passato con Mina e Bulbo. Non li hai lasciati soli.",
 			"Io sono rimasta allo sportello a guardare.",
 			"Tieni. Questo lo pago io.",
 			"Mi chiamo Nives. Quando ripassi, puoi salutarmi anche senza comprare niente."], who, BADGE_CLERK)
 	elif first_friend:
 		await Ui.say(["* L'addetta dello sportello ti viene incontro con un badge in mano.",
-			"Ho sentito. Hai dato una mano a tutti, qui. A tutti.",
+			"Ho sentito che hai dato una mano a tutti, qui.",
 			"Sai quante persone l'hanno fatto, in vent'anni? Nessuna. Io, per esempio, no.",
 			"Questo badge te lo regalo io. E il tornello te lo apro io. Siamo amici, adesso. Io mi chiamo Nives, a proposito. Nessuno me l'aveva mai chiesto."], who, BADGE_CLERK)
 	else:
-		await Ui.say(["{name}! L'ho saputo: anche qui hai aiutato tutti.",
+		await Ui.say(["{name}! Hai dato una mano anche qui. L’ho saputo.",
 			"Siamo tutte uguali, noi addette. Ma io mi ricordo di te. Tieni: offre Nives."], who, BADGE_CLERK)
 	open_turnstiles()
 	await Ui.say(["* Hai ricevuto il badge del %s. La tua autostima sale: %d." % [GameState.floor_name(need), GameState.self_esteem]])
@@ -1109,6 +1112,9 @@ func _badge_machine() -> void:
 		GameState.flags["badge_clerk_same_face"] = true
 		await Ui.say(["Un'addetta per piano. Stessa faccia, prezzi diversi."], who, BADGE_CLERK)
 	if GameState.has_badge(need):
+		if GameState.floor_id == "-5":
+			await _nives_fondo_saluto(who)
+			return
 		await Ui.say(["Hai già il badge del %s. Le scale sono lì. Buona salita." % GameState.floor_name(need)], who, BADGE_CLERK)
 		return
 	# la stanza può chiedere qualcosa in più prima del badge (al -4: il Modulo B-4)
@@ -1150,6 +1156,28 @@ func _badge_machine() -> void:
 	for n in _turnstiles:
 		if is_instance_valid(n):
 			n.unlock()
+
+
+## Il saluto promesso al Fondo ha seguito anche dopo aver ricevuto il badge.
+func _nives_fondo_saluto(who: String) -> void:
+	var count := int(GameState.flags.get("nives_fondo_saluti", 0))
+	GameState.flags["nives_fondo_saluti"] = count + 1
+	var lines: Array
+	if count == 0 and GameState.flags.get("gift_-5", false):
+		lines = ["Sei tornato davvero a salutarmi.", "Aspetta, tolgo il cartello CHIUSO. Non lo metto mai, ma mi sembrava il momento di usarlo."]
+	elif GameState.flags.get("c1_rivelazione", false) and not GameState.flags.get("nives_fondo_grigio", false):
+		GameState.flags["nives_fondo_grigio"] = true
+		lines = ["Senza tutte quelle luci ti vedo meglio.", "Mi ero abituata a chiedere il badge prima di guardare la persona."]
+	elif GameState.worked_today and not GameState.flags.get("nives_fondo_turno", false):
+		GameState.flags["nives_fondo_turno"] = true
+		lines = ["Hai finito il turno? Siediti un momento.", "Non è una promozione. È una sedia. Puoi usarla lo stesso."]
+	else:
+		var saluti: Array = [
+			["Ciao, {name}. Oggi niente pratica?", "Bene. Avevo voglia di una conversazione senza timbro."],
+			["Mina mi ha aggiustato la lampada dello sportello.", "Adesso vedo tutti i moduli arretrati. Non gliel’ho ancora perdonato."],
+			["Ho portato un cuscino per quella sedia.", "Se lo chiamiamo dotazione, prima o poi me lo fanno pagare."]]
+		lines = saluti[count % saluti.size()]
+	await Ui.say(lines, "Nives" if GameState.flags.get("clerk_friend", false) else who, BADGE_CLERK)
 
 
 func add_spot(pos: Vector2, action: Callable) -> Interactable:
@@ -1244,14 +1272,14 @@ func _clerk_path(start: Vector2) -> Array[Vector2]:
 ## La strada a piedi da `start` a `goal`, girando intorno a muri e mobili (griglia da 8 px).
 ## `exclude`: i corpi da non contare come ostacoli (chi cammina). Ritorna solo le curve; l'ultimo punto
 ## è il più vicino a `goal` che si riesce a raggiungere.
-func walk_path(start: Vector2, goal: Vector2, exclude: Array[RID] = []) -> Array[Vector2]:
+func walk_path(start: Vector2, goal: Vector2, exclude: Array[RID] = [], footprint := Vector2(9, 5)) -> Array[Vector2]:
 	const GRID := 8
 	var from := Vector2i(start / GRID)
 	var queue: Array[Vector2i] = [from]
 	var parents := {from: from}
 	var found := from
 	var closest := INF
-	var shape := RectangleShape2D.new(); shape.size = Vector2(9, 5)
+	var shape := RectangleShape2D.new(); shape.size = footprint
 	var query := PhysicsShapeQueryParameters2D.new(); query.shape = shape; query.collision_mask = 1
 	query.exclude = exclude
 	var cursor := 0

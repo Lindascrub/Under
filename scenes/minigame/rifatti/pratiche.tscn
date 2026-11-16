@@ -28,7 +28,7 @@ offset_bottom = 29.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.30, 1)
 theme_override_font_sizes/font_size = 18
-text = "TEO · DUE DOCUMENTI"
+text = "TEO · TROVA LA DIFFERENZA"
 autowrap_mode = 2
 vertical_alignment = 1
 
@@ -84,7 +84,7 @@ offset_bottom = 24.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
 theme_override_font_sizes/font_size = 14
-text = "DOCUMENTO ORIGINALE"
+text = "ORIGINALE"
 autowrap_mode = 2
 vertical_alignment = 1
 
@@ -159,7 +159,7 @@ offset_bottom = 24.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
 theme_override_font_sizes/font_size = 14
-text = "COPIA NEL FASCICOLO"
+text = "COPIA"
 autowrap_mode = 2
 vertical_alignment = 1
 
@@ -232,7 +232,7 @@ focus_mode = 0
 theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("carta")
-text = "NESSUNA ANOMALIA"
+text = "TUTTO UGUALE"
 autowrap_mode = 2
 
 [node name="Timbro" type="Label" parent="."]

@@ -42,7 +42,7 @@ func avvia(c: Dictionary) -> void:
 	add_child(riferimento)
 	for i in voci.size():
 		if _doppia(i): doppi += 1
-	$Aiuto.text = "Tocca la ricevuta doppia. Sotto trovi la voce precedente." if TouchControls.enabled else "SINISTRA/DESTRA: ricevuta. INVIO o clic: timbra il doppio."
+	$Aiuto.text = "Uguale a quella prima? Toccala." if TouchControls.enabled else "Uguale a quella prima? Timbrala: clic, o FRECCE e INVIO."
 	_aggiorna()
 
 
@@ -186,12 +186,12 @@ func seleziona(r: Control) -> void:
 	if is_instance_valid(selezionata): selezionata.add_theme_stylebox_override("panel", stile_normale)
 	selezionata = r
 	if r == null:
-		riferimento.text = "La voce precedente resta qui, anche quando esce dal nastro."
+		riferimento.text = ""
 		return
 	r.add_theme_stylebox_override("panel", stile_scelto)
 	var i := int(r.get_meta("indice"))
 	if i == 0:
-		riferimento.text = "PRIMA VOCE DEL MESE · Non ha una voce precedente."
+		riferimento.text = "Prima ricevuta: niente da confrontare."
 	else:
 		var voce: Array = voci[i - 1]
 		riferimento.text = "VOCE PRECEDENTE · %s · %s · %d EUR" % [voce[0], voce[1], int(voce[2])]

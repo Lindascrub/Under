@@ -74,18 +74,20 @@ func _process(_delta: float) -> void:
 	if scene == null:
 		return
 	if sp == Router.MINIGAME and not Ui.transitioning and scene.get("phase") == "play" and not Ui.busy:
-		_scrivi("    [minigioco %s: vinto dal giro]" % str(GameState.minigame.get("name", GameState.minigame.get("type", "?"))))
+		var vince := strada != "perde"
+		_scrivi("    [minigioco %s: %s dal giro, tentativi finora %s]" % [str(GameState.minigame.get("name", GameState.minigame.get("type", "?"))), "vinto" if vince else "PERSO",
+			str(GameState.flags.get("tentativi_" + str(GameState.minigame.get("id", "")), 0))])
 		var v: Node = scene.get("visivo")
 		if v != null:
-			v.errori = 0
-			v.chiudi(true)
+			v.errori = 0 if vince else 99
+			v.chiudi(vince)
 		else:
-			scene.set("misses", 0)
-			scene.call("_finish", true, false)
+			scene.set("misses", 0 if vince else 99)
+			scene.call("_finish", vince, false)
 		return
 	if sp == Router.WORK and not Ui.transitioning and scene.get("phase") == "play" and not Ui.busy:
 		_scrivi("    [turno di lavoro: finito dal giro]")
-		scene.set("score", scene.get("target"))
+		scene.set("score", scene.get("target") if strada != "perde" else 0)
 		scene.set("time_left", 0.0)
 		return
 	if sp == Router.DIREZIONE and not Ui.transitioning and not Ui.busy and _frame % 3 == 0:
@@ -164,6 +166,11 @@ func _scelta(prompt: String, opts: Array) -> int:
 	if p.contains("comprare il badge"):
 		return 0
 	# rifare un aiuto già perfetto: no, si va avanti
+	if trova.call(["cominciamo l'assemblea"]) >= 0:
+		var vol: int = trova.call(["volantini"])
+		return vol if vol >= 0 and strada != "solo" else trova.call(["cominciamo l'assemblea"])
+	if strada == "perde" and trova.call(["riprova", "dai una mano"]) >= 0:
+		return trova.call(["riprova", "dai una mano"])
 	if trova.call(["rifallo", "rigioca"]) >= 0:
 		var k: int = trova.call(["non ora", "no"])
 		return k if k >= 0 else opts.size() - 1
@@ -452,7 +459,7 @@ func _run() -> void:
 		_scrivi("\n#### PIANO %s" % path.get_file().get_basename())
 		await _giro_stanza(path, 1)
 		await _turno(path)
-		await _giro_stanza(path, 3)
+		await _giro_stanza(path, 12 if strada == "perde" else 3)
 		if path == Router.CITY:
 			Router.goto(Router.CASA_COMUNE, "default")
 			await _wait_scene(Router.CASA_COMUNE, 20000)
@@ -462,7 +469,6 @@ func _run() -> void:
 			await _wait_scene(Router.CITY, 20000)
 			await _calma()
 			await _giro_stanza(Router.CITY, 2)
-		_notte()
 		await _sali(path, need)
 		var n := 0
 		while _scene_path() == path and n < 30000:

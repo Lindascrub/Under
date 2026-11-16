@@ -8,7 +8,7 @@ var scelte_escluse: Array[int] = []
 func avvia(c: Dictionary) -> void:
 	super.avvia(c)
 	pratiche = GameState.bank.get("teo", {}).get("pratiche", [])
-	$Aiuto.text = "Tocca il dettaglio che non torna." if TouchControls.enabled else "FRECCE: confronta le righe. INVIO o clic: segnala."
+	$Aiuto.text = "Tocca la riga diversa." if TouchControls.enabled else "Clicca la riga diversa. Oppure FRECCE e INVIO."
 	_mostra()
 func _mostra() -> void:
 	scelte_escluse.clear()
@@ -16,20 +16,29 @@ func _mostra() -> void:
 	var p: Dictionary = pratiche[indice]
 	var tipo := int(p.get("tipo", 0))
 	var righe: Array = p.get("righe", [])
-	var sinistra: Array = righe.duplicate()
-	var destra: Array = righe.duplicate()
-	# Stessi dati canonici, accostati alla prova pertinente.
+	# Una parola e un valore per riga, uguali sui due fogli: al massimo una riga è diversa.
+	var paga := _valore(str(righe[1]))
+	var etichette := ["IDENTITÀ", "PAGA", "REDDITI", "RICHIESTA"]
+	var sinistra := ["SÌ", paga, paga if tipo in [3, 4] else _valore(str(righe[2])), _valore(str(righe[3]))]
+	var destra: Array = sinistra.duplicate()
 	if tipo == 1:
-		sinistra[0] = "Documento richiesto:\nidentità valida"
-		destra[0] = "Allegato identità:\nMANCANTE"
+		destra[0] = "MANCA"
 	if tipo == 2:
-		sinistra[2] = righe[1]
+		sinistra[2] = paga
+		destra[2] = _valore(str(righe[2]))
 	if tipo == 3:
-		sinistra[2] = "Allegati richiesti:\nuna busta di maggio"
-		destra[2] = "Seconda copia:\nbusta di maggio"
+		etichette[2] = "BUSTE PAGA"
+		sinistra[2] = "1"
+		destra[2] = "2 UGUALI"
 	if tipo == 4:
-		sinistra[3] = righe[2]
-	$Stato.text = "Pratica %s · %s · %d/%d · Errori %d/%d" % [p.get("id", ""), p.get("nome", ""), indice + 1, pratiche.size(), errori, int(configurazione.get("misses", 2))]
+		sinistra[3] = _valore(str(righe[2]))
+		destra[3] = _valore(str(righe[3]))
+	for i in 4:
+		sinistra[i] = "%s
+%s" % [etichette[i], sinistra[i]]
+		destra[i] = "%s
+%s" % [etichette[i], destra[i]]
+	$Stato.text = "%d/%d · Errori %d/%d" % [indice + 1, pratiche.size(), errori, int(configurazione.get("misses", 2))]
 	$Timbro.visible = false
 	for i in 4:
 		var a: Label = $Sinistra/Campi.get_child(i)
@@ -39,6 +48,10 @@ func _mostra() -> void:
 		a.modulate = Color.WHITE
 		b.modulate = Color.WHITE
 	_evidenzia()
+## Il valore di una riga di data/bank.json: quello che sta dopo i due punti, senza «al mese».
+func _valore(riga: String) -> String:
+	var v := riga.get_slice(": ", 1) if ": " in riga else riga
+	return v.replace(" al mese", "").strip_edges()
 func _evidenzia() -> void:
 	for i in 4:
 		var focused := i == selezione and not TouchControls.enabled
@@ -52,7 +65,7 @@ func scegli(k: int) -> void:
 	if scelto != corretto:
 		scelte_escluse.append(k)
 		errori += 1
-		$Esito.text = "Questa scelta non prova un errore. Confronta date, importi e allegati."
+		$Esito.text = "No: quella è uguale."
 		_evidenzia()
 		Sound.sfx("deny")
 		if errori >= int(configurazione.get("misses", 2)): chiudi(false)
@@ -62,7 +75,7 @@ func scegli(k: int) -> void:
 		$Sinistra/Campi.get_child(k).modulate = Color("9ee6b2")
 		$Destra/Campi.get_child(k).modulate = Color("9ee6b2")
 	$Timbro.visible = true
-	$Esito.text = "Nessuna anomalia." if k == 4 else "Prova individuata. Si richiede il controllo di questa voce."
+	$Esito.text = "Giusto: tutto uguale." if k == 4 else "Trovata."
 	Sound.sfx("stamp")
 	await get_tree().create_timer(pausa_timbro).timeout
 	if not is_inside_tree() or not attivo: return

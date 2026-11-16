@@ -8,7 +8,7 @@ const Art := preload("res://scripts/minigame_art.gd")
 ##   type "collect":  muovi il cuore e raccogli tutto prima che scada il tempo (foglie, croccantini)
 ##   type "sequence": ricorda e ripeti la sequenza di frecce (pratiche, post-it, curriculum)
 ##   type "bulbs":    smista le lampadine: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla
-##                    si aggiusta con SU o GIÙ (Bulbo, il nonno delle lampadine)
+##                    si aggiusta con due pressioni SU (Bulbo, il nonno delle lampadine)
 ##   type "wires":    collega i fili dello stesso colore, come in Among Us (Mina, l'elettricista)
 ##   type "inventory": ogni prodotto sul suo scaffale (Leda: SCATOLE E SCAFFALI)
 ##   type "rate":     sei documenti in ordine di data, poi la voce doppia nell'estratto conto
@@ -269,12 +269,12 @@ func _start() -> void:
 		"sequence":
 			_next_round()
 		"bulbs":
-			_info.text = "SCORRI: a destra buona, a sinistra rotta, su e giù aggiusta" if TouchControls.enabled else "DESTRA buona   SINISTRA rotta   SU/GIÙ aggiusta"
+			_info.text = "Rotte a sinistra, buone a destra. Due swipe in su." if TouchControls.enabled else "SINISTRA rotte, DESTRA buone. Due volte SU aggiusta."
 			time_left = float(cfg.get("time", 25.0))
 			time_total = time_left
 			_new_bulb()
 		"wires":
-			_info.text = "Trascina ogni filo sul suo colore e sulla sua lettera." if TouchControls.enabled else "Trascina col mouse ogni filo sul suo colore e sulla sua lettera."
+			_info.text = "Collega i fili dello stesso colore, da sinistra a destra."
 			time_left = float(cfg.get("time", 30.0))
 			time_total = time_left
 			_new_wires()
@@ -319,7 +319,7 @@ func _start() -> void:
 			_vl_ada()
 		"coincidenze":
 			_cz_restart()
-			if prima_prova: cz_msg = "Prima tratta gratuita. Poi, a ogni cambio, aggiungi 3 minuti."
+			if prima_prova: cz_msg = "Prima tratta di prova. A ogni cambio: 3 minuti in più."
 			time_left = float(_cz_data().get("tempo", 75))
 			cz_msg = "Trascina il dito da una fermata all'altra, lungo una linea, fino al lavoro." if TouchControls.enabled else "Trascina col mouse da una fermata all'altra. Oppure FRECCE e %s." % GameState.fmt("{ok}")
 	if prima_prova and type in ["bulbs", "wires"]:
@@ -711,7 +711,7 @@ func _process(delta: float) -> void:
 				_sn_process(delta)
 			elif type == "coincidenze":
 				if not prima_prova: time_left -= delta
-				_info.text = "Tempo: %d   Ore %s   Spesa: %d €   Errori: %d/3" % [int(ceil(time_left)), _clock(cz_now), _cz_cost(), misses]
+				_info.text = "Tempo %d   Ore %s → %s   Spesa %d/%d €   Errori %d/3" % [int(ceil(time_left)), _clock(cz_now), str(_cz_data().get("entrata", "8:00")), _cz_cost(), int(_cz_data().get("budget", 6)), misses]
 				if time_left <= 0.0:
 					_finish(false)
 			elif type == "inventory":
@@ -882,7 +882,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_bulb_answer(bulb == "buona")
 		elif event.is_action_pressed("move_left"):
 			_bulb_answer(bulb == "rotta")
-		elif event.is_action_pressed("move_up") or event.is_action_pressed("move_down"):
+		elif event.is_action_pressed("move_up"):
 			if bulb == "fioca":
 				bulb_fix += 1
 				Sound.sfx("move", 1.0 + bulb_fix * 0.2)
@@ -1039,6 +1039,11 @@ func _finish(success: bool, partial := false) -> void:
 	var persi := 0 if success else int(GameState.flags.get("persi_" + id, 0)) + 1
 	if _con_stelle():
 		GameState.flags["persi_" + id] = persi
+	var tentativi := int(GameState.flags.get("tentativi_" + id, 0))
+	if _con_stelle():
+		tentativi += 1
+		GameState.flags["tentativi_" + id] = tentativi
+	var chiudi_aiuto := _con_stelle() and tentativi >= 10 and not GameState.minigame_closed(id)
 	var lines: Array = []
 	if success:
 		Sound.sfx("spare")
@@ -1063,7 +1068,7 @@ func _finish(success: bool, partial := false) -> void:
 			if not rigioco:
 				lines.append("Tieni, non è molto, ma te li sei guadagnati.")
 			lines.append("* %s ti dà %s." % [who, GameState.euros(reward)])
-		if cfg.has("item"):
+		if cfg.has("item") and not rigioco:
 			GameState.give_item(str(cfg["item"]))
 			lines.append("* (Hai ricevuto: %s.)" % str(cfg["item"]))
 	elif partial:
@@ -1083,10 +1088,29 @@ func _finish(success: bool, partial := false) -> void:
 			GameState.money += _risposta.soldi_se_perdi
 			GameState.changed.emit()
 			lines.append("* %s ti dà %s lo stesso, per il disturbo." % [who, GameState.euros(_risposta.soldi_se_perdi)])
+	if chiudi_aiuto:
+		GameState.flags["aiuto_concluso_" + id] = true
+		# L'ora è già stata spesa. Il personaggio riconosce l'impegno, non una prova riuscita.
+		if id not in GameState.helped_ids: GameState.help(id, "money", 0)
+		# «Finisco io»: il lavoro alla fine è fatto, e la storia lo sa (le stanze di Ada, la prova di Olga).
+		# Restano fuori solo i premi in denaro (il bonus di Amir).
+		for f in cfg.get("win_flags", []):
+			if not str(f).ends_with("_bonus"): GameState.flags[str(f)] = true
+		lines.append_array(cfg.get("dopo_dieci", []))
+		var record := maxi(prima, quante)
+		var saldo := maxi(0, int(cfg.get("reward", 0)) - _risposta.soldi(int(cfg.get("reward", 0)), record))
+		if saldo > 0:
+			GameState.money += saldo
+			lines.append("* %s ti dà ancora %s: il compenso è completo." % [who, GameState.euros(saldo)])
+		GameState.changed.emit()
 	# quello che il minigioco ha deciso (com'è diventata la Casa, che strada fa Nadir) viene prima
 	if success and cfg.has("_extra"):
 		lines = (cfg["_extra"] as Array) + lines
 	await Ui.say(lines, who)
+	if chiudi_aiuto and int(GameState.flags.get("stelle_" + id, 0)) < 3:
+		# Dieci prove bastano: le tre stelle arrivano per l'impegno, e non si deve più riprovare.
+		await _risposta.vittoria(3, id)
+		await Ui.say(["* Tre stelle per l'impegno. Ci hai provato dieci volte: qui non devi più riprovare."])
 	Router.goto(str(cfg.get("return", Router.FONDO)), "_mg")
 
 
@@ -1160,7 +1184,7 @@ func _draw_bulbs(font: Font) -> void:
 	if phase != "demo":
 		Art.bulb(self, c, bulb, 3, lit)
 	if bulb == "fioca" and phase == "play" and not prima_prova:
-		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Scorri su o giù (%d/%d)" if TouchControls.enabled else "Sfarfalla! SU o GIÙ per avvitarla (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
+		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), ("Sfarfalla! Due swipe in su (%d/%d)" if TouchControls.enabled else "Sfarfalla! Premi due volte SU (%d/%d)") % [bulb_fix, int(cfg.get("fix", 2))], HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, YELLOW)
 	elif bulb_fixed and phase == "play" and not prima_prova:
 		draw_string(font, Vector2(BOX.position.x, BOX.position.y + 18), "Avvitata! Ora mettila nelle BUONE >", HORIZONTAL_ALIGNMENT_CENTER, BOX.size.x, 11, GREEN)
 
@@ -1827,7 +1851,7 @@ func _cz_preview(l: Dictionary) -> String:
 		var c: Dictionary = _cz_rides()[k]
 		if str(c.get("stato", "")) == "badge": return str(l["linea"]) + ": serve il badge CHEAP."
 		if str(c.get("stato", "")) == "soppressa" or _cz_min(str(c["parte"])) < ready: continue
-		return "%s: %s > %s · Totale %d/%d EUR" % [l["linea"], c["parte"], c["arriva"], _cz_cost() + int(c.get("euro", 0)), int(_cz_data().get("budget", 6))]
+		return "%s: %s > %s · poi %d/%d €" % [l["linea"], c["parte"], c["arriva"], _cz_cost() + int(c.get("euro", 0)), int(_cz_data().get("budget", 6))]
 	return str(l["linea"]) + ": nessuna corsa disponibile."
 
 
@@ -1934,8 +1958,6 @@ func _cz_miss(msg: String) -> void:
 func _draw_coincidenze(font: Font) -> void:
 	draw_rect(BIG.grow(-4), Color("1c232b"))
 	var d := _cz_data()
-	draw_string(font, BIG.position + Vector2(14, 18), "Nadir è a %s alle %s   ·   si entra alle %s   ·   %d € al giorno" % [
-		_cz_stop_name(cz_at), _clock(cz_now), str(d.get("entrata", "8:00")), int(d.get("budget", 6))], HORIZONTAL_ALIGNMENT_LEFT, BIG.size.x - 28, 9, YELLOW)
 	var targets := _cz_targets()
 	var focus: Variant = null if targets.is_empty() else targets[clampi(cz_focus, 0, targets.size() - 1)]
 	var lines := _cz_lines()
@@ -1961,29 +1983,35 @@ func _draw_coincidenze(font: Font) -> void:
 		var l: Dictionary = lines[li]
 		var first: Dictionary = rides[(l["corse"] as Array)[0]]
 		var stato := str(first.get("stato", ""))
-		var top := str(l["linea"]) + "  ·  " + ("solo badge" if stato == "badge" else (str(first["nota"]) if first.has("nota") else "%d €" % int(first.get("euro", 0))))
+		var here := int(l["da"]) == cz_at
+		var presa := false
+		for k: int in l["corse"]:
+			presa = presa or k in cz_path
+		# Si legge solo quello che serve adesso: le linee che partono da dove è Nadir.
+		if not here and not presa:
+			continue
+		var top := str(l["linea"]) + "  ·  " + ("SOLO BADGE" if stato == "badge" else (str(first["nota"]) if first.has("nota") else "%d €" % int(first.get("euro", 0))))
 		var times: Array = []
 		for k: int in l["corse"]:
 			var c: Dictionary = rides[k]
 			times.append(str(c["parte"]) + (" soppressa" if str(c.get("stato", "")) == "soppressa" else ""))
-		var bottom := "parte " + ", ".join(times)
+		var bottom := "   ".join(times)
 		var curve := _cz_curve(l)
-		var w := maxf(font.get_string_size(top, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, font.get_string_size(bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x) + 8
+		var w := maxf(font.get_string_size(top, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x, font.get_string_size(bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x) + 10
 		# il cartellino sta sulla curva, a metà: così non si confonde con quello della linea accanto
-		var r := Rect2(curve[10] - Vector2(w, 21) / 2.0, Vector2(w, 21))
+		var r := Rect2(curve[10] - Vector2(w, 27) / 2.0, Vector2(w, 27))
 		var col: Color = CZ_COLORS[li % CZ_COLORS.size()]
-		var here := int(l["da"]) == cz_at
-		draw_rect(r, Color(0.08, 0.1, 0.13, 0.92 if here else 0.75))
-		draw_rect(r, col if here else col.darkened(0.55), false, 1.0)
-		draw_string(font, r.position + Vector2(4, 9), top, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("ff7a6a") if stato == "badge" else (Color("f2ead8") if here else Color("8a98a4")))
-		draw_string(font, r.position + Vector2(4, 18), bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("f2ead8") if here else Color("8a98a4"))
+		draw_rect(r, Color(0.08, 0.1, 0.13, 0.94))
+		draw_rect(r, col, false, 1.0)
+		draw_string(font, r.position + Vector2(5, 11), top, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("ff7a6a") if stato == "badge" else Color("f2ead8"))
+		draw_string(font, r.position + Vector2(5, 23), bottom, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Art.GOLD)
 	var last := (d["fermate"] as Array).size() - 1
 	for i in last + 1:
 		var p := _cz_stop_pos(i)
 		var here := i == cz_at
 		draw_circle(p, CZ_STOP + 2, Color.BLACK)
 		draw_circle(p, CZ_STOP, YELLOW if here else (Color("6ad07a") if i == last else Color("e8e8e8")))
-		var name := _cz_stop_name(i) + (" (lavoro)" if i == last else "")
+		var name := "LAVORO" if i == last else _cz_stop_name(i)
 		# il lavoro ha il nome sotto: sopra passano le linee che arrivano
 		draw_string(font, p + Vector2(-60, CZ_STOP + 14 if i == last else -CZ_STOP - 5), name, HORIZONTAL_ALIGNMENT_CENTER, 120, 9, YELLOW if here else Color("f2ead8"))
 		if here:
