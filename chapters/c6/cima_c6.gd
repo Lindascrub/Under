@@ -1079,6 +1079,10 @@ func _boss_review() -> void:
 	Sound.sfx("drring")
 	GameState.save_game(scene_file_path, player.global_position)
 	await Ui.say(["Il turno. Tariffe ai lavoratori: %d. Firme uniche: %d. Decisioni condivise: %d." % [int(st.get("worker_costs", 0)), int(st.get("centralized", 0)), int(st.get("shared", 0))]], "La Presidente")
+	# Il Capo non telefona: alla Cima entra di persona, dal corridoio degli specchi (il punto è Posti/PostoCapo).
+	boss = _person("Capo", BOSS_SHEET, _posto("Capo"), "idle_right", func() -> void: pass, true)
+	Sound.sfx("door")
+	await Ui.say(["* Il Capo entra dal corridoio degli specchi. Niente costume, niente colori. Una camicia stirata male."])
 	await Ui.say(["Hai visto? Il problema non è trovare cento unità. È decidere di chi sono i cinque che mancano.", "È tutto molto semplice!"], BOSS)
 	var fatti: Array = []
 	if int(st.get("worker_costs", 0)) > 0:
@@ -1091,6 +1095,8 @@ func _boss_review() -> void:
 		fatti.append("* Hai mantenuto le tutele. Il bilancio resta sulla scrivania.")
 	fatti.append("* La prova è finita. Puoi assumere la Direzione, partire o proporre di decidere insieme. La Presidente aspetta al tavolo.")
 	await Ui.say(fatti)
+	_remove(boss)
+	Sound.sfx("door")
 	_remove(president)
 	president = _person("Presidente", PRES_SHEET, _posto("Tavolo"), "idle_left", talk_president, true)
 	GameState.save_game(scene_file_path, player.global_position)

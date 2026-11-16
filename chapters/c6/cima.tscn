@@ -592,9 +592,9 @@ lines = PackedStringArray("* Un angolo per gli ospiti. I cuscini sono ancora nel
 lines_after = PackedStringArray()
 
 [node name="GuardaVuoto" type="Node2D" parent="Mondo" unique_id=639425661]
-position = Vector2(728, 224)
+position = Vector2(800, 232)
 script = ExtResource("9_aqhgw")
-lines = PackedStringArray("* Qui non c\'è niente. Lo spazio di un ufficio intero al -4.", "* Il pavimento è lucidato lo stesso. Tutti i giorni.")
+lines = PackedStringArray("* La sala d\'attesa della Presidenza. Le riviste sono del mese scorso. Di undici anni fa.", "* Nessuno ha mai aspettato qui abbastanza da finirne una.")
 lines_after = PackedStringArray()
 
 [node name="DivanoOspiti" type="Sprite2D" parent="Mondo" unique_id=983807305]
