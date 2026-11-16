@@ -43,7 +43,7 @@ func enter() -> void:
 	if not _f("c5_casa"):
 		GameState.flags["c5_casa"] = true
 		await Ui.say(["* Tavoli, libri, piante, sedie spaiate. Qualcuno studia, qualcuno compila un curriculum, qualcuno dorme sul braccio.",
-			"* Si entra gratis. Lo dice un cartello scritto a mano. Sotto, un altro, stampato: CHIUSURA PREVISTA: FRA 3 GIORNI."])
+			"* Si entra gratis. Lo dice un cartello scritto a mano. Sotto, un altro, stampato: " + CITY_LOGIC.closure_text()])
 	await show_pending()
 	if Ui.transitioning:
 		return
@@ -98,7 +98,7 @@ func _ada_first() -> void:
 	Sound.sfx("thump")
 	await Ui.say(["* THUMP. Un libro cade dall'ultimo ripiano."])
 	await Ui.say(["Quella libreria mi odia."], who)
-	await Ui.say(["* Sulla porta, un avviso: CHIUSURA PREVISTA: FRA 3 GIORNI."])
+	await Ui.say(["* Sulla porta, un avviso: " + CITY_LOGIC.closure_text()])
 	await Ui.say(["Dicono che mantenere questo posto costa troppo.", "Il problema è che non sappiamo dove andare.",
 		"Alcuni di noi studiano qui. Alcuni cercano lavoro. Altri vengono solo per stare un po' insieme."], who)
 
@@ -112,7 +112,7 @@ func _ada_menu() -> void:
 		if not _f("c5_ada_perche"):
 			opts.append("Perché non andate altrove?")
 			acts.append("altrove")
-		if not _f("c5_ada_stanze"):
+		if not _f("c5_ada_stanze") and not GameState.minigame_closed("ada"):
 			opts.append("Ti do una mano coi volantini")
 			acts.append("stanze")
 		if not _f("c5_lettera"):
@@ -179,11 +179,7 @@ func robot_talk_ada(_n: Npc) -> bool:
 
 
 func _offer(id: String, who: String) -> void:
-	var h: Dictionary = GameState.npc_data(id).get("help", {})
-	var c: int = await Ui.choose(str(h.get("ask", "")), ["Dai una mano (1 ora)", "Non ora"], who)
-	if c != 0:
-		return
-	Router.minigame(Npc.minigame_cfg(id, who, h, scene_file_path, player.global_position))
+	await Npc.offer_minigame(id, who, self)
 
 
 # --- 5.04 la proposta CHEAP ---------------------------------------------------------------------
@@ -231,11 +227,14 @@ func _bacheca() -> void:
 		found = true
 		match GameState.npc_state(str(p[0])):
 			"libero":
-				lines.append("* Un biglietto scritto a mano: \"Sono uscito anch'io. Il sole c'è davvero. — %s\"" % p[1])
+				lines.append("* Un biglietto scritto a mano: \"Sono uscit%s anch'io. Il sole c'è davvero. — %s\"" % ["a" if bool(GameState.npc_data(str(p[0])).get("femminile", false)) else "o", p[1]])
 			"sfruttato":
 				lines.append("* Un volantino stampato, firmato %s: \"LA PRODUTTIVITÀ È LUCE.\" La firma è perfetta. Troppo." % p[1])
 			_:
-				lines.append("* Un biglietto a matita: \"Lavoro ancora, giù al -5. Se qualcuno sale, salutatemi il cielo. — %s\"" % p[1])
+				# ognuno scrive il suo: Fermo cerca un cambio, Mina ripara, Bulbo regala
+				var biglietto: String = {"fermo": "Cerco qualcuno che mi dia il cambio. Anche solo dieci minuti.",
+					"bulbo": "Riparo lampade e prese. Si paga in caffè.", "mina": "Regalo lampadine quasi buone."}[str(p[0])]
+				lines.append("* Un biglietto a matita: \"%s — %s\"" % [biglietto, p[1]])
 	if not found:
 		lines.append("* Fra gli annunci, nessun nome che conosci.")
 	await Ui.say(lines)

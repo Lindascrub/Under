@@ -82,7 +82,10 @@ func enter() -> void:
 
 ## Al piano terra il badge non si regala a chi ha aiutato "tutti": decide Nives (vedi _badge_machine).
 func _floor_gift() -> void:
-	pass
+	if not gift_allowed() or GameState.has_badge(BADGE): return
+	GameState.flags["c5_badge"] = "regalo"
+	GameState.flags["badge_day_" + BADGE] = GameState.day
+	await super()
 
 
 func _npc(id: String) -> Npc:
@@ -100,6 +103,7 @@ static func _f(key: String) -> bool:
 
 func _arrival() -> void:
 	GameState.flags["c5_arrivo"] = true
+	GameState.flags["c5_arrivo_giorno"] = GameState.day
 	Ui.cutscene = true
 	await get_tree().create_timer(0.3).timeout
 	await Ui.say(["* Una porta di vetro. Sopra, un'insegna: BENVENUTO ALL'ESTERNO.", "* Sotto, più piccolo: \"Servizio soggetto a disponibilità.\""])
@@ -174,7 +178,9 @@ static func closure_text() -> String:
 				return "CHIUSURA RINVIATA. IN ATTESA DI UNA REVISIONE DEI COSTI."
 	if _f("c5_protesta"):
 		return "CHIUSURA PREVISTA: FRA 2 GIORNI. (L'1 è stato corretto a penna in un 2. Poi di nuovo in un 1. Poi in un 2.)"
-	return "CHIUSURA PREVISTA: FRA 3 GIORNI."
+	var passati := GameState.day - int(GameState.flags.get("c5_arrivo_giorno", GameState.day))
+	var restano := clampi(3 - passati, 1, 3)
+	return "CHIUSURA PREVISTA: FRA 1 GIORNO." if restano == 1 else "CHIUSURA PREVISTA: FRA %d GIORNI." % restano
 
 
 func _avviso() -> void:
@@ -249,7 +255,7 @@ func _nadir_menu() -> void:
 		if (_f("c5_nadir_cambiare") or _f("c5_nadir_percorso")) and not _f("c5_nadir_uccelli"):
 			opts.append("Cosa stai guardando?")
 			acts.append("uccelli")
-		if (_f("c5_nadir_cambiare") or _f("c5_nadir_uccelli") or _f("c5_nadir_percorso")) and not _f("c5_nadir_percorso"):
+		if (_f("c5_nadir_cambiare") or _f("c5_nadir_uccelli") or _f("c5_nadir_percorso")) and not _f("c5_nadir_percorso") and not GameState.minigame_closed("nadir"):
 			opts.append("Ti aiuto con gli orari")
 			acts.append("percorso")
 		if _f("c5_nadir_percorso") and _f("c5_ada") and not _f("c5_nadir_rete"):
@@ -741,8 +747,15 @@ func _protest() -> void:
 			await Ui.say(["* Il telefono vibra. Un messaggio del capo: \"La presentazione è oggi. L'offerta è scaduta. Le offerte scadono. Come il latte.\""])
 	_dress_protest()
 	_visitors()
+	await _cartello("LA PIAZZA")
+	var frame := Inquadratura.new()
+	frame.position = _posto("Ada" if not GameState.is_robot("ada") else "Studente") + Vector2(0, -22)
+	frame.zoom = 1.7
+	frame.durata = 0.45
+	add_child(frame)
+	var shot := await FocusShot.begin(self, frame)
 	Sound.sfx("honk", 0.8)
-	await Ui.say(["* La piazza si riempie. Studenti, lavoratori, residenti. E chi passava di lì e si è fermato.",
+	await Ui.say(["* Davanti alla Casa Comune la piazza si riempie: l’edificio rischia di chiudere. Studenti, lavoratori e residenti chiedono che resti aperto.",
 		"* Cartelli fatti a mano: VOGLIAMO UN POSTO PER STUDIARE. IL TEMPO NON SI RECUPERA.",
 		"* UN SERVIZIO PUBBLICO NON È UN LUSSO. LAVORARE NON BASTA?"])
 	await Ui.say(["Sono qui perché chiudono il posto dove studio."], "Studente")
@@ -766,8 +779,9 @@ func _protest() -> void:
 	if _f("c5_rina_ascoltata"):
 		await Ui.say(["Io vorrei che l'edificio restasse aperto.", "Ma domani devo anche aprire il negozio.",
 			"Se vogliamo fare qualcosa insieme, dobbiamo pensare anche a chi lavora qui."], "Rina")
-	await _three_proposals()
-	await _crash()
+	await Ui.say(["* Quando vuoi sentire le proposte, parla con %s." % organizer()])
+	await FocusShot.restore(self, shot)
+	frame.queue_free()
 	var missions = load("res://scripts/boss_missions.gd")
 	# These lines have just been spoken above; old saves never synthesize an archive.
 	missions.record_quote("student", "Studente", "Sono qui perché chiudono il posto dove studio.", "La protesta riguarda la chiusura della Casa Comune.", 20)
@@ -775,14 +789,56 @@ func _protest() -> void:
 		missions.record_quote("casa", "Ada", "Vogliamo capire perché l'unica soluzione proposta è far pagare chi lo usa.", "Ada ha detto che tetto e manutenzione richiedono soldi.", 22)
 	else:
 		missions.record_quote("casa", "Lavoratore", "Io sono qui perché per arrivare al lavoro spendo metà della giornata.", "Il lavoratore parla del tempo perso nei trasporti.", 22)
-	missions.record_quote("rina", "Rina", "L'avevo appena riparata.", "La vetrina è rotta. Non si è visto chi è stato; Rina non ha chiesto di chiudere la Casa.", 18)
 	Ui.cutscene = false
-	if missions.uses("0") and not missions.state("0").get("seen", false):
-		var score := Sound.capture_music()
-		Sound.music("capo")
-		await _boss_call()
-		if not Ui.transitioning:
-			Sound.restore_music(score)
+
+
+## Un cartello in mezzo al capitolo: dice che cosa sta per succedere (le scritte sono in world/sguardo_indietro.tscn).
+func _cartello(titolo: String) -> void:
+	var card := load(LOOK_BACK_CARD).instantiate() as SguardoIndietro
+	add_child(card)
+	await card.cartello("", titolo)
+	card.queue_free()
+
+
+## Il secondo momento: le tre proposte (si ascolta soltanto: si vota all'assemblea), poi la vetrina e il giornalista.
+func _proposte() -> void:
+	GameState.flags["c5_proposte"] = true
+	Ui.cutscene = true
+	await _cartello("LE PROPOSTE")
+	await _three_proposals()
+	var frame := Inquadratura.new()
+	frame.position = (_npc("rina").global_position + Vector2(0, -20)) if _npc("rina") else _posto("Rina")
+	frame.zoom = 1.7
+	frame.durata = 0.45
+	add_child(frame)
+	var shot := await FocusShot.begin(self, frame)
+	await _crash()
+	await FocusShot.restore(self, shot)
+	frame.queue_free()
+	load("res://scripts/boss_missions.gd").record_quote("rina", "Rina", "L'avevo appena riparata.", "La vetrina è rotta. Non si è visto chi è stato; Rina non ha chiesto di chiudere la Casa.", 18)
+	Ui.cutscene = false
+
+
+## Il foglio di Ada: che cosa serve perché la gestione comunitaria possa passare. Niente punteggi: tre cose vere.
+func _foglio() -> void:
+	var serve := 3 if _f("boss_news_divisive") and not _f("boss_news_rectified") else 2
+	await Ui.say(["* PER TENERE APERTA LA CASA SERVONO:",
+		"* I conti dell'archivio: %s." % ("LETTI" if _f("c5_rapporto") else "NON ANCORA"),
+		"* Le stanze fatte conoscere: %s." % ("SÌ" if _f("c5_ada_stanze") else "NON ANCORA"),
+		"* Aiuti da fuori: %d su %d." % [mini(resources().size(), serve), serve]])
+
+
+## Il Capo telefona per il notiziario: dopo che hai parlato col giornalista (è il suo servizio che si monta),
+## o al più tardi quando vai a cominciare l'assemblea.
+func _capo_notiziario() -> void:
+	var missions = load("res://scripts/boss_missions.gd")
+	if not missions.uses("0") or missions.state("0").get("seen", false):
+		return
+	var score := Sound.capture_music()
+	Sound.music("capo")
+	await _boss_call()
+	if not Ui.transitioning:
+		Sound.restore_music(score)
 
 
 func organizer() -> String:
@@ -792,22 +848,10 @@ func organizer() -> String:
 ## 5.12: tre strade sul tavolo. Il sostegno del protagonista pesa, ma non decide da solo.
 func _three_proposals() -> void:
 	var who := organizer()
-	await Ui.say(["Allora. Sul tavolo ci sono tre strade.",
-		"A: la ristrutturazione CHEAP. Pagano loro manutenzione e attrezzature. Alcuni servizi diventano a pagamento. Restano borse di studio e qualche attività gratuita.",
-		"B: la gestione comunitaria. Cerchiamo fondi, ci organizziamo noi. L'accesso resta quasi tutto gratuito. Servono soldi, accordi, e gente che si prende delle responsabilità.",
-		"C: chiediamo un rinvio della chiusura. Tempo per una revisione indipendente dei costi e per cercare finanziamenti. È una soluzione temporanea."], who)
-	var c: int = await Ui.choose("Tu cosa sostieni?", ["Ristrutturazione CHEAP: accesso in parte a pagamento.", "Gestione comunitaria: organizzarci e cercare fondi.", "Rinvio: rivedere i costi e cercare finanziamenti.", "Non prendo posizione"], who)
-	var key: String = ["A", "B", "C", "nessuna"][c]
-	GameState.flags["c5_proposta"] = key
-	match key:
-		"A":
-			await Ui.say(["Va bene. Almeno qualcuno ha guardato il tetto.", "Lo scriviamo. Ne parliamo all'assemblea."], who)
-		"B":
-			await Ui.say(["Bene. Ma un sì non basta: servono numeri, persone, soldi.", "Lo scriviamo. Ne parliamo all'assemblea."], who)
-		"C":
-			await Ui.say(["Prendere tempo non è scappare, se poi il tempo lo usi.", "Lo scriviamo. Ne parliamo all'assemblea."], who)
-		_:
-			await Ui.say(["Va bene anche ascoltare. È più raro di quanto sembri."], who)
+	await Ui.say(["Oggi raccogliamo le proposte. La decisione si prenderà dopo, all’assemblea.",
+		"A: la ristrutturazione CHEAP. Pagano loro. Una parte dei servizi diventa a pagamento.",
+		"B: la gestione comunitaria. Ci organizziamo noi. Resta quasi tutto gratuito, ma servono soldi e persone.",
+		"C: un rinvio. Tempo per rivedere i costi e cercare fondi. È una soluzione temporanea."], who)
 
 
 func _crash() -> void:
@@ -824,7 +868,7 @@ func _crash() -> void:
 	_add_person("Giornalista", "rpg_vx3_3", "idle_left", _giornalista)
 	await Ui.say(["* Arriva qualcuno con un taccuino e un microfono che ha visto giorni migliori."])
 	await Ui.say(["Possiamo avere una dichiarazione?"], "Giornalista")
-	await Ui.say(["* (Puoi parlare con Rina, con chi manifesta, con il giornalista. Nell'ordine che vuoi. E poi c'è l'assemblea: %s la sta organizzando.)" % organizer()])
+	await Ui.say(["* La protesta si interrompe. Puoi aiutare Rina o parlare col giornalista. Quando sei pronto per l’assemblea, torna da %s." % organizer()])
 
 
 func _manifestante() -> void:
@@ -856,6 +900,7 @@ func _giornalista() -> void:
 			await Ui.say(["Lo annoto: non hai visto chi è stato. Il vetro è rotto; il responsabile, per ora, non lo sappiamo."], who)
 		_:
 			await Ui.say(["Anche il silenzio è una dichiarazione. Ma non si può citare."], who)
+	await _capo_notiziario()
 
 
 ## Il titolo del giorno dopo: dipende da quello che si sa davvero, non da quello che pensi tu.
@@ -985,7 +1030,28 @@ func _organizer_talk() -> void:
 		await Ui.say(["L'assemblea c'è stata. Domani ce ne sarà un'altra. Le assemblee sono come gli autobus: ne arriva sempre una dopo."], who)
 		return
 	if not _f("c5_vetrina"):
-		await Ui.say(["Un attimo, sto contando le sedie."], who)
+		await _proposte()
+		return
+	# Durante la manifestazione Ada è qui e non nella Casa: i volantini si possono fare anche in piazza.
+	var opts: Array = []
+	var acts: Array = []
+	if not GameState.is_robot("ada") and not _f("c5_ada_stanze") and not GameState.minigame_closed("ada"):
+		opts.append("Ti do una mano coi volantini")
+		acts.append("volantini")
+	opts.append_array(["Leggi il foglio", "Cominciamo l'assemblea", "Ciao"])
+	acts.append_array(["foglio", "assemblea", ""])
+	var c: int = await Ui.choose(who + ".", opts, who)
+	match str(acts[c]):
+		"volantini":
+			await _offer("ada", who)
+			return
+		"foglio":
+			await _foglio()
+			return
+		"":
+			return
+	await _capo_notiziario()
+	if Ui.transitioning:
 		return
 	await assembly()
 
@@ -1107,6 +1173,7 @@ func assembly() -> void:
 			return
 	Ui.cutscene = true
 	GameState.flags["c5_assemblea"] = true
+	await _cartello("L'ASSEMBLEA")
 	await Ui.say(["* Una cassetta della frutta fa da palco. Le sedie sono tutte spaiate. L'assemblea discute i bilanci."])
 	if _f("c5_rapporto"):
 		var p: int = await Ui.choose("Hai letto il rapporto dei bilanci.", ["Presenta il rapporto", "Lascia parlare gli altri"], who)
@@ -1114,10 +1181,7 @@ func assembly() -> void:
 			GameState.flags["c5_rapporto_presentato"] = true
 			await _present_report()
 	await _contributions()
-	var prev := str(GameState.flags.get("c5_proposta", ""))
 	var ask := "Si vota. Tu cosa sostieni?"
-	if prev != "":
-		ask += " (In piazza avevi detto: %s.)" % ("nessuna posizione" if prev == "nessuna" else prev)
 	await Ui.say(["* Puoi sostenere una proposta. Gli altri porteranno i loro bisogni e quello che possono mettere a disposizione."])
 	var v: int = await Ui.choose(ask, ["Ristrutturazione CHEAP: accesso in parte a pagamento.", "Gestione comunitaria: organizzarci e cercare fondi.", "Rinvio: rivedere i costi e cercare finanziamenti.", "Mi astengo"], who)
 	var support: String = ["A", "B", "C", "nessuna"][v]
@@ -1275,10 +1339,10 @@ func _dress_after() -> void:
 
 # --- 5.16 Nives e l'ultimo badge -----------------------------------------------------------------
 
-## Il badge regalato: Ada aiutata con le stanze, Nadir con il percorso, Rina ascoltata, Ada umana.
+## Il badge regalato: tre stelle con Ada e Nadir, entrambi ancora persone. Rina non assegna stelle.
 ## L'assemblea non conta. Non tocca né i soldi né il debito: nessuno ha pagato niente.
 static func gift_allowed() -> bool:
-	return _f("c5_ada_stanze") and _f("c5_nadir_percorso") and _f("c5_rina_ascoltata") and not GameState.is_robot("ada")
+	return GameState.floor_minigames_mastered("0")
 
 
 func _badge_machine() -> void:
@@ -1568,8 +1632,4 @@ func _secret() -> void:
 # --- l'aiuto (minigiochi di Ada e Nadir) -------------------------------------------------------------
 
 func _offer(id: String, who: String) -> void:
-	var h: Dictionary = GameState.npc_data(id).get("help", {})
-	var c: int = await Ui.choose(str(h.get("ask", "")), ["Dai una mano (1 ora)", "Non ora"], who)
-	if c != 0:
-		return
-	Router.minigame(Npc.minigame_cfg(id, who, h, scene_file_path, player.global_position))
+	await Npc.offer_minigame(id, who, self)

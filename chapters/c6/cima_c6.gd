@@ -216,13 +216,15 @@ func _remove(c: CharSprite) -> void:
 ## Le persone che hai incontrato, com'erano l'ultima volta: per lo specchio e per il panorama.
 static func person_line(id: String) -> String:
 	var who := str(GameState.npc_data(id).get("name", id.capitalize()))
+	# le donne hanno "femminile": true in data/npcs.json
+	var f := bool(GameState.npc_data(id).get("femminile", false))
 	if GameState.is_robot(id):
-		return "%s, con l'antenna. Sorride. È sempre stato così, dice il riflesso." % who
+		return "%s, con l'antenna. Sorride. È sempre stat%s così, dice il riflesso." % [who, "a" if f else "o"]
 	if id in GameState.freed:
-		return "%s, fuori dal lavoro. Non è dove l'avevi lasciato." % who
+		return "%s, fuori dal lavoro. Non è dove l'avevi lasciat%s." % [who, "a" if f else "o"]
 	if id in GameState.helped_ids:
-		return "%s, grigio come allora. Ti riconosce." % who
-	return "%s, grigio, che aspetta il suo turno." % who
+		return "%s, grigi%s come allora. Ti riconosce." % [who, "a" if f else "o"]
+	return "%s, grigi%s, che aspetta il suo turno." % [who, "a" if f else "o"]
 
 
 func _elevator() -> void:
@@ -506,7 +508,7 @@ func _offer() -> void:
 		await Ui.say(["La scrivania è quella. Si chiama TURNO anche qui. Mi dispiace: il nome l'ha scelto il quarto Consiglio."], PRES)
 		await start_cycle()
 	else:
-		await Ui.say(["La scrivania è lì. Quando vuoi.", "Puoi anche guardare dalla finestra. Da qui si vede tutto. È il problema."], PRES)
+		await Ui.say(["Quando vuoi cominciare il turno, dimmelo. Ti accompagno io.", "Puoi anche guardare dalla finestra. Da qui si vede tutto. È il problema."], PRES)
 
 
 ## Il timbro DEBITO ANNULLATO, mostrato e rimesso nel cassetto.
@@ -526,10 +528,18 @@ func _president_menu() -> void:
 	var left: Array = range(all.size()).filter(func(i: int) -> bool: return i < 2 or not _f("c6_chiesto_%d" % i))
 	var opts: Array = left.map(func(i: int) -> String: return all[i])
 	# l'ascensore scende solo se lo chiede la Presidenza (la targhetta vicino ai pulsanti)
+	var turno_index := -1
+	if turn_open():
+		turno_index = opts.size()
+		opts.append("Cominciamo il turno di Direzione.")
+	var scendi_index := opts.size()
 	opts.append("Vorrei scendere.")
 	opts.append("Niente.")
 	var pick: int = await Ui.choose("Sì?", opts, PRES)
-	if pick == left.size():
+	if pick == turno_index:
+		await start_cycle()
+		return
+	if pick == scendi_index:
 		await _scendi()
 		return
 	var c: int = left[pick] if pick < left.size() else 4
@@ -539,7 +549,7 @@ func _president_menu() -> void:
 		0:
 			if cycles_done() < 3:
 				await Ui.say(["Un turno di bilancio. Cento unità, la Casa Comune, la regola dei debiti. Nessuno è contento, alla fine. È così che capisci che hai finito.",
-					"La scrivania è lì."], PRES)
+					"Quando vuoi cominciare, chiedimelo."], PRES)
 			else:
 				await Ui.say(["L'hai visto. Più o meno è tutto qui.", "Il resto sono telefonate."], PRES)
 		1:
@@ -713,7 +723,7 @@ static func _testimony(id: String, n: int, sm: Dictionary) -> Array:
 				return ["Al -3 il pane è passato da 18 a 25.", "Un aumento sotto i 55 non arriva a fine mese. Arriva a metà, e lì si ferma."] if not sm["wages_cover"] \
 					else ["Ho fatto i conti. Questo mese arrivo alla fine.", "Non mi era mai successo di avere una fine del mese da raggiungere."]
 			return ["Gli stipendi sono quelli che sono. Ma il mio quaderno di ricette si sta riempiendo."] if not sm["wages_up"] \
-				else ["Con l'aumento ho comprato una padella vera. Pesante. Si sente che è una decisione."]
+				else ["Se l'aumento arriva davvero, compro una padella vera. Pesante. Si sente che è una decisione."]
 		"leda":
 			if sm["wages_cover"]:
 				return ["Questo mese la fattura l'ho pagata il giorno giusto.", "Mi sono sentita ricca per mezz'ora."]
@@ -934,7 +944,7 @@ func assign_roles() -> void:
 		for id: String in cands:
 			opts.append(str(GameState.npc_data(id).get("name", id)))
 		opts.append("Nessuno, per ora.")
-		var c: int = await Ui.choose("Chi si occupa di %s?" % title.to_lower(), opts)
+		var c: int = await Ui.choose("Chi si occupa de%s?" % title.to_lower(), opts)
 		roles[role] = str(cands[c]) if c < cands.size() else ""
 	d["final_decision"]["roles"] = roles
 

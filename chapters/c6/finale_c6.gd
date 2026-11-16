@@ -154,6 +154,7 @@ func _actor(sheet: String, x: float, grey := true, robot := false, anim := "idle
 
 
 func _sheet(id: String) -> String:
+	if id == "fermo": return "cheap_fermo"
 	return str(GameState.npc_data(id).get("sheet", "char_02"))
 
 
@@ -468,7 +469,7 @@ func _c2_scene() -> void:
 	t.scale = Vector2(2, 2)
 	stage.add_child(t)
 	var c: Array = ["* I tavoli condivisi. %s ha il quaderno. %s sposta le sedie." % [_name(_role("conti")), _name(_role("servizi"))],
-		"* Su un foglio: le decisioni del tavolo. " + ", ".join(policy_lines()) + "."]
+		"* Su un foglio, le decisioni del tavolo: " + ", ".join(policy_lines()) + "."]
 	if int(FINALI.turn_state().get("backlog", 0)) >= RULES.BREAKDOWN_AT:
 		c.append("* Sul muro: \"Caldaia: mancano…\". Sotto, alcuni nomi a matita.")
 	c.append("* Il tuo fascicolo è sul tavolo. " + debt_lines()[0].trim_prefix("* "))
@@ -486,7 +487,7 @@ func _c1_scene() -> void:
 	for r: String in ["conti", "servizi", "turni"]:
 		roles.append("%s: %s" % [FINALI.ROLES[r]["name"], _name(_role(r)) if _role(r) != "" else "?"])
 	await Ui.say(["* La festa c'è, %s. Non ci sono tutti." % where,
-		"* Su un foglio: quello che la comunità fa davvero. " + (", ".join(nets) + "." if not nets.is_empty() else "Per ora, il foglio stesso."),
+		"* Su un foglio, quello che la comunità fa davvero: " + (", ".join(nets) + "." if not nets.is_empty() else "per ora, il foglio stesso."),
 		"* I ruoli: " + ", ".join(roles) + "."])
 	match fermo_state():
 		"umano":
@@ -570,6 +571,8 @@ func epilogue_segment(i: int) -> void:
 			var e := epilogue_for(id)
 			await Ui.say(e["lines"], str(e.get("speaker", "")))
 			(d["epilogue"]["seen_character_ids"] as Array).append(id)
+	if i == 4:
+		await FratelliFermo.epilogue(self)
 	_clear()
 
 
@@ -651,9 +654,9 @@ func epilogue_for(id: String) -> Dictionary:
 			if robot:
 				return {"lines": ["* Teo timbra. Il quaderno di fumetti è ancora nel cassetto della scrivania. Incompleto."]}
 			if f.get("c4_teo_sogno", false) and (sm["wages_up"] or fam == "C" or str(sm["debt_rule"]) == "revisione"):
-				var lines: Array = ["* Teo ha in mano un fascicolo spillato. In copertina, un supereroe con una borsetta.", "TEO: È il primo numero."]
+				var lines: Array = ["* Teo ha in mano un fascicolo spillato. In copertina, un supereroe con una borsetta.", "Teo: È il primo numero."]
 				if FINALI.met("olga") and not GameState.is_robot("olga"):
-					lines.append_array(["OLGA: È meglio del secondo.", "TEO: Non l'ho ancora disegnato!", "OLGA: Appunto."])
+					lines.append_array(["Olga: È meglio del secondo.", "Teo: Non l'ho ancora disegnato!", "Olga: Appunto."])
 				return {"lines": lines}
 			return {"lines": ["* Teo controlla pratiche. Di sera disegna. Poco. Ma disegna."]}
 		"leda":
@@ -664,7 +667,7 @@ func epilogue_for(id: String) -> Dictionary:
 			if f.get("c3_leda_ordini", false):
 				return {"lines": ["Gli ordini condivisi adesso sono undici famiglie.", "La dodicesima chiede sempre lo sconto."], "speaker": "Leda"}
 			if helped:
-				return {"lines": ["Mi hai dato una mano. Lo so.", "Ma domani arriva un'altra fattura."], "speaker": "Leda"}
+				return {"lines": ["Ho pagato la fattura. Quella dopo è già arrivata.", "Ma stavolta l'ho aperta subito."], "speaker": "Leda"}
 			return {"lines": ["* Leda conta gli scontrini della giornata. Li conta due volte."]}
 		"amir":
 			if robot:
