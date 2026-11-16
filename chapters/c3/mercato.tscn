@@ -232,6 +232,9 @@ size = Vector2(14, 8)
 [sub_resource type="RectangleShape2D" id="cart_shape_CarrelloCorsia"]
 size = Vector2(13, 19)
 
+[sub_resource type="RectangleShape2D" id="base_sedia_cassa"]
+size = Vector2(12, 9)
+
 [node name="Mercato" type="Node2D" unique_id=1362303612]
 script = ExtResource("1_ermtk")
 room_music = "mercato"
@@ -1139,7 +1142,7 @@ avvicinamento = "destra"
 guarda_verso = "left"
 
 [node name="PuntoUso" parent="Mondo/PostoCassa" index="0"]
-position = Vector2(-8, 8)
+position = Vector2(5, 16)
 
 [node name="Targhetta" parent="Mondo/PostoCassa" index="1"]
 offset_left = -21.0
@@ -1314,3 +1317,7 @@ position = Vector2(256, 60)
 script = ExtResource("inq_script")
 
 [editable path="Mondo/PostoCassa"]
+
+[node name="BaseSedia" type="CollisionShape2D" parent="Mondo/CassaTurno/Collisione"]
+position = Vector2(23, -18)
+shape = SubResource("base_sedia_cassa")

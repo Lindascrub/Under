@@ -61,7 +61,10 @@ func enter() -> void:
 
 ## Al -2 il badge non si regala a chi ha aiutato "tutti": decide Nives (vedi _badge_machine).
 func _floor_gift() -> void:
-	pass
+	if not gift_allowed() or GameState.has_badge(BADGE): return
+	GameState.flags["c4_badge"] = "regalo"
+	GameState.flags["badge_day_" + BADGE] = GameState.day
+	await super()
 
 
 func _npc(id: String) -> Npc:
@@ -145,6 +148,9 @@ func talk_olga(_npc_node: Npc) -> bool:
 			await _olga_return()
 		else:
 			await Ui.say(["La contestazione è partita. Ora si aspetta.", "Io aspetto benissimo. Ho esperienza: sono qui da martedì."], "Olga")
+	elif GameState.flags.get("aiuto_concluso_olga", false) and not _f("c4_olga_ordinati"):
+		set_meta("npc_help_offered", true)
+		await Ui.say(GameState.npc_data("olga").help.minigame.concluso, "Olga")
 	elif not _f("c4_olga_ordinati"):
 		await Ui.say([["Le ricevute sono ancora qui. Mi guardano. Io guardo loro. Nessuna delle due cede.",
 			"Ho riletto l'estratto conto. Tre volte. È sempre lui ad avere ragione, dicono."].pick_random()], "Olga")
@@ -215,14 +221,7 @@ func _olga_return() -> void:
 
 ## Offre il minigioco di aiuto di una persona (si può riprovare: conta solo se riesce).
 func _offer(id: String, who: String) -> void:
-	var h: Dictionary = GameState.npc_data(id).get("help", {})
-	if not GameState.has_time(GameState.COST_HELP_TIME):
-		await Ui.say(["* È tardi. Per oggi non c'è più tempo per dare una mano. (Una stellina fa passare la notte.)"])
-		return
-	var c: int = await Ui.choose(str(h.get("ask", "")), ["Dai una mano (1 ora)", "Non ora"], who)
-	if c != 0:
-		return
-	Router.minigame(Npc.minigame_cfg(id, who, h, scene_file_path, player.global_position))
+	await Npc.offer_minigame(id, who, self)
 
 
 # --- 4.04 / 4.05 Teo --------------------------------------------------------------------------
@@ -232,6 +231,9 @@ func talk_teo(_npc_node: Npc) -> bool:
 		return false
 	if not _f("c4_teo"):
 		await _teo_first()
+	elif GameState.flags.get("aiuto_concluso_teo", false) and not _f("c4_teo_aiutato"):
+		set_meta("npc_help_offered", true)
+		await Ui.say(GameState.npc_data("teo").help.minigame.concluso, "Teo")
 	elif not _f("c4_teo_aiutato"):
 		await Ui.say([["Altre sei pratiche. Le altre sei di prima sono diventate sette.",
 			"Mi hanno dato un obiettivo nuovo: finire prima di cominciare."].pick_random()], "Teo")
@@ -596,10 +598,10 @@ func _pay() -> void:
 
 # --- 4.11 Nives e il badge ------------------------------------------------------------------------
 
-## Il badge regalato: Olga aiutata fino alla contestazione, Teo aiutato e ancora una persona.
+## Il badge regalato: tre stelle con Olga e Teo, entrambi ancora persone.
 ## Non tocca né i soldi né il debito: nessuno ha pagato niente.
 func gift_allowed() -> bool:
-	return _f("c4_olga_contestazione") and _f("c4_teo_aiutato") and not GameState.is_robot("teo")
+	return GameState.floor_minigames_mastered("-2")
 
 
 func _badge_machine() -> void:
@@ -730,6 +732,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 		await Ui.say(["Gli interessi continuano a maturare."], TERMINAL)
 	else:
 		GameState.flags["c4_riepilogo"] = true
+		GameState.flags["c4_verifica_rifiutata"] = true
 		await Ui.say(["Riepilogo della posizione."], TERMINAL)
 		Sound.sfx("blip", 1.2)
 		await Ui.say(["* Esce un foglio: DEBITO ATTIVO: {debt}. CONTRATTO ORIGINALE: NON TROVATO.",
@@ -864,7 +867,7 @@ func _farewell() -> void:
 		await _farewell_deceived()
 		return
 	var teo_ok := _f("c4_teo_aiutato") and not GameState.is_robot("teo")
-	if _f("c4_olga_contestazione") and teo_ok:
+	if _f("c4_verifica") and _f("c4_olga_contestazione") and teo_ok:
 		GameState.flags["c4_ricevuta_copia"] = true
 		await _come_to_stairs("teo", "Punti/SalutoTeo", saluto_velocita_teo)
 		await Ui.say(["* Teo arriva di corsa con il quaderno."])
@@ -876,9 +879,11 @@ func _farewell() -> void:
 		await Ui.say(["Chiedi sempre la copia. E leggila due volte.",
 			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello col biscotto. Me lo merito anche io."], "Olga")
 	else:
-		await Ui.say(["* Metti la ricevuta in tasca, vicino al badge. Pesa più del badge.",
-			"* Olga, dalla sedia d'attesa, alza il numerino come per salutare. Poi guarda di nuovo il tabellone.",
-			"* Nives, in cima alla prima rampa:"])
+		var saluti: Array = ["* Metti la ricevuta in tasca, vicino al badge. Pesa più del badge."]
+		if _f("c4_olga") and not GameState.is_robot("olga"):
+			saluti.append("* Olga, dalla sedia d'attesa, alza il numerino come per salutare. Poi guarda di nuovo il tabellone.")
+		saluti.append("* Nives, in cima alla prima rampa:")
+		await Ui.say(saluti)
 		await Ui.say(["Ricevute. Le colleziono anche io. Nessuna risposta, finora. Ma la carta è bella."], NIVES, BADGE_CLERK)
 		_nives_on_stairs = true
 	if Storia.olga_proposta_chiara():
@@ -1074,7 +1079,20 @@ func _secret_setup() -> void:
 	for c in sc.get_children():
 		if c is CharSprite:
 			(c as CharSprite).sheet = str(GameState.npc_data((c as CharSprite).person).get("sheet", (c as CharSprite).sheet))
-	add_spot((sc.get_node("Guarda") as Node2D).global_position, _secret)
+	for c in sc.get_children():
+		if c is CharSprite:
+			var id := str(c.person)
+			var spot := add_spot(c.global_position, func() -> void: await _talk_on_sofa(id))
+			spot.interaction_bounds = Rect2(-8, -16, 16, 24)
+			spot.reach = 14
+			spot.add_to_group("walker")
+
+
+func _talk_on_sofa(id: String) -> void:
+	if not _f("c4_segreta"): await _secret()
+	if Ui.transitioning: return
+	var n := _npc(id)
+	if n: await n.interact()
 
 
 func _secret() -> void:

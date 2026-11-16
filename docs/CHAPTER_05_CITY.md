@@ -1,5 +1,7 @@
 # Capitolo 5 — La Città (piano 0)
 
+> Aggiornamento 9/11/2026: per il badge gratuito servono tre stelle in ogni minigioco dei personaggi del piano; a tre stelle non si rigioca. Le condizioni precedenti descritte sotto vanno lette secondo [REGOLE_STELLE](REGOLE_STELLE.md).
+
 Il protagonista esce dalla Torre per la prima volta. Fuori c'è il cielo. C'è anche un cartellone:
 "ANCHE IL CIELO HA UN LIMITE. SUPERALO CON PREMIUM." La Casa Comune sta per chiudere, la gente protesta,
 e alla fine, dal primo gradino delle scale verso la Cima, si vede che i quattro piani di sotto

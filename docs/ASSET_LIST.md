@@ -262,3 +262,7 @@ Documento di licenza locale: `../asset/image/modernexteriors-win/Modern_Exterior
 Gli ingressi riusano home, condo_blue e condo_yellow; il pacco riusa market/box_1;
 strada e porta riusano city_terrains e porta_legno. Le texture dei carrelli sono ancora
 necessarie nel Mercato e non vengono cancellate.
+
+
+### Stridio ascensore — 9/11/2026
+`audio/ascensore_metallo.wav`: attrito irregolare a banda larga, risonanze fisse e colpi delle ante, generato proceduralmente per CHEAP. Durata 1,42 s, mono PCM 16 bit/44,1 kHz; nessuna registrazione esterna. Sostituisce `stridio.wav`, archiviato in `cheap_da_cancellare/ritocchi_fondo_20261109/dismessi/audio/`. La musica dell’ascensore resta invariata.

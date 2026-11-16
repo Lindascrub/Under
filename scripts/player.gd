@@ -153,7 +153,7 @@ func _find_target() -> Node:
 		elif n.get_meta("inspect_prop", false):
 			d += 3.0
 		# sedie e sportelli (le cose che si usano da un lato preciso) contano più delle descrizioni
-		var main: bool = n is Seat or (n is Interactable and n.approach != Vector2.ZERO and not n.get_meta("inspect_prop", false))
+		var main: bool = n is Seat or n.has_meta("job_id") or (n is Interactable and n.approach != Vector2.ZERO and not n.get_meta("inspect_prop", false))
 		if main and d < seat_d:
 			seat = n
 			seat_d = d

@@ -1,0 +1,301 @@
+{
+  "sheet": "cheap_fermo",
+  "speaker": "Il fratello di Fermo",
+  "dialoghi": {
+    "messaggio": [
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Se lassù incontri qualcuno con la mia faccia, digli che qui sotto la festa continua. Lui capisce."
+        ]
+      }
+    ],
+    "riconosciuto": [
+      {
+        "speaker": "",
+        "lines": [
+          "* La stessa faccia di Fermo. Con un badge sul petto."
+        ]
+      },
+      {
+        "speaker": "player",
+        "lines": [
+          "Fermo?"
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Quasi. Sono suo fratello. Gemello.",
+          "Lui è rimasto al Fondo. Io sono salito.",
+          "Non scendo da un po’."
+        ]
+      }
+    ],
+    "sconosciuto": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Cerchi uno sportello? Anche io. Lavoro qui: dovrei essere avvantaggiato."
+        ]
+      }
+    ],
+    "senza_messaggio": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sei passato dal Fondo? Mio fratello è ancora lì.",
+          "Fermo. Gli somiglio parecchio, ma lui trova subito qualcosa da dire. Io preparo le risposte dopo."
+        ]
+      }
+    ],
+    "consegna": [
+      {
+        "speaker": "player",
+        "lines": [
+          "Tuo fratello mi ha detto di dirti che qui sotto la festa continua."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Ha detto proprio così?",
+          "* Il sorriso gli resta a metà.",
+          "Eravamo arrivati insieme. Ci avevano accolti con quella festa.",
+          "Quando ho preso il badge gli ho detto: «Vado a vedere come funziona lassù. Poi torno.»",
+          "Prima aspettavo di avere qualcosa di bello da raccontargli. Poi mi vergognavo di quanto tempo era passato.",
+          "Pensavo che ormai non volesse più vedermi."
+        ]
+      },
+      {
+        "speaker": "player",
+        "lines": [
+          "Potresti scendere a chiederglielo."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sì.",
+          "Stavo per dire «dopo». È il problema, vero?",
+          "Vado."
+        ]
+      }
+    ],
+    "rimandato": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Se cerchi i moduli, sono sempre da un’altra parte. È la prima cosa che ho imparato salendo."
+        ]
+      }
+    ],
+    "attesa_fondo": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "È ancora sulla cassetta.",
+          "Ho fatto tutta la scala. Adesso mi mancano due passi."
+        ]
+      }
+    ],
+    "risposta": [
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "L’hai incontrato?"
+        ]
+      },
+      {
+        "speaker": "player",
+        "lines": [
+          "Ho incontrato tuo fratello. Gli ho portato il messaggio.",
+          "Pensava che ormai non volessi più vederlo."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Poteva almeno scendere a chiedermelo."
+        ]
+      }
+    ],
+    "arrivo": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Alle scale, un passo. Poi un altro."
+        ]
+      }
+    ],
+    "seduto": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Suo fratello si siede accanto alla cassetta."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Ci hai messo un po’. La torta è ancora quella."
+        ]
+      }
+    ],
+    "insieme": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sto imparando a stare qui senza guardare l’orologio."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Se vuoi ti insegno. Ho esperienza."
+        ]
+      }
+    ],
+    "insieme_altro": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Mi racconta tutto quello che mi sono perso."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Sono ancora al primo giorno. Siediti comodo."
+        ]
+      }
+    ],
+    "robot_attesa": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Ha la sua faccia. Ma quel sorriso non era suo."
+        ]
+      }
+    ],
+    "robot_visita": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Suo fratello si ferma davanti a Fermo. Aspetta che lo riconosca."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "BUONA FESTA."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sono io.",
+          "* Si siede accanto a lui.",
+          "Resto un po’."
+        ]
+      }
+    ],
+    "epilogo_arrivo": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Il messaggio è arrivato. Suo fratello, finalmente, anche."
+        ]
+      }
+    ],
+    "epilogo_insieme": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Nella pausa, la cassetta di Fermo ha di nuovo qualcuno accanto."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Scendo anche domani."
+        ]
+      },
+      {
+        "speaker": "Fermo",
+        "lines": [
+          "Comincia da domani. Per dopodomani vediamo."
+        ]
+      }
+    ],
+    "epilogo_robot": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Suo fratello torna a sedersi accanto a Fermo. La visita non gli ha restituito la voce di prima."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Ti racconto io qualcosa, oggi."
+        ]
+      }
+    ],
+    "scale_chiuse": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Si avvicina alle scale. Il nastro vieta ancora di scendere."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sono chiuse.",
+          "Potevo tornare quando erano aperte.",
+          "Vado a chiedere chi le può riaprire."
+        ]
+      }
+    ],
+    "attesa_scale_chiuse": [
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Il messaggio me lo ricordo.",
+          "Oggi ho chiesto chi può riaprire le scale. Mi hanno mandato a un altro sportello.",
+          "Domani ci vado. Questa volta domani."
+        ]
+      }
+    ],
+    "epilogo_scale_chiuse": [
+      {
+        "speaker": "",
+        "lines": [
+          "* Al Sottoufficio, le scale per il Fondo sono ancora sbarrate. Il fratello di Fermo torna qui nella pausa."
+        ]
+      },
+      {
+        "speaker": "Il fratello di Fermo",
+        "lines": [
+          "Sono qui."
+        ]
+      },
+      {
+        "speaker": "",
+        "lines": [
+          "* Bussa. Da sotto arrivano due colpi in risposta. Il nastro è ancora al suo posto."
+        ]
+      }
+    ]
+  },
+  "scelte": {
+    "messaggio": {
+      "prompt": "Gli porti il messaggio di Fermo?",
+      "options": [
+        "«Qui sotto la festa continua.»",
+        "Non adesso."
+      ]
+    }
+  }
+}

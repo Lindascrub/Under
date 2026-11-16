@@ -76,7 +76,10 @@ func enter() -> void:
 
 ## Al -3 il badge non si regala a chi ha aiutato "tutti": decide Nives (vedi _badge_machine).
 func _floor_gift() -> void:
-	pass
+	if not gift_allowed() or GameState.has_badge(BADGE): return
+	GameState.flags["c3_badge"] = "regalo"
+	GameState.flags["badge_day_" + BADGE] = GameState.day
+	await super()
 
 
 func _npc(id: String) -> Npc:
@@ -173,10 +176,12 @@ func talk_leda(_npc_node: Npc) -> bool:
 		await _leda_first()
 	elif GameState.flags.get("c3_prezzi", false) and not GameState.flags.get("c3_leda_seconda", false):
 		await _leda_second()
-	elif not GameState.flags.get("c3_leda_inventario", false):
+	elif not GameState.flags.get("c3_leda_inventario", false) and not GameState.minigame_closed("leda"):
 		await Ui.say([["Le scatole sono ancora lì. Ci fissiamo da un po’. Per ora stanno vincendo loro.",
 			"Il sapone è ancora tra i biscotti. Ormai sono amici."].pick_random()], "Leda")
 		await _leda_offer()
+	elif GameState.flags.get("aiuto_concluso_leda", false) and not GameState.flags.get("c3_leda_inventario", false):
+		await Ui.say(GameState.npc_data("leda").help.minigame.concluso, "Leda")
 	else:
 		await Ui.say([["Gli scaffali sono ancora in ordine. È la cosa più stabile del Mercato.",
 			"Ho venduto un pane. Quasi fresco. Il cliente era quasi contento.",
@@ -215,14 +220,7 @@ func _leda_offer() -> void:
 
 ## Offre il minigioco di aiuto di una persona (si può riprovare: non conta "met_today").
 func _offer(id: String, who: String) -> void:
-	var h: Dictionary = GameState.npc_data(id).get("help", {})
-	if not GameState.has_time(GameState.COST_HELP_TIME):
-		await Ui.say(["* È tardi. Per oggi non c'è più tempo per dare una mano. (Una stellina fa passare la notte.)"])
-		return
-	var c: int = await Ui.choose(str(h.get("ask", "")), ["Dai una mano (1 ora)", "Non ora"], who)
-	if c != 0:
-		return
-	Router.minigame(Npc.minigame_cfg(id, who, h, scene_file_path, player.global_position))
+	await Npc.offer_minigame(id, who, self)
 
 
 func _lavagnetta(with_leda := false) -> void:
@@ -333,8 +331,10 @@ func talk_amir(_npc_node: Npc) -> bool:
 		await _amir_first()
 	elif GameState.flags.get("c3_amir_aiutato", false) and not GameState.flags.get("c3_amir_sogno", false):
 		await _amir_dream()
+	elif GameState.flags.get("aiuto_concluso_amir", false) and not GameState.flags.get("c3_amir_bonus", false):
+		await Ui.say(GameState.npc_data("amir").help.minigame.concluso, who)
 	elif not GameState.flags.get("c3_amir_bonus", false):
-		await Ui.say([["Diciassette. Il numero preferito di nessuno.", "Sei porte. Il terminale continua a chiamarle «un giro»."].pick_random()], who)
+		await Ui.say([["Diciassette. Il numero preferito di nessuno.", "Diciotto pacchi. Il terminale continua a chiamarli «un giro»."].pick_random()], who)
 		await _offer("amir", who)
 	else:
 		await Ui.say([["Diciotto. Lo ripeto ogni tanto, per sentire com'è.", "Il treno parte sabato. Mia sorella ha già comprato il riso. Io porto la pentola.",
@@ -348,10 +348,10 @@ func _amir_first() -> void:
 	GameState.flags["c3_amir"] = true
 	GameState.flags["met_amir"] = true
 	await Ui.say(["* Amir controlla l'elenco dei pacchi sul terminale."])
-	await Ui.say(["Mi manca un giro per il bonus. Sei pacchi.",
-		"Sullo schermo sembra una riga sola. In strada sono sei porte."], who)
+	await Ui.say(["Mi manca un giro per il bonus. Diciotto pacchi.",
+		"Sullo schermo sembra una riga sola. In strada sono diciotto case."], who)
 	Sound.sfx("blip", 1.4)
-	await Ui.say(["* Il terminale delle consegne lampeggia:", "* GIRI COMPLETATI: 17.", "* GIRI RICHIESTI PER IL BONUS: 18.", "* ULTIMO GIRO: SEI PACCHI DA CONSEGNARE."])
+	await Ui.say(["* Il terminale delle consegne lampeggia:", "* GIRI COMPLETATI: 17.", "* GIRI RICHIESTI PER IL BONUS: 18.", "* ULTIMO GIRO: 18 PACCHI. BONUS DA 14 CONSEGNE RIUSCITE."])
 	await Ui.say(["Con il bonus potrei prendere il treno e andare a trovare mia sorella questo fine settimana."], who)
 	await _offer("amir", who)
 
@@ -567,11 +567,10 @@ func _price_update() -> void:
 
 # --- 3.12 Nives e il badge -------------------------------------------------------------------
 
-## Il badge regalato: hai aiutato tutti e due (Leda con l'inventario, Amir con le consegne)
+## Il badge regalato: tre stelle con Leda e Amir
 ## e Amir è ancora una persona. Non tocca né i soldi né il debito: nessuno ha pagato niente.
 func gift_allowed() -> bool:
-	return GameState.flags.get("c3_leda_inventario", false) and GameState.flags.get("c3_amir_aiutato", false) \
-		and not GameState.is_robot("amir")
+	return GameState.floor_minigames_mastered("-3")
 
 
 func _badge_machine() -> void:
@@ -842,7 +841,7 @@ func _dress_for_look_back() -> void:
 				m.anim = ["idle_left", "idle_up"][i]
 				m.position = leda.position + [Vector2(20, 2), Vector2(4, 16)][i]
 				world.add_child(m)
-		elif not GameState.flags.get("c3_leda_inventario", false):
+		elif not GameState.flags.get("c3_leda_inventario", false) and not GameState.minigame_closed("leda"):
 			leda.face("up")
 	var amir := _npc("amir")
 	if amir and not GameState.is_robot("amir"):

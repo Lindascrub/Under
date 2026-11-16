@@ -3,6 +3,8 @@ extends Node2D
 signal finita
 @export var durata := 4.2
 @export var durata_riprova := 1.0
+@export var durata_fili := 1.4
+var durata_attiva := 4.2
 ## Nel gioco dei fili di Mina la freccia che scorre lungo il filo non serve: basta il filo che si disegna.
 @export var freccia_nei_fili := false
 @export var colori_fili: Array[Color] = [Color("d23b3b"), Color("39b6ff"), Color("ffe14d"), Color("3ddc84")]
@@ -24,6 +26,7 @@ var filo := 0
 
 func mostra(gioco: String, colori: Array) -> void:
 	tipo = gioco
+	durata_attiva = durata_fili if gioco == "wires" else durata
 	ordine = colori.duplicate()
 	filo = 0
 	tempo = 0.0
@@ -49,13 +52,13 @@ func aggiorna(gioco: String, stato: String, colori: Array, fatti: Array) -> void
 	puntatore.visible = tipo == "bulbs" or freccia_nei_fili
 	if tipo == "bulbs":
 		match stato:
-			"fioca": testo.text = "Scorri su o giù finché resta accesa." if TouchControls.enabled else "Premi SU o GIÙ finché resta accesa."
+			"fioca": testo.text = "Scorri due volte verso l’alto. Poi mettila nelle BUONE." if TouchControls.enabled else "Premi due volte SU. Poi mettila nelle BUONE."
 			"rotta": testo.text = "Scorri a sinistra: nelle ROTTE." if TouchControls.enabled else "SINISTRA: mettila nelle ROTTE."
 			_: testo.text = "Scorri a destra: nelle BUONE." if TouchControls.enabled else "DESTRA: mettila nelle BUONE."
 		puntatore.position = avvita.position if stato == "fioca" else (rotte.position if stato == "rotta" else buone.position)
 		puntatore.rotation = -PI / 2.0 if stato == "fioca" else (PI if stato == "rotta" else 0.0)
 	else:
-		testo.text = "Trascina il filo sul colore uguale. Poi lascia." if TouchControls.enabled else "Trascina col mouse sul colore uguale. Rilascia."
+		testo.text = "Collega i colori uguali, da sinistra a destra." if TouchControls.enabled else "Collega col mouse i colori uguali, da sinistra a destra."
 
 
 func riprova() -> void:
@@ -72,7 +75,7 @@ func _process(delta: float) -> void:
 	if tipo == "wires" and ordine.size() == 4:
 		var da: Vector2 = get_node("FiliSinistra/%d" % filo).position
 		var a: Vector2 = get_node("FiliDestra/%d" % ordine.find(filo)).position
-		var k := minf(1.0, fmod(tempo / durata, 1.0) * 1.4)
+		var k := minf(1.0, fmod(tempo / durata_attiva, 1.0) * 1.4)
 		puntatore.position = da.lerp(a, k)
 		puntatore.rotation = (a - da).angle()
 		puntatore.visible = freccia_nei_fili
@@ -84,14 +87,14 @@ func _process(delta: float) -> void:
 		return
 	if tipo == "bulbs":
 		lampadina.visible = true
-		var k := clampf(tempo / durata, 0.0, 1.0)
+		var k := clampf(tempo / durata_attiva, 0.0, 1.0)
 		if k < 0.65:
 			lampadina.position = centro.position
 			lampadina.modulate = Color.WHITE if k > 0.4 or int(tempo * 6.0) % 2 == 0 else Color(0.25, 0.25, 0.3)
 			lampadina.rotation = sin(tempo * 8.0) * 0.16
 			puntatore.position = avvita.position
 			puntatore.rotation = -PI / 2.0
-			testo.text = "Scorri su o giù finché resta accesa." if TouchControls.enabled else "Premi SU o GIÙ finché resta accesa."
+			testo.text = "Scorri due volte verso l’alto. Poi mettila nelle BUONE." if TouchControls.enabled else "Premi due volte SU. Poi mettila nelle BUONE."
 		else:
 			lampadina.modulate = Color.WHITE
 			lampadina.rotation = 0.0
@@ -100,8 +103,8 @@ func _process(delta: float) -> void:
 			puntatore.rotation = 0.0
 			testo.text = "Accesa: ora va nelle BUONE."
 	else:
-		testo.text = "Trascina il filo sul colore uguale. Poi lascia." if TouchControls.enabled else "Trascina col mouse sul colore uguale. Rilascia."
-	if tempo >= durata:
+		testo.text = "Collega i colori uguali, da sinistra a destra." if TouchControls.enabled else "Collega col mouse i colori uguali, da sinistra a destra."
+	if tempo >= durata_attiva:
 		demo = false
 		lampadina.visible = false
 		cavo.visible = false

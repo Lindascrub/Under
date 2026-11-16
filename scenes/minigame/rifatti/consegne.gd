@@ -38,7 +38,6 @@ var chiuse := 0
 var lancio_in_corso := false
 var origine_dito := Vector2.ZERO
 var gesto := false
-var porta_dito: Node = null
 var porte: Array[Node] = []
 
 
@@ -48,7 +47,7 @@ func avvia(c: Dictionary) -> void:
 	pacchi = porte_totali + scorta
 	rimasti = pacchi
 	_crea_porte()
-	$Aiuto.text = "Scorri su o giù: corsia. Tocca una porta: lancia dalla tua corsia." if TouchControls.enabled else "SU/GIÙ: corsia. INVIO o clic: lancia dalla tua corsia."
+	$Aiuto.text = "Scorri su o giù: corsia. Tocca ovunque: lancia verso la casa." if TouchControls.enabled else "SU/GIÙ: corsia. INVIO o clic: lancia dalla tua corsia."
 	_aggiorna()
 
 
@@ -117,10 +116,14 @@ func lancia() -> void:
 	for p in porte:
 		if p.get_meta("chiusa", false) or p.get_meta("consegnata", false) or absf(p.position.y - corsie[corsia]) > 1: continue
 		var distanza := absf(p.position.x - velocita * durata_lancio - $Mira.position.x)
+		var facciata := p.get_node("Facciata") as Sprite2D
+		var bordo := facciata.get_rect()
+		var impatto: float = $Mira.position.x - (p.position.x - velocita * durata_lancio)
+		if impatto < bordo.position.x or impatto > bordo.end.x: continue
 		if distanza < errore_distanza:
 			scelta = p
 			errore_distanza = distanza
-	var valido := scelta != null and errore_distanza <= tolleranza
+	var valido := scelta != null
 	var da: Vector2 = $Amir/UscitaPacco.global_position
 	$Pacco.position = da
 	$Pacco.visible = true
@@ -152,7 +155,7 @@ func lancia() -> void:
 		Sound.sfx("coin")
 	else:
 		errori += 1
-		$Esito.text = "Pacco a terra. Controlla la corsia e anticipa un poco il passaggio della porta."
+		$Esito.text = "Pacco a terra. Controlla la corsia: la casa deve arrivare sulla mira."
 		Sound.sfx("deny")
 	_aggiorna()
 	if rimasti == 0 or _tutte_fatte(): _termina()
@@ -179,25 +182,12 @@ func punta(pos: Vector2, step: int) -> void:
 	if step == 0:
 		origine_dito = pos
 		gesto = false
-		porta_dito = _porta_al_punto(pos)
-		if not TouchControls.enabled: _porta_premuta(pos)
+		if not TouchControls.enabled: lancia()
 	elif step == 1:
 		gesto = gesto or pos.distance_to(origine_dito) >= 20.0
 	elif step == 2 and TouchControls.enabled:
 		var spostamento := pos - origine_dito
 		if absf(spostamento.y) >= 20.0:
 			cambia_corsia(-1 if spostamento.y < 0 else 1)
-		elif not gesto and is_instance_valid(porta_dito) and not porta_dito.get_meta("chiusa", false) and not porta_dito.get_meta("consegnata", false): lancia()
-		porta_dito = null
+		elif not gesto: lancia()
 
-
-func _porta_premuta(pos: Vector2) -> void:
-	if _porta_al_punto(pos) != null: lancia()
-
-
-func _porta_al_punto(pos: Vector2) -> Node:
-	for p in porte:
-		var larghezza: float = p.get_node("Facciata").texture.get_width()
-		if not p.get_meta("chiusa", false) and not p.get_meta("consegnata", false) and Rect2(p.position - Vector2(larghezza / 2.0, 50), Vector2(larghezza, 72)).has_point(pos):
-			return p
-	return null

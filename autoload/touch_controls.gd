@@ -252,7 +252,6 @@ func _draw_controls() -> void:
 		for k in 2:
 			var held := ("move_left" if k == 0 else "move_right") in _held_actions()
 			_canvas.draw_rect(Rect2(k * 320 + 6, 312, 308, 42), Color(1, 0.88, 0.3, 0.28) if held else Color(1, 1, 1, 0.07))
-			_canvas.draw_string(font, Vector2(k * 320 + 6, 338), "TOCCA QUI" if k == 0 else "E QUI", HORIZONTAL_ALIGNMENT_CENTER, 308, 12, Color(1, 1, 1, 0.5))
 	elif scheme == "hold":
 		var down := not _g_held.is_empty()
 		_canvas.draw_rect(Rect2(6, 312, 628, 42), Color(1, 0.88, 0.3, 0.28) if down else Color(1, 1, 1, 0.07))

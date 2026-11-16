@@ -23,13 +23,13 @@
 [ext_resource type="Script" path="res://world/security_camera.gd" id="cam_sc"]
 [ext_resource type="Texture2D" path="res://assets/limezu/grocery/356.png" id="crate_356"]
 [ext_resource type="Script" path="res://world/inquadratura.gd" id="inq_script"]
-[ext_resource type="Texture2D" path="res://assets/limezu/themes/classroom.png" id="lavagna_png"]
 [ext_resource type="Texture2D" path="res://art/lampadina_cassetta.png" id="lamp_png"]
 [ext_resource type="PackedScene" path="res://world/posto_turno.tscn" id="posto_tscn"]
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="Script" path="res://world/thin_wall.gd" id="thin_wall"]
 [ext_resource type="Script" path="res://world/premio_aiuto.gd" id="premio_aiuto"]
+[ext_resource type="PackedScene" path="res://world/fratello_fermo.tscn" id="fratello_fermo_scene"]
 
 [sub_resource type="RectangleShape2D" id="muro_MuroTramezzo"]
 size = Vector2(6, 145)
@@ -1494,19 +1494,6 @@ position = Vector2(80, 176)
 position = Vector2(176, 16)
 script = ExtResource("19_kwl31")
 
-[node name="TabelloneDebito" type="Sprite2D" parent="Mondo"]
-position = Vector2(300, 28)
-scale = Vector2(0.8, 0.8)
-texture = ExtResource("lavagna_png")
-centered = false
-region_enabled = true
-region_rect = Rect2(208, 84, 32, 28)
-
-[node name="GuardaTabelloneDebito" type="Node2D" parent="Mondo"]
-position = Vector2(312, 56)
-script = ExtResource("7_i6r6f")
-lines = PackedStringArray("* Un tabellone impolverato, mezzo coperto dai cavi. C'è scritto: \"DEBITO DEL NUOVO ARRIVATO: 7.000.000.000 €\".", "* Sotto, qualcuno ha aggiunto a pennarello: \"Più gli interessi.\"")
-
 [node name="Arrivi" type="Node2D" parent="." unique_id=1574611149]
 
 [node name="default" type="Marker2D" parent="Arrivi" unique_id=741006832]
@@ -1616,3 +1603,23 @@ texture = ExtResource("lamp_png")
 [node name="Lampadina3" type="Sprite2D" parent="Mondo/PremioBulbo/Ordinate2"]
 position = Vector2(24, -17)
 texture = ExtResource("lamp_png")
+
+
+[node name="FratelloFermo" parent="Mondo" instance=ExtResource("fratello_fermo_scene")]
+position = Vector2(208, 84)
+place = "fondo"
+
+[node name="Punti" type="Node2D" parent="."]
+
+[node name="FratelloIngresso" type="Marker2D" parent="Punti"]
+position = Vector2(484, 104)
+
+[node name="FratelloSeduto" type="Marker2D" parent="Punti"]
+position = Vector2(208, 84)
+
+[node name="FratelliFermo" type="Marker2D" parent="Inquadrature"]
+position = Vector2(220, 72)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.45
+durata_ritorno = 0.45

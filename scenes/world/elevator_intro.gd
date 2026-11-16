@@ -78,8 +78,8 @@ func _sequence() -> void:
 		"Accanto, una lettera già aperta:",
 		"«Si presenti alla CHEAP per saldare il suo debito.»",
 		"Tuo padre se n’era andato. Tu eri rimasto senza una lira, con quella lettera in mano.",
-		"CHEAP srl.",
 	])
+	await _title_card("", "CHEAP srl.")
 	_cabin.visible = true
 	_player.visible = true
 	Sound.music("ascensore")
@@ -146,7 +146,7 @@ func _sequence() -> void:
 		"* Per un momento non succede nulla."])
 	await _wait(0.6)
 	Sound.sfx("door", 0.7)
-	Sound.sfx("stridio", 1.0, -3.0)
+	Sound.sfx("ascensore_metallo", 1.0, -6.0)
 	var tw := create_tween().set_parallel()
 	tw.tween_property(self, "_doors", 0.45, 1.4).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(_outside, "modulate:a", 1.0, 1.4).set_trans(Tween.TRANS_SINE)
@@ -159,8 +159,23 @@ func _sequence() -> void:
 	walk.tween_property(_player, "position", _exit.position, 1.3)
 	_player.play("walk_down")
 	await walk.finished
+	await _title_card("CAPITOLO 1", "IL FONDO")
 	Ui.cutscene = false
-	Router.goto(Router.FONDO, "elevator", ["CAPITOLO 1", "IL FONDO", "Piano −5."])
+	Router.goto(Router.FONDO, "elevator", ["Piano −5."])
+
+
+## La stessa scena e lo stesso stile dei capitoli successivi.
+func _title_card(chapter: String, title: String) -> void:
+	var card := preload("res://world/sguardo_indietro.tscn").instantiate() as SguardoIndietro
+	add_child(card)
+	await card.buio()
+	await card.titolo(chapter, title)
+	if chapter != "":
+		# Il cartello lascia il buio, senza un lampo della cabina prima del cambio scena.
+		_cabin.visible = false
+		_player.visible = false
+		_dark.color.a = 1.0
+	card.queue_free()
 
 
 ## I due scatti dell'ascensore: un colpo, la cabina trema, poi un altro. Da lì le luci sfarfallano.

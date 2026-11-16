@@ -128,3 +128,8 @@ Modificare `variant_rules()` in `finali.gd` (testo e condizione stanno insieme) 
 Il test `_test_chapter6` prova 1200 combinazioni casuali: ogni combinazione deve dare una variante della famiglia scelta.
 `tests/storia_test.tscn` prova A1/A2/A3, lo stato del debito, le combinazioni del finale B, le reazioni e
 gioca ogni variante fino ai titoli di coda.
+
+
+## Il fratello di Fermo — 9 novembre 2026
+
+La sottotrama è implementata e salva il proprio stato nella partita. Il messaggio consegnato può chiudersi nel Fondo o nell’epilogo di qualsiasi finale. Scale sbarrate e Fermo robot non vengono ignorati. Nessun nuovo legame, voto, aiuto, requisito o cambio delle condizioni dei finali: [FRATELLO_FERMO](FRATELLO_FERMO.md).

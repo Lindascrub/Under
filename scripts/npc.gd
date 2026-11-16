@@ -175,7 +175,7 @@ func _fidget(delta: float) -> void:
 		return
 	if _fidget_walking:
 		var to := _fidget_to - position
-		if to.length() < 0.6 or test_move(global_transform, to.normalized() * 2.0):
+		if to.length() < 0.6 or test_move(global_transform, to.normalized() * minf(FIDGET_SPEED * delta, to.length())):
 			_fidget_walking = false
 			sprite.play("idle_" + base)
 			return
@@ -287,13 +287,20 @@ func interact() -> void:
 		return
 	# la stanza può avere qualcosa di speciale da far dire a questa persona (talk_<id>)
 	var room := get_tree().current_scene
+	if room:
+		room.set_meta("npc_help_offered", false)
 	if room and room.has_method("talk_" + id) and await room.call("talk_" + id, self):
+		if not Ui.transitioning and not bool(room.get_meta("npc_help_offered", false)) \
+				and (id in GameState.helped_ids or int(GameState.flags.get("tentativi_" + id, 0)) > 0):
+			await _offer_replay(who)
 		return
 	# dopo la rivelazione del capitolo, chi ha perso il colore ti dice la verità (campo "reveal")
 	var reveal_flag := str(data.get("reveal_flag", "c1_rivelazione"))
 	if data.has("reveal") and GameState.flags.get(reveal_flag, false) and not GameState.flags.get("svelato_" + id, false):
 		GameState.flags["svelato_" + id] = true
 		await Ui.say(data["reveal"], who)
+		return
+	if id not in GameState.helped_ids and int(GameState.flags.get("tentativi_" + id, 0)) > 0 and await _offer_replay(who):
 		return
 	# chi lavora per restare colorato, dopo un po' ti manda via (campo "busy_line")
 	if data.has("busy_line"):
@@ -311,7 +318,7 @@ func interact() -> void:
 			return
 	# Anche chi non ha busy_line (Tilde, Ercole) può rifare il suo aiuto.
 	# Prima viene il ringraziamento, poi la scelta di rigiocare con il record precedente.
-	if not data.has("busy_line") and id in GameState.helped_ids and data.get("help", {}).get("minigame", {}).has("rigioca"):
+	if not data.has("busy_line") and id in GameState.helped_ids and bool(data.get("help", {}).get("minigame", {}).get("stelle", false)):
 		if not GameState.flags.get("thanked_" + id, false):
 			GameState.flags["thanked_" + id] = true
 			await Ui.say(data.get("helped", ["Grazie."]), who)
@@ -354,40 +361,55 @@ func _offer_encounter(who: String) -> void:
 
 
 func _offer_help(who: String) -> void:
-	var h: Dictionary = data.get("help", {})
-	if not h.has("minigame") or not GameState.has_time(GameState.COST_HELP_TIME):
-		return
-	var choice: int = await Ui.choose(str(h.get("ask", "Ti chiede una mano.")), ["Dai una mano (1 ora)", "Non ora"], who)
-	if choice != 0:
-		return
-	if h.has("prima"):
-		await Ui.say(h["prima"], who)
-	GameState.met_today.append(id)
-	Router.minigame(Npc.minigame_cfg(id, who, h, get_tree().current_scene.scene_file_path,
-		(get_tree().get_first_node_in_group("player") as Node2D).global_position))
+	await offer_minigame(id, who, get_tree().current_scene)
 
 
-## Rifare il minigioco d'aiuto (campo "rigioca" nel minigioco): costa tempo come la prima volta,
-## e paga solo la differenza col record di stelline (scenes/minigame/minigame.gd, _finish).
-## Vero se te l'ha chiesto (anche se dici di no).
+## Vero se l'interazione è stata gestita, anche quando il gioco è già completato.
 func _offer_replay(who: String) -> bool:
-	var h: Dictionary = data.get("help", {})
-	var mg: Dictionary = h.get("minigame", {})
-	if not mg.has("rigioca") or not GameState.has_time(GameState.COST_HELP_TIME):
-		return false
-	var prima := int(GameState.flags.get("stelle_" + id, 0))
-	var frasi: Array = (mg["rigioca"] as Dictionary).get("tre_stelle" if prima >= 3 else "chiede", ["Vuoi rifarlo?"])
-	if frasi.size() > 1:
-		await Ui.say(frasi.slice(0, frasi.size() - 1), who)
-	var choice: int = await Ui.choose(str(frasi[-1]), ["Rifallo (1 ora)", "Non ora"], who)
-	if choice != 0:
+	var mg: Dictionary = data.get("help", {}).get("minigame", {})
+	if not bool(mg.get("stelle", false)): return false
+	if GameState.minigame_closed(id):
+		var lines: Array = mg.get("concluso", []) if GameState.flags.get("aiuto_concluso_" + id, false) else mg.get("completato", ["Tre stelle. Qui è tutto a posto, {name}."])
+		var count := int(GameState.flags.get("saluto_completato_" + id, 0))
+		GameState.flags["saluto_completato_" + id] = count + 1
+		await Ui.say([lines[count % lines.size()]], who)
 		return true
-	var cfg := Npc.minigame_cfg(id, who, h, get_tree().current_scene.scene_file_path,
-		(get_tree().get_first_node_in_group("player") as Node2D).global_position)
-	cfg["rigioco"] = true
-	cfg["stelle_prima"] = prima
-	Router.minigame(cfg)
+	if not GameState.has_time(GameState.COST_HELP_TIME): return false
+	await offer_minigame(id, who, get_tree().current_scene)
 	return true
+
+
+## Anche le richieste speciali dei capitoli passano da qui: niente rigioco a tre stelle.
+static func offer_minigame(npc_id: String, who: String, room: Node) -> void:
+	room.set_meta("npc_help_offered", true)
+	if GameState.is_robot(npc_id): return
+	if GameState.minigame_closed(npc_id):
+		var mg: Dictionary = GameState.npc_data(npc_id).get("help", {}).get("minigame", {})
+		var lines: Array = mg.get("concluso", []) if GameState.flags.get("aiuto_concluso_" + npc_id, false) else mg.get("completato", [])
+		if not lines.is_empty(): await Ui.say([lines[0]], who)
+		return
+	var h: Dictionary = GameState.npc_data(npc_id).get("help", {})
+	if not h.has("minigame"): return
+	if not GameState.has_time(GameState.COST_HELP_TIME):
+		await Ui.say(["* Per oggi non c’è più tempo. Puoi tornare dopo aver dormito alla stellina."])
+		return
+	var prima := int(GameState.flags.get("stelle_" + npc_id, 0))
+	var replay := npc_id in GameState.helped_ids or prima > 0 or int(GameState.flags.get("tentativi_" + npc_id, 0)) > 0
+	var prompt := str(h.get("ask", "Ti chiede una mano."))
+	if replay:
+		var frasi: Array = h.minigame.get("rigioca", {}).get("chiede", ["Mi dai ancora una mano, {name}?"])
+		if frasi.size() > 1: await Ui.say(frasi.slice(0, frasi.size() - 1), who)
+		prompt = str(frasi[-1]) + " (Record: %d/3 stelle.)" % prima
+	var choice: int = await Ui.choose(prompt, ["Riprova (1 ora)" if replay else "Dai una mano (1 ora)", "Non ora"], who)
+	if choice != 0: return
+	if not replay and h.has("prima"): await Ui.say(h.prima, who)
+	if npc_id not in GameState.met_today: GameState.met_today.append(npc_id)
+	var player := room.get_tree().get_first_node_in_group("player") as Node2D
+	var cfg := minigame_cfg(npc_id, who, h, room.scene_file_path, player.global_position if player else Vector2.ZERO)
+	if replay:
+		cfg["rigioco"] = true
+		cfg["stelle_prima"] = prima
+	Router.minigame(cfg)
 
 
 ## Prepara la configurazione del minigioco di aiuto di una persona.

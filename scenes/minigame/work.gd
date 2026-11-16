@@ -170,7 +170,7 @@ func _rules() -> String:
 	if TouchControls.enabled:
 		match game:
 			"pedal":
-				return "* Tocca lo schermo a SINISTRA e a DESTRA, una volta per parte, per pedalare. Tieni la lancetta nel verde. Se tocchi due volte lo stesso lato, inciampi."
+				return "* Non inciampare: pedala alternando un tocco a SINISTRA e uno a DESTRA. Tieni la lancetta nel verde."
 			"helpdesk":
 				return "* Tocca il telefono che squilla. Poi tocca la risposta.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 			"cassa":
@@ -184,7 +184,7 @@ func _rules() -> String:
 	# (solo PC) da qui in giù: il telefono è già tornato sopra
 	match game:
 		"pedal":
-			return "* Premi SINISTRA e DESTRA, una alla volta, per pedalare. Tieni la lancetta nel verde. Se premi due volte lo stesso lato, inciampi."
+			return "* Non inciampare: pedala alternando una pressione a SINISTRA e una a DESTRA. Tieni la lancetta nel verde."
 		"helpdesk":
 			return "* Rispondi al telefono che squilla con la sua freccia. Poi scegli una risposta con SU e GIÙ e conferma con {ok}.\n* Il copione aumenta il punteggio del turno. Le risposte sincere vengono registrate a parte. Quelle sgarbate contano come errori."
 		"cassa":

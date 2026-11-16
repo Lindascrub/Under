@@ -1,5 +1,7 @@
 # Capitolo 4 — La Banca (piano -2)
 
+> Aggiornamento 9/11/2026: per il badge gratuito servono tre stelle in ogni minigioco dei personaggi del piano; a tre stelle non si rigioca. Le condizioni precedenti descritte sotto vanno lette secondo [REGOLE_STELLE](REGOLE_STELLE.md).
+
 **Obiettivo:** il badge del Piano Terra, che costa **4.000 €**. **Persone:** Olga e Teo.
 **Tema:** debito e dipendenza. La Banca è elegante e quasi buffa, poi diventa inquietante: il debito di
 7 miliardi non ha un contratto. L'origine vera del debito resta per il Capitolo 6.

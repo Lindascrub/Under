@@ -73,6 +73,9 @@
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 
+[ext_resource type="Script" path="res://world/cliente_seduto.gd" id="cliente_seduto"]
+[ext_resource type="PackedScene" path="res://world/fratello_fermo.tscn" id="fratello_fermo_scene"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_eshio"]
 size = Vector2(32, 16)
 
@@ -6909,6 +6912,7 @@ size = Vector2(9, 4)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_84qwo"]
 size = Vector2(8, 5)
 
+
 [node name="Banca" type="Node2D" unique_id=279209491]
 script = ExtResource("1_7cjwg")
 room_music = "banca"
@@ -8171,10 +8175,12 @@ animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
-script = ExtResource("9_b8kf0")
+script = ExtResource("cliente_seduto")
 sheet = "rpg_vx1_6"
 anim = "idle_up"
 nudge = Vector2(0, 3)
+battute = PackedStringArray("Sono arrivato per chiedere un prestito.", "Mentre aspetto mi stanno finendo i risparmi. Tecnicamente è una consulenza efficace.")
+
 
 [node name="SedutoAttesa1" type="AnimatedSprite2D" parent="Mondo" unique_id=1381905710]
 position = Vector2(365, 251)
@@ -8183,10 +8189,12 @@ animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
-script = ExtResource("9_b8kf0")
+script = ExtResource("cliente_seduto")
 sheet = "rpg_vx1_7"
 anim = "idle_up"
 nudge = Vector2(0, 3)
+battute = PackedStringArray("Ho il numero quarantadue. Il display è fermo al quattro.", "Sto cercando di non prenderla sul personale.")
+
 
 [node name="SedutoAttesa2" type="AnimatedSprite2D" parent="Mondo" unique_id=589818652]
 position = Vector2(426, 251)
@@ -8195,10 +8203,12 @@ animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -28)
-script = ExtResource("9_b8kf0")
+script = ExtResource("cliente_seduto")
 sheet = "rpg_vx1_8"
 anim = "idle_up"
 nudge = Vector2(0, 3)
+battute = PackedStringArray("Mi hanno detto di stare comoda.", "Non pensavo fosse una previsione a lungo termine.")
+
 
 [node name="SedutoSala0" type="AnimatedSprite2D" parent="Mondo" unique_id=970445931]
 position = Vector2(56, 169)
@@ -8207,10 +8217,11 @@ animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -27)
-script = ExtResource("9_b8kf0")
+script = ExtResource("cliente_seduto")
 sheet = "rpg_vx2_1"
 anim = "idle_up"
 nudge = Vector2(0, 4)
+battute = PackedStringArray("Aspetto che mi chiamino.", "Non so più per cosa. Ma ormai ho il posto.")
 
 [node name="SedutoSala1" type="AnimatedSprite2D" parent="Mondo" unique_id=2072697370]
 position = Vector2(120, 217)
@@ -8219,10 +8230,11 @@ animation = &"idle_up"
 frame_progress = 0.25967672
 centered = false
 offset = Vector2(-8, -27)
-script = ExtResource("9_b8kf0")
+script = ExtResource("cliente_seduto")
 sheet = "rpg_vx2_2"
 anim = "idle_up"
 nudge = Vector2(0, 4)
+battute = PackedStringArray("Mi hanno detto: si accomodi.", "Era giovedì. Non hanno detto quale.")
 
 [node name="Serranda" parent="Mondo" unique_id=1387951791 instance=ExtResource("serranda_tscn")]
 position = Vector2(448, 64)
@@ -8328,3 +8340,17 @@ position = Vector2(424, 76)
 position = Vector2(410, 90)
 
 [editable path="Mondo/PostoSportello"]
+
+[node name="FratelloFermo" parent="Mondo" instance=ExtResource("fratello_fermo_scene")]
+position = Vector2(328, 148)
+place = "banca"
+
+[node name="FratelloScale" type="Marker2D" parent="Punti"]
+position = Vector2(224, 236)
+
+[node name="FratelloFermo" type="Marker2D" parent="Inquadrature"]
+position = Vector2(328, 128)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.35
+durata_ritorno = 0.35

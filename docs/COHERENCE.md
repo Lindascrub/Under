@@ -1,5 +1,7 @@
 # CHEAP — Regole attuali e continuità
 
+> Aggiornamento 9/11/2026: per il badge gratuito servono tre stelle in ogni minigioco dei personaggi del piano; a tre stelle non si rigioca. Le condizioni precedenti descritte sotto vanno lette secondo [REGOLE_STELLE](REGOLE_STELLE.md).
+
 Aggiornato il 5 novembre 2026, dopo l'approvazione della revisione completa. Questa pagina descrive il comportamento attuale. Il vecchio piano P1–P5 è conservato nella cronologia Git e nel backup della revisione; le sue proposte non sono istruzioni per cambiare automaticamente il gioco.
 
 ## Fonti
@@ -138,3 +140,8 @@ La conferma mostra sforzo, pausa e premio prima dell'applicazione. Restano i con
 il compenso una sola volta, riparazione, torto e finali. Le 45 combinazioni esistenti
 si riprendono senza passare per le vecchie tacche e senza cambiare le decorazioni.
 Le versioni precedenti sono in ../cheap_da_cancellare/fermo_circuiti_20261107.
+
+
+## Il fratello di Fermo — 9 novembre 2026
+
+La sottotrama è implementata e salva il proprio stato nella partita. Il messaggio consegnato può chiudersi nel Fondo o nell’epilogo di qualsiasi finale. Scale sbarrate e Fermo robot non vengono ignorati. Nessun nuovo legame, voto, aiuto, requisito o cambio delle condizioni dei finali: [FRATELLO_FERMO](FRATELLO_FERMO.md).

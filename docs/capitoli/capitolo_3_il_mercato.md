@@ -1,5 +1,7 @@
 # Capitolo 3 — Il Mercato (piano -3)
 
+> Aggiornamento 9/11/2026: badge gratuito con tre stelle in tutti i minigiochi del piano; niente rigioco a tre stelle. Vedi [regole aggiornate](../REGOLE_STELLE.md).
+
 **Durata:** 15-20 minuti. **Obiettivo:** il badge della Banca (-2), che costa 2.000 €.
 **Tema:** il costo della vita. Guadagnare non vuol dire stare meglio.
 **Sottotitolo:** "Qui puoi comprare tutto. Tranne quello che ti manca."

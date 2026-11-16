@@ -1396,6 +1396,7 @@ func _run() -> void:
 	GameState.flags["fermo_called"] = true
 	var esteem0 := GameState.self_esteem
 	GameState.helped_ids.assign(GameState.floor_people("-5"))
+	for id in GameState.floor_minigames("-5"): GameState.flags["stelle_" + id] = 3
 	GameState.flags["c1_arrivo"] = true
 	await _go(Router.FONDO, "elevator")
 	await get_tree().create_timer(0.5).timeout

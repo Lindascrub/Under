@@ -108,6 +108,7 @@ func _run() -> void:
 		sezione = modo + "_nives_regalo"
 		fondo = await _go(Router.FONDO)
 		GameState.helped_ids.assign(GameState.floor_people("-5"))
+		for id in GameState.floor_minigames("-5"): GameState.flags["stelle_" + id] = 3
 		var soldi := GameState.money
 		var autostima := GameState.self_esteem
 		await fondo.call("_floor_gift")
@@ -139,6 +140,7 @@ func _run() -> void:
 		_check(GameState.money == 600, "premio per i minuti in più invariato")
 		_check(str(fondo.call("_look_back_line")).contains("La sua pausa no"), "chiusura ricorda la pausa sottratta")
 		GameState.helped_ids.assign(GameState.floor_people("-5"))
+		for id in GameState.floor_minigames("-5"): GameState.flags["stelle_" + id] = 3
 		GameState.flags["c1_extra"] = 3
 		_check(str(fondo.call("_look_back_line")).contains("La sua pausa no"), "aiuti e straordinari non nascondono il torto")
 		choose_index = 0

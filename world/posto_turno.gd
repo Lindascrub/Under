@@ -7,6 +7,8 @@ extends Node2D
 
 ## Il lavoro (id in data/worklist.json).
 @export var job := ""
+@export var area_uso := Rect2(-8, -6, 16, 12)
+@export var distanza_uso := 14.0
 ## Da che parte ci si deve avvicinare (per esempio "su": da sopra, dietro al bancone).
 @export_enum("libero", "su", "giu", "sinistra", "destra") var avvicinamento := "libero"
 ## Dove deve guardare il giocatore per usarlo.

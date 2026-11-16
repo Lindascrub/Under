@@ -206,6 +206,8 @@ func _look_back_line() -> String:
 # --- Fermo ------------------------------------------------------------------------
 
 func _talk_fermo() -> void:
+	if await FratelliFermo.talk_fermo(self):
+		return
 	if GameState.is_robot("fermo"):
 		# gli hai preso il quaderno: adesso sorride, come i poster
 		await Ui.say(["* Fermo ti guarda. Per la prima volta, sorride.",
@@ -235,8 +237,8 @@ func _talk_fermo() -> void:
 		return
 	if GameState.has_badge("-4") and not GameState.flags.get("fermo_badge_line", false):
 		GameState.flags["fermo_badge_line"] = true
-		await Ui.say(["Hai il badge. ...Bene.", "Non voltarti, quando sali. Fa male, voltarsi.",
-			"Se lassù vedi qualcuno con la mia faccia, digli che qui sotto la festa continua. Da sola."], who)
+		await Ui.say(["Hai il badge. ...Bene.", "Non voltarti, quando sali. Fa male, voltarsi."], who)
+		await FratelliFermo.give_message()
 		return
 	if GameState.worked_today:
 		await Ui.say([["Hai pedalato. I palloncini sono belli gonfi, oggi. Grazie a te.",

@@ -1,5 +1,7 @@
 # Capitolo 2 — Il Sottoufficio (piano -4)
 
+> Aggiornamento 9/11/2026: badge gratuito con tre stelle in tutti i minigiochi del piano; niente rigioco a tre stelle. Vedi [regole aggiornate](../REGOLE_STELLE.md).
+
 **Durata:** 10-15 minuti. **Obiettivo:** il badge del Mercato (-3), che costa 1.000 €.
 **Tema:** la burocrazia infinita. **Stile:** ufficio anni '80 finto allegro.
 
@@ -67,3 +69,8 @@ la logica è in `chapters/c2/sottoufficio_c2.gd`. Quattro stanze, divise dai sep
   legno, le bandiere, l'urna dei reclami, il tritacarte, le sedie per aspettare;
 - **l'archivio di Ercole** (a destra, legno): le librerie di raccoglitori fino al soffitto, le file di schedari, gli scatoloni.
 Le sedie e il divano sono posti a sedere veri (`world/seat.gd`, da `data/props.json`); le sedie sono solide, non ci si passa sotto.
+
+
+## Il fratello di Fermo — 9 novembre 2026
+
+Fra le scrivanie si può incontrare il gemello di Fermo e portargli «la festa continua». La visita è facoltativa e non conta per le stelle di Tilde ed Ercole. Con le scale aperte il fratello scende; se sono sbarrate, si ferma davanti al divieto. [Percorso completo e varianti](../FRATELLO_FERMO.md).

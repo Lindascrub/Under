@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" path="res://world/stairs_up.tscn" id="stairs_up_tscn"]
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="Texture2D" path="res://art/tritacarte.png" id="trita_png"]
+[ext_resource type="PackedScene" path="res://world/fratello_fermo.tscn" id="fratello_fermo_scene"]
 
 [sub_resource type="RectangleShape2D" id="poster_PosterSorridi"]
 size = Vector2(56, 24)
@@ -4685,3 +4686,23 @@ script = ExtResource("inq_script")
 zoom = 3.5
 
 [editable path="Mondo/PostoCallCenter"]
+
+
+[node name="FratelloFermo" parent="Mondo" instance=ExtResource("fratello_fermo_scene")]
+position = Vector2(36, 212)
+place = "scale_chiuse"
+
+[node name="Punti" type="Node2D" parent="."]
+
+[node name="FratelloScale" type="Marker2D" parent="Punti"]
+position = Vector2(28, 248)
+
+[node name="FratelloFermo" type="Marker2D" parent="Inquadrature"]
+position = Vector2(96, 196)
+script = ExtResource("inq_script")
+zoom = 3.0
+durata = 0.35
+durata_ritorno = 0.35
+
+[node name="FratelloScaleChiuse" type="Marker2D" parent="Punti"]
+position = Vector2(36, 212)

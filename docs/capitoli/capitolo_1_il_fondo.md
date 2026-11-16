@@ -19,10 +19,10 @@ Poi fai il tuo primo turno e scopri che quei colori li accendi tu, con la tua fa
 | Chi | Com'è | Il suo aiuto (minigioco) |
 |---|---|---|
 | **Fermo** | L'unico grigio, con l'alone scuro. Undici anni al Fondo. Spiega le regole e la scritta TURNO. | Il Capo ti fa regolare il suo lavoro alla cyclette: ritmo, durata e pausa. Il quaderno rubato resta solo nei vecchi salvataggi. |
-| **Bulbo** | Nonno anziano, sorride troppo, smista lampadine. Accanto ha le scatole di lampadine. | **Lampadine**: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla si avvita con SU o GIÙ |
+| **Bulbo** | Nonno anziano, sorride troppo, smista lampadine. Accanto ha le scatole di lampadine. | **Lampadine**: buona a DESTRA, rotta a SINISTRA, quella che sfarfalla si aggiusta con due swipe verso l’alto (su PC due pressioni SU), poi va nelle BUONE |
 | **Mina** | Un'elettricista, scherza su tutto. Accanto ha i cavi aggrovigliati. | **Fili**: collega i fili dello stesso colore, come in Among Us |
 
-Nives, l'addetta ai badge, dà prima le informazioni per salire. Se aiuti tutti, ti regala il badge e si presenta: «Quando ripassi, puoi salutarmi anche senza comprare niente.»
+Nives, l'addetta ai badge, dà prima le informazioni per salire. Se ottieni tre stelle sia con Mina sia con Bulbo, ti regala il badge e si presenta: «Quando ripassi, puoi salutarmi anche senza comprare niente.»
 La prima volta allo sportello dice il prezzo così: "Cinquecento euro." / "Per una porta?" / "Per quella dopo."
 Il commento sulle addette uguali arriva al primo sportello successivo al Fondo: «Un'addetta per piano. Stessa faccia, prezzi diversi.»
 Dopo un finale, alla partita nuova, ti riconosce: "Oh. Sei tornato." (docs/NIVES_MEMORIA.md).
@@ -71,3 +71,8 @@ In alto resta la barra con piano, ora, debito ("7,00 mld €") e soldi. Quello c
 ## Da decidere più avanti
 
 - Musica dell'ascensore e del Fondo colorato.
+
+
+## Il sosia di Fermo — direzione approvata il 9 novembre 2026
+
+Il sosia sarà suo fratello gemello: era salito promettendo di tornare. Il messaggio «la festa continua» significa che Fermo lo sta ancora aspettando. L'arco si chiude con il fratello che scende e si siede accanto alla cassetta. Le scene sono implementate: il fratello si incontra nel Sottoufficio e può tornare al Fondo; scale sbarrate e Fermo robot hanno risposte proprie. Il percorso e i vincoli sono in [FRATELLO_FERMO](../FRATELLO_FERMO.md).

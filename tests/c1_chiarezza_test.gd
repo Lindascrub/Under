@@ -82,8 +82,20 @@ func _run() -> void:
 		_check(game.get("misses") == 0 and game.get("bulb") == "fioca", "sbagliare la prova non consuma errori né cambia lampadina")
 		_check(float(game.get("time_left")) == tempo, "tempo fermo durante la prova")
 		for i in 2:
-			_tap("move_up")
+			if tel:
+				var down := InputEventScreenTouch.new()
+				down.index = 0; down.position = Vector2(320,210); down.pressed = true
+				Input.parse_input_event(down)
+				var drag := InputEventScreenDrag.new()
+				drag.index = 0; drag.position = Vector2(320,170)
+				Input.parse_input_event(drag)
+				var up := InputEventScreenTouch.new()
+				up.index = 0; up.position = drag.position
+				Input.parse_input_event(up)
+			else:
+				_tap("move_up")
 			await get_tree().process_frame
+			_check(game.get("bulb_fix") == i+1, "un gesto in su vale una sola girata")
 		_check(game.get("bulb") == "buona", "avvitata resta accesa")
 		_tap("move_right")
 		await get_tree().process_frame

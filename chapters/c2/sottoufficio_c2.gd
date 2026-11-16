@@ -181,7 +181,10 @@ func _agenda() -> void:
 	if GameState.flags.get("c2_modulo_ok", false):
 		await Ui.say(["Il suo B-4 è perfetto. Lo tengo io, al sicuro. Il badge è allo sportello accanto. Buona salita!"], who)
 		return
-	var c: int = await Ui.choose("Il Modulo B-4?", ["Ecco il modulo", "Procedura d'urgenza (%s)" % GameState.euros(URGENZA), "Arrivederci"], who)
+	if GameState.flags.get("c2_timbro", false):
+		await _hand_in(who)
+		return
+	var c: int = await Ui.choose("Il B-4 aspetta ancora il timbro." if GameState.flags.get("c2_firma", false) else "La firma manca ancora.", ["Come completo il B-4?", "Procedura d'urgenza (%s)" % GameState.euros(URGENZA), "Arrivederci"], who)
 	match c:
 		0:
 			await _hand_in(who)

@@ -8,6 +8,11 @@ func _process(delta: float) -> void:
 		var label: Label = Ui.get(key)
 		if Ui.busy and is_instance_valid(label) and label.text not in letti:
 			letti.append(label.text)
+	var scene := get_tree().current_scene
+	if scene:
+		var card := scene.get_node_or_null("SguardoIndietro")
+		if card and card.get_node("Titolo").text not in letti:
+			letti.append(card.get_node("Titolo").text)
 	super(delta)
 
 

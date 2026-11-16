@@ -40,6 +40,7 @@ func _ready() -> void:
 	_check(not GameState.flags.get("badge_clerk_intro",false),"Test requires never having spoken to clerk")
 	_check(room._turnstiles.size()==1 and room._turnstiles[0].current_frame==0,"Turnstile should begin closed")
 	GameState.helped_ids.assign(["fermo","mina","bulbo"])
+	for id in GameState.floor_minigames("-5"): GameState.flags["stelle_" + id] = 3
 	_finish_gift()
 	var photographed:=false
 	for i in 2400:
