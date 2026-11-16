@@ -148,10 +148,9 @@ func _run() -> void:
 	var picked := [-1]
 	(func() -> void: picked[0] = await Ui.choose("Prova", ["Uno", "Due", "Tre"])).call()
 	await _frames(5)
-	var riquadro := Ui.get("_choice_box") as Control
-	var righe := Ui.get("_choice_label") as Label
-	var alta := righe.get_line_height() + righe.get_theme_constant("line_spacing")
-	await _tap_at(riquadro.position + righe.position + Vector2(20, alta * 2.5))
+	# sul telefono le risposte sono cartoncini: si tocca il terzo
+	var carte: Array = Ui.get("_carte")
+	await _tap_at((carte[2] as Control).get_global_rect().get_center())
 	await _frames(5)
 	_check(picked[0] == 2, "toccando la terza riga dovrebbe uscire la terza voce (è uscita %d)" % picked[0])
 	manual_choice = false

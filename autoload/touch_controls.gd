@@ -23,10 +23,12 @@ const SWIPE_MIN := 22.0
 const BUTTONS := {
 	"confirm": [Vector2(592, 292), 26.0, "OK"],
 	"cancel": [Vector2(540, 324), 19.0, "X"],
-	"menu": [Vector2(612, 238), 15.0, "C"],
+	"menu": [Vector2(608, 44), 18.0, "MENU"],
 }
 
 var enabled := false
+## Nel mondo si cammina toccando (vedi scripts/player.gd): niente joystick né «OK», resta solo il pulsante dello stato.
+var mondo_col_dito := true
 ## Cosa si vede adesso: il joystick e/o i pulsanti (dipende da dove sei, vedi _process).
 var show_stick := true
 var show_buttons := true
@@ -88,6 +90,8 @@ func _process(_delta: float) -> void:
 	elif path == "res://scenes/minigame/minigame.tscn":
 		stick = scene.get("phase") in ["play", "show"] and scene.get("type") not in ["timing", "volantini"]
 		buttons = false
+	elif mondo_col_dito:
+		stick = false
 	if stick != show_stick or buttons != show_buttons:
 		show_stick = stick
 		show_buttons = buttons
@@ -118,6 +122,8 @@ func _input(event: InputEvent) -> void:
 				return
 			for action: String in BUTTONS:
 				var b: Array = BUTTONS[action]
+				if mondo_col_dito and action != "menu":
+					continue
 				if show_buttons and t.position.distance_to(b[0]) < float(b[1]) * 1.3:
 					_button_fingers[t.index] = action
 					_send(action, true)
@@ -261,11 +267,13 @@ func _draw_controls() -> void:
 	if not show_buttons:
 		return
 	for action: String in BUTTONS:
+		if mondo_col_dito and action != "menu":
+			continue
 		var b: Array = BUTTONS[action]
 		var down := action in _button_fingers.values()
 		_canvas.draw_circle(b[0], b[1], Color(1, 0.88, 0.3, 0.55) if down else base)
 		_canvas.draw_arc(b[0], b[1], 0, TAU, 32, line, 2.0)
-		var size := 14 if float(b[1]) > 20 else 11
+		var size := 14 if float(b[1]) > 20 else (8 if str(b[2]).length() > 2 else 11)
 		_canvas.draw_string(font, b[0] + Vector2(-b[1], size * 0.35), str(b[2]), HORIZONTAL_ALIGNMENT_CENTER, float(b[1]) * 2.0, size, Color(1, 1, 1, 0.85))
 
 

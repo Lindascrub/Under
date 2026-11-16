@@ -21,6 +21,16 @@ var _stand_offset := Vector2.ZERO
 ## Seduto su qualcosa (una cassetta, una panchina): fermo finché non ti muovi.
 var seated := false
 
+# --- telefono: si cammina toccando ---------------------------------------------------------------
+## Sul telefono non c'è il joystick: tocchi un punto e ci vai; tocchi una persona o un oggetto e ci vai a parlare.
+## I punti del percorso da seguire (vuoto: fermo) e la cosa da usare quando si arriva.
+var _percorso: PackedVector2Array = []
+var _meta: Node = null
+var _fermo_da := 0.0
+## Il lato di un quadretto della griglia su cui si cerca la strada, e quanto lontano si cerca (in quadretti).
+const PASSO_DITO := 8.0
+const RAGGIO_DITO := 90
+
 
 func _ready() -> void:
 	add_to_group("player")
@@ -35,6 +45,15 @@ func _physics_process(_delta: float) -> void:
 	var v := Vector2.ZERO
 	if not Ui.blocks_input():
 		v = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	else:
+		_percorso.clear()
+		_meta = null
+	# col dito: si segue il percorso, un punto alla volta (un tasto premuto lo annulla)
+	if v != Vector2.ZERO:
+		_percorso.clear()
+		_meta = null
+	elif not _percorso.is_empty():
+		v = _passo_sul_percorso(_delta)
 	if seated:
 		if v == Vector2.ZERO:
 			return
@@ -65,6 +84,10 @@ func _physics_process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Ui.blocks_input():
+		return
+	if TouchControls.enabled and event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+		get_viewport().set_input_as_handled()
+		_tocco_nel_mondo(get_canvas_transform().affine_inverse() * (event as InputEventScreenTouch).position)
 		return
 	if event.is_action_pressed("confirm"):
 		var target: Node = _find_target()
@@ -268,3 +291,153 @@ func get_up(to: Vector2) -> void:
 	await tw.finished
 	_sprite.play("idle_down")
 	facing = "down"
+
+
+# --- telefono: si cammina toccando ---------------------------------------------------------------
+
+## Un dito sul mondo: se sotto c'è una persona o un oggetto si va lì e lo si usa, se no si va nel punto toccato.
+func _tocco_nel_mondo(punto: Vector2) -> void:
+	var cosa := _cosa_sotto_il_dito(punto)
+	var dove := punto
+	if cosa != null:
+		dove = cosa.interaction_point(global_position) if cosa is Interactable else cosa.call("hotspot")
+		# già abbastanza vicino: si usa subito, senza fare un passo
+		if global_position.distance_to(dove) <= _portata(cosa):
+			_usa(cosa, dove)
+			return
+	var strada := _cerca_strada(dove, cosa)
+	if strada.is_empty():
+		Sound.sfx("deny", 1.2, -8.0)
+		return
+	_percorso = strada
+	_meta = cosa
+	_fermo_da = 0.0
+	_segna(strada[strada.size() - 1])
+
+
+## La cosa con cui si interagisce più vicina al dito (anche toccandone il corpo, sopra i piedi).
+func _cosa_sotto_il_dito(punto: Vector2) -> Node:
+	var meglio: Node = null
+	var dist := 18.0
+	for n in get_tree().get_nodes_in_group("interactable"):
+		if not (n as CanvasItem).is_visible_in_tree():
+			continue
+		var at: Vector2 = n.interaction_point(punto) if n is Interactable else n.call("hotspot")
+		var d := punto.distance_to(at)
+		# una persona è alta: vale anche il tocco sulla testa
+		if n.is_in_group("npc") or n.is_in_group("walker"):
+			d = minf(d, punto.distance_to(at + Vector2(0, -12)))
+			d -= 4.0
+		if d < dist:
+			dist = d
+			meglio = n
+	return meglio
+
+
+func _portata(cosa: Node) -> float:
+	return (float(cosa.reach) if cosa is Interactable else 12.0) + 10.0
+
+
+## Ci si gira verso la cosa e la si usa, come con il tasto.
+func _usa(cosa: Node, dove: Vector2) -> void:
+	if not is_instance_valid(cosa):
+		return
+	var verso := dove - global_position
+	if absf(verso.x) > absf(verso.y):
+		facing = "right" if verso.x > 0 else "left"
+	else:
+		facing = "down" if verso.y > 0 else "up"
+	_sprite.play("idle_" + facing)
+	cosa.call("interact")
+
+
+## Un passo lungo il percorso: la direzione da prendere adesso. Arrivati, si usa la cosa toccata (se c'era).
+func _passo_sul_percorso(delta: float) -> Vector2:
+	while not _percorso.is_empty() and global_position.distance_to(_percorso[0]) < 3.0:
+		_percorso.remove_at(0)
+	if _percorso.is_empty():
+		var cosa := _meta
+		_meta = null
+		if is_instance_valid(cosa):
+			var dove: Vector2 = cosa.interaction_point(global_position) if cosa is Interactable else cosa.call("hotspot")
+			if global_position.distance_to(dove) <= _portata(cosa) + 8.0:
+				_usa.call_deferred(cosa, dove)
+		return Vector2.ZERO
+	# bloccati contro qualcosa (una persona che si è spostata): ci si ferma, senza spingere all'infinito
+	_fermo_da = _fermo_da + delta if get_real_velocity().length() < 4.0 else 0.0
+	if _fermo_da > 0.6:
+		_percorso.clear()
+		_meta = null
+		return Vector2.ZERO
+	return (_percorso[0] - global_position).normalized()
+
+
+## La strada fino a `dove`, girando intorno ai mobili: una griglia di quadretti liberi, cercata intorno al giocatore.
+## Se `dove` è dentro un mobile o una persona, si arriva al quadretto libero più vicino.
+func _cerca_strada(dove: Vector2, cosa: Node) -> PackedVector2Array:
+	var spazio := get_world_2d().direct_space_state
+	var q := PhysicsShapeQueryParameters2D.new()
+	q.shape = ($Collisione as CollisionShape2D).shape
+	q.collision_mask = collision_mask
+	q.exclude = [get_rid()]
+	var sposta: Vector2 = ($Collisione as CollisionShape2D).position
+	var inizio := Vector2i.ZERO
+	var da := {inizio: inizio}
+	var coda: Array[Vector2i] = [inizio]
+	var testa := 0
+	var arrivo := inizio
+	var arrivo_d := global_position.distance_to(dove)
+	var vicini: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
+	var libero := {}
+	var prova := func(c: Vector2i) -> bool:
+		if not libero.has(c):
+			q.transform = Transform2D(0.0, global_position + Vector2(c) * PASSO_DITO + sposta)
+			libero[c] = spazio.intersect_shape(q, 1).is_empty()
+		return libero[c]
+	while testa < coda.size():
+		var c: Vector2i = coda[testa]
+		testa += 1
+		var qui := global_position + Vector2(c) * PASSO_DITO
+		var d := qui.distance_to(dove)
+		if d < arrivo_d:
+			arrivo_d = d
+			arrivo = c
+			if d < PASSO_DITO * 0.75:
+				break
+		for v: Vector2i in vicini:
+			var n := c + v
+			if da.has(n) or absi(n.x) > RAGGIO_DITO or absi(n.y) > RAGGIO_DITO:
+				continue
+			# in diagonale solo se i due lati sono liberi: non si passa fra due spigoli
+			if v.x != 0 and v.y != 0 and not (prova.call(c + Vector2i(v.x, 0)) and prova.call(c + Vector2i(0, v.y))):
+				continue
+			if prova.call(n):
+				da[n] = c
+				coda.append(n)
+	if arrivo == inizio:
+		return PackedVector2Array()
+	# verso una cosa: se anche dal punto migliore resta troppo lontana, non ci si muove a vuoto
+	if cosa != null and arrivo_d > _portata(cosa) + 24.0:
+		return PackedVector2Array()
+	var strada: PackedVector2Array = []
+	var k := arrivo
+	while k != inizio:
+		strada.append(global_position + Vector2(k) * PASSO_DITO)
+		k = da[k]
+	strada.reverse()
+	return strada
+
+
+## Un cerchietto che dice «vado lì», e sparisce.
+func _segna(punto: Vector2) -> void:
+	var s := Node2D.new()
+	s.top_level = true
+	s.z_index = 50
+	s.global_position = punto
+	s.draw.connect(func() -> void:
+		s.draw_arc(Vector2.ZERO, 5.0, 0, TAU, 20, Color(1, 0.88, 0.3, 0.9), 1.5))
+	get_parent().add_child(s)
+	var tw := s.create_tween()
+	tw.tween_property(s, "scale", Vector2(0.4, 0.4), 0.5)
+	tw.parallel().tween_property(s, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(s.queue_free)

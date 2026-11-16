@@ -139,6 +139,22 @@ func _refresh_hud() -> void:
 		GameState.euros(GameState.money), GameState.energy, GameState.MAX_ENERGY, GameState.self_esteem,
 	]
 	_update_time_bar()
+	if TouchControls.enabled:
+		_hud_telefono()
+
+
+## Sul telefono la barra in alto dice solo tre cose, più grandi: l'ora, il debito, i soldi. Il resto sta nel MENU.
+func _hud_telefono() -> void:
+	_hud_prima.text = "%s   Debito " % GameState.clock()
+	_hud_dopo.text = "   Soldi %s" % GameState.euros(GameState.money)
+	_time_bar.text = "Turno di oggi: fatto." if _time_bar.text.begins_with("Turno di oggi: fatto") else "Turno di oggi: da fare."
+	for l: Label in [_hud_prima, _hud_debito, _hud_dopo]:
+		l.add_theme_font_size_override("font_size", 14)
+		l.add_theme_constant_override("outline_size", 4)
+		l.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.08))
+	_time_bar.add_theme_constant_override("outline_size", 4)
+	_time_bar.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.08))
+	_time_bar.position.y = 26.0
 
 
 # --- dialoghi ---------------------------------------------------------------
@@ -399,6 +415,9 @@ func _render_choices() -> void:
 	if is_instance_valid(_described):
 		_described.seleziona(_sel)
 		return
+	if TouchControls.enabled:
+		_mostra_carte()
+		return
 	var lines: Array[String] = []
 	for i in _options.size():
 		lines.append(("> " if i == _sel else "   ") + GameState.fmt(str(_options[i])))
@@ -412,6 +431,8 @@ func _render_choices() -> void:
 
 
 func _process(delta: float) -> void:
+	if not _carte.is_empty() and not _choice_box.visible:
+		_togli_carte()
 	# il debito resta rosso solo mentre l'HUD si vede (non durante la notte o i minigiochi)
 	if _debito_salito_t > 0.0 and _hud.visible:
 		_debito_salito_t -= delta
@@ -442,6 +463,16 @@ func _process(delta: float) -> void:
 func _touch(event: InputEventScreenTouch) -> bool:
 	if not event.pressed:
 		return false
+	# sul telefono le risposte sono cartoncini grandi: si tocca quello che si vuole
+	if _mode == "choose" and not is_instance_valid(_described) and not _carte.is_empty():
+		for i in _carte.size():
+			if _carte[i].get_global_rect().grow(2).has_point(event.position):
+				_sel = i
+				_carte[i].modulate = Color(1.0, 0.92, 0.55)
+				Sound.sfx("select")
+				_chosen.emit(i)
+				return true
+		return true
 	if _mode == "say":
 		if _typing:
 			_typing = false
@@ -516,3 +547,46 @@ func fade_in(time := 0.35) -> void:
 	await tw.finished
 	transitioning = false
 	faded_in.emit()
+
+
+# --- telefono: le risposte a cartoncini ------------------------------------------------------------
+
+## Sul telefono le risposte non sono una lista con la freccetta: sono cartoncini grandi, uno sotto l'altro,
+## sopra il riquadro del dialogo. La carta è la scena scenes/ui/carta_scelta.tscn (colori e bordo si cambiano lì).
+const CARTA := preload("res://scenes/ui/carta_scelta.tscn")
+## Larghezza delle carte, spazio fra una e l'altra, altezza minima e massima (in pixel del gioco).
+@export var carte_larghezza := 420.0
+@export var carte_spazio := 5.0
+@export var carte_altezza_min := 24.0
+@export var carte_altezza_max := 40.0
+var _carte: Array[Panel] = []
+
+
+func _mostra_carte() -> void:
+	_togli_carte()
+	# il vecchio riquadro resta (dice al resto del codice che c'è una scelta aperta), ma non si vede
+	_choice_box.self_modulate.a = 0.0
+	_choice_label.visible = false
+	var n := _options.size()
+	var sotto := _box.position.y - 8.0
+	var spazio_tot := sotto - 34.0
+	var h := clampf(floorf((spazio_tot - (n - 1) * carte_spazio) / n), carte_altezza_min, carte_altezza_max)
+	var y := sotto - (n * h + (n - 1) * carte_spazio)
+	for i in n:
+		var c := CARTA.instantiate() as Panel
+		c.size = Vector2(carte_larghezza, h)
+		c.position = Vector2((640.0 - carte_larghezza) * 0.5, y + i * (h + carte_spazio))
+		var t := c.get_node("Testo") as Label
+		t.text = GameState.fmt(str(_options[i]))
+		if n > 5 or t.text.length() > 60:
+			t.add_theme_font_size_override("font_size", 10)
+		add_child(c)
+		move_child(c, _choice_box.get_index())
+		_carte.append(c)
+
+
+func _togli_carte() -> void:
+	for c in _carte:
+		if is_instance_valid(c):
+			c.queue_free()
+	_carte.clear()

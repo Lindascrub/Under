@@ -193,6 +193,9 @@ func _scegli_vero(i: int, quante: int) -> void:
 			for x in range(40, 640, 40):
 				if pos.x < 0 and int((descritta as Object).call("indice_a", Vector2(x, y))) == i:
 					pos = Vector2(x, y)
+	elif not (Ui.get("_carte") as Array).is_empty():
+		var carte: Array = Ui.get("_carte")
+		pos = (carte[clampi(i, 0, carte.size() - 1)] as Control).get_global_rect().get_center()
 	else:
 		var box: Control = Ui.get("_choice_box")
 		var lab: Label = Ui.get("_choice_label")
