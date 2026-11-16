@@ -187,8 +187,9 @@ func _testo(t: String, r: Rect2, size := 11, colore := PAPER) -> void:
 
 func _draw() -> void:
 	ART.backdrop(self)
-	_testo("CAPO · IL CALENDARIO DI OLGA", Rect2(16, 6, 608, 26), 18, GOLD)
-	_testo("Nuovo prestito: 1.200 € · in più al mutuo.", Rect2(16, 35, 608, 20), 13)
+	_testo("IL PRESTITO DI OLGA", Rect2(16, 6, 440, 26), 18, GOLD)
+	ART.premio(self, 0 if bool(p.get("visible", true)) else 3000, Time.get_ticks_msec() / 1000.0)
+	_testo("1.200 € in più al mutuo.", Rect2(16, 35, 440, 20), 13)
 	ART.panel(self, Rect2(12, 64, 616, 255), Color("454246"), Color("968f7c"))
 	_draw_calendario()
 	_draw_rata()
@@ -200,9 +201,9 @@ func _draw() -> void:
 	var esci := rett("Esci")
 	ART.panel(self, esci, Color("293642"))
 	_testo("SALVA/ESCI", Rect2(esci.position + Vector2(8, 8), esci.size - Vector2(16, 8)), 11)
-	var aiuto := "Allunga il calendario. Confronta rata e totale."
-	if not TouchControls.enabled: aiuto = "FRECCE e INVIO: usa. Trascina il bordo del calendario."
-	if in_mano: aiuto = "Scegli la copia in cui lasciare il riepilogo."
+	var aiuto := "Allunga i mesi: la rata scende, il totale sale."
+	if not TouchControls.enabled: aiuto = "FRECCE e INVIO, o trascina il calendario."
+	if in_mano: aiuto = "A chi lasci il riepilogo?"
 	if avviso != "": aiuto = avviso
 	_testo(aiuto, Rect2(16, 332, 314, 27), 10, GOLD if avviso != "" else PAPER)
 	var targets := bersagli()
@@ -231,14 +232,14 @@ func _draw_rata() -> void:
 	ART.panel(self, r, Color("293e46"))
 	_testo("RATA AL MESE", Rect2(r.position + Vector2(10, 5), r.size), 11, MINT)
 	_testo(B.cash(int(v.get("monthly", 0))), Rect2(r.position + Vector2(10, 23), Vector2(188, 32)), 23, GOLD)
-	_testo("Disponibili: 65 €", Rect2(r.position + Vector2(10, 56), Vector2(188, 17)), 11)
+	_testo("Olga può: 65 €", Rect2(r.position + Vector2(10, 56), Vector2(188, 17)), 11)
 	var barra := Rect2(r.position + Vector2(10, 78), Vector2(180, 9))
 	draw_rect(barra, INK)
 	var quota := clampf(float(v.get("monthly", 0)) / 12000.0, 0, 1)
 	draw_rect(Rect2(barra.position, Vector2(roundf(barra.size.x * quota), barra.size.y)), MINT if int(v.get("monthly", 0)) <= 6500 else Color("db9b72"))
 	var limite := barra.position.x + barra.size.x * 6500.0 / 12000.0
 	draw_line(Vector2(limite, barra.position.y - 3), Vector2(limite, barra.end.y + 3), PAPER, 2)
-	_testo("ENTRO IL LIMITE" if int(v.get("monthly", 0)) <= 6500 else "OLTRE IL LIMITE", Rect2(r.position + Vector2(10, 94), Vector2(188, 15)), 10)
+	_testo("CE LA FA" if int(v.get("monthly", 0)) <= 6500 else "TROPPO", Rect2(r.position + Vector2(10, 94), Vector2(188, 15)), 10)
 
 func _draw_controlli() -> void:
 	for nome in ["Tasso", "Spesa"]:
@@ -259,7 +260,7 @@ func _draw_copie() -> void:
 	ART.paper(self, interno)
 	_testo("COPIA INTERNA", Rect2(28, 202, 200, 16), 11, INK)
 	_testo("Rata %s · %d mesi" % [B.cash(int(v.get("monthly", 0))), int(v.get("months", 24))], Rect2(28, 221, 200, 17), 11, INK)
-	_testo("Interessi %s\nSpesa iniziale %d €\nUltima rata %s" % [B.cash(int(v.get("interest", 0))), int(v.get("fee", 0)), B.cash(int(v.get("last", 0)))], Rect2(28, 241, 200, 38), 10, INK)
+	_testo("In più: %s" % B.cash(int(v.get("total", 0)) - 120000), Rect2(28, 247, 200, 20), 12, Color("8a5a1c"))
 	_testo("TOTALE " + B.cash(int(v.get("total", 0))), Rect2(28, 285, 205, 24), 16, INK)
 	_draw_monete()
 	var tasca := rett("Interno/Tasca")
@@ -275,7 +276,7 @@ func _draw_copie() -> void:
 	_testo("Rata %s · %d mesi" % [B.cash(int(v.get("monthly", 0))), int(v.get("months", 24))], Rect2(332, 222, 264, 17), 11, INK)
 	if bool(p.get("visible", true)): _draw_riepilogo(rett("Riepilogo"))
 	else:
-		_testo("Il riepilogo dei costi\nresta nella copia interna.", Rect2(336, 255, 264, 40), 12, Color("6b4c50"))
+		_testo("Senza il totale.", Rect2(336, 262, 264, 20), 12, Color("6b4c50"))
 	var persona := Assets.character(str(GameState.npc_data("olga").get("sheet", "char_09"))).get_frame_texture("idle_left", 0)
 	draw_texture_rect(persona, Rect2(602, 198, 16, 32), false)
 	draw_set_transform(Vector2.ZERO)
@@ -284,7 +285,7 @@ func _draw_copie() -> void:
 func _draw_riepilogo(r: Rect2) -> void:
 	ART.paper(self, r, Color("ddd6bb"))
 	_testo("TOTALE " + B.cash(int(v.get("total", 0))), Rect2(r.position + Vector2(7, 3), r.size - Vector2(14, 3)), 15, INK)
-	_testo("Interessi %s · Spesa iniziale %d €\nUltima rata %s" % [B.cash(int(v.get("interest", 0))), int(v.get("fee", 0)), B.cash(int(v.get("last", 0)))], Rect2(r.position + Vector2(7, 25), r.size - Vector2(14, 25)), 10, INK)
+	_testo("In più: %s" % B.cash(int(v.get("total", 0)) - 120000), Rect2(r.position + Vector2(7, 27), r.size - Vector2(14, 25)), 12, Color("8a5a1c"))
 
 func _draw_monete() -> void:
 	var alto := int(round(float(v.get("total", 120000)) / 180000.0 * 72))
@@ -304,11 +305,10 @@ func _draw_monete() -> void:
 func _draw_conferma() -> void:
 	draw_rect(Rect2(0, 0, 640, 360), Color(0, 0, 0, 0.8))
 	ART.panel(self, Rect2(92, 92, 456, 176), Color("293642"))
-	_testo("INVIARE QUESTA PROPOSTA?", Rect2(112, 106, 416, 28), 18, GOLD)
+	_testo("VA BENE COSÌ?", Rect2(112, 106, 416, 28), 18, GOLD)
 	var testo := "%s al mese · %d mesi.\n" % [B.cash(int(v.get("monthly", 0))), int(v.get("months", 24))]
-	if bool(p.get("visible", true)): testo += "Totale %s, riepilogo completo.\n" % B.cash(int(v.get("total", 0)))
-	else: testo += "Olga non riceve il riepilogo dei costi.\n"
-	testo += "Olga deciderà se accettare."
+	if bool(p.get("visible", true)): testo += "Olga vede il totale: %s." % B.cash(int(v.get("total", 0)))
+	else: testo += "Olga non vede il totale."
 	_testo(testo, Rect2(112, 145, 416, 48), 12)
 	for nome in ["Indietro", "Invia"]:
 		var r := rett("Conferma/" + nome)

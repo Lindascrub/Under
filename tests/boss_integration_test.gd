@@ -15,7 +15,10 @@ func _ready() -> void:
  for floor: String in ["-5", "-4", "-3", "-2", "0"]:
   await open_room(floor)
   if floor == "0":
-   current.call("_protest")
+   (func() -> void:
+    await current.call("_protest")
+    await current.call("_proposte")
+    await current.call("_capo_notiziario")).call()
   else:
    current.call("_boss_call")
   await wait_scene(B.SCENE)

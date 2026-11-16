@@ -127,3 +127,12 @@ static func collectible(ci: CanvasItem, c: Vector2, color: Color, title: String)
 		pixel(ci, c - Vector2(4, 3), ["..####..", ".#llrr#.", "#lrrrrd#", "#rrrrrd#", ".#rddd#.", "..####.."], {"#": INK, "r": color, "l": color.lightened(0.3), "d": color.darkened(0.3)})
 	else:
 		pixel(ci, c - Vector2(4, 4), ["....gg..", "..gggg..", ".gggld..", "gggld...", ".gld....", "..d....."], {"g": color, "l": color.lightened(0.3), "d": color.darkened(0.3)})
+
+## Il premio del Capo, sempre in vista in alto a destra: grigio a zero, oro (e che batte) quando la scelta lo fa salire.
+static func premio(ci: CanvasItem, euro: int, t := 0.0) -> void:
+	var r := Rect2(464, 4, 160, 44)
+	panel(ci, r, Color("6b5326") if euro > 0 else Color("293642"))
+	var font := Assets.font()
+	ci.draw_string(font, r.position + Vector2(8, 13), "PREMIO DEL CAPO", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, CREAM)
+	var size := 16 + (roundi(2.0 * absf(sin(t * 4.0))) if euro > 0 else 0)
+	ci.draw_string(font, r.position + Vector2(8, 36), GameState.euros(euro), HORIZONTAL_ALIGNMENT_LEFT, -1, size, GOLD if euro > 0 else Color("8a8f98"))

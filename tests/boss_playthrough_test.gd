@@ -6,7 +6,10 @@ func _ready() -> void:
   for floor: String in ["-5", "-4", "-3", "-2", "0"]:
    await open_room(floor)
    if floor == "-3": GameState.flags["c3_turni"] = 1
-   if floor == "0": current._protest()
+   if floor == "0": (func() -> void:
+    await current._protest()
+    await current._proposte()
+    await current._capo_notiziario()).call()
    else: current._boss_call()
    await wait_scene(B.SCENE)
    if current.scene_file_path != B.SCENE: break

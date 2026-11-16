@@ -202,7 +202,8 @@ func _prodotto(r: Rect2) -> void:
 
 func _draw() -> void:
 	ART.backdrop(self)
-	_testo("CAPO · LO SCONTO IN VETRINA", Rect2(16, 6, 608, 26), 18, GOLD)
+	_testo("LO SCONTO IN VETRINA", Rect2(16, 6, 440, 26), 18, GOLD)
+	ART.premio(self, _premio_finora(), Time.get_ticks_msec() / 1000.0)
 	_testo("%s · cartellino %d / 3" % [str(v.get("product", "")).to_upper(), mini(3, int(p.get("round", 0)) + 1)], Rect2(16, 35, 608, 20), 13)
 	ART.panel(self, Rect2(12, 64, 616, 254), Color("4b4140"), Color("9b8b72"))
 	_draw_stampante()
@@ -233,12 +234,12 @@ func _draw() -> void:
 		var r := rett(nome)
 		ART.panel(self, r, Color("365b55") if nome == "Applica" else Color("293642"))
 		_testo("APPLICA" if nome == "Applica" else "SALVA/ESCI", Rect2(r.position + Vector2(9, 8), r.size - Vector2(18, 8)), 13 if nome == "Applica" else 11, GOLD if nome == "Applica" else PAPER)
-	var aiuto := "Scegli lo sconto. STAMPA prepara il cartellino."
-	if stampato(): aiuto = "Sistema le etichette sul cartellino, poi APPLICA."
-	if stampato() and not B.market_print_current(p): aiuto = "Bozza cambiata: ristampa il cartellino."
-	if not TouchControls.enabled: aiuto = "FRECCE e INVIO: usa gli oggetti. Mouse: trascina."
+	var aiuto := "Scegli lo sconto, poi STAMPA."
+	if stampato(): aiuto = "Sistema le etichette, poi APPLICA."
+	if stampato() and not B.market_print_current(p): aiuto = "Ristampa il cartellino."
+	if not TouchControls.enabled: aiuto = "FRECCE e INVIO, o il mouse."
 	if in_mano != "":
-		aiuto = "Appoggia l'etichetta sul cartellino o annulla."
+		aiuto = "Posala sul cartellino."
 		if not TouchControls.enabled: aiuto = "MAIUSC + FRECCE: sposta. INVIO sul cartellino: posa."
 	if avviso != "": aiuto = avviso
 	_testo(aiuto, Rect2(16, 331, 488, 28), 10, GOLD if avviso != "" else PAPER)
@@ -319,3 +320,11 @@ func _draw_conferma() -> void:
 		var r := rett("Conferma/" + nome)
 		ART.panel(self, r, Color("344550"))
 		_testo("TORNA AL BANCO" if nome == "Indietro" else "APPLICA COSÌ", r.grow(-11), 12)
+
+## 500 euro per ogni cartellino con le condizioni nascoste: quelli già fatti, più quello sul banco.
+func _premio_finora() -> int:
+	var n := 0
+	for label: Dictionary in p.get("labels", []):
+		if bool(label.get("hidden", false)): n += 1
+	if (p.get("labels", []) as Array).size() < 3 and not bool(p.get("visible", true)): n += 1
+	return n * 500

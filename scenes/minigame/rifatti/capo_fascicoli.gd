@@ -262,7 +262,8 @@ func _timbro(i: int, r: Rect2, preso := false) -> void:
 
 func _draw() -> void:
 	ART.backdrop(self)
-	_testo("CAPO · IL FASCICOLO INCOMPLETO", Rect2(16, 6, 608, 25), 18, GOLD)
+	_testo("IL FASCICOLO", Rect2(16, 6, 440, 25), 18, GOLD)
+	ART.premio(self, 900 if _ercole_chiuso() else 0, Time.get_ticks_msec() / 1000.0)
 	_testo("%s · %d / 4" % [titoli[documento], documento + 1], Rect2(16, 36, 608, 20), 13)
 	ART.panel(self, Rect2(12, 64, 616, 253), Color("4c3f3b"), Color("8d7a67"))
 	_testo("SUL TAVOLO", Rect2(25, 72, 150, 15), 10, MINT)
@@ -275,10 +276,9 @@ func _draw() -> void:
 		var r := rett(nome)
 		ART.panel(self, r, Color("365b55") if nome == "Consegna" and timbro >= 0 else Color("293642"))
 		_testo({"Consegna": "CONSEGNA", "Dettagli": "DETTAGLI", "Esci": "SALVA / ESCI"}[nome], Rect2(r.position + Vector2(8, 7), r.size - Vector2(16, 7)), 11, GOLD if nome == "Consegna" else PAPER)
-	var aiuto := "Foglio, poi sagoma. Timbro, poi fascicolo."
-	if not TouchControls.enabled: aiuto = "FRECCE e INVIO: fogli, sagome, timbri."
-	if in_mano.begins_with("carta_"): aiuto = "Scegli la sagoma dello stesso documento."
-	elif in_mano.begins_with("timbro_"): aiuto = "Appoggia il timbro sul fascicolo."
+	var aiuto := "" if TouchControls.enabled else "FRECCE e INVIO, o il mouse."
+	if in_mano.begins_with("carta_"): aiuto = "Mettilo sulla sua sagoma."
+	elif in_mano.begins_with("timbro_"): aiuto = "Timbra il fascicolo."
 	if avviso != "": aiuto = avviso
 	_testo(aiuto, Rect2(116, 331, 388, 28), 10, GOLD if avviso != "" else PAPER)
 	var targets := bersagli()
@@ -342,3 +342,9 @@ func _draw_dettagli() -> void:
 	var r := rett("Dettagli/Chiudi")
 	ART.panel(self, r, Color("344550"))
 	_testo("TORNA AL TAVOLO", r.grow(-11), 12)
+
+## La pratica di Ercole chiusa come RISOLTA (adesso sul tavolo, o già consegnata così): è quella che il Capo paga.
+func _ercole_chiuso() -> bool:
+	if documento == 1 and timbro == 3: return true
+	var fatte: Array = p.get("decisions", [])
+	return fatte.size() > 1 and int(fatte[1].get("action", -1)) == 3

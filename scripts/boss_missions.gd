@@ -355,7 +355,7 @@ static func energy_preview(p: Dictionary) -> Dictionary:
 static func finish_energy() -> String:
  var p := progress("-5")
  var v := energy_preview(p)
- if not bool(v["valid"]): return "Manca energia: riduci le decorazioni, aumenta intensità o durata, poi riprova la simulazione."
+ if not bool(v["valid"]): return "Manca energia."
  var r := p.duplicate(true)
  r["reward"] = 600 if bool(v["overwork"]) else 0
  commit("-5", r)

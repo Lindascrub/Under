@@ -284,8 +284,9 @@ func _draw() -> void:
 	_aggiorna_testi()
 	ART.backdrop(self)
 	draw_rect(Rect2(12, 58, 616, 271), Color("34313a"))
-	_testo("CAPO · IL TAVOLO DI MONTAGGIO", Rect2(16, 7, 608, 24), 18, GOLD)
-	_testo("Tre voci. Sessanta secondi di servizio.", Rect2(16, 35, 608, 18), 12)
+	_testo("IL NOTIZIARIO", Rect2(16, 7, 440, 24), 18, GOLD)
+	ART.premio(self, _tagli() * 2000, Time.get_ticks_msec() / 1000.0)
+	_testo("Tre voci in sessanta secondi.", Rect2(16, 35, 440, 18), 12)
 	_testo("REGISTRAZIONI", Rect2(16, 59, 320, 14), 10, MINT)
 	for i in fonti.size():
 		var r := rett_fonte(i)
@@ -317,9 +318,9 @@ func _draw() -> void:
 			_testo(titolo, Rect2(r.position + Vector2(38, 11), r.size), 10)
 		else: _testo(titolo, Rect2(r.position + Vector2(9, 11), r.size), 11, GOLD if nome == "Trasmetti" else PAPER)
 	_draw_pista()
-	var aiuto := "Trascina un rullo sulla pista. FORBICI, poi uno spezzone: taglia."
+	var aiuto := "Trascina le voci sulla pista."
 	if not TouchControls.enabled:
-		aiuto = "FRECCE / INVIO: scegli fonte, poi pista. Mouse: trascina."
+		aiuto = "FRECCE e INVIO, o il mouse."
 		if tipo_fuoco == "clip": aiuto = "MAIUSC + FRECCE: ordine. CANC: togli. FORBICI: taglia."
 	if utensile != "": aiuto = "Scegli lo spezzone: " + ("togli il contesto." if utensile == "taglia" else "rimetti il contesto.")
 	if messaggio != "": aiuto = messaggio
@@ -383,3 +384,10 @@ func _draw_conferma() -> void:
 		var r := rett("Conferma/" + nome)
 		ART.panel(self, r, Color("36564f") if nome == "Invia" else Color("34414f"))
 		_testo("TRASMETTI" if nome == "Invia" else "TORNA AL TAVOLO", Rect2(r.position + Vector2(12, 12), r.size), 12)
+
+## Quanti spezzoni sono stati tagliati dal loro contesto: il Capo paga quelli.
+func _tagli() -> int:
+	var n := 0
+	for c in clips():
+		if bool(c.get("cut", false)): n += 1
+	return n

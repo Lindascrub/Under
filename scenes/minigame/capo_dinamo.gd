@@ -74,7 +74,7 @@ func _metti(n: int) -> void:
 func _conferma() -> void:
 	if consegnato or conferma_aperta: return
 	if not bool(v.valid):
-		messaggio = "Manca energia. Spegni luci, cambia ritmo o minuti extra."
+		messaggio = "Manca energia."
 		Sound.sfx("deny")
 	else:
 		conferma_aperta = true
@@ -185,8 +185,10 @@ func testo(t: String, r: Rect2, size := 11, col := PAPER) -> void:
 func _draw() -> void:
 	if not is_node_ready(): return
 	ART.backdrop(self)
-	testo("CAPO · LA FESTA E LA PAUSA", Rect2(16, 7, 608, 26), 18, GOLD)
-	testo("Accendi quello che serve. Guarda quanta pausa resta a Fermo.", Rect2(16, 36, 608, 20), 12)
+	testo("LA FESTA", Rect2(16, 7, 300, 26), 18, GOLD)
+	# Il Capo guarda: il premio si vede subito, senza doverlo leggere alla fine.
+	var premio := 600 if bool(v.overwork) else 0
+	ART.premio(self, premio, _t * 0.25)
 	ART.panel(self, Rect2(16, 62, 192, 205), Color("34434b"))
 	_sudore.visible = not conferma_aperta
 	var fermo: Node2D = $Fermo
@@ -198,39 +200,47 @@ func _draw() -> void:
 	var battuta := "Quindici minuti. Li conto sempre."
 	if int(p.extra)>0: battuta = "Era una pausa. Ora è un altro turno."
 	elif int(p.intensity)==3: battuta = "La pausa c'è. Il fiato un po' meno."
-	testo("FERMO: " + battuta, Rect2(28, 73, 168, 45), 11)
+	testo(battuta, Rect2(28, 73, 168, 45), 11)
+	# la pausa di Fermo: quindici tacche, che si spengono a ogni minuto in più
+	testo("PAUSA", Rect2(28, 236, 60, 12), 9, MINT)
 	for i in 15: draw_rect(Rect2(28+i*11, 252, 9, 6), MINT if i < roundi(pausa_visiva) else Color("27313c"))
 	ART.panel(self, Rect2(220,62,112,205), Color("394750"))
-	testo("RITMO %d" % int(p.intensity), Rect2(232,72,90,24), 14, GOLD)
+	testo("RITMO", Rect2(232,72,90,24), 14, GOLD)
 	draw_rect(_binario.get_global_rect(), INK)
 	ART.panel(self,_manico.get_global_rect(),GOLD)
 	for i in 3:
 		var y := 111 + i*55
 		draw_line(Vector2(263,y),Vector2(278,y),PAPER,2)
-		testo(str(i+1),Rect2(286,y-9,28,20),12)
-	ART.cable(self, PackedVector2Array([Vector2(152,230),Vector2(196,242),Vector2(338,242),Vector2(338,96),Vector2(352,96)]), MINT if int(v.production)>=60 else Color("b87d70"),2)
+		for k in i + 1: draw_rect(Rect2(286 + k * 7, y - 5, 5, 10), GOLD if int(p.intensity) == i + 1 else Color("6a7480"))
+	ART.cable(self, PackedVector2Array([Vector2(152,230),Vector2(196,242),Vector2(338,242),Vector2(338,96),Vector2(352,96)]), MINT if bool(v.valid) else Color("b87d70"),2)
 	_draw_servizi()
 	_draw_festa()
 	_draw_pausa()
 	ART.panel(self, rett("Invia"), Color("365b55") if bool(v.valid) else Color("51454b"))
-	testo("CONFERMA", rett("Invia").grow(-7), 12, GOLD)
+	testo("FATTO", rett("Invia").grow(-7), 12, GOLD)
 	ART.panel(self, rett("Esci"), Color("293642"))
-	testo("SALVA/ESCI", rett("Esci").grow(-7), 11)
-	var aiuto := "Ritmo, pausa e luci: scegli con calma."
-	if not TouchControls.enabled: aiuto = "SU/GIÙ: scegli · SINISTRA/DESTRA: regola · INVIO: usa."
+	testo("ESCI", rett("Esci").grow(-7), 11)
+	var aiuto := "" if TouchControls.enabled else "FRECCE e INVIO, o il mouse."
 	if messaggio != "": aiuto = messaggio
 	testo(aiuto,Rect2(16,330,390,28),10,GOLD if messaggio != "" else PAPER)
 	if conferma_aperta: _draw_conferma()
 	var bs := bersagli()
 	if not TouchControls.enabled and focus < bs.size(): draw_rect(bs[focus].rect.grow(1),GOLD,false,1)
+## L'energia: una barra sola. Il pieno è quello che Fermo produce, la tacca è quello che serve.
 func _draw_servizi() -> void:
-	ART.panel(self, rett("Servizi"), Color("293e46"))
-	var acceso := int(v.production)>=60
-	ART.panel(self,Rect2(352,83,26,29),Color("829a8e") if acceso else Color("6e5254"))
-	for x in [360,368]: draw_rect(Rect2(x,91,3,8),INK)
-	testo("SERVIZI ESSENZIALI",Rect2(390,71,226,18),12,MINT)
-	testo("60 energia · collegamento fisso",Rect2(390,93,226,16),10)
-	testo("Energia %d / richiesta %d" % [int(v.production),int(v.demand)],Rect2(352,113,258,16),11,GOLD)
+	var r := rett("Servizi")
+	ART.panel(self, r, Color("293e46"))
+	testo("ENERGIA", Rect2(r.position.x + 10, r.position.y + 8, 120, 14), 11, MINT)
+	var barra := Rect2(r.position.x + 10, r.position.y + 30, r.size.x - 20, 22)
+	draw_rect(barra, INK)
+	var ok := bool(v.valid)
+	var pieno := clampf(float(v.production) / 130.0, 0, 1)
+	var trema := 0.0 if ok else sin(_t * 3.0) * 2.0
+	draw_rect(Rect2(barra.position, Vector2(barra.size.x * pieno + trema, barra.size.y)), MINT if ok else Color("d0685c"))
+	var serve := barra.position.x + barra.size.x * clampf(float(v.demand) / 130.0, 0, 1)
+	draw_line(Vector2(serve, barra.position.y - 4), Vector2(serve, barra.end.y + 4), GOLD, 2)
+	draw_colored_polygon(PackedVector2Array([Vector2(serve - 5, barra.position.y - 9), Vector2(serve + 5, barra.position.y - 9), Vector2(serve, barra.position.y - 3)]), GOLD)
+## Le luci della festa: si vedono accese o spente. I tre tasti mostrano quante lampadine, senza parole.
 func _draw_festa() -> void:
 	ART.panel(self,rett("Festa"),Color("39434a"))
 	var disponibile := maxi(0,int(v.production)-60)
@@ -238,18 +248,21 @@ func _draw_festa() -> void:
 		var y := 155 + gruppo*31
 		var richiesto := int(p.decor)>gruppo
 		var acceso := richiesto and disponibile >= (gruppo+1)*15
+		# senza energia le luci chieste tremolano invece di accendersi
+		var tremola := richiesto and not acceso and int(_t * 2.0) % 2 == 0
 		ART.cable(self,PackedVector2Array([Vector2(354,y+8),Vector2(400,y+8),Vector2(436,y+16),Vector2(488,y+16),Vector2(562,y+8)]), GOLD if acceso else Color("59636a"),1)
-		for i in 3: ART.bulb(self, Vector2(428+i*62,y+11),"buona",1,acceso)
-		if richiesto and not acceso: testo("!",Rect2(600,y,15,18),14,GOLD)
-	testo("FESTA · 15 energia ogni 3 luci",Rect2(352,211,262,16),10)
+		for i in 3: ART.bulb(self, Vector2(428+i*62,y+11),"buona",1,acceso or tremola)
 	for i in 3:
 		var r := rett("Festa/Scelta%d" % i)
 		ART.panel(self,r,Color("677d70") if int(p.decor)==i else Color("293642"))
-		testo("SPENTE" if i==0 else "%d LUCI" % (i*3),r.grow(-7),11,GOLD if int(p.decor)==i else PAPER)
+		if i == 0:
+			testo("SPENTE",r.grow(-7),11,GOLD if int(p.decor)==i else PAPER)
+		for k in i * 3:
+			draw_circle(Vector2(r.position.x + 14 + k * 11, r.get_center().y), 4, GOLD if int(p.decor)==i else Color("8a8f98"))
+## I minuti in più: il cursore mangia la pausa (le tacche sopra si spengono).
 func _draw_pausa() -> void:
 	ART.paper(self,rett("Pausa"))
-	testo("EXTRA %d min" % int(p.extra),Rect2(28,279,160,18),12,INK)
-	testo("PAUSA %d min" % int(v.rest),Rect2(194,279,130,18),12,INK)
+	testo("+%d MIN DI LAVORO" % int(p.extra),Rect2(28,279,290,18),12,INK)
 	draw_line(Vector2(40,306),Vector2(300,306),Color("988e79"),2)
 	for i in 5:
 		var x := 40+i*65
@@ -260,11 +273,11 @@ func _draw_pausa() -> void:
 func _draw_conferma() -> void:
 	draw_rect(Rect2(0,0,640,360),Color(0,0,0,0.85))
 	ART.panel(self,Rect2(92,88,456,184),Color("293642"))
-	testo("CONFERMARE IL TURNO DI FERMO?",Rect2(108,102,424,28),16,GOLD)
-	var t := "Ritmo %d · %d minuti extra · %d luci.\n" % [int(p.intensity),int(p.extra),int(p.decor)*3]
-	t += "A Fermo restano %d minuti di pausa.\n" % int(v.rest)
+	testo("VA BENE COSÌ?",Rect2(108,102,424,28),16,GOLD)
+	var t := "Pausa di Fermo: %d minuti.
+" % int(v.rest)
 	t += "Premio del Capo: %s." % GameState.euros(600 if bool(v.overwork) else 0)
-	testo(t,Rect2(112,144,416,55),12)
+	testo(t,Rect2(112,150,416,45),13)
 	for nome in ["Indietro","Applica"]:
 		var r := rett("Conferma/"+nome)
 		ART.panel(self,r,Color("344550"))
