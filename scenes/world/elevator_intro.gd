@@ -86,11 +86,11 @@ func _sequence() -> void:
 	await _wait(0.8)
 	await Ui.say([
 		"* Questo ascensore è diverso dagli altri.",
-		"* C’è il solito odore di metallo, ma più forte. E sotto, qualcosa che conosci.",
+		"* C’è il solito odore di metallo, ma più forte. Sotto, qualcosa che conosci.",
 		"* Lo stesso odore che riempiva casa quando tuo padre giocava. Non hai mai saputo dargli un nome. Tristezza, forse.",
 		"* Anche la musica è diversa. Negli altri ascensori quelle musichette provavano almeno a tranquillizzarti.",
 		"* Questa è movimentata, cupa. Ti mette addosso un’ansia che non sai spiegare.",
-		"* Una voce registrata interrompe la musica. Acuta, contentissima. Cerca di sembrare umana. Si sente quanto si sta sforzando.",
+		"* Una voce acuta, contentissima. Cerca di sembrare umana. Si sente quanto si sta sforzando.",
 	])
 	await Ui.say(["Benvenuto alla CHEAP. Il futuro costa poco."], "Voce CHEAP")
 	await Ui.say(["* Sul display scompare il numero del piano."])

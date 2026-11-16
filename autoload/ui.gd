@@ -176,6 +176,8 @@ func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 	_name.visible = speaker != ""
 	_show_portrait(speaker, portrait)
 	_pitch = 1.0 if speaker == "" else 0.75 + float(absi(speaker.hash()) % 50) / 100.0
+	# la voce registrata della CHEAP è acuta, contentissima: più alta di tutte le altre
+	if speaker == "Voce CHEAP": _pitch = 1.7
 	for line: Variant in lines:
 		# una frase troppo lunga per il riquadro diventa più pagine
 		var t := GameState.fmt(str(line))

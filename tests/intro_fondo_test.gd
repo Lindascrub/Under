@@ -40,7 +40,7 @@ func _run() -> void:
 	_check(_letto("Mi dispiace"), "biglietto di papà presente")
 	_check(_letto("Si presenti alla CHEAP"), "lettera presente")
 	_check(_letto("Tristezza, forse"), "nuova descrizione dell'ascensore")
-	_check(_letto("Acuta, contentissima"), "voce registrata chiara")
+	_check(_letto("Una voce acuta, contentissima"), "voce registrata chiara")
 	_check(_letto("Alla fine premi l’allarme"), "allarme ascensore")
 	_check(_letto("fin troppo abbaglianti"), "le porte danno sulle luci")
 	_check(_letto("Piacere, io sono LUCA"), "nome scelto dal giocatore (detto da lui, di lato)")
