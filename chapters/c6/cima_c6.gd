@@ -324,7 +324,7 @@ func talk_president() -> void:
 func _president_first() -> void:
 	var d := c6()
 	Ui.cutscene = true
-	await Ui.say(["* Una stanza enorme, quasi vuota. Una signora anziana, grigia, con una giacca semplice.",
+	await Ui.say(["* Una stanza enorme. Una signora anziana, grigia, con una giacca semplice.",
 		"* Sta cercando di aprire una bustina di zucchero."])
 	await _request_answer()
 	Sound.sfx("strap")

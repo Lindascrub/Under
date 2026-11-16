@@ -19,6 +19,9 @@ var strada := "gentile"
 var finale := "C"
 var turno := "buono"
 var contesta := "si"
+## "pc" o "tel": alla Cima, nel TURNO e nel finale si usano i comandi veri (tastiera e mouse, o il dito), non le scorciatoie.
+var vero := ""
+var _coda: Array = []
 var _log: FileAccess
 var _ultimo := ""
 var _visti := {}
@@ -37,6 +40,7 @@ func _ready() -> void:
 			"finale": finale = kv[1]
 			"turno": turno = kv[1]
 			"contesta": contesta = kv[1]
+			"vero": vero = kv[1]
 			"log": percorso = kv[1]
 	# ogni giro ha il suo salvataggio e la sua memoria di Nives, vuota: i giri non si ricordano fra loro
 	GameState.save_path = "user://giro_storia_%s.json" % percorso.get_file().get_basename()
@@ -90,18 +94,33 @@ func _process(_delta: float) -> void:
 		scene.set("score", scene.get("target") if strada != "perde" else 0)
 		scene.set("time_left", 0.0)
 		return
-	if sp == Router.DIREZIONE and not Ui.transitioning and not Ui.busy and _frame % 3 == 0:
+	var reale := vero != "" and sp in [Router.CIMA, Router.DIREZIONE, Router.FINALE]
+	if vero == "tel" and not TouchControls.enabled:
+		TouchControls.enabled = true
+	# i comandi veri vanno uno per fotogramma, come le dita
+	if not _coda.is_empty():
+		(_coda.pop_front() as Callable).call()
+		return
+	if reale and sp == Router.DIREZIONE and not Ui.transitioning and not Ui.busy:
+		if _frame % 40 == 0:
+			_direzione_vera(scene)
+		return
+	if reale and sp == Router.FINALE:
+		if not Ui.busy and not Ui.transitioning and _frame % 60 == 0:
+			_premi(Vector2(320, 180))
+	elif sp == Router.DIREZIONE and not Ui.transitioning and not Ui.busy and _frame % 3 == 0:
 		_scrivi("    [TURNO di Direzione, fase %s: piano %s]" % [scene.get("phase"), director_plan])
 		_drive_direction(scene)
 		return
-	if sp == Router.FINALE:
+	if sp == Router.FINALE and not reale:
 		scene.set("fast", true)
-	if not Ui.busy or _frame % 2 != 0:
+	if not Ui.busy or _frame % (12 if reale else 2) != 0:
 		return
 	var mode := str(Ui.get("_mode"))
 	if mode == "say":
 		if bool(Ui.get("_typing")):
-			_tap("confirm")   # salta la scrittura lettera per lettera
+			if reale: _avanti_vero()
+			else: _tap("confirm")   # salta la scrittura lettera per lettera
 			return
 		var lbl: Label = Ui.get("_label")
 		var nome: Label = Ui.get("_name")
@@ -114,17 +133,97 @@ func _process(_delta: float) -> void:
 		else:
 			t = "  " + ((nome.text + ": ") if nome.visible and nome.text != "" else "") + lbl.text
 		_registra(t)
-		_tap("confirm")
+		if reale: _avanti_vero()
+		else: _tap("confirm")
 	elif mode == "choose":
 		var opts: Array = Ui.get("_options")
 		var prompt := str((Ui.get("_text") as Label).text)
 		var i := _scelta(prompt, opts)
-		Ui.set("_sel", i)
+		if not reale:
+			Ui.set("_sel", i)
 		var righe: Array = []
 		for k in opts.size():
 			righe.append(("[x] " if k == i else "[ ] ") + GameState.fmt(str(opts[k])))
 		_registra("  ?? " + prompt.replace("\n", " / ") + "\n      " + "\n      ".join(righe))
+		if reale: _scegli_vero(i, opts.size())
+		else: _tap("confirm")
+
+
+# --- i comandi veri (--vero=pc|tel) --------------------------------------------------------------
+
+## Un tocco (telefono) o un clic (PC) in un punto dello schermo: giù adesso, su al fotogramma dopo.
+func _premi(pos: Vector2) -> void:
+	if vero == "tel":
+		_touch(pos, true, 0)
+		_coda.append(func() -> void: _touch(pos, false, 0))
+	else:
+		_clic(pos, true)
+		_coda.append(func() -> void: _clic(pos, false))
+
+
+func _clic(pos: Vector2, giu: bool) -> void:
+	var e := InputEventMouseButton.new()
+	e.button_index = MOUSE_BUTTON_LEFT
+	e.pressed = giu
+	e.position = pos
+	e.global_position = pos
+	Input.parse_input_event(e)
+
+
+## Avanti in un dialogo: il dito al centro, o INVIO.
+func _avanti_vero() -> void:
+	if vero == "tel":
+		_premi(Vector2(320, 300))
+	else:
 		_tap("confirm")
+
+
+## Una scelta fatta davvero: col dito sulla riga, o con GIÙ e INVIO. Se arriva una voce diversa lo si scrive.
+func _scegli_vero(i: int, quante: int) -> void:
+	var descritta: Variant = Ui.get("_described")
+	if vero == "pc":
+		var sel := int(Ui.get("_sel"))
+		for k in posmod(i - sel, quante):
+			_coda.append(func() -> void: _tap("move_down"))
+		_coda.append(func() -> void: _tap("confirm"))
+		return
+	var pos := Vector2(-1, -1)
+	if is_instance_valid(descritta):
+		for y in range(20, 360, 6):
+			for x in range(40, 640, 40):
+				if pos.x < 0 and int((descritta as Object).call("indice_a", Vector2(x, y))) == i:
+					pos = Vector2(x, y)
+	else:
+		var box: Control = Ui.get("_choice_box")
+		var lab: Label = Ui.get("_choice_label")
+		var riga := lab.get_line_height() + lab.get_theme_constant("line_spacing")
+		pos = Vector2(box.position.x + box.size.x * 0.5, box.position.y + lab.position.y + riga * (i + 0.5))
+		if not Rect2(box.position, box.size).has_point(pos) or pos.y > 356:
+			_scrivi("    [VERO: la voce %d di %d è FUORI dal riquadro o dallo schermo (y=%d, riquadro fino a %d)]" % [i, quante, int(pos.y), int(box.position.y + box.size.y)])
+	if pos.x < 0:
+		_scrivi("    [VERO: non trovo dove toccare la voce %d]" % i)
+		return
+	_premi(pos)
+
+
+## Il TURNO di Direzione con i comandi veri: PROSEGUI, poi la voce voluta e di nuovo conferma.
+func _direzione_vera(d: Node) -> void:
+	var fase := str(d.get("phase"))
+	_scrivi("    [VERO %s: TURNO di Direzione, fase %s, avviso «%s»]" % [vero, fase, str(d.get("msg"))])
+	var p: Dictionary = director_plan[0] if not director_plan.is_empty() else {}
+	match fase:
+		"alloc":
+			_premi((d.call("confirm_button") as Rect2).get_center())
+		"casa", "debiti":
+			var opts: Array = d.get("options")
+			var want := str(p.get("casa" if fase == "casa" else "choice", ""))
+			var pick := opts.size() - 1 if fase == "casa" else 0
+			for i in opts.size():
+				if str(opts[i][0]) == want and str(opts[i][opts[i].size() - 1]) == "":
+					pick = i
+			_premi((d.call("option_button", pick) as Rect2).get_center())
+			_coda.append(func() -> void: pass)
+			_coda.append(func() -> void: _premi((d.call("confirm_button") as Rect2).get_center()))
 
 
 func _registra(t: String) -> void:

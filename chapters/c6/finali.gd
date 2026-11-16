@@ -96,12 +96,15 @@ static func facts() -> Dictionary:
 	}
 
 
+## Da quanti incarichi del Capo chiusi a modo suo (con il premio) i finali migliori, A2 e C2, non si raggiungono più.
+const CAPO_TROPPO := 3
+
 ## Le regole delle varianti, in ordine di priorità. La prima vera vince; l'ultima di ogni famiglia è il fallback.
 static func variant_rules() -> Dictionary:
 	return {
 		"A": [
-			["A2", "stipendi o servizi migliorati, almeno 2 legami, una regola dei debiti cambiata, attribuzione globale rifiutata",
-				func(x: Dictionary) -> bool: return x["improved"] and x["bonds"] >= 2 and x["rule_changed"] and not x["power"]],
+			["A2", "stipendi o servizi migliorati, almeno 2 legami, una regola dei debiti cambiata, attribuzione globale rifiutata, il Capo aiutato meno di 3 volte",
+				func(x: Dictionary) -> bool: return x["improved"] and x["bonds"] >= 2 and x["rule_changed"] and not x["power"] and int(x.get("exploited", 0)) < CAPO_TROPPO],
 			["A1", "nel turno \"Conserva il sistema dei debiti\" scelto mentre almeno un'altra regola era aperta",
 				func(x: Dictionary) -> bool: return x.get("kept_by_choice", false)],
 			["A3", "altrimenti", func(_x: Dictionary) -> bool: return true],
@@ -112,9 +115,9 @@ static func variant_rules() -> Dictionary:
 			["B1", "altrimenti", func(_x: Dictionary) -> bool: return true],
 		],
 		"C": [
-			["C2", "almeno 3 reti, 4 legami, i 3 ruoli affidati a persone, manutenzione in regola, riserve almeno 10, regola dei debiti cambiata, attribuzione globale rifiutata",
+			["C2", "almeno 3 reti, 4 legami, i 3 ruoli affidati a persone, manutenzione in regola, riserve almeno 10, regola dei debiti cambiata, attribuzione globale rifiutata, il Capo aiutato meno di 3 volte",
 				func(x: Dictionary) -> bool: return x["networks"] >= 3 and x["bonds"] >= 4 and x["roles_filled"] == 3 \
-					and x["policy"]["maintenance_ok"] and x["policy"]["reserve_ok"] and x["rule_changed"] and not x["power"]],
+					and x["policy"]["maintenance_ok"] and x["policy"]["reserve_ok"] and x["rule_changed"] and not x["power"] and int(x.get("exploited", 0)) < CAPO_TROPPO],
 			["C3", "meno di 2 legami, oppure nessuna rete, oppure nessun ruolo affidato",
 				func(x: Dictionary) -> bool: return x["bonds"] < 2 or x["networks"] == 0 or x["roles_filled"] == 0],
 			["C1", "altrimenti", func(_x: Dictionary) -> bool: return true],

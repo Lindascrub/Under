@@ -207,19 +207,36 @@ func _confirm() -> void:
 	if B.uses("cima"):
 		phase = "mandate"
 		await Ui.say(["Prima della conferma scegli chi sostiene i costi e chi partecipa. Il bilancio resta di cento unità."], "La Presidente")
-		var mode: int = await Ui.choose_described("Chi paga e chi decide?", [
+		# Il mandato si sceglie fra quelli che questo bilancio regge: gli altri dicono subito che cosa manca.
+		# Nessun ritorno a vuoto al tavolo: si resta qui finché non se ne sceglie uno possibile (o si decide di rivedere).
+		var chiavi := ["tutele", "tariffe", "accentrata", "condivisa"]
+		var voci := [
 			["Mantieni le tutele", "Rispetti i minimi per stipendi e servizi. Nessuna tariffa aggiunta ai lavoratori."],
 			["Tariffe ai lavoratori", "Le riserve ricevono 5 unità. A pagarle sono i lavoratori."],
 			["Firma unica", "Sposti 5 dai servizi alle riserve. Decidi senza i rappresentanti."],
-			["Decisione con i rappresentanti", "I rappresentanti partecipano prima dell'applicazione. Coordinarsi costa 5 unità."]])
-		st["mandate"] = ["tutele", "tariffe", "accentrata", "condivisa"][mode]
-		var issue := RULES.invalid(st, alloc)
-		if issue != "":
-			msg = issue
+			["Decisione con i rappresentanti", "I rappresentanti partecipano prima dell'applicazione. Coordinarsi costa 5 unità."]]
+		for k in chiavi.size():
+			st["mandate"] = chiavi[k]
+			var manca := RULES.invalid(st, alloc)
+			if manca != "":
+				voci[k][1] = "ADESSO NO. " + manca
+		st["mandate"] = ""
+		var mode := -1
+		while mode < 0:
+			var scelto: int = await Ui.choose_described("Chi paga e chi decide?", voci)
+			st["mandate"] = chiavi[scelto]
+			var issue := RULES.invalid(st, alloc)
+			if issue == "":
+				mode = scelto
+				break
 			st["mandate"] = ""
-			phase = "alloc"
-			queue_redraw()
-			return
+			Sound.sfx("deny")
+			var poi: int = await Ui.choose(issue, ["Scelgo un altro mandato", "Rivedo il bilancio"])
+			if poi == 1:
+				msg = issue
+				phase = "alloc"
+				queue_redraw()
+				return
 		await Ui.say(RULES.hints(st, alloc))
 		if mode == 3:
 			await Ui.say(["Non possiamo fissare i turni senza sapere chi accompagna i bambini. I rappresentanti portano gli orari, noi dobbiamo rispettare il bilancio.", "La consultazione non crea soldi. Cambia chi può contestare una decisione prima che venga applicata."], "Rappresentante dei servizi")

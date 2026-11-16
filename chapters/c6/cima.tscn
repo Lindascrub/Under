@@ -199,6 +199,42 @@ region_rect = Rect2(112, 352, 64, 32)
 metadata/calpestabile = true
 metadata/prop_talk_skip = true
 
+[node name="TappetoSalotto" type="Sprite2D" parent="Decori" unique_id=729866679]
+position = Vector2(432, 348)
+texture = ExtResource("8_kw2m7")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
+metadata/prop_talk_skip = true
+
+[node name="TappetoAttesa" type="Sprite2D" parent="Decori" unique_id=1526872913]
+position = Vector2(800, 196)
+texture = ExtResource("8_kw2m7")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
+metadata/prop_talk_skip = true
+
+[node name="TappetoCorsia0" type="Sprite2D" parent="Decori" unique_id=261652237]
+position = Vector2(424, 220)
+texture = ExtResource("8_kw2m7")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
+metadata/prop_talk_skip = true
+
+[node name="TappetoCorsia1" type="Sprite2D" parent="Decori" unique_id=256442312]
+position = Vector2(488, 220)
+texture = ExtResource("8_kw2m7")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 352, 64, 32)
+metadata/calpestabile = true
+metadata/prop_talk_skip = true
+
 [node name="Mondo" type="Node2D" parent="." unique_id=1518140009]
 y_sort_enabled = true
 
@@ -704,6 +740,307 @@ position = Vector2(0, 5)
 [node name="_CollisionShape2D_50" type="CollisionShape2D" parent="Mondo/PiantaLaboratorio/Collisione" unique_id=345213672]
 position = Vector2(16, -10)
 shape = SubResource("RectangleShape2D_d0kdd")
+
+[node name="LibreriaParete0" type="Sprite2D" parent="Mondo" unique_id=1945063986]
+position = Vector2(440, 96)
+texture = ExtResource("27_jseg7")
+centered = false
+offset = Vector2(0, -42)
+region_enabled = true
+region_rect = Rect2(0, 208, 32, 48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LibreriaParete0" unique_id=412773241]
+position = Vector2(0, 6)
+
+[node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/LibreriaParete0/Collisione" unique_id=152403391]
+position = Vector2(18, -13.5)
+shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
+
+[node name="LibreriaParete1" type="Sprite2D" parent="Mondo" unique_id=603089859]
+position = Vector2(472, 96)
+texture = ExtResource("27_jseg7")
+centered = false
+offset = Vector2(0, -42)
+region_enabled = true
+region_rect = Rect2(0, 208, 32, 48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LibreriaParete1" unique_id=534435884]
+position = Vector2(0, 6)
+
+[node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/LibreriaParete1/Collisione" unique_id=561717829]
+position = Vector2(18, -13.5)
+shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
+
+[node name="LibreriaParete2" type="Sprite2D" parent="Mondo" unique_id=837533626]
+position = Vector2(504, 96)
+texture = ExtResource("27_jseg7")
+centered = false
+offset = Vector2(0, -42)
+region_enabled = true
+region_rect = Rect2(0, 208, 32, 48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LibreriaParete2" unique_id=745830382]
+position = Vector2(0, 6)
+
+[node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/LibreriaParete2/Collisione" unique_id=564927189]
+position = Vector2(18, -13.5)
+shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
+
+[node name="LibreriaParete3" type="Sprite2D" parent="Mondo" unique_id=840236593]
+position = Vector2(680, 96)
+texture = ExtResource("27_jseg7")
+centered = false
+offset = Vector2(0, -42)
+region_enabled = true
+region_rect = Rect2(0, 208, 32, 48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LibreriaParete3" unique_id=1098657286]
+position = Vector2(0, 6)
+
+[node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/LibreriaParete3/Collisione" unique_id=230540327]
+position = Vector2(18, -13.5)
+shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
+
+[node name="LibreriaParete4" type="Sprite2D" parent="Mondo" unique_id=123228633]
+position = Vector2(712, 96)
+texture = ExtResource("27_jseg7")
+centered = false
+offset = Vector2(0, -42)
+region_enabled = true
+region_rect = Rect2(0, 208, 32, 48)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LibreriaParete4" unique_id=1700291824]
+position = Vector2(0, 6)
+
+[node name="_CollisionShape2D_47" type="CollisionShape2D" parent="Mondo/LibreriaParete4/Collisione" unique_id=859366336]
+position = Vector2(18, -13.5)
+shape = SubResource("RectangleShape2D_g6yp8_Libreria28")
+
+[node name="DivanoSalotto" type="Sprite2D" parent="Mondo" unique_id=710889966]
+modulate = Color(0.78, 0.68, 0.58, 1)
+position = Vector2(400, 352)
+texture = ExtResource("26_aqhgw")
+centered = false
+offset = Vector2(0, -32)
+region_enabled = true
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/DivanoSalotto" unique_id=1134220572]
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/DivanoSalotto/Collisione" unique_id=1617791865]
+position = Vector2(17, -13)
+shape = SubResource("RectangleShape2D_4m25g")
+
+[node name="DivanoSalotto2" type="Sprite2D" parent="Mondo" unique_id=354170663]
+modulate = Color(0.78, 0.68, 0.58, 1)
+position = Vector2(464, 352)
+texture = ExtResource("26_aqhgw")
+centered = false
+offset = Vector2(0, -32)
+region_enabled = true
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/DivanoSalotto2" unique_id=1193822988]
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/DivanoSalotto2/Collisione" unique_id=1676964103]
+position = Vector2(16, -12.125)
+shape = SubResource("RectangleShape2D_63n3h")
+
+[node name="TavolinoSalotto" type="Sprite2D" parent="Mondo" unique_id=956914996]
+position = Vector2(432, 394)
+texture = ExtResource("8_kw2m7")
+centered = false
+offset = Vector2(0, -29)
+region_enabled = true
+region_rect = Rect2(80, 96, 48, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TavolinoSalotto" unique_id=1111381550]
+position = Vector2(0, 3)
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/TavolinoSalotto/Collisione" unique_id=470353764]
+position = Vector2(24, -14)
+shape = SubResource("RectangleShape2D_b8kf0_Tavolino")
+
+[node name="LampadaSalotto" type="Sprite2D" parent="Mondo" unique_id=376075938]
+position = Vector2(368, 338)
+texture = ExtResource("23_l6d22")
+centered = false
+offset = Vector2(0, -41)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/LampadaSalotto" unique_id=747983112]
+position = Vector2(0, 7)
+
+[node name="@CollisionShape2D@34" type="CollisionShape2D" parent="Mondo/LampadaSalotto/Collisione" unique_id=1510566884]
+position = Vector2(7.5, -11)
+shape = SubResource("RectangleShape2D_jseg7")
+
+[node name="DivanoAttesa" type="Sprite2D" parent="Mondo" unique_id=1255589775]
+modulate = Color(0.78, 0.68, 0.58, 1)
+position = Vector2(768, 200)
+texture = ExtResource("26_aqhgw")
+centered = false
+offset = Vector2(0, -32)
+region_enabled = true
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/DivanoAttesa" unique_id=1358161868]
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/DivanoAttesa/Collisione" unique_id=1263836852]
+position = Vector2(17, -13)
+shape = SubResource("RectangleShape2D_4m25g")
+
+[node name="DivanoAttesa2" type="Sprite2D" parent="Mondo" unique_id=389561434]
+modulate = Color(0.78, 0.68, 0.58, 1)
+position = Vector2(832, 200)
+texture = ExtResource("26_aqhgw")
+centered = false
+offset = Vector2(0, -32)
+region_enabled = true
+region_rect = Rect2(112, 448, 32, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/DivanoAttesa2" unique_id=1409204241]
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/DivanoAttesa2/Collisione" unique_id=605125153]
+position = Vector2(16, -12.125)
+shape = SubResource("RectangleShape2D_63n3h")
+
+[node name="TavolinoAttesa" type="Sprite2D" parent="Mondo" unique_id=1890881828]
+position = Vector2(800, 242)
+texture = ExtResource("8_kw2m7")
+centered = false
+offset = Vector2(0, -29)
+region_enabled = true
+region_rect = Rect2(80, 96, 48, 32)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/TavolinoAttesa" unique_id=1298282767]
+position = Vector2(0, 3)
+
+[node name="Ingombro" type="CollisionShape2D" parent="Mondo/TavolinoAttesa/Collisione" unique_id=455183766]
+position = Vector2(24, -14)
+shape = SubResource("RectangleShape2D_b8kf0_Tavolino")
+
+[node name="SchedarioDirezione0" type="Sprite2D" parent="Mondo" unique_id=1351580117]
+position = Vector2(544, 432)
+texture = ExtResource("28_o0lts")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/SchedarioDirezione0" unique_id=1433266307]
+
+[node name="_CollisionShape2D_51" type="CollisionShape2D" parent="Mondo/SchedarioDirezione0/Collisione" unique_id=1579535094]
+position = Vector2(7.75, -12.5)
+shape = SubResource("RectangleShape2D_uy445")
+
+[node name="SchedarioDirezione1" type="Sprite2D" parent="Mondo" unique_id=1609633776]
+position = Vector2(560, 432)
+texture = ExtResource("28_o0lts")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/SchedarioDirezione1" unique_id=1513168728]
+
+[node name="_CollisionShape2D_51" type="CollisionShape2D" parent="Mondo/SchedarioDirezione1/Collisione" unique_id=516606895]
+position = Vector2(7.75, -12.5)
+shape = SubResource("RectangleShape2D_uy445")
+
+[node name="SchedarioDirezione2" type="Sprite2D" parent="Mondo" unique_id=1247707727]
+position = Vector2(576, 432)
+texture = ExtResource("28_o0lts")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/SchedarioDirezione2" unique_id=308188589]
+
+[node name="_CollisionShape2D_51" type="CollisionShape2D" parent="Mondo/SchedarioDirezione2/Collisione" unique_id=370620840]
+position = Vector2(7.75, -12.5)
+shape = SubResource("RectangleShape2D_uy445")
+
+[node name="SchedarioDirezione3" type="Sprite2D" parent="Mondo" unique_id=251132179]
+position = Vector2(592, 432)
+texture = ExtResource("28_o0lts")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/SchedarioDirezione3" unique_id=1421095349]
+
+[node name="_CollisionShape2D_51" type="CollisionShape2D" parent="Mondo/SchedarioDirezione3/Collisione" unique_id=265889523]
+position = Vector2(7.75, -12.5)
+shape = SubResource("RectangleShape2D_uy445")
+
+[node name="SchedarioDirezione4" type="Sprite2D" parent="Mondo" unique_id=287881769]
+position = Vector2(608, 432)
+texture = ExtResource("28_o0lts")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/SchedarioDirezione4" unique_id=354351665]
+
+[node name="_CollisionShape2D_51" type="CollisionShape2D" parent="Mondo/SchedarioDirezione4/Collisione" unique_id=385192953]
+position = Vector2(7.75, -12.5)
+shape = SubResource("RectangleShape2D_uy445")
+
+[node name="ScatoleDirezione" type="Sprite2D" parent="Mondo" unique_id=1188687306]
+position = Vector2(640, 432)
+texture = ExtResource("12_rfblm")
+centered = false
+offset = Vector2(0, -26)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/ScatoleDirezione" unique_id=477401965]
+position = Vector2(0, 6)
+
+[node name="@CollisionShape2D@24" type="CollisionShape2D" parent="Mondo/ScatoleDirezione/Collisione" unique_id=358667767]
+position = Vector2(8, -10)
+shape = SubResource("RectangleShape2D_5m67u")
+
+[node name="PalmaIngresso" type="Sprite2D" parent="Mondo" unique_id=1309813702]
+position = Vector2(352, 432)
+texture = ExtResource("22_kc68t")
+centered = false
+offset = Vector2(0, -31)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/PalmaIngresso" unique_id=734917721]
+position = Vector2(0, 1)
+
+[node name="@CollisionShape2D@33" type="CollisionShape2D" parent="Mondo/PalmaIngresso/Collisione" unique_id=1637615552]
+position = Vector2(16, -4)
+shape = SubResource("RectangleShape2D_aqhgw")
+
+[node name="PiantaScrivania" type="Sprite2D" parent="Mondo" unique_id=1734880299]
+position = Vector2(568, 150)
+texture = ExtResource("8_kw2m7")
+centered = false
+offset = Vector2(0, -31)
+region_enabled = true
+region_rect = Rect2(212, 408, 23, 31)
+metadata/footprint_applied = true
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaScrivania" unique_id=1288201664]
+
+[node name="@CollisionShape2D@27" type="CollisionShape2D" parent="Mondo/PiantaScrivania/Collisione" unique_id=1583970096]
+position = Vector2(11.5, -4)
+shape = SubResource("RectangleShape2D_h8ct1")
+
+[node name="PiantaAttesa" type="Sprite2D" parent="Mondo" unique_id=454557649]
+position = Vector2(896, 200)
+texture = ExtResource("18_ioeuc")
+centered = false
+offset = Vector2(0, -25)
+
+[node name="Collisione" type="StaticBody2D" parent="Mondo/PiantaAttesa" unique_id=750000301]
+position = Vector2(0, 7)
+
+[node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/PiantaAttesa/Collisione" unique_id=804891842]
+position = Vector2(8, -10)
+shape = SubResource("RectangleShape2D_0trnd")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=621777101]
 

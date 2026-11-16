@@ -133,3 +133,12 @@ gioca ogni variante fino ai titoli di coda.
 ## Il fratello di Fermo — 9 novembre 2026
 
 La sottotrama è implementata e salva il proprio stato nella partita. Il messaggio consegnato può chiudersi nel Fondo o nell’epilogo di qualsiasi finale. Scale sbarrate e Fermo robot non vengono ignorati. Nessun nuovo legame, voto, aiuto, requisito o cambio delle condizioni dei finali: [FRATELLO_FERMO](FRATELLO_FERMO.md).
+
+
+## Aggiornamento del 17 novembre 2026: il Capo conta
+
+A2 e C2 chiedono anche che il Capo sia stato aiutato **meno di 3 volte** (`GameState.exploited < FINALI.CAPO_TROPPO`):
+ogni incarico chiuso prendendo il premio vale 1. Con 3 o più, chi sceglie A finisce in A1 o A3, chi sceglie C in C1 (o C3).
+
+TURNO di Direzione: nella scelta del mandato le voci che il bilancio non regge dicono subito «ADESSO NO» e perché.
+Sceglierne una non riporta più al tavolo: si sceglie un altro mandato, oppure «Rivedo il bilancio».
