@@ -54,3 +54,9 @@ compare la scritta «Tre stelle per l'impegno. Ci hai provato dieci volte: qui n
   Il cartello «CHIUSURA PREVISTA» conta i giorni dall'arrivo in Città.
 - Incarichi del Capo: titoli corti, premio sempre in vista (`ART.premio`), aiuti ridotti a una riga.
 - Banca: le due comparse sedute nella sala (`SedutoSala0/1`) usano `world/cliente_seduto.gd`: solide e con una battuta.
+
+## Aggiornamento del 17 novembre 2026: Fermo
+
+Anche Fermo ha un aiuto con le stelle (`data/fermo.json`, offerto da `chapters/c1/fondo_c1.gd`, funzione `_aiuto_fermo`): gli tieni il ritmo sulla cyclette
+mentre fa i quindici minuti di pausa (minigioco "timing": sei colpi nel verde, tre errori). Conta come legame per i finali.
+Non entra nei requisiti del badge regalato del Fondo: quelli restano Mina e Bulbo.

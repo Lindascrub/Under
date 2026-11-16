@@ -30,6 +30,7 @@
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="Texture2D" path="res://assets/limezu/themes/gym.png" id="Texture_bici_originale"]
 [ext_resource type="Texture2D" path="res://assets/limezu/bank/Hospital_Singles_126.png" id="tex_stampante"]
+[ext_resource type="Script" path="res://world/cliente_seduto.gd" id="cliente_seduto"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b7el1"]
 size = Vector2(19, 8)
@@ -1041,6 +1042,26 @@ position = Vector2(0, 7)
 [node name="@CollisionShape2D@29" type="CollisionShape2D" parent="Mondo/PiantaAttesa/Collisione" unique_id=804891842]
 position = Vector2(8, -10)
 shape = SubResource("RectangleShape2D_0trnd")
+
+[node name="AttesaCima0" type="AnimatedSprite2D" parent="Mondo" unique_id=1911700101]
+position = Vector2(776, 276)
+centered = false
+offset = Vector2(-8, -28)
+script = ExtResource("cliente_seduto")
+sheet = "rpg_vx1_6"
+anim = "idle_up"
+nome = "Un uomo in attesa"
+battute = PackedStringArray("Ho chiesto un colloquio con la Presidente.", "Mi hanno dato un numero. È lo stesso che avevo in Banca.")
+
+[node name="AttesaCima1" type="AnimatedSprite2D" parent="Mondo" unique_id=1911700102]
+position = Vector2(828, 276)
+centered = false
+offset = Vector2(-8, -28)
+script = ExtResource("cliente_seduto")
+sheet = "rpg_vx2_2"
+anim = "idle_up"
+nome = "Una donna in attesa"
+battute = PackedStringArray("Sono salita per un reclamo.", "A ogni piano mi hanno detto: più su.")
 
 [node name="Arrivi" type="Node2D" parent="." unique_id=621777101]
 

@@ -240,6 +240,8 @@ func _talk_fermo() -> void:
 		await Ui.say(["Hai il badge. ...Bene.", "Non voltarti, quando sali. Fa male, voltarsi."], who)
 		await FratelliFermo.give_message()
 		return
+	if await _aiuto_fermo():
+		return
 	if GameState.worked_today:
 		await Ui.say([["Hai pedalato. I palloncini sono belli gonfi, oggi. Grazie a te.",
 			"La torta è ancora lì. Nessuno la mangia. È di plastica, come tutto.",
@@ -488,3 +490,37 @@ func _make_lift(top_left: Vector2i) -> void:
 		"* L'ascensore. Le porte sono storte, le luci spente, dentro è buio. Dal soffitto pende un filo che sfrigola.",
 		"* Sotto la pulsantiera, un adesivo a forma di cuore: \"Si sale solo col badge. Ti vogliamo bene!\"",
 	])
+
+
+## L'aiuto a Fermo (data/fermo.json): gli tieni il ritmo sulla cyclette mentre fa i suoi quindici minuti di pausa.
+## Come per le altre persone: stelle, rigioco finché non sono tre, e dopo dieci prove basta così.
+## Restituisce true se ha già detto o fatto qualcosa (allora Fermo non aggiunge la sua frase del giorno).
+func _aiuto_fermo() -> bool:
+	var h: Dictionary = (GameState._load_json("res://data/fermo.json", {}) as Dictionary).get("help", {})
+	if h.is_empty():
+		return false
+	var who := "Fermo"
+	var mg: Dictionary = h["minigame"]
+	if GameState.minigame_closed("fermo"):
+		if GameState.flags.get("fermo_aiuto_detto", false):
+			return false
+		GameState.flags["fermo_aiuto_detto"] = true
+		var fine: Array = mg.get("concluso", []) if GameState.flags.get("aiuto_concluso_fermo", false) else mg.get("completato", [])
+		await Ui.say(fine, who)
+		return true
+	var prima := int(GameState.flags.get("stelle_fermo", 0))
+	var rifare := "fermo" in GameState.helped_ids or prima > 0 or int(GameState.flags.get("tentativi_fermo", 0)) > 0
+	var domanda := str(h.get("ask", ""))
+	if rifare:
+		domanda = str((mg["rigioca"]["chiede"] as Array)[0]) + " (Record: %d/3 stelle.)" % prima
+	var scelta: int = await Ui.choose(domanda, ["Riprova (1 ora)" if rifare else "Dai una mano (1 ora)", "Non ora"], who)
+	if scelta != 0:
+		return false
+	if not rifare:
+		await Ui.say(h.get("prima", []), who)
+	var cfg := Npc.minigame_cfg("fermo", who, h, scene_file_path, player.global_position)
+	if rifare:
+		cfg["rigioco"] = true
+		cfg["stelle_prima"] = prima
+	Router.minigame(cfg)
+	return true

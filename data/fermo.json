@@ -1,0 +1,71 @@
+{
+  "_nota": "L'aiuto a Fermo: gli tieni il ritmo sulla cyclette mentre fa la pausa. Usato da chapters/c1/fondo_c1.gd.",
+  "help": {
+    "kind": "time",
+    "ask": "Fermo guarda l'orologio. Gli spettano quindici minuti di pausa, ma la cyclette non si può fermare.",
+    "prima": [
+      "Tienimi il ritmo. Quindici minuti. Li conto io."
+    ],
+    "yes": [
+      "Quindici minuti. Interi.",
+      "Non me li ricordavo così lunghi."
+    ],
+    "lose": [
+      "La luce ha tremato. Di sopra se ne sono accorti.",
+      "Fa niente. La pausa la finisco in sella."
+    ],
+    "minigame": {
+      "music": "lavoro",
+      "type": "timing",
+      "title": "Il cambio a Fermo",
+      "stelle": true,
+      "hits": 6,
+      "reward": 10,
+      "intro": [
+        "[PC] * Premi INVIO quando il segno è nel verde.",
+        "[TEL] * Tocca quando il segno è nel verde.",
+        "* Servono sei pedalate giuste. Al terzo sbaglio la luce salta."
+      ],
+      "battute_stelle": {
+        "1": [
+          "Hai pedalato storto. Ma hai pedalato tu."
+        ],
+        "2": [
+          "Un colpo a vuoto solo. Io ne faccio di più, e mi pagano."
+        ],
+        "3": [
+          "Neanche uno sbaglio. Non dirlo al Capo: ti ci lascia."
+        ]
+      },
+      "sgridata_dopo": 3,
+      "sgridata": [
+        "Piano. Guarda il segno, non le gambe."
+      ],
+      "rigioca": {
+        "chiede": [
+          "Vuoi rifarlo? La cyclette non si offende. Io nemmeno."
+        ],
+        "meglio": [
+          "Meglio dell'altra volta. La differenza te la do: è l'unico interesse che pago volentieri."
+        ],
+        "uguale": [
+          "Come l'altra volta. I soldi, quelli, li hai già avuti."
+        ],
+        "peggio": [
+          "L'altra volta andava meglio. Capita. A me capita da undici anni."
+        ]
+      },
+      "completato": [
+        "La pausa l'ho fatta. Seduto. Su una cosa che non gira.",
+        "Ho ancora il fiato. Non so cosa farne."
+      ],
+      "dopo_dieci": [
+        "Dieci volte. Ormai la cyclette ti conosce.",
+        "Basta così. I soldi te li do tutti: oggi hai pedalato più tu di me."
+      ],
+      "concluso": [
+        "Scendi da lì. Per oggi hai dato."
+      ]
+    }
+  }
+}
