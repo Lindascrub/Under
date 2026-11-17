@@ -39,25 +39,44 @@ func _process(delta: float) -> void:
 
 
 func _drive_mission(m: Node, exploit: bool) -> void:
+	# come in tests/boss_playthrough_test.gd: gli incarichi rifatti (dinamo, fascicoli, cartellini, contratto)
 	match str(m.get("floor")):
 		"-5":
-			if exploit:
-				m.call("_act", "extra"); m.call("_act", "extra"); m.call("_act", "extra")
-			else:
-				m.call("_act", "decor")
-			m.call("_act", "simulate")
+			m.dinamo.attiva("decor_0")
+			m.dinamo._metti(2 if exploit else 1)
+			m.dinamo._conferma()
+			m.dinamo.attiva("applica")
 		"-4":
 			for choice in [3, 3 if exploit else 2, 1, 2]:
-				m.call("_act", "doc_%d" % choice)
+				if not is_instance_valid(m): break
+				var pieces := B.document_pieces(int(m.p["document"]))
+				for i in pieces.size():
+					if bool(pieces[i]["available"]):
+						m._act("fasc_carta_%d" % i)
+						m._act("fasc_sagoma_%d" % i)
+				m._act("fasc_timbro_%d" % choice)
+				m._act("fasc_fascicolo")
+				m._act("fasc_consegna")
+				if m.visuale.conferma_aperta: m._act("fasc_chiudi")
+				await get_tree().create_timer(0.42).timeout
 		"-3":
 			for i in 3:
+				if not is_instance_valid(m): break
+				if exploit: m._act("label_units_2")
+				m._act("label_stampa")
 				if exploit:
-					m.call("_act", "units"); m.call("_act", "visible")
-				m.call("_act", "submit")
+					m._act("label_conditions")
+					m._act("label_terminale")
+				m._act("label_applica")
+				if m.visuale.conferma_aperta: m._act("label_conferma")
+				await get_tree().create_timer(0.42).timeout
 		"-2":
 			if exploit:
-				m.call("_act", "visible")
-			m.call("_act", "proposal")
+				m._act("loan_summary"); m._act("loan_interno")
+			m._act("loan_invia")
+			m._act("loan_conferma")
+			await get_tree().create_timer(0.42).timeout
+	if not is_instance_valid(m): return
 	print("  incarico ", m.get("floor"), " sfruttando=", exploit, " msg=", m.get("msg"))
 	for i in 200:
 		await get_tree().process_frame
@@ -164,6 +183,10 @@ func _play_floor(route: String, i: int) -> void:
 	if path == Router.SOTTOUFFICIO and not GameState.flags.get("c2_modulo_ok", false):
 		# il B-4: consegnato (firmato da Ercole, timbrato da Tilde) o, per chi ha fretta, pagato
 		choose_queue = [1] if route == "sfruttare" else [0]
+		if route == "aiutare":
+			# firma di Ercole e telefonata del «responsabile»: la strada vera la provano giocatore.gd ed ercole_test
+			GameState.flags["c2_firma"] = true
+			GameState.flags["c2_timbro"] = true
 		_room().call("_agenda")
 		await _back_to(path)
 		_check(GameState.flags.get("c2_modulo_ok", false), route + ": il Modulo B-4 non si timbra")
