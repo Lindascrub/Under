@@ -29,6 +29,8 @@ func _ready() -> void:
 		var kv := a.trim_prefix("--").split("=", true, 1)
 		if kv.size() == 2 and kv[0] == "foto":
 			foto_dir = kv[1]
+		if kv.size() == 2 and kv[0] == "pausa":
+			pausa = int(kv[1])
 	if foto_dir != "":
 		DirAccess.make_dir_recursive_absolute(foto_dir)
 	_rng.seed = hash(str(OS.get_cmdline_user_args()))
@@ -138,7 +140,10 @@ func _usa(n: Node2D, path: String) -> void:
 			var r := _room()
 			if r and r.player:
 				r.player.global_position = n.global_position + Vector2(0, 14)
-			await n.call("interact")
+			# senza await: se la persona sparisce (si apre un minigioco), quell'await non tornerebbe più
+			n.call("interact")
+			for f in 5:
+				await get_tree().process_frame
 	await _calma()
 	if _scene_path() != path and _scene_path() in Router.WORLD and _scene_path() != Router.CIMA:
 		_forza("uscito in %s: si torna a %s" % [_scene_path().get_file(), path.get_file()])
@@ -181,10 +186,26 @@ func _cammina_e_usa(n: Node2D) -> bool:
 			var schermo: Vector2 = pl.get_canvas_transform() * bersaglio
 			var dentro := Rect2(16, 64, 608, 284).has_point(schermo)
 			if not dentro:
-				# troppo lontano: si tocca verso di lui, sul bordo, e si cammina
+				# troppo lontano: come un giocatore, si tocca il pavimento lungo la strada giusta
+				# (giro intorno ai muri, dalla porta), il punto più avanti che si vede sullo schermo
 				var me: Vector2 = pl.get_canvas_transform() * pl.global_position
-				schermo = me + (schermo - me).limit_length(140.0)
-				schermo = schermo.clamp(Vector2(24, 72), Vector2(616, 340))
+				var via: PackedVector2Array = pl.call("_cerca_strada", bersaglio, null)
+				var scelto := Vector2.INF
+				for i in range(via.size() - 1, -1, -1):
+					var sp: Vector2 = pl.get_canvas_transform() * via[i]
+					if Rect2(24, 72, 592, 268).has_point(sp) and sp.distance_to(me) > 12.0 and pl.call("_cosa_sotto_il_dito", via[i]) == null:
+						scelto = sp
+						break
+				if scelto != Vector2.INF:
+					schermo = scelto
+				else:
+					schermo = me + (schermo - me).limit_length(140.0)
+					schermo = schermo.clamp(Vector2(24, 72), Vector2(616, 340))
+			if dentro and strada == "solo":
+				var sotto: Node = pl.call("_cosa_sotto_il_dito", bersaglio)
+				if sotto != null and sotto != n and (sotto.is_in_group("npc") or sotto.is_in_group("walker")):
+					_nota("strada solitaria: il dito prenderebbe %s, si lascia stare" % _nome(sotto))
+					return false
 			_premi(schermo)
 			for k in 420:
 				await get_tree().process_frame
@@ -195,6 +216,16 @@ func _cammina_e_usa(n: Node2D) -> bool:
 			if dentro and volta >= 3:
 				break
 		_problema("col dito non si riesce a usare %s (toccato, ma non si apre niente)" % _nome(n))
+		if is_instance_valid(r.player) and is_instance_valid(n):
+			var pl2: Node2D = r.player
+			var strada_dito: PackedVector2Array = pl2.call("_cerca_strada", _punto(n, pl2.global_position), n)
+			_nota("dito: giocatore a %s (schermo %s), blocca=%s busy=%s cut=%s trans=%s, strada %d passi, sotto il dito: %s" % [
+				pl2.global_position, pl2.get_canvas_transform() * pl2.global_position, Ui.blocks_input(), Ui.busy, Ui.cutscene,
+				Ui.transitioning, strada_dito.size(), _nome(pl2.call("_cosa_sotto_il_dito", _punto(n, pl2.global_position))) if pl2.call("_cosa_sotto_il_dito", _punto(n, pl2.global_position)) else "niente"])
+			var cam := get_viewport().get_camera_2d()
+			_nota("dito: camera %s (del giocatore: %s) centro %s, giocatore visibile %s, processa %s, input %s" % [
+				cam.get_path() if cam else "nessuna", cam == pl2.get("camera"), cam.get_screen_center_position() if cam else Vector2.ZERO,
+				pl2.is_visible_in_tree(), pl2.can_process(), pl2.is_processing_unhandled_input()])
 		return false
 	# PC: le frecce lungo la strada, poi INVIO davanti alla cosa
 	var pl: CharacterBody2D = r.player
@@ -205,15 +236,16 @@ func _cammina_e_usa(n: Node2D) -> bool:
 	# il posto da cui, con la tastiera, il tasto prende proprio questa cosa (il più vicino a dove sei)
 	var posto: Array = []
 	var strada_pc := PackedVector2Array()
-	for tentativo in 4:
+	for tentativo in 2:
 		var posti: Array = _posto_per(pl, n)
 		if posti.is_empty():
 			_problema("da tastiera %s non si può usare da nessun punto libero lì intorno" % _nome(n))
 			return false
 		# il primo posto buono a cui si arriva davvero camminando (alcuni sono chiusi fra i mobili)
 		var scelti: Array = []
-		for k in mini(16, posti.size()):
-			scelti.append(posti[k * posti.size() / mini(16, posti.size())])
+		# al massimo 4 posti da provare: ogni ricerca della strada costa cara
+		for k in mini(4, posti.size()):
+			scelti.append(posti[k * posti.size() / mini(4, posti.size())])
 		for cand: Array in scelti:
 			if pl.global_position.distance_to(cand[0]) <= 4.0:
 				posto = cand
@@ -280,6 +312,9 @@ func _cammina_e_usa(n: Node2D) -> bool:
 			_nota("da tastiera, davanti a %s il tasto non prende niente (distanza %d)" % [_nome(n), int(pl.global_position.distance_to(_punto(n, pl.global_position)))])
 			return false
 		_scrivi("    [davanti a %s il tasto prende invece %s]" % [_nome(n), _nome(preso)])
+		if strada == "solo" and (preso.is_in_group("npc") or preso.is_in_group("walker")):
+			_nota("strada solitaria: non si parla con %s, si guarda solo l'oggetto" % _nome(preso))
+			return false
 	_tap("confirm")
 	for k in 60:
 		await get_tree().process_frame

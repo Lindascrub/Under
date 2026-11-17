@@ -23,6 +23,8 @@ var contesta := "si"
 var vero := ""
 ## true: i comandi veri dappertutto (tests/giocatore.gd), non solo alla Cima.
 var ovunque := false
+## Fotogrammi fra un "avanti" e l'altro nei dialoghi coi comandi veri (per un video si allunga, e le lettere si lasciano scrivere).
+var pausa := 12
 var _coda: Array = []
 var _log: FileAccess
 var _ultimo := ""
@@ -116,11 +118,12 @@ func _process(_delta: float) -> void:
 		return
 	if sp == Router.FINALE and not reale:
 		scene.set("fast", true)
-	if not Ui.busy or _frame % (12 if reale else 2) != 0:
+	if not Ui.busy or _frame % (pausa if reale else 2) != 0:
 		return
 	var mode := str(Ui.get("_mode"))
 	if mode == "say":
 		if bool(Ui.get("_typing")):
+			if reale and pausa > 12: return
 			if reale: _avanti_vero()
 			else: _tap("confirm")   # salta la scrittura lettera per lettera
 			return
@@ -218,6 +221,18 @@ func _direzione_vera(d: Node) -> void:
 	var p: Dictionary = director_plan[0] if not director_plan.is_empty() else {}
 	match fase:
 		"alloc":
+			# i gettoni: prima si tolgono (finiscono sul tavolo), poi si mettono; uno per volta, col gettone da 5
+			var voluto: Dictionary = p.get("alloc", {})
+			var ora: Dictionary = d.get("alloc")
+			var chiavi := ["stipendi", "servizi", "manutenzione", "riserve"]
+			for k in chiavi.size():
+				if voluto.has(chiavi[k]) and int(ora.get(chiavi[k], 0)) > int(voluto[chiavi[k]]):
+					_premi((d.call("minus_button", k) as Rect2).get_center())
+					return
+			for k in chiavi.size():
+				if voluto.has(chiavi[k]) and int(ora.get(chiavi[k], 0)) < int(voluto[chiavi[k]]):
+					_premi((d.call("plus_button", k) as Rect2).get_center())
+					return
 			_premi((d.call("confirm_button") as Rect2).get_center())
 		"casa", "debiti":
 			var opts: Array = d.get("options")
@@ -589,6 +604,9 @@ func _run() -> void:
 		for c in _cose():
 			if _scene_path() != Router.CIMA:
 				break
+			# dopo la Direzione la Cima si ricarica: le cose della lista vecchia non ci sono più
+			if not is_instance_valid(c):
+				continue
 			await _usa(c, Router.CIMA)
 		if _scene_path() == Router.DIREZIONE:
 			await _wait_scene(Router.CIMA, 60000)

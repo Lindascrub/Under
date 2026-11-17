@@ -202,6 +202,8 @@ func say(lines: Array, speaker: String = "", portrait: String = "") -> void:
 		var t := GameState.fmt(str(line))
 		if t == "":
 			continue   # frase solo per l'altro dispositivo ([PC] / [TEL])
+		# le righe con "*" sono il narratore: lì il nome di chi parla non ci va
+		_name.visible = speaker != "" and not t.begins_with("*")
 		for page in _pages(t):
 			await _type(_text, page)
 	_box.visible = false
