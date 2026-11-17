@@ -165,6 +165,10 @@ func _find_target() -> Node:
 	var best_d := INF
 	var seat: Node = null
 	var seat_d := INF
+	var person: Node = null
+	var person_d := INF
+	var person_at := Vector2.ZERO
+	var best_at := Vector2.ZERO
 	for n in get_tree().get_nodes_in_group("interactable"):
 		if n is Interactable and n.facing_required != "" and n.facing_required != facing:
 			continue
@@ -176,6 +180,11 @@ func _find_target() -> Node:
 		# le cose dentro un mobile (un tornello, la gente in fila) si usano anche da un passo più in là
 		if n is Interactable and d > maxf(n.reach, PORTATA_MINIMA):
 			continue
+		# una persona a portata, poco più in là della panca o del mobile: si parla con lei
+		if (n.is_in_group("npc") or n.is_in_group("walker")) and d < person_d and (n is Interactable or d < 16.0):
+			person = n
+			person_d = d
+			person_at = at
 		# Se una persona e un oggetto sono nello stesso punto (Bruno sulla panchina), vince la persona.
 		if n.is_in_group("npc") or n.is_in_group("walker"):
 			d -= 6.0
@@ -193,10 +202,26 @@ func _find_target() -> Node:
 		if d < best_d:
 			best_d = d
 			best = n
+			best_at = at
+	# chi va a parlare con qualcuno seduto vicino a una panca non vuole sedersi: vince la persona,
+	# se non è molto più lontana della cosa scelta (best_d ha già lo sconto delle persone e delle sedie)
+	# (non davanti a uno sportello: lì l'impiegato dietro il vetro non ruba il tasto allo sportello)
+	var sportello: bool = best != null and (best.has_meta("job_id") or (best is Interactable and best.approach != Vector2.ZERO and not best is Seat))
+	# e solo se la persona è davanti almeno quanto la cosa: davanti a una sedia libera, chi siede accanto non la ruba
+	if person and best != person and not sportello and person_d <= best_d + 8.0 and _davanti(person_at) >= _davanti(best_at) - 0.15:
+		return person
 	# una sedia o uno sportello a portata vince sulla descrizione automatica del mobile accanto
 	if seat and best and best.get_meta("inspect_prop", false):
 		return seat
 	return best
+
+
+## Quanto un punto sta davanti al giocatore (1 = proprio dove guarda, 0 = di lato).
+func _davanti(at: Vector2) -> float:
+	var verso := at - (global_position + Vector2(0, -6))
+	if verso.length() < 0.5:
+		return 1.0
+	return verso.normalized().dot(FACING_VECTORS[facing] as Vector2)
 
 
 var _sleep_nodes: Array[Node] = []
