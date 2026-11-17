@@ -203,8 +203,20 @@ func _cammina_e_usa(n: Node2D) -> bool:
 				if scelto != Vector2.INF:
 					schermo = scelto
 				else:
-					schermo = me + (schermo - me).limit_length(140.0)
-					schermo = schermo.clamp(Vector2(24, 72), Vector2(616, 340))
+					# verso di lui, ma su un punto libero: un dito che cade su un'altra cosa la apre
+					var verso: Vector2 = schermo - me
+					var trovato := false
+					for lungo: float in [140.0, 100.0, 60.0]:
+						for giro: float in [0.0, 0.4, -0.4, 0.8, -0.8]:
+							var prova: Vector2 = (me + verso.rotated(giro).limit_length(lungo)).clamp(Vector2(24, 72), Vector2(616, 340))
+							if pl.call("_cosa_sotto_il_dito", pl.get_canvas_transform().affine_inverse() * prova) == null:
+								schermo = prova
+								trovato = true
+								break
+						if trovato:
+							break
+					if not trovato:
+						schermo = (me + verso.limit_length(140.0)).clamp(Vector2(24, 72), Vector2(616, 340))
 			if dentro and strada == "solo":
 				var sotto: Node = pl.call("_cosa_sotto_il_dito", bersaglio)
 				if sotto != null and sotto != n and (sotto.is_in_group("npc") or sotto.is_in_group("walker")):
