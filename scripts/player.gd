@@ -32,6 +32,8 @@ const PASSO_DITO := 8.0
 const RAGGIO_DITO := 90
 ## Da quanti punti di strada in su si corre invece di camminare (un punto = 8 pixel).
 const PUNTI_PER_CORRERE := 14
+## Il tasto prende una cosa fino a questa distanza anche se la sua `reach` è più corta.
+const PORTATA_MINIMA := 14.0
 
 
 func _ready() -> void:
@@ -158,7 +160,7 @@ func face(dir: String) -> void:
 func _find_target() -> Node:
 	var probe := global_position + Vector2(0, -6) + (FACING_VECTORS[facing] as Vector2) * 6.0
 	var best: Node = null
-	var best_d := 16.0
+	var best_d := INF
 	var seat: Node = null
 	var seat_d := INF
 	for n in get_tree().get_nodes_in_group("interactable"):
@@ -169,7 +171,8 @@ func _find_target() -> Node:
 		if side != Vector2.ZERO and (global_position - at).dot(side.normalized()) < 0.0:
 			continue
 		var d := probe.distance_to(at)
-		if n is Interactable and d > n.reach:
+		# le cose dentro un mobile (un tornello, la gente in fila) si usano anche da un passo più in là
+		if n is Interactable and d > maxf(n.reach, PORTATA_MINIMA):
 			continue
 		# Se una persona e un oggetto sono nello stesso punto (Bruno sulla panchina), vince la persona.
 		if n.is_in_group("npc") or n.is_in_group("walker"):
@@ -178,6 +181,8 @@ func _find_target() -> Node:
 			d -= 4.0
 		elif n.get_meta("inspect_prop", false):
 			d += 3.0
+		if not n is Interactable and d >= 16.0:
+			continue
 		# sedie e sportelli (le cose che si usano da un lato preciso) contano più delle descrizioni
 		var main: bool = n is Seat or n.has_meta("job_id") or (n is Interactable and n.approach != Vector2.ZERO and not n.get_meta("inspect_prop", false))
 		if main and d < seat_d:
@@ -338,7 +343,7 @@ func _cosa_sotto_il_dito(punto: Vector2) -> Node:
 
 
 func _portata(cosa: Node) -> float:
-	return (float(cosa.reach) if cosa is Interactable else 12.0) + 10.0
+	return (maxf(float(cosa.reach), PORTATA_MINIMA) if cosa is Interactable else 12.0) + 10.0
 
 
 ## Ci si gira verso la cosa e la si usa, come con il tasto.

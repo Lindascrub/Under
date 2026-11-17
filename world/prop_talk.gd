@@ -219,7 +219,8 @@ static func _add_inspection(holder: Node, spr: Sprite2D, rect: Rect2, entry: Dic
 	e.global_position = Vector2(rect.get_center().x, rect.end.y - 4)
 	var inner := rect.grow(-1.0) if rect.size.x > 2.0 and rect.size.y > 2.0 else rect
 	e.interaction_bounds = Rect2(inner.position - e.global_position, inner.size)
-	e.reach = 12.0
+	# un mobile si guarda anche da un passo in là (dietro un bancone, sopra una mensola)
+	e.reach = 18.0
 	made.append(e)
 
 

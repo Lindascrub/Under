@@ -21,6 +21,8 @@ var turno := "buono"
 var contesta := "si"
 ## "pc" o "tel": alla Cima, nel TURNO e nel finale si usano i comandi veri (tastiera e mouse, o il dito), non le scorciatoie.
 var vero := ""
+## true: i comandi veri dappertutto (tests/giocatore.gd), non solo alla Cima.
+var ovunque := false
 var _coda: Array = []
 var _log: FileAccess
 var _ultimo := ""
@@ -94,7 +96,7 @@ func _process(_delta: float) -> void:
 		scene.set("score", scene.get("target") if strada != "perde" else 0)
 		scene.set("time_left", 0.0)
 		return
-	var reale := vero != "" and sp in [Router.CIMA, Router.DIREZIONE, Router.FINALE]
+	var reale := vero != "" and (ovunque or sp in [Router.CIMA, Router.DIREZIONE, Router.FINALE])
 	if vero == "tel" and not TouchControls.enabled:
 		TouchControls.enabled = true
 	# i comandi veri vanno uno per fotogramma, come le dita

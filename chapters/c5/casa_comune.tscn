@@ -275,6 +275,7 @@ script = ExtResource("8_u4p8y")
 lines = PackedStringArray()
 lines_after = PackedStringArray()
 method = "_contatore"
+reach = 28.0
 
 [node name="PiantaArchivio" type="Sprite2D" parent="Mondo" unique_id=1768866598]
 position = Vector2(320, 169)

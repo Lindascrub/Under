@@ -3704,7 +3704,7 @@ lines = PackedStringArray()
 lines_after = PackedStringArray()
 method = "_agenda"
 approach = Vector2(0, 1)
-reach = 10.0
+reach = 26.0
 
 [node name="DietroLoSportello" type="StaticBody2D" parent="Mondo/BanconeAgenda" unique_id=798668141]
 position = Vector2(32, -24)
