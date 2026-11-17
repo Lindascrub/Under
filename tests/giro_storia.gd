@@ -320,10 +320,13 @@ func _scelta(prompt: String, opts: Array) -> int:
 		if k >= 0:
 			return k
 		return 0
-	# gentile / solo: la prima voce che non è una scorciatoia
+	# gentile / solo: la prima voce che non è una scorciatoia (da solo, nemmeno un aiuto)
+	var evita: Array = cattive.duplicate()
+	if strada == "solo":
+		evita.append_array(["ti aiuto", "ti do una mano", "dai una mano", "aiut", "prepariamo", "posso fare qualcosa"])
 	for k in low.size():
 		var ok := true
-		for w: String in cattive:
+		for w: String in evita:
 			if str(low[k]).contains(w):
 				ok = false
 		if ok and str(low[k]) != "admin":
