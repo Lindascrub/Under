@@ -133,13 +133,22 @@ func _a_caso() -> void:
 func _usa(n: Node2D, path: String) -> void:
 	if not is_instance_valid(n) or _scene_path() != path:
 		return
+	# durante una scena il dito non va: un giocatore aspetta che finisca
+	for i in 600:
+		if not Ui.cutscene and not Ui.transitioning:
+			break
+		if Ui.busy and i % 10 == 0: _tap("confirm")
+		await get_tree().process_frame
+	if not is_instance_valid(n) or _scene_path() != path:
+		return
 	_scrivi("\n  >> " + _nome(n))
 	var ok: bool = await _cammina_e_usa(n)
 	if not ok:
 		# prima la foto del problema, poi il giro rimedia
 		for f in 3:
 			await get_tree().process_frame
-		if is_instance_valid(n) and _scene_path() == path and not Ui.busy:
+		# mai a mano durante una scena: due inquadrature insieme lasciano la camera ferma (cosa che a mano non succede)
+		if is_instance_valid(n) and _scene_path() == path and not Ui.busy and not Ui.cutscene:
 			_forza("usato a mano dopo il problema: " + _nome(n))
 			var r := _room()
 			if r and r.player:
