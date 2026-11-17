@@ -4,5 +4,5 @@
 
 [node name="Cartello" type="Sprite2D"]
 z_index = 1
-position = Vector2(0, -34)
+position = Vector2(0, -30)
 texture = ExtResource("1_cartello")
