@@ -30,6 +30,8 @@ var _fermo_da := 0.0
 ## Il lato di un quadretto della griglia su cui si cerca la strada, e quanto lontano si cerca (in quadretti).
 const PASSO_DITO := 8.0
 const RAGGIO_DITO := 90
+## Da quanti punti di strada in su si corre invece di camminare (un punto = 8 pixel).
+const PUNTI_PER_CORRERE := 14
 
 
 func _ready() -> void:
@@ -69,7 +71,8 @@ func _physics_process(_delta: float) -> void:
 			facing = "right" if v.x > 0 else "left"
 		else:
 			facing = "down" if v.y > 0 else "up"
-	var running := Input.is_action_pressed("cancel")
+	# col dito non c'è il tasto per correre: si corre da soli quando la strada è lunga
+	var running := Input.is_action_pressed("cancel") or _percorso.size() > PUNTI_PER_CORRERE
 	velocity = v * (RUN_SPEED if running else SPEED)
 	move_and_slide()
 	if v != Vector2.ZERO and velocity.length() > 1.0:

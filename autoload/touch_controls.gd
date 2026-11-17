@@ -69,6 +69,9 @@ func _notification(what: int) -> void:
 func _process(_delta: float) -> void:
 	if not enabled:
 		return
+	# i segnalini dondolano e seguono la telecamera: si ridisegna sempre
+	if mondo_col_dito:
+		_canvas.queue_redraw()
 	var stick := true
 	var buttons := true
 	var scene := get_tree().current_scene
@@ -249,7 +252,40 @@ func _send(action: String, pressed: bool) -> void:
 	Input.parse_input_event(ev)
 
 
+## I segnalini: un puntino giallo che dondola sopra le persone e le cose con cui si può fare qualcosa
+## (non sopra ogni mobile da guardare, se no lo schermo si riempie). Solo nel mondo, quando si può toccare.
+func _segnalini() -> void:
+	var scene := get_tree().current_scene
+	if scene == null or Ui.busy or Ui.transitioning or Ui.cutscene or scene.has_method("touch_scheme"):
+		return
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	if p == null:
+		return
+	var tr := p.get_canvas_transform()
+	var su := sin(Time.get_ticks_msec() / 260.0) * 1.5
+	for n in get_tree().get_nodes_in_group("interactable"):
+		# le sedie hanno `low_pose`, i punti da guardare hanno `method` (vuoto: solo una frase): si riconoscono così,
+		# senza nominare le loro classi (questo file si carica prima delle stanze)
+		if not (n as CanvasItem).is_visible_in_tree() or n.get("low_pose") != null or n.get_meta("inspect_prop", false):
+			continue
+		var persona: bool = n.is_in_group("npc") or n.is_in_group("walker")
+		if n.get("method") != null and str(n.get("method")) == "" and not persona:
+			continue
+		var at: Vector2 = n.call("hotspot")
+		# le persone si vedono sempre; gli oggetti solo da vicino, se no lo schermo si riempie di puntini
+		if not persona and at.distance_to(p.global_position) > 56.0:
+			continue
+		var s: Vector2 = tr * (at + Vector2(0, -24 if persona else -14))
+		if s.x < 8 or s.x > 632 or s.y < 40 or s.y > 352:
+			continue
+		s.y += su
+		_canvas.draw_circle(s, 3.5, Color(0.05, 0.05, 0.08, 0.9))
+		_canvas.draw_circle(s, 2.5, Color(1, 0.88, 0.3))
+
+
 func _draw_controls() -> void:
+	if mondo_col_dito:
+		_segnalini()
 	var font := Assets.font()
 	var base := Color(1, 1, 1, 0.18)
 	var line := Color(1, 1, 1, 0.45)

@@ -155,6 +155,9 @@ func _hud_telefono() -> void:
 	_time_bar.add_theme_constant_override("outline_size", 4)
 	_time_bar.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.08))
 	_time_bar.position.y = 26.0
+	# anche i dialoghi si leggono più grandi (le pagine si dividono da sole: vedi _pages)
+	_text.add_theme_font_size_override("font_size", 14)
+	_name.add_theme_font_size_override("font_size", 12)
 
 
 # --- dialoghi ---------------------------------------------------------------

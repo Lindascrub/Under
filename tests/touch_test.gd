@@ -159,7 +159,7 @@ func _run() -> void:
 	var w := await _work("pedal")
 	_check(TouchControls.scheme == "halves", "la cyclette dovrebbe usare le due metà dello schermo (è %s)" % TouchControls.scheme)
 	_check(not TouchControls.show_stick and not TouchControls.show_buttons, "nei minigiochi non dovrebbero esserci joystick e pulsanti")
-	_check("Tocca" in w.call("_rules"), "le regole della cyclette dovrebbero dire 'tocca'")
+	_check("sinistra" in str(w.call("_rules")).to_lower() and "INVIO" not in str(w.call("_rules")), "le regole della cyclette sul telefono parlano di sinistra e destra, non di tasti")
 	for i in 6:
 		await _tap_at(Vector2(100, 200))
 		await _tap_at(Vector2(540, 200))
@@ -213,8 +213,8 @@ func _run() -> void:
 	m.set("bulb", "fioca")
 	m.set("bulb_fix", 0)
 	await _swipe(Vector2(300, 200), Vector2(300, 140))
-	await _swipe(Vector2(300, 200), Vector2(300, 260))
-	_check(str(m.get("bulb")) == "buona", "scorrere su e giù dovrebbe avvitare la lampadina che sfarfalla")
+	await _swipe(Vector2(300, 200), Vector2(300, 140))
+	_check(str(m.get("bulb")) == "buona", "scorrere due volte in su dovrebbe avvitare la lampadina che sfarfalla")
 
 	# --- fili: tocca un filo, poi il suo posto
 	m = await _help("wires")
@@ -500,8 +500,14 @@ func _run() -> void:
 	await _wait_scene(Router.WORK)
 	_check(float(get_tree().current_scene.get("d")) >= 0.25, "lo straordinario dovrebbe essere più difficile")
 	await _wait_scene(Router.FONDO)
-	await _frames(30)
-	_check(Ui.cutscene, "tornati dallo straordinario la festa dovrebbe riaccendersi")
+	# prima può comparire il cartello del giorno nuovo: si aspetta che la scena della festa cominci
+	var riaccesa := false
+	for i in 400:
+		await _frames(1)
+		if Ui.cutscene and get_tree().current_scene.scene_file_path == Router.FONDO:
+			riaccesa = true
+			break
+	_check(riaccesa, "tornati dallo straordinario la festa dovrebbe riaccendersi")
 	await _idle()
 	auto_work = false
 	_check(int(GameState.flags.get("c1_extra", 0)) == 1, "lo straordinario non è stato contato")
