@@ -104,7 +104,9 @@ func _run() -> void:
 		var before := economy()
 		if tel:
 			await get_tree().process_frame
-			var down:=InputEventScreenTouch.new();down.index=0;down.position=Vector2(592,292);down.pressed=true;Input.parse_input_event(down)
+			# nel mondo non c'è più il pulsante OK: si tocca il fratello col dito
+			var dove: Vector2 = office.player.get_canvas_transform() * (brother.get_node("Parla") as Node2D).global_position
+			var down:=InputEventScreenTouch.new();down.index=0;down.position=get_viewport().get_screen_transform()*dove;down.pressed=true;Input.parse_input_event(down)
 			var up:=InputEventScreenTouch.new();up.index=0;up.position=down.position;Input.parse_input_event(up)
 		else:
 			_tap("confirm")
