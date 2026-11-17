@@ -383,7 +383,13 @@ func _passo_sul_percorso(delta: float) -> Vector2:
 	_fermo_da = _fermo_da + delta if get_real_velocity().length() < 4.0 else 0.0
 	if _fermo_da > 0.6:
 		_percorso.clear()
+		var cosa := _meta
 		_meta = null
+		# bloccati all'ultimo passo (Ada in mezzo alla folla): se si è già abbastanza vicini, la si usa
+		if is_instance_valid(cosa):
+			var dove: Vector2 = cosa.interaction_point(global_position) if cosa is Interactable else cosa.call("hotspot")
+			if global_position.distance_to(dove) <= _portata(cosa) + DITO_TOLLERANZA:
+				_usa.call_deferred(cosa, dove)
 		return Vector2.ZERO
 	return (_percorso[0] - global_position).normalized()
 
