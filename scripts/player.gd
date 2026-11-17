@@ -386,6 +386,12 @@ func _cerca_strada(dove: Vector2, cosa: Node) -> PackedVector2Array:
 	var spazio := get_world_2d().direct_space_state
 	var q := PhysicsShapeQueryParameters2D.new()
 	q.shape = ($Collisione as CollisionShape2D).shape
+	# un pixel di margine per lato: camminando la fisica tiene un po' di distanza dai muri,
+	# e una strada che li sfiora esatti si incastra sullo spigolo (Banca, vicino alla pianta)
+	if q.shape is RectangleShape2D:
+		var largo := (q.shape as RectangleShape2D).duplicate() as RectangleShape2D
+		largo.size += Vector2(2, 2)
+		q.shape = largo
 	q.collision_mask = collision_mask
 	q.exclude = [get_rid()]
 	var sposta: Vector2 = ($Collisione as CollisionShape2D).position
