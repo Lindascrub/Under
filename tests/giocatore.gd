@@ -92,7 +92,7 @@ func _minigioco(scene: Node) -> void:
 	if _mg_frame == _mg_durata:
 		_foto("minigioco_%s_dopo_le_prove" % id)
 	# la prima volta, quasi una su due si perde (come chi non ha ancora capito il gioco)
-	var vince := strada != "perde" and not (int(_mg_prove[id]) == 1 and _rng.randf() < 0.45)
+	var vince := strada != "perde" and not (not bravo and int(_mg_prove[id]) == 1 and _rng.randf() < 0.45)
 	_scrivi("    [minigioco %s, prova %d: provato a mano per %d s, poi %s dal giro]" % [id, _mg_prove[id], _mg_durata / 30, "vinto" if vince else "PERSO"])
 	var v: Node = scene.get("visivo")
 	if v != null:
@@ -498,12 +498,16 @@ func _foto(nome: String) -> void:
 var da := ""
 ## --traccia: col telefono scrive dove va il giocatore dopo ogni tocco (per capire perché non arriva).
 var traccia := false
+## --bravo: chi punta al finale migliore non perde apposta la prima volta (i minigiochi li prova lo stesso).
+var bravo := false
 
 
 func _run() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a == "--traccia":
 			traccia = true
+		if a == "--bravo":
+			bravo = true
 		if a.begins_with("--da="):
 			da = a.trim_prefix("--da=")
 	if da == "":
