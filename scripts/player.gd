@@ -30,6 +30,8 @@ var _fermo_da := 0.0
 ## Il lato di un quadretto della griglia su cui si cerca la strada, e quanto lontano si cerca (in quadretti).
 const PASSO_DITO := 8.0
 const RAGGIO_DITO := 90
+## Col dito: quanto oltre la portata si può fermare la strada verso una cosa, e la si usa lo stesso.
+const DITO_TOLLERANZA := 24.0
 ## Da quanti punti di strada in su si corre invece di camminare (un punto = 8 pixel).
 const PUNTI_PER_CORRERE := 14
 ## Il tasto prende una cosa fino a questa distanza anche se la sua `reach` è più corta.
@@ -368,7 +370,9 @@ func _passo_sul_percorso(delta: float) -> Vector2:
 		_meta = null
 		if is_instance_valid(cosa):
 			var dove: Vector2 = cosa.interaction_point(global_position) if cosa is Interactable else cosa.call("hotspot")
-			if global_position.distance_to(dove) <= _portata(cosa) + 8.0:
+			# la stessa tolleranza di _cerca_strada: se ci si è incamminati è perché da lì si arriva
+			# (l'insegna in alto, la panchina contro il muro: più vicino di così non si va)
+			if global_position.distance_to(dove) <= _portata(cosa) + DITO_TOLLERANZA:
 				_usa.call_deferred(cosa, dove)
 		return Vector2.ZERO
 	# bloccati contro qualcosa (una persona che si è spostata): ci si ferma, senza spingere all'infinito
@@ -431,7 +435,7 @@ func _cerca_strada(dove: Vector2, cosa: Node) -> PackedVector2Array:
 	if arrivo == inizio:
 		return PackedVector2Array()
 	# verso una cosa: se anche dal punto migliore resta troppo lontana, non ci si muove a vuoto
-	if cosa != null and arrivo_d > _portata(cosa) + 24.0:
+	if cosa != null and arrivo_d > _portata(cosa) + DITO_TOLLERANZA:
 		return PackedVector2Array()
 	var strada: PackedVector2Array = []
 	var k := arrivo
