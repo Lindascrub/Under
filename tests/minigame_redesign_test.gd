@@ -10,7 +10,7 @@ func _ready() -> void:
 	GameState.save_path = "user://test_minigame_redesign.json"
 	GameState.new_game()
 	_test_teo()
-	_test_boss_trays()
+	# il Capo al -4 non ha più i vassoi: è capo_documenti, provato da boss_fascicoli_test
 	print("MINIGAME REDESIGN: %d verifiche, errori %s" % [checks, str(failures)])
 	get_tree().quit(failures.size())
 
@@ -27,28 +27,6 @@ func _test_teo() -> void:
 	var none: Rect2 = game.call("_pr_none_button")
 	check(not row.intersects(none), "Teo: le righe non coprono il pulsante finale")
 	game.free()
-
-
-func _test_boss_trays() -> void:
-	var game: Node = load("res://scenes/minigame/boss_mission.gd").new()
-	game.set("floor", "-4")
-	game.set("selected", 0)
-	_press(game, "move_right")
-	check(int(game.get("selected")) == 1, "Capo: destra segue la riga superiore")
-	_press(game, "move_down")
-	check(int(game.get("selected")) == 3, "Capo: giù segue la colonna")
-	_press(game, "move_down")
-	check(int(game.get("selected")) == 4, "Capo: giù raggiunge SALVA ED ESCI")
-	_press(game, "move_up")
-	check(int(game.get("selected")) == 2, "Capo: su rientra nella scrivania")
-	game.free()
-
-
-func _press(game: Node, action: String) -> void:
-	var event := InputEventAction.new()
-	event.action = action
-	event.pressed = true
-	game.call("_unhandled_input", event)
 
 
 func check(ok: bool, label: String) -> void:
