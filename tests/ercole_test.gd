@@ -159,14 +159,23 @@ func _ready() -> void:
 		if str(persona.get("id")) == "ercole":
 			npc = persona
 	if npc != null:
+		# con tre stelle l'aiuto è chiuso: Ercole ringrazia e non propone di rigiocare
 		accetta_rigioco = true
+		npc.call("interact")
+		attesa = 0
+		while (_scena() != Router.MINIGAME and attesa < 240) or Ui.busy:
+			await get_tree().process_frame
+			attesa += 1
+		verifica(_scena() == Router.SOTTOUFFICIO, "con tre stelle Ercole non fa rigiocare")
+		# con un record di due stelle invece si riprova, e il rigioco parte da quel record
+		GameState.flags["stelle_ercole"] = 2
 		npc.call("interact")
 		attesa = 0
 		while _scena() != Router.MINIGAME and attesa < 2400:
 			await get_tree().process_frame
 			attesa += 1
 		verifica(attesa < 2400 and GameState.minigame.get("rigioco", false), "parlare con Ercole avvia il rigioco")
-		verifica(GameState.minigame.get("stelle_prima", 0) == 3, "il rigioco usa il record esistente")
+		verifica(GameState.minigame.get("stelle_prima", 0) == 2, "il rigioco usa il record esistente")
 	else:
 		verifica(false, "Ercole trovato nella sua stanza")
 	print("ERCOLE TEST: %d controlli, errori %s" % [controlli, errori])
