@@ -181,11 +181,15 @@ func _c3_call(m: Room, method: String, args: Array = []) -> Room:
 ## furto, la scelta al terminale e l'aumento dei prezzi partono da soli, con delle pause in mezzo.
 func _c3_settle() -> Room:
 	await get_tree().process_frame
-	await _wait_scene(Router.MERCATO, 60000)
-	await _idle()
-	while Ui.cutscene or Ui.busy or Ui.transitioning:
-		await get_tree().process_frame
-	await _idle()
+	# tre volte: un turno o una notte possono partire un attimo dopo, quando sembrava tutto fermo
+	for volta in 3:
+		await _wait_scene(Router.MERCATO, 60000)
+		await _idle()
+		var n := 0
+		while (Ui.cutscene or Ui.busy or Ui.transitioning or _scene_path() != Router.MERCATO) and n < 60000:
+			await get_tree().process_frame
+			n += 1
+		await _idle()
 	return get_tree().current_scene as Room
 
 
@@ -1373,20 +1377,28 @@ func _run() -> void:
 	fondo.call("_save_here", fondo.call("cell_feet", Vector2i(12, 10)))
 	await get_tree().create_timer(0.5).timeout
 	await _wait_scene(Router.FONDO)
-	await _idle()
+	# la notte (cartello GIORNO N) è una scena intera: si aspetta che finisca davvero
+	for k in 3:
+		while Ui.cutscene or Ui.busy or Ui.transitioning or _scene_path() != Router.FONDO:
+			await get_tree().process_frame
+		await _idle()
 	_check(GameState.day == day_star + 1 and not GameState.worked_today, "la stellina dovrebbe far passare la notte (e ridare il turno)")
 	fondo = get_tree().current_scene
 	# le scale: con il badge si sale al -4
-	fondo.player.position = Vector2(31 * 16 + 16, 16 + 6)
+	# in cima agli scalini (l'area «Cima» della scena delle scale)
+	fondo.player.position = (fondo.get_node("Decori/ScaleSu") as Node2D).position + Vector2(16, -26)
 	await _wait_scene(Router.SOTTOUFFICIO)
 	await _idle()
 	_check(GameState.floor_id == "-4", "con il badge le scale dovrebbero portare al piano -4")
 	# senza il badge del -3 il tornello respinge
 	var s4: Room = get_tree().current_scene
 	_check(s4.player.position.distance_to(s4.get("_stairs_down_exit")) < 24, "salendo dal Fondo si arriva in cima alle scale, non in mezzo alla stanza (%s)" % s4.player.position)
-	s4.player.position = s4.cell_feet(Vector2i(21, 3))
-	for i in 10:
+	# sotto il tornello, e su a piedi: la sbarra chiusa ferma
+	s4.player.position = (s4.get_node("Decori/ScaleSu") as Node2D).position + Vector2(16, 14)
+	Input.action_press("move_up")
+	for i in 40:
 		await get_tree().physics_frame
+	Input.action_release("move_up")
 	await _idle()
 	_check(_scene_path() == Router.SOTTOUFFICIO, "senza badge il tornello non dovrebbe far passare")
 

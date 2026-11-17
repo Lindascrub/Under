@@ -1019,6 +1019,9 @@ func _finish(success: bool, partial := false) -> void:
 	# di solito dare una mano conta anche se va male; per Leda e Amir conta solo se riesce (o a metà)
 	# chi conta solo se riesce: se la prima volta è andata male, vincere riprovando è l'aiuto vero
 	var conta: bool = success or not cfg.get("help_on_win_only", false) or (partial and cfg.get("help_on_partial", false))
+	# riprovando dopo una sconfitta l'aiuto non c'era ancora: questa è la prima volta vera (grazie e regalo)
+	if rigioco and conta and prima == 0 and cfg.get("help_on_win_only", false) and id not in GameState.helped_ids:
+		rigioco = false
 	if rigioco and (id in GameState.helped_ids or not conta):
 		GameState.spend(GameState.COST_HELP_TIME)
 	elif conta:
