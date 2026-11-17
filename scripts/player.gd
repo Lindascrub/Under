@@ -317,6 +317,10 @@ func _tocco_nel_mondo(punto: Vector2) -> void:
 			return
 	var strada := _cerca_strada(dove, cosa)
 	if strada.is_empty():
+		# già davanti (l'agenda dietro la pedana): più vicino non si va, la si usa da qui
+		if cosa != null and global_position.distance_to(dove) <= _portata(cosa) + DITO_TOLLERANZA:
+			_usa(cosa, dove)
+			return
 		Sound.sfx("deny", 1.2, -8.0)
 		return
 	_percorso = strada
