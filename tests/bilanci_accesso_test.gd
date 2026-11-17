@@ -61,7 +61,10 @@ func prova(fase: String) -> void:
 	else:
 		verifica(not stanza.has_node("Mondo/PortaArchivio"), "La porta è aperta: " + fase)
 		verifica(not strada.is_empty(), "Percorso fisico fino al terminale: " + fase)
-		if not strada.is_empty():
+		if not strada.is_empty() and telefono:
+			# sul telefono nel mondo non c'è più il joystick: si tocca il terminale e il ragazzo ci va da solo
+			await col_dito(terminale, fase)
+		elif not strada.is_empty():
 			var arrivato := await cammina(strada)
 			verifica(arrivato and passi > 0, "Raggiunto camminando: " + fase)
 			# Ultimo passo verso lo schermo, anche col joystick: orientamento da input reale.
@@ -96,6 +99,41 @@ func prova(fase: String) -> void:
 	stanza.queue_free()
 	get_tree().current_scene = self
 	await get_tree().process_frame
+
+## Telefono: tocca il terminale (se è fuori dallo schermo, prima un punto della strada che si vede).
+func col_dito(terminale: Node2D, fase: String) -> void:
+	var p := stanza.player
+	var inizio := p.global_position
+	verifica(p.call("_cosa_sotto_il_dito", terminale.global_position) == terminale, "Il dito sul terminale prende proprio i bilanci: " + fase)
+	for volta in 4:
+		var schermo: Vector2 = p.get_canvas_transform() * terminale.global_position
+		if not Rect2(16, 64, 608, 284).has_point(schermo):
+			var via: PackedVector2Array = p.call("_cerca_strada", terminale.global_position, null)
+			for i in range(via.size() - 1, -1, -1):
+				var sp: Vector2 = p.get_canvas_transform() * via[i]
+				if Rect2(24, 72, 592, 268).has_point(sp) and p.call("_cosa_sotto_il_dito", via[i]) == null:
+					schermo = sp
+					break
+		tocco(schermo, true)
+		await get_tree().process_frame
+		tocco(schermo, false)
+		for k in 600:
+			await get_tree().physics_frame
+			if Ui.busy: break
+			if k > 20 and p.get_real_velocity().length() < 1.0 and (p.get("_percorso") as PackedVector2Array).is_empty(): break
+		if Ui.busy: break
+	print("DITO piedi ", p.global_position)
+	verifica(p.global_position.distance_to(inizio) > 40.0, "Raggiunto camminando: " + fase)
+	await immagine(fase + "_rapporto")
+	verifica(GameState.flags.get("c5_rapporto", false) and Ui.busy, "Rapporto aperto toccando il terminale: " + fase)
+	for i in 500:
+		if not Ui.busy: break
+		if Ui.get("_mode") == "choose": Ui.set("_sel", 1)
+		azione("confirm", true)
+		azione("confirm", false)
+		await get_tree().process_frame
+	verifica(not Ui.busy, "Si chiude il rapporto e si torna a camminare")
+
 
 func percorso(meta: Vector2) -> PackedVector2Array:
 	var p := stanza.player
