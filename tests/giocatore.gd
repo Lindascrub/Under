@@ -59,6 +59,10 @@ func _process(delta: float) -> void:
 			_lavoro_frame = 0
 			_foto("turno_di_lavoro")
 		_lavoro_frame += 1
+		# prima si alza il dito (o si lascia il tasto): un dito vero non preme due volte senza staccarsi
+		if not _coda.is_empty():
+			(_coda.pop_front() as Callable).call()
+			return
 		if _lavoro_frame < 150:
 			_frame += 1
 			if _lavoro_frame % 7 == 0:
@@ -207,8 +211,13 @@ func _cammina_e_usa(n: Node2D) -> bool:
 					_nota("strada solitaria: il dito prenderebbe %s, si lascia stare" % _nome(sotto))
 					return false
 			_premi(schermo)
+			if traccia:
+				_scrivi("      [traccia] tocco %s (mondo %s) da %s" % [schermo, pl.get_canvas_transform().affine_inverse() * schermo, pl.global_position])
 			for k in 420:
 				await get_tree().process_frame
+				if traccia and k % 15 == 0:
+					_scrivi("      [traccia] f%d pos %s vel %s frecce %s percorso %d" % [k, pl.global_position, (pl as CharacterBody2D).get_real_velocity(),
+						Input.get_vector("move_left", "move_right", "move_up", "move_down"), (pl.get("_percorso") as PackedVector2Array).size()])
 				if _successo_qualcosa(path):
 					return true
 				if k > 20 and (pl as CharacterBody2D).get_real_velocity().length() < 1.0 and (pl.get("_percorso") as PackedVector2Array).is_empty():
@@ -475,10 +484,14 @@ func _foto(nome: String) -> void:
 
 ## --da=sottoufficio|mercato|banca|citta|cima: si parte da quel piano (per riprovare un pezzo solo).
 var da := ""
+## --traccia: col telefono scrive dove va il giocatore dopo ogni tocco (per capire perché non arriva).
+var traccia := false
 
 
 func _run() -> void:
 	for a in OS.get_cmdline_user_args():
+		if a == "--traccia":
+			traccia = true
 		if a.begins_with("--da="):
 			da = a.trim_prefix("--da=")
 	if da == "":
