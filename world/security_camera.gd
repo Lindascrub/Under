@@ -37,7 +37,13 @@ func _apply() -> void:
 ## La frase (`Guarda`, toccandola dal pavimento) è un nodo figlio nella scena: si vede e si cambia
 ## nell'editor. Se manca (una telecamera aggiunta a mano), la crea qui.
 func setup_in_room(room: Room) -> void:
-	if not find_children("*", "Examine", true, false).is_empty():
+	var gia := find_children("*", "Examine", true, false)
+	if not gia.is_empty():
+		# la frase nella scena è vuota: senza questa, toccandola non succedeva niente
+		for e: Examine in gia:
+			if e.lines.is_empty() and e.method == "":
+				e.lines = PackedStringArray(LINES)
+				e.setup_in_room(room)
 		return
 	var e := Examine.new()
 	e.lines = PackedStringArray(LINES)
