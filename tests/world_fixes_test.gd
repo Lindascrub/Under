@@ -133,8 +133,16 @@ func _stairs() -> void:
 		var p := room.player
 		var old := p.position
 		p.position = Vector2(rect.position.x-12, rect.get_center().y)
-		var hit := p.move_and_collide(Vector2(32, 0), true)
-		_check(hit != null and hit.get_travel().x < 12, "Stair left edge can be straddled in %s at %s (hit %s)" % [room.scene_file_path, rect, hit.get_travel() if hit else null])
+		# come a destra: se accanto alla scala c'è già un mobile (al Mercato lo sportello del badge),
+		# lì non ci si può stare, e basta che il bordo sia pieno
+		var hit: KinematicCollision2D = null
+		if _feet_clear(p):
+			hit = p.move_and_collide(Vector2(32, 0), true)
+			_check(hit != null and hit.get_travel().x < 12, "Stair left edge can be straddled in %s at %s (hit %s)" % [room.scene_file_path, rect, hit.get_travel() if hit else null])
+		else:
+			var left_point := PhysicsPointQueryParameters2D.new()
+			left_point.position = Vector2(rect.position.x+1.5, rect.get_center().y)
+			_check(not room.get_world_2d().direct_space_state.intersect_point(left_point).is_empty(), "Stair left edge is not solid")
 		p.position = Vector2(rect.end.x+12, rect.get_center().y)
 		if _feet_clear(p):
 			hit = p.move_and_collide(Vector2(-32, 0), true)
@@ -159,12 +167,16 @@ func _seats() -> void:
 	for node in room.find_children("*", "Seat", true, false):
 		var seat := node as Seat
 		var reachable := false
-		for dir in ["up", "down", "left", "right"]:
-			for distance in range(2, 27, 2):
-				p.position = seat.hotspot() - (Player.FACING_VECTORS[dir] as Vector2) * distance + Vector2(0, 6)
-				p.facing = dir
-				if _feet_clear(p) and p._find_target() == seat:
-					reachable = true; break
+		# anche un po' di lato: in Banca davanti al divano c'è il tavolino, ci si arriva di sbieco
+		for side in [0, 4, -4, 8, -8]:
+			for dir in ["up", "down", "left", "right"]:
+				var v: Vector2 = Player.FACING_VECTORS[dir]
+				for distance in range(2, 27, 2):
+					p.position = seat.hotspot() - v * distance + Vector2(-v.y, v.x) * side + Vector2(0, 6)
+					p.facing = dir
+					if _feet_clear(p) and p._find_target() == seat:
+						reachable = true; break
+				if reachable: break
 			if reachable: break
 		_check(reachable, "Seat has no accessible interaction: " + str(seat.global_position))
 		p.sit(seat.global_position, seat.dir, seat.lift, seat.low_pose)
