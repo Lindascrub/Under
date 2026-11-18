@@ -271,7 +271,7 @@ func _immagine(s: Dictionary, r: Rect2, tagliato: bool) -> void:
 			draw_texture_rect(INSEGNA, Rect2(r.position + Vector2(8, 5), Vector2(78, 9)), false)
 	_persona(s, Vector2(r.position.x + 20 * k, r.end.y - 2), k)
 	if not tagliato:
-		draw_texture_rect(CARTELLO, Rect2(r.position + Vector2(32 * k, 7), Vector2(CARTELLO.get_size()) * (16.0 / CARTELLO.get_size().y) * k), false)
+		draw_texture_rect(CARTELLO, Rect2(r.position + Vector2(32 * k, 7), Vector2(CARTELLO.get_size()) * (26.0 / CARTELLO.get_size().y) * k), false)
 	else:
 		draw_rect(r.grow(-1), Color("e17a70"), false, 2)
 

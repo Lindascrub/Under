@@ -3,6 +3,6 @@
 [ext_resource type="Texture2D" path="res://art/c5/cartello_protesta.png" id="1_cartello"]
 
 [node name="Cartello" type="Sprite2D"]
-z_index = 1
-position = Vector2(12, -24)
+show_behind_parent = true
+position = Vector2(7, -21)
 texture = ExtResource("1_cartello")
