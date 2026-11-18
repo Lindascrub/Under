@@ -276,7 +276,7 @@ method = "_specchio_2"
 [node name="GuardaRitratti" type="Node2D" parent="Mondo" unique_id=553559258]
 position = Vector2(184, 152)
 script = ExtResource("9_aqhgw")
-lines = PackedStringArray("* Ritratti. I Presidenti di prima. Stessa giacca, stessa poltrona, facce diverse.", "* L\'ultima cornice è vuota. Sotto c\'è scritto: \"PROSSIMAMENTE\".")
+lines = PackedStringArray("* Ritratti. I Presidenti di prima. Stessa giacca, stessa poltrona, facce diverse.", "* Cambiano i nasi, gli occhiali, le pettinature. La piega stanca agli angoli della bocca è identica.", "* L\'ultima cornice è vuota. Sotto c\'è scritto: \"PROSSIMAMENTE\".")
 lines_after = PackedStringArray()
 
 [node name="Stellina" type="Node2D" parent="Mondo" unique_id=715646177 instance=ExtResource("stellina_tscn")]

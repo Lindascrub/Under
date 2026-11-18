@@ -70,7 +70,7 @@ func _ready() -> void:
 func _sequence() -> void:
 	await Ui.narrate([
 		"La sveglia è suonata, come ogni mattina. Ti sei alzato dal lato sbagliato del letto. Ultimamente succedeva spesso.",
-		"Sei sceso in cucina per fare colazione, come sempre frettoloso. Il mondo intero sembrava che avesse sempre fretta e tu cercavi di stargli dietro.",
+		"Sei sceso in cucina di corsa, come sempre. Il mondo andava di fretta e tu gli correvi dietro.",
 		"Ma stavolta era tutto sottosopra.",
 		"Hai chiamato tuo padre. Una volta, due, tre. Nessuna risposta.",
 		"Sei andato a cercarlo in camera sua. Hai trovato soltanto un biglietto:",

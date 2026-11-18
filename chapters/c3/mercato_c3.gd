@@ -108,6 +108,7 @@ func _arrival() -> void:
 			tw.tween_property(sign, "modulate", Color.WHITE, 0.12)
 	await Ui.say(["* Sopra la cassa lampeggia un'insegna: \"OGGI TUTTO AL 50%*\".",
 		"* Sotto, piccolissimo: \"*Rispetto al prezzo che applicheremo domani\"."])
+	await Ui.say(["Gentili clienti, ricordiamo che l'indecisione rallenta la corsia. Scegliete con il cuore. Pagate alla cassa 2."], SPEAKER)
 	Ui.cutscene = false
 
 

@@ -153,7 +153,8 @@ func talk_olga(_npc_node: Npc) -> bool:
 		await Ui.say(GameState.npc_data("olga").help.minigame.concluso, "Olga")
 	elif not _f("c4_olga_ordinati"):
 		await Ui.say([["Le ricevute sono ancora qui. Mi guardano. Io guardo loro. Nessuna delle due cede.",
-			"Ho riletto l'estratto conto. Tre volte. È sempre lui ad avere ragione, dicono."].pick_random()], "Olga")
+			"Ho riletto l'estratto conto. Tre volte. È sempre lui ad avere ragione, dicono.",
+			"L'altro giorno ho chiesto quanto manca per finire il mutuo. L'impiegato ha girato il monitor verso di me: c'era il simbolo dell'infinito. Scritto in corsivo elegante, però."].pick_random()], "Olga")
 		await _offer("olga", "Olga")
 	else:
 		await Ui.say([["Un ritardo, una commissione. È aritmetica, non beneficenza.",
@@ -713,6 +714,7 @@ func on_stairs_step(p: Player, _need: String) -> void:
 			Sound.sfx("blip", 1.6)
 			await get_tree().create_timer(0.45).timeout
 		await Ui.say(["Contratto originale: nessun documento trovato."], TERMINAL)
+		await Ui.say(["* Nessun documento. Pensi alla busta in camera di tuo padre. Lui l'aveva letta e se n'era andato. Per un foglio che qui non trova nessuno."])
 	else:
 		await Ui.say(["Bentornato. La ricerca del contratto originale risulta già effettuata."], TERMINAL)
 		await Ui.choose("", ["Lo so. Non c'era."])

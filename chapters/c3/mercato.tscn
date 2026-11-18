@@ -1245,7 +1245,7 @@ shape = SubResource("RectangleShape2D_gyumu")
 [node name="Guarda" type="Node2D" parent="Mondo/CarrelloCliente2" unique_id=2034737870]
 position = Vector2(16, -3)
 script = ExtResource("7_phso2")
-lines = PackedStringArray("* Un carrello della spesa. Una ruota gira per conto suo, come tutti qui.")
+lines = PackedStringArray("* Un altro carrello. Dentro c'è uno scontrino più lungo del carrello.")
 lines_after = PackedStringArray()
 
 [node name="CarrelloCliente3" type="Sprite2D" parent="Mondo" unique_id=1919073960]
@@ -1269,7 +1269,7 @@ shape = SubResource("cart_shape_CarrelloCliente3")
 [node name="Guarda" type="Node2D" parent="Mondo/CarrelloCliente3" unique_id=1255463252]
 position = Vector2(16, -8)
 script = ExtResource("7_phso2")
-lines = PackedStringArray("* Un carrello della spesa. Una ruota gira per conto suo, come tutti qui.")
+lines = PackedStringArray("* L'ultimo carrello della fila. Per sbloccarlo serve un euro. Per rimetterlo a posto, nessuno ha tempo.")
 lines_after = PackedStringArray()
 
 [node name="CarrelloCorsia" type="Sprite2D" parent="Mondo" unique_id=1107738970]

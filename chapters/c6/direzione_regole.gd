@@ -184,7 +184,8 @@ static func hints(st: Dictionary, a: Dictionary) -> Array:
 	else:
 		out.append("MANUTENZIONE %d: ne servono %d. L'arretrato sale a %d." % [m, need, backlog_after]
 			+ (" Con 10 di arretrato, è previsto un guasto dopo questa prova." if backlog_after >= BREAKDOWN_AT else ""))
-	out.append("RISERVE %d: in cassa ne resteranno %d." % [r, int(cover["reserve_after"])])
+	out.append("RISERVE %d: in cassa ne resteranno %d." % [r, int(cover["reserve_after"])]
+		+ (" Zero riserve: la Torre cammina sul cornicione senza guardare giù." if int(cover["reserve_after"]) == 0 else ""))
 	return out
 
 

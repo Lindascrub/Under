@@ -710,7 +710,7 @@ func nives_scene() -> void:
 	var fam := str(out.get("family", ""))
 	match fam:
 		"A":
-			await Ui.say(["* Nives è al banco dei badge. Da quando la Torre ha un responsabile solo, ne vende di più."])
+			await Ui.say(["* Nives è al banco dei badge. Da quando il responsabile sei tu, ne vende di più."])
 		"C":
 			await Ui.say(["* Nives ha una sedia al tavolo condiviso. Non sa ancora cosa firma. Lo chiede, ogni volta."] if str(out.get("variant", "")) == "C2" \
 				else ["* Nives è al banco dei badge. Il martedì sera va alle riunioni. Dice che ci va per il caffè."])

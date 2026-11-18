@@ -217,7 +217,8 @@ func _avviso() -> void:
 
 ## I messaggi del Fondo dipendono da com'è andata davvero laggiù. Chi non hai conosciuto non scrive.
 func _bacheca() -> void:
-	var lines: Array = ["* La bacheca: annunci di ripetizioni, un gatto smarrito, \"CERCO SEDIA. ANCHE ZOPPA\"."]
+	var lines: Array = ["* La bacheca: annunci di ripetizioni, un gatto smarrito, \"CERCO SEDIA. ANCHE ZOPPA\".",
+		"* Un foglietto con i numeri di telefono da strappare. Li hanno staccati tutti. Anche l'intestazione."]
 	var people := [["fermo", "Fermo", "fermo_talked"], ["bulbo", str(GameState.npc_data("bulbo").get("name")), "met_bulbo"],
 		["mina", str(GameState.npc_data("mina").get("name")), "met_mina"]]
 	var found := false

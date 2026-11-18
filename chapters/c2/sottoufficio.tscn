@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" path="res://world/stellina.tscn" id="stellina_tscn"]
 [ext_resource type="Texture2D" path="res://art/tritacarte.png" id="trita_png"]
 [ext_resource type="PackedScene" path="res://world/fratello_fermo.tscn" id="fratello_fermo_scene"]
+[ext_resource type="Texture2D" path="res://art/c2/orologio_senza_lancette.png" id="orologio_png"]
 
 [sub_resource type="RectangleShape2D" id="poster_PosterSorridi"]
 size = Vector2(56, 24)
@@ -3651,8 +3652,20 @@ script = ExtResource("8_08xbl")
 lines = PackedStringArray()
 lines_after = PackedStringArray()
 
+[node name="Orologio" type="Sprite2D" parent="Decori" unique_id=1188230417]
+texture_filter = 1
+position = Vector2(175, 28)
+texture = ExtResource("orologio_png")
+
 [node name="Mondo" type="Node2D" parent="." unique_id=757980677]
 y_sort_enabled = true
+
+[node name="GuardaOrologio" type="Node2D" parent="Mondo" unique_id=1188230418]
+position = Vector2(175, 46)
+script = ExtResource("8_08xbl")
+lines = PackedStringArray("* Un orologio senza lancette. Sotto, una targhetta: \"L'orario di uscita è uno stato mentale.\"")
+approach = Vector2(0, 1)
+facing_required = "up"
 
 [node name="GuardaSorridi" type="Node2D" parent="Mondo" unique_id=886084119]
 position = Vector2(52, 46)

@@ -212,6 +212,12 @@ fontana, lampione, la fermata del bus e i terreni del tileset `world/tilesets/ci
 Dal foglio LimeZu `generic.png` (acquistato, non segnaposto): tappeto rosso `Rect2(48,354,32,28)`,
 panca `Rect2(1,254,30,18)`, pianta `Rect2(212,408,23,31)`. Dai props LimeZu: `office_desk.png` (scrivania di Teo).
 
+## Capitolo 2 — Il Sottoufficio (`art/c2/`, generato da `tools/make_orologio_sottoufficio.py`)
+
+| File | Misura (px) | Funzione | Prospettiva | Animazione | Dove si usa |
+|---|---|---|---|---|---|
+| `orologio_senza_lancette.png` | 16x16 | Orologio da parete **senza lancette** (solo tacche e perno): la targhetta dice "L'orario di uscita è uno stato mentale." | frontale, appeso al muro | nessuna | `chapters/c2/sottoufficio.tscn`, nodo `Decori/Orologio` (175,28); esame `Mondo/GuardaOrologio` |
+
 ## Capitolo 3 — Il Mercato (`art/`, generati da `tools/make_art_mercato.py`)
 
 Sono disegnati dal codice (pixel art semplice): vanno considerati segnaposto anche loro.
