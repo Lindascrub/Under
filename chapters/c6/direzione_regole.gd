@@ -330,7 +330,7 @@ static func evidence() -> Array:
 static func networks(st := {}) -> Array:
 	var f := GameState.flags
 	var out: Array = []
-	if f.get("c3_leda_ordini", false) and not GameState.is_robot("leda"):
+	if f.get("c3_leda_ordini", false):
 		out.append("gli ordini condivisi di Leda")
 	if f.get("c5_nadir_rete", false):
 		out.append("la rete dei pendolari di Nadir")

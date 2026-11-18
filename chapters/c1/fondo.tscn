@@ -1048,7 +1048,7 @@ after_flag = "c1_rivelazione"
 [node name="GuardaPalloncino2" type="Node2D" parent="Mondo" unique_id=1617494417]
 position = Vector2(152, 56)
 script = ExtResource("7_i6r6f")
-lines = PackedStringArray("* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via. Come te.")
+lines = PackedStringArray("* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via.")
 lines_after = PackedStringArray("* Il cuore rosso si è sgonfiato. Adesso sembra un portafoglio vuoto.")
 after_flag = "c1_rivelazione"
 

@@ -95,8 +95,8 @@ func _arrival() -> void:
 	GameState.flags["c3_arrivo"] = true
 	Ui.cutscene = true
 	await get_tree().create_timer(0.3).timeout
-	Sound.sfx("ding")
-	await Ui.say(["* DING. La porta si apre su un Mercato coloratissimo. Musica allegra, da tutte le parti."])
+	Sound.sfx("door")
+	await Ui.say(["* Spingi la porta pesante in cima alle scale. Dall'altra parte, un Mercato coloratissimo. Musica allegra, da tutte le parti."])
 	await Ui.say(["Benvenuto al Mercato CHEAP! Qui i tuoi desideri sono la nostra priorità!"], SPEAKER)
 	await get_tree().create_timer(0.7).timeout
 	await Ui.say(["Compatibilmente con il tuo saldo disponibile."], SPEAKER)

@@ -877,7 +877,7 @@ func _farewell() -> void:
 		await _come_to_stairs("olga", "Punti/SalutoOlga", saluto_velocita_olga)
 		await Ui.say(["* Olga si alza dalla sedia d'attesa con il suo numerino."])
 		await Ui.say(["Chiedi sempre la copia. E leggila due volte.",
-			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello col biscotto. Me lo merito anche io."], "Olga")
+			"Quando ti rispondono, me lo dici. Io intanto mi compro il gelato. Quello al pistacchio. Me lo merito anche io."], "Olga")
 	else:
 		var saluti: Array = ["* Metti la ricevuta in tasca, vicino al badge. Pesa più del badge."]
 		if _f("c4_olga") and not GameState.is_robot("olga"):

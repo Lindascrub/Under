@@ -1087,10 +1087,9 @@ func _leda() -> void:
 		GameState.flags["c5_leda_collabora"] = true
 		await Ui.say(["Carta, lampadine, sedie usate. Comprate insieme costano meno. Non è beneficenza: è aritmetica.",
 			"Lo dico all'assemblea. Se mi ascoltano, bene. Se no, lo dico più forte."], who)
-		if not GameState.is_robot("leda"):
-			GameState.flags["offerta_leda"] = true
-			Storia.segna("offerta_leda")
-			await Ui.say(["Gli ordini condivisi hanno bisogno di qualcuno che li porti. Paga poco, ma all'ora giusta."], who)
+		GameState.flags["offerta_leda"] = true
+		Storia.segna("offerta_leda")
+		await Ui.say(["Gli ordini condivisi hanno bisogno di qualcuno che li porti. Paga poco, ma all'ora giusta."], who)
 
 
 func _amir() -> void:

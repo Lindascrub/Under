@@ -75,9 +75,9 @@ func _sequence() -> void:
 		"Hai chiamato tuo padre. Una volta, due, tre. Nessuna risposta.",
 		"Sei andato a cercarlo in camera sua. Hai trovato soltanto un biglietto:",
 		"«Mi dispiace.» Firmato: papà.",
-		"Accanto, una lettera già aperta:",
+		"Accanto, una busta con il tuo nome, già aperta. Dentro, un solo foglio:",
 		"«Si presenti alla CHEAP per saldare il suo debito.»",
-		"Tuo padre se n’era andato. Tu eri rimasto senza una lira, con quella lettera in mano.",
+		"Tuo padre l’aveva letta prima di te. Se n’era andato, e tu eri rimasto senza una lira, con quel foglio in mano.",
 	])
 	await _title_card("", "CHEAP srl.")
 	_cabin.visible = true

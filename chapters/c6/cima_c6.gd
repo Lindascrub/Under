@@ -481,6 +481,8 @@ func _origin() -> void:
 		await Ui.say(["Pensavo di essere qui per il debito di mio padre."], GameState.player_name)
 		await Ui.say(["Su questo fascicolo c'è il tuo nome. Il suo non c'è.",
 			"Non hai ereditato questo debito da lui. È la quota che assegnano a chi viene registrato."], PRES)
+		await Ui.say(["Ma la lettera era in camera sua. L'aveva aperta lui."], GameState.player_name)
+		await Ui.say(["Forse voleva risparmiarti di leggerla per primo. O forse sapeva già che non poteva aiutarti a pagarla."], PRES)
 	d["president"]["origin_explained"] = true
 	await _verification()
 

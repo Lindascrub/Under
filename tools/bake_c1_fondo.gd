@@ -226,7 +226,7 @@ func _party() -> void:
 			["* Il palloncino giallo è afflosciato. La scritta adesso dice \"BENVE...\". Il resto è una piega."]],
 		[["* Un palloncino blu. Lo tocchi: è tiepido. Come se qualcuno ci avesse soffiato dentro poco fa.", "* Su un'etichetta: \"Gonfiato al piano terra. Non riutilizzabile\"."],
 			["* Il palloncino blu è grigio e floscio. Tiepido non lo è più."]],
-		[["* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via. Come te."],
+		[["* Un palloncino rosso a forma di cuore. Sopra: \"LA CHEAP TI VUOLE BENE\".", "* Il filo è legato a un peso di piombo. Così non vola via."],
 			["* Il cuore rosso si è sgonfiato. Adesso sembra un portafoglio vuoto."]],
 		[["* Un palloncino verde. Dentro c'è un bigliettino: \"Hai vinto un turno extra!\".", "* Sul retro, in piccolo: \"Il premio non è convertibile in tempo libero\"."],
 			["* Il palloncino verde è per terra. Il bigliettino è rimasto dentro, ma ormai non lo legge nessuno."]],
