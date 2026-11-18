@@ -27,6 +27,7 @@ region = Rect2(0, 80, 16, 16)
 [node name="Gioco" type="Node2D"]
 texture_filter = 1
 script = ExtResource("gioco")
+accelerazione = 0.0
 facciate = Array[Texture2D]([SubResource("casa"), SubResource("ingresso_blu"), SubResource("ingresso_giallo")])
 
 [node name="Fondo" type="ColorRect" parent="."]

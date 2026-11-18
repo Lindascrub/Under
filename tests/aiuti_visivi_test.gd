@@ -79,7 +79,7 @@ func _prove(tel: bool) -> void:
 	a = nuovo("consegne")
 	var v0: float = a.velocita
 	a._process(0.5)
-	verifica(a.velocita > v0, "Amir: la strada accelera man mano")
+	verifica(is_equal_approx(a.velocita, v0), "Amir: la strada va sempre alla stessa velocità (Linda 18/11: era troppo difficile)")
 	var b := nuovo("consegne")
 	var diverse := false
 	for i in a.porte.size():

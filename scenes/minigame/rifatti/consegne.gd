@@ -1,5 +1,6 @@
 extends "res://scenes/minigame/rifatti/base.gd"
-## LE DICIOTTO PORTE (Amir): le case passano da destra a sinistra, sempre più veloci.
+## LE DICIOTTO PORTE (Amir): le case passano da destra a sinistra, sempre alla stessa velocità
+## (accelerazione nella scena: 0; alzala per farle andare sempre più veloci).
 ## Amir guida il furgone delle consegne; quando una porta illuminata arriva sulla
 ## sua corsia, si lancia il pacco poco prima che la porta raggiunga la mira.
 ## Ogni lancio consuma un pacco (ce n'è qualcuno di scorta). Errore = lancio a vuoto o porta superata.
@@ -74,7 +75,7 @@ func _crea_porte() -> void:
 
 func _process(dt: float) -> void:
 	if not attivo or Ui.busy or porte.is_empty(): return
-	# sempre più veloce, man mano
+	# con accelerazione 0 la velocità resta quella iniziale
 	velocita = minf(velocita + accelerazione * dt, velocita_max)
 	for p in porte:
 		p.position.x -= velocita * dt
