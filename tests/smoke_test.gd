@@ -132,6 +132,12 @@ func _go(path: String, spawn := "") -> Node:
 	Router.goto(path, spawn)
 	await _wait_scene(path)
 	await _idle()
+	# il cartello GIORNO N e le scene d'ingresso sono cutscene: si aspetta che finiscano
+	var n := 0
+	while (Ui.cutscene or Ui.busy or Ui.transitioning) and n < 60000:
+		await get_tree().process_frame
+		n += 1
+	await _idle()
 	return get_tree().current_scene
 
 
@@ -398,11 +404,15 @@ func _c4_call(m: Room, method: String, args: Array = []) -> Room:
 ## Aspetta il ritorno in Banca (anche da un minigioco) e la fine di ogni dialogo.
 func _c4_settle() -> Room:
 	await get_tree().process_frame
-	await _wait_scene(Router.BANCA, 60000)
-	await _idle()
-	while Ui.cutscene or Ui.busy or Ui.transitioning:
-		await get_tree().process_frame
-	await _idle()
+	# tre volte: un turno o una notte possono partire un attimo dopo, quando sembrava tutto fermo
+	for volta in 3:
+		await _wait_scene(Router.BANCA, 60000)
+		await _idle()
+		var n := 0
+		while (Ui.cutscene or Ui.busy or Ui.transitioning or _scene_path() != Router.BANCA) and n < 60000:
+			await get_tree().process_frame
+			n += 1
+		await _idle()
 	return get_tree().current_scene as Room
 
 
@@ -519,10 +529,12 @@ func _test_chapter4() -> void:
 	# 24-25: il badge regalato (niente soldi, niente debito), mai due volte
 	money0 = GameState.money
 	debt0 = GameState.debt
-	m = await _c4_call(m, "_badge_machine")
-	_check(GameState.flags.get("c4_nives", false) and not GameState.has_badge("0"), "Nives: prima il prezzo")
-	choose_queue = [0]
-	m = await _c4_call(m, "_badge_machine")
+	# chi ha aiutato tutti il badge lo riceve subito (Nives arriva da sola); altrimenti prima il prezzo
+	if not GameState.has_badge("0"):
+		m = await _c4_call(m, "_badge_machine")
+		_check(GameState.flags.get("c4_nives", false) and not GameState.has_badge("0"), "Nives: prima il prezzo")
+		choose_queue = [0]
+		m = await _c4_call(m, "_badge_machine")
 	_check(GameState.has_badge("0") and GameState.money == money0 and GameState.debt == debt0 and GameState.flags.get("c4_badge", "") == "regalo", "il badge regalato non tocca soldi né debito")
 	m = await _c4_call(m, "_badge_machine")
 	_check(GameState.badges.count("0") == 1, "nessun badge due volte")
@@ -759,7 +771,7 @@ func _test_chapter6() -> void:
 	await _go(Router.CIMA, "default")
 	m = await _c6_settle()
 	_check(not Ui.cutscene, "16: l'ascensore parla una volta sola")
-	_check(logic.person_line("amir").begins_with("Amir") and logic.person_line("ada").contains("grigio"), "17: lo specchio mostra le persone come sono")
+	_check(logic.person_line("amir").begins_with("Amir") and logic.person_line("ada").contains("grigia"), "17: lo specchio mostra le persone come sono")
 	GameState.robots.append("teo")
 	_check(logic.person_line("teo").contains("antenna"), "17: un robot nello specchio ha l'antenna")
 	GameState.robots.erase("teo")
@@ -1067,7 +1079,10 @@ func _test_chapter5() -> void:
 	_check(GameState.money == money0 + 1600 and int(GameState.flags.get("c5_turni", 0)) == 1, "il turno al centralino dovrebbe pagare 1.600 € (pagati %d)" % (GameState.money - money0))
 	_check(GameState.flags.get("c5_capo", false) and GameState.flags.get("c5_capo_chiuso", false) and not GameState.is_robot("ada") and GameState.exploited == 0, "il capo chiama; 'No' chiude l'offerta e Ada resta Ada")
 	# 28, 30: la manifestazione, le tre proposte, la vetrina
-	_check(GameState.flags.get("c5_protesta", false) and GameState.flags.get("c5_vetrina", false) and str(GameState.flags.get("c5_proposta", "")) == "B", "la manifestazione parte, si sostiene B, poi CRASH")
+	# la piazza in tre momenti: la protesta parte, le proposte si ascoltano parlando con Ada (si vota all'assemblea), poi CRASH
+	_check(GameState.flags.get("c5_protesta", false), "la manifestazione parte dopo il turno")
+	m = await _c5_call(m, "_organizer_talk")
+	_check(GameState.flags.get("c5_proposte", false) and GameState.flags.get("c5_vetrina", false), "da Ada le tre proposte, poi CRASH")
 	_check(_shown(m, "VetrinaRottaNuova") and m.get("people").has("Ada") and m.get("people").has("Giornalista"), "in piazza: la vetrina rotta, Ada, il giornalista")
 	choose_queue = [0]
 	m = await _c5_call(m, "_station", [job])
@@ -1214,7 +1229,7 @@ func _test_chapter5() -> void:
 	choose_queue = [3]
 	m = await _go(Router.CITY, "from_casa")
 	m = await _c5_settle()
-	_check(GameState.flags.get("c5_protesta", false) and GameState.flags.get("c5_capo_chiuso", false) and not GameState.is_robot("ada") and str(GameState.flags.get("c5_proposta", "")) == "nessuna", "il giorno dopo: l'offerta scade, la manifestazione parte")
+	_check(GameState.flags.get("c5_protesta", false) and GameState.flags.get("c5_capo_chiuso", false) and not GameState.is_robot("ada"), "il giorno dopo: l'offerta scade, la manifestazione parte")
 	_check(logic.look_back_line() == "Erano tutti nella stessa città. Non stavano vivendo la stessa vita.", "senza assemblea: la frase della città frammentata")
 
 	# le regole dell'assemblea (nessun punteggio): sostenere B non basta; pronti + A = rinvio
